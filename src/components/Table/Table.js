@@ -5,22 +5,20 @@ const COLUMNS_MODE = 'columns';
 const ROWS_MODE = 'rows';
 
 const properties = mode => {
-  if (mode === 'columns') {
+  if (mode === COLUMNS_MODE) {
     return {
       size: 'offsetWidth',
       startPadding: 'paddingLeft',
       endPadding: 'paddingRight',
       coordinate: 'clientX'
     }
-  } else if (mode === 'rows') {
+  } else if (mode === ROWS_MODE) {
     return {
       size: 'offsetHeight',
       startPadding: 'paddingTop',
       endPadding: 'paddingBottom',
       coordinate: 'clientY'
     }
-  } else {
-    throw new Error('Invalid mode ' + mode);
   }
 };
 
@@ -51,14 +49,18 @@ const calculateOffset = (mode, rootRef, fixCells, sizes) => {
 const calculateSizes = (mode, interaction, sourceSize, event) => {
   const { coordinate } = properties(mode);
   const diff = event[coordinate] - interaction.startCoordinate;
+
   const size = [...sourceSize];
-  size[interaction.index] = interaction.curStartSize + diff;
-  size[interaction.index + 1] = interaction.nextStartSize - diff;
-
   const sizeWithPaddings = [];
-  sizeWithPaddings[interaction.index] = size[interaction.index] + interaction.curPadding;
-  sizeWithPaddings[interaction.index + 1] = size[interaction.index + 1] + interaction.nextPadding;
 
+  size[interaction.index] = interaction.curStartSize + diff;
+  sizeWithPaddings[interaction.index] = size[interaction.index] + interaction.curPadding;
+
+  if (interaction.nextStartSize) {
+    size[interaction.index + 1] = interaction.nextStartSize - diff;
+    sizeWithPaddings[interaction.index + 1] = size[interaction.index + 1] + interaction.nextPadding;
+  }
+  
   return { size, sizeWithPaddings };
 };
 
@@ -117,17 +119,22 @@ const TableResizer = ({ mode, index, fix, ...props }) => {
 
   const handleMouseDown = event => {
     event.persist();
-    const parentNode = event.target.parentElement;
-    const curNode = parentNode;
-    const nextNode = curNode.nextElementSibling;
     const { size, coordinate } = properties(mode);
+    const parentNode = event.target.parentElement;
+
+    const curNode = parentNode;
     const curPadding = getNodePaddings(mode, curNode);
-    const nextPadding = getNodePaddings(mode, nextNode);
     const curStartSize = curNode[size]// - curPadding;
-    const nextStartSize = nextNode[size]// - nextPadding;
+
+    let nextPadding, nextStartSize;
+    if (mode === COLUMNS_MODE) {
+      const nextNode = curNode.nextElementSibling;
+      nextPadding = getNodePaddings(mode, nextNode);
+      nextStartSize = nextNode[size]// - nextPadding;
+    }
+
     setInteraction({
       mode,
-      mousePressed: true,
       index,
       curNode,
       startCoordinate: event[coordinate],
@@ -170,5 +177,5 @@ const TableResizer = ({ mode, index, fix, ...props }) => {
   return <div {...props} onMouseDown={handleMouseDown} />;
 };
 
-export const TableColumnResizer = props => <TableResizer mode="columns" {...props} />;
-export const TableRowResizer = props => <TableResizer mode="rows" {...props} />;
+export const TableColumnResizer = props => <TableResizer mode={COLUMNS_MODE} {...props} />;
+export const TableRowResizer = props => <TableResizer mode={ROWS_MODE} {...props} />;
