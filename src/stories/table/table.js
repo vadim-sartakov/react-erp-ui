@@ -61,7 +61,7 @@ const TestTable = ({ columnsCount, valuesCount, ...props }) => {
         {values.map((value, rowIndex) => (
           <TableRow key={rowIndex} index={rowIndex + 1}>
             {columns.map((column, columnIndex) => (
-              <TableCell key={columnIndex} columnIndex={columnIndex} rowIndex={rowIndex}>
+              <TableCell key={columnIndex} columnIndex={columnIndex} rowIndex={rowIndex + 1}>
                 <TableCellValue>
                   {value[column.key]}
                 </TableCellValue>
