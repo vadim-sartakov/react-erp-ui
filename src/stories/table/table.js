@@ -7,6 +7,7 @@ import {
   TableHeaderCell,
   TableBody,
   TableCell,
+  TableCellValue,
   TableColumnResizer,
   TableRowResizer
 } from '../../components/Table';
@@ -40,31 +41,42 @@ const values = new Array(20).fill(1).map((item, index) => {
   };
 });
 
-storiesOf('Table', module)
-  .add('default', () => (
-    <Table className="table">
-      <TableHeader>
-        <TableRow>
-          {columns.map((column, index) => (
-            <TableHeaderCell key={index} index={index}>
+const TestTable = props => (
+  <Table
+      className="table"
+      defaultRowHeight={16}
+      defaultColumnWidth={300}
+      {...props}>
+    <TableHeader>
+      <TableRow index={0}>
+        {columns.map((column, index) => (
+          <TableHeaderCell key={index} index={index}>
+            <TableCellValue>
               {column.title}
-              <TableColumnResizer index={index} className="resizer column-resizer" />
-            </TableHeaderCell>
+            </TableCellValue>
+            <TableColumnResizer index={index} className="resizer column-resizer" />
+            <TableRowResizer className="resizer row-resizer" />
+          </TableHeaderCell>
+        ))}
+      </TableRow>
+    </TableHeader>
+    
+    <TableBody>
+      {values.map((value, rowIndex) => (
+        <TableRow key={rowIndex} index={rowIndex + 1}>
+          {columns.map((column, columnIndex) => (
+            <TableCell key={columnIndex}>
+              <TableCellValue>
+                {value[column.key]}
+              </TableCellValue>
+              <TableRowResizer className="resizer row-resizer" />
+            </TableCell>
           ))}
         </TableRow>
-      </TableHeader>
-      
-      <TableBody>
-        {values.map((value, rowIndex) => (
-          <TableRow key={rowIndex} index={rowIndex}>
-            {columns.map((column, columnIndex) => (
-              <TableCell key={columnIndex}>
-                {value[column.key]}
-                <TableRowResizer index={rowIndex} className="resizer row-resizer" />
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  ));
+      ))}
+    </TableBody>
+  </Table>
+);
+
+storiesOf('Table', module)
+  .add('default', () => <TestTable />);

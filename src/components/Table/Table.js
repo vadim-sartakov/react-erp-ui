@@ -1,181 +1,132 @@
-import React, { useState, createContext, useContext, useEffect, useCallback } from 'react';
+import React, { useState, createContext, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
-const COLUMNS_MODE = 'columns';
-const ROWS_MODE = 'rows';
-
-const properties = mode => {
-  if (mode === COLUMNS_MODE) {
-    return {
-      size: 'offsetWidth',
-      startPadding: 'paddingLeft',
-      endPadding: 'paddingRight',
-      coordinate: 'clientX'
-    }
-  } else if (mode === ROWS_MODE) {
-    return {
-      size: 'offsetHeight',
-      startPadding: 'paddingTop',
-      endPadding: 'paddingBottom',
-      coordinate: 'clientY'
-    }
-  }
-};
-
-const getNodePaddings = (mode, node) => {
-  const computedStyle = getComputedStyle(node);
-  const { startPadding, endPadding } = properties(mode);
-  return parseFloat(computedStyle[startPadding] || '0') + parseFloat(computedStyle[endPadding] || '0');
-};
-
-const calculateOffset = (mode, rootRef, fixCells, sizes) => {
-  const offset = [];
-  const { size } = properties(mode);
-  if (!rootRef || !rootRef.current) return [];
-  const allSiblingNodes = rootRef.current.children;
-  for (let i = 0; i < fixCells; i++) {
-    if (i === 0) {
-      offset.push(0);
-      continue;
-    }
-    // Taking either html node size or calculated due to resizing size
-    const prevNodeSize = ( sizes && sizes[i - 1] ) || allSiblingNodes[i - 1][size];
-    const prevOffset = offset[i - 1];
-    offset.push(prevOffset + prevNodeSize);
-  }
-  return offset;
-};
-
-const calculateSizes = (mode, interaction, sourceSize, event) => {
-  const { coordinate } = properties(mode);
-  const diff = event[coordinate] - interaction.startCoordinate;
-
-  const size = [...sourceSize];
-  const sizeWithPaddings = [];
-
-  size[interaction.index] = interaction.curStartSize + diff;
-  sizeWithPaddings[interaction.index] = size[interaction.index] + interaction.curPadding;
-
-  if (interaction.nextStartSize) {
-    size[interaction.index + 1] = interaction.nextStartSize - diff;
-    sizeWithPaddings[interaction.index + 1] = size[interaction.index + 1] + interaction.nextPadding;
-  }
-  
-  return { size, sizeWithPaddings };
-};
 
 const TableContext = createContext();
 
 export const Table = ({
+  defaultRowHeight,
+  defaultColumnWidth,
   fixRows,
   fixColumns,
+  style = {},
   ...props
 }) => {
-  const [interaction, setInteraction] = useState();
-  const [dimensions, setDimensions] = useState({
-    columns: {
-      size: [],
-      offset: []
-    },
-    rows: {
-      size: [],
-      offset: []
-    }
-  });
+  const [widths, setWidths] = useState([]);
+  const [heights, setHeights] = useState([]);
   return (
     <TableContext.Provider value={{
-      interaction,
-      setInteraction,
-      dimensions,
-      setDimensions
+      defaultRowHeight,
+      defaultColumnWidth,
+      fixRows,
+      fixColumns,
+      widths: [widths, setWidths],
+      heights: [heights, setHeights]
     }}>
-      <table {...props} />
+      <table {...props} style={{ ...style, tableLayout: 'fixed', width: 'min-content' }} />
     </TableContext.Provider>
   )
 };
 Table.propTypes = {
+  defaultRowHeight: PropTypes.number.isRequired,
+  defaultColumnWidth: PropTypes.number.isRequired,
   fixRows: PropTypes.number,
   fixColumns: PropTypes.number
 };
+Table.defaultProps = {
+  defaultRowHeight: 16,
+  defaultColumnWidth: 100
+};
 
 export const TableHeader = props => <thead {...props} />;
-export const TableBody = props => <tbody {...props} />;
-export const TableRow = ({ style = {}, index, ...props }) => {
-  const { dimensions } = useContext(TableContext);
-  const height = dimensions.rows.size[index];
-  const nextStyle = { ...style, height };
-  return <tr {...props} style={nextStyle} />;
-};
+
 export const TableHeaderCell = ({ style = {}, index, ...props }) => {
-  const { dimensions } = useContext(TableContext);
-  const width = dimensions.columns.size[index];
+  const { defaultColumnWidth, widths: [widths] } = useContext(TableContext);
+  const width = widths[index] || defaultColumnWidth;
   const nextStyle = { ...style, width };
   return <th {...props} style={nextStyle} />;
 };
-export const TableCell = props => <td {...props} />;
 
-const TableResizer = ({ mode, index, fix, ...props }) => {
-  const { interaction, setInteraction, setDimensions } = useContext(TableContext);
+const useResize = (index, { defaultSize, size, coordinate }) => {
+  const { [defaultSize]: defSize, [size]: [sizes, setSizes] } = useContext(TableContext);
+  const [interaction, setInteraction] = useState();
 
   const handleMouseDown = event => {
-    event.persist();
-    const { size, coordinate } = properties(mode);
-    const parentNode = event.target.parentElement;
-
-    const curNode = parentNode;
-    const curPadding = getNodePaddings(mode, curNode);
-    const curStartSize = curNode[size]// - curPadding;
-
-    let nextPadding, nextStartSize;
-    if (mode === COLUMNS_MODE) {
-      const nextNode = curNode.nextElementSibling;
-      nextPadding = getNodePaddings(mode, nextNode);
-      nextStartSize = nextNode[size]// - nextPadding;
-    }
-
+    const startCoordinate = event[coordinate];
+    const startSize = sizes[index] || defSize;
     setInteraction({
-      mode,
       index,
-      curNode,
-      startCoordinate: event[coordinate],
-      curStartSize,
-      curPadding,
-      nextStartSize,
-      nextPadding
+      startCoordinate,
+      startSize
     });
   };
 
-  const handleMouseMove = useCallback(event => {
-    if (interaction && interaction.mode === mode) {
-      setDimensions(state => {
-        const { size, sizeWithPaddings } = calculateSizes(mode, interaction, state[mode].size, event)
-        const offset = calculateOffset(mode, sizeWithPaddings);
-        return {
-          ...state,
-          [mode]: {
-            size,
-            offset
-          }
-        }
-      });
-    }
-  }, [mode, setDimensions, interaction]);
-
-  const handleMouseUp = useCallback(() => {
-    if (interaction) setInteraction(null);
-  }, [interaction, setInteraction]);
-
   useEffect(() => {
+    const handleMouseMove = event => {
+      if (interaction) {
+        setSizes(sizes => {
+          const nextSizes = [...sizes];
+          const diff = event[coordinate] - interaction.startCoordinate;
+          nextSizes[index] = interaction.startSize + diff;
+          return nextSizes;
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (interaction) setInteraction(null);
+    };
+
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
+
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [handleMouseMove, handleMouseUp]);
+  }, [index, coordinate, interaction, setSizes]);
 
+  return handleMouseDown;
+
+};
+
+export const TableColumnResizer = ({ index, ...props }) => {
+  const handleMouseDown = useResize(index, {
+    defaultSize: 'defaultColumnWidth',
+    size: 'widths',
+    coordinate: 'pageX'
+  })
   return <div {...props} onMouseDown={handleMouseDown} />;
 };
 
-export const TableColumnResizer = props => <TableResizer mode={COLUMNS_MODE} {...props} />;
-export const TableRowResizer = props => <TableResizer mode={ROWS_MODE} {...props} />;
+const TableRowContext = createContext();
+
+export const TableRow = ({ index, ...props }) => (
+  <TableRowContext.Provider value={index}>
+    <tr {...props} />
+  </TableRowContext.Provider>
+);
+TableRow.propTypes = {
+  index: PropTypes.number.isRequired
+};
+
+export const TableRowResizer = props => {
+  const index = useContext(TableRowContext);
+  const handleMouseDown = useResize(index, {
+    defaultSize: 'defaultRowHeight',
+    size: 'heights',
+    coordinate: 'pageY'
+  })
+  return <div {...props} onMouseDown={handleMouseDown} />;
+};
+
+export const TableCell = props => <td {...props} />;
+
+export const TableCellValue = ({ mode, style, ...props }) => {
+  const { defaultRowHeight, heights: [heights] } = useContext(TableContext);
+  const index = useContext(TableRowContext);
+  const height = heights[index] || defaultRowHeight;
+  const nextStyle = { ...style, height, overflow: 'hidden' };
+  return <div style={nextStyle} {...props} />;
+};
+
+export const TableBody = props => <tbody {...props} />;
