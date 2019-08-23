@@ -150,8 +150,9 @@ export const TableRowResizer = props => {
   return <div {...props} onMouseDown={handleMouseDown} />;
 };
 
-export const TableCell = ({ Component = 'td', columnIndex, rowIndex, className, style, ...props }) => {
+export const TableCell = ({ Component = 'td', columnIndex, className, style, ...props }) => {
   const { defaultColumnWidth, defaultRowHeight, widths: [widths], heights: [heights], fixColumns, fixRows, classes } = useContext(TableContext);
+  const rowIndex = useContext(TableRowContext);
 
   const columnFixedStyle = getFixedStyle({
     index: columnIndex,
@@ -176,8 +177,7 @@ export const TableCell = ({ Component = 'td', columnIndex, rowIndex, className, 
   return <Component {...props} className={classNames(columnClassName, rowClassName)} style={nextStyle} />;
 };
 TableCell.propTypes = {
-  columnIndex: PropTypes.number.isRequired,
-  rowIndex: PropTypes.number.isRequired
+  columnIndex: PropTypes.number.isRequired
 };
 
 export const TableHeaderCell = ({ style = {}, ...props }) => {
