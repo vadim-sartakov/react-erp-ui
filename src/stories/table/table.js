@@ -31,7 +31,7 @@ const createValues = (columns, count) => new Array(count).fill(1).map((item, val
 
 const TestTable = ({ columnsCount, valuesCount, ...props }) => {
   const columns = createColumns(columnsCount);
-  const values = createValues(columns, valuesCount);
+  const rows = createValues(columns, valuesCount);
   return (
     <Table
         className="table"
@@ -58,7 +58,7 @@ const TestTable = ({ columnsCount, valuesCount, ...props }) => {
       </TableHeader>
       
       <TableBody>
-        {values.map((value, rowIndex) => (
+        {rows.map((value, rowIndex) => (
           <TableRow key={rowIndex} index={rowIndex + 1}>
             {columns.map((column, columnIndex) => (
               <TableCell key={columnIndex} columnIndex={columnIndex}>

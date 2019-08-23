@@ -1,6 +1,64 @@
-import React, { useState, createContext, useContext, useEffect } from 'react';
+import React, { useState, useRef, createContext, useContext, useEffect } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
+
+export const TableScrollContext = createContext();
+// Extract it as generic scroll component
+// Got to set margins depending on content size
+export const TableScroll = ({
+  scrollTop,
+  scrollLeft,
+  rowsPerPage,
+  columnsPerPage,
+  widths,
+  heights,
+  defaultWidth,
+  defaultHeight,
+  children,
+  ...props
+}) => {
+  const scrollRef = useRef();
+
+  useEffect(() => {
+    scrollRef.current.scrollTop = scrollTop
+  }, [scrollTop]);
+  useEffect(() => {
+    scrollRef.current.scrollLeft = scrollLeft
+  }, [scrollLeft]);
+
+  const handleScroll = e => {
+
+  };
+
+  const visibleValues = {
+    columns: {
+      pages: [0, 1],
+      children: [
+        {
+          pages: [0, 1],
+          expanded: true
+        }
+      ]
+    },
+    rows: {
+      pages: [0]
+    }
+  };
+
+  return (
+    <div {...props} ref={scrollRef} onScroll={handleScroll}>
+      {children(visibleValues)}
+    </div>
+  );
+};
+TableScroll.propTypes = {
+  scrollTop: PropTypes.number,
+  scrollLeft: PropTypes.number,
+};
+TableScroll.defaultProps = {
+  scrollTop: 0,
+  scrollLeft: 0,
+};
 
 const TableContext = createContext();
 
@@ -11,8 +69,10 @@ export const Table = ({
   fixColumns,
   classes,
   style = {},
+  value,
   ...props
 }) => {
+  // Got to be hierarchical
   const [widths, setWidths] = useState([]);
   const [heights, setHeights] = useState([]);
   return (
@@ -50,6 +110,7 @@ Table.defaultProps = {
 
 export const TableHeader = props => <thead {...props} />;
 
+// Extract it as generic resize component
 const useResize = (index, { defaultSize, size, coordinate }) => {
   const { [defaultSize]: defSize, [size]: [sizes, setSizes] } = useContext(TableContext);
   const [interaction, setInteraction] = useState();
