@@ -1,4 +1,5 @@
 import React, { useState, createContext, useContext, useEffect } from 'react';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 const TableContext = createContext();
@@ -8,6 +9,7 @@ export const Table = ({
   defaultColumnWidth,
   fixRows,
   fixColumns,
+  fixCellClass,
   style = {},
   ...props
 }) => {
@@ -19,6 +21,7 @@ export const Table = ({
       defaultColumnWidth,
       fixRows,
       fixColumns,
+      fixCellClass,
       widths: [widths, setWidths],
       heights: [heights, setHeights]
     }}>
@@ -34,16 +37,49 @@ Table.propTypes = {
 };
 Table.defaultProps = {
   defaultRowHeight: 16,
-  defaultColumnWidth: 100
+  defaultColumnWidth: 100,
+  fixRows: 0,
+  fixColumns: 0
 };
 
 export const TableHeader = props => <thead {...props} />;
 
-export const TableHeaderCell = ({ style = {}, index, ...props }) => {
-  const { defaultColumnWidth, widths: [widths] } = useContext(TableContext);
+const isFixed = (index, fixCells) => index <= fixCells - 1;
+
+const getFixedStyle = ({ index, fixCells, sizes, defaultSize, offsetProperty }) => {
+  const style = {};
+  if (isFixed(index, fixCells)) {
+    style.position = 'sticky';
+    let offset = 0;
+    for(let i = 0; i < index && i < fixCells; i++) {
+      const currentSize = sizes[i] || defaultSize;
+      offset = offset + currentSize;
+    }
+    style[offsetProperty] = offset;
+  }
+  return style;
+};
+
+export const TableHeaderCell = ({ className, style = {}, index, ...props }) => {
+  const { fixCellClass, defaultColumnWidth, widths: [widths], fixColumns } = useContext(TableContext);
   const width = widths[index] || defaultColumnWidth;
-  const nextStyle = { ...style, width };
-  return <th {...props} style={nextStyle} />;
+  const fixedStyle = getFixedStyle({
+    index,
+    fixCells: fixColumns,
+    sizes: widths,
+    defaultSize: defaultColumnWidth,
+    offsetProperty: 'left'
+  });
+  const nextStyle = { ...style, width, ...fixedStyle };
+  return (
+    <th
+        {...props}
+        className={classNames(
+          { [fixCellClass]: isFixed(index, fixColumns) },
+          className
+        )}
+        style={nextStyle} />
+  );
 };
 
 const useResize = (index, { defaultSize, size, coordinate }) => {

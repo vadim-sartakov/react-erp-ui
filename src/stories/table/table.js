@@ -37,6 +37,7 @@ const TestTable = ({ columnsCount, valuesCount, ...props }) => {
         className="table"
         defaultRowHeight={16}
         defaultColumnWidth={300}
+        fixCellClass="fixed"
         {...props}>
       <TableHeader>
         <TableRow index={0}>
@@ -72,4 +73,4 @@ const TestTable = ({ columnsCount, valuesCount, ...props }) => {
 
 storiesOf('Table', module)
   .add('default', () => <TestTable columnsCount={6} valuesCount={20} />)
-  .add('fixed rows', () => <TestTable columnsCount={6} valuesCount={20} fixRows={2} />);
+  .add('fixed columns', () => <TestTable columnsCount={6} valuesCount={20} fixColumns={2} />);
