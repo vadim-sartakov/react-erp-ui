@@ -50,33 +50,6 @@ Table.defaultProps = {
 
 export const TableHeader = props => <thead {...props} />;
 
-const isFixed = (index, fixCells) => index <= fixCells - 1;
-
-const getFixedStyle = ({ index, fixCells, sizes, defaultSize, offsetProperty }) => {
-  const style = {};
-  if (isFixed(index, fixCells)) {
-    style.position = 'sticky';
-    let offset = 0;
-    for(let i = 0; i < index && i < fixCells; i++) {
-      const currentSize = sizes[i] || defaultSize;
-      offset = offset + currentSize;
-    }
-    style[offsetProperty] = offset;
-  }
-  return style;
-};
-
-const getFixedClassName = ({ index, fixCells, className, fixClass, lastFixClass }) => {
-  const cellIsFixed = isFixed(index, fixCells);
-  return classNames(
-    { 
-      [fixClass]: cellIsFixed,
-      [lastFixClass]: lastFixClass && cellIsFixed && index === fixCells - 1,
-    },
-    className
-  )
-};
-
 const useResize = (index, { defaultSize, size, coordinate }) => {
   const { [defaultSize]: defSize, [size]: [sizes, setSizes] } = useContext(TableContext);
   const [interaction, setInteraction] = useState();
@@ -150,8 +123,44 @@ export const TableRowResizer = props => {
   return <div {...props} onMouseDown={handleMouseDown} />;
 };
 
+const isFixed = (index, fixCells) => index <= fixCells - 1;
+
+const getFixedStyle = ({ index, fixCells, sizes, defaultSize, offsetProperty }) => {
+  const style = {};
+  if (isFixed(index, fixCells)) {
+    style.position = 'sticky';
+    let offset = 0;
+    for(let i = 0; i < index && i < fixCells; i++) {
+      const currentSize = sizes[i] || defaultSize;
+      offset = offset + currentSize;
+    }
+    style[offsetProperty] = offset;
+  }
+  return style;
+};
+
+const getFixedClassName = ({ index, fixCells, className, fixClass, lastFixClass }) => {
+  const cellIsFixed = isFixed(index, fixCells);
+  return classNames(
+    { 
+      [fixClass]: cellIsFixed,
+      [lastFixClass]: lastFixClass && cellIsFixed && index === fixCells - 1,
+    },
+    className
+  )
+};
+
 export const TableCell = ({ Component = 'td', columnIndex, className, style, ...props }) => {
-  const { defaultColumnWidth, defaultRowHeight, widths: [widths], heights: [heights], fixColumns, fixRows, classes } = useContext(TableContext);
+  const {
+    defaultColumnWidth,
+    defaultRowHeight,
+    widths: [widths],
+    heights: [heights],
+    fixColumns,
+    fixRows,
+    classes
+  } = useContext(TableContext);
+  // TODO: introduce 'fixed' prop and fix the cell depending not only on fixed cells count, but also on this prop
   const rowIndex = useContext(TableRowContext);
 
   const columnFixedStyle = getFixedStyle({
@@ -170,8 +179,20 @@ export const TableCell = ({ Component = 'td', columnIndex, className, style, ...
     offsetProperty: 'top',
   });
   
-  const columnClassName = getFixedClassName({ className, index: columnIndex, fixClass: classes.fixColumn, lastFixClass: classes.lastFixColumn, fixCells: fixColumns });
-  const rowClassName = getFixedClassName({ className, index: rowIndex, fixClass: classes.fixRow, lastFixClass: classes.lastFixRow, fixCells: fixRows });
+  const columnClassName = getFixedClassName({
+    className,
+    index: columnIndex, 
+    fixClass: classes.fixColumn,
+    lastFixClass: classes.lastFixColumn,
+    fixCells: fixColumns
+  });
+  const rowClassName = getFixedClassName({
+    className,
+    index: rowIndex,
+    fixClass: classes.fixRow,
+    lastFixClass: classes.lastFixRow,
+    fixCells: fixRows
+  });
 
   const nextStyle = { ...style, ...columnFixedStyle, ...rowFixedStyle };
   return <Component {...props} className={classNames(columnClassName, rowClassName)} style={nextStyle} />;
