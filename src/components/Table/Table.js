@@ -9,7 +9,7 @@ export const Table = ({
   defaultColumnWidth,
   fixRows,
   fixColumns,
-  fixCellClass,
+  classes,
   style = {},
   ...props
 }) => {
@@ -21,7 +21,7 @@ export const Table = ({
       defaultColumnWidth,
       fixRows,
       fixColumns,
-      fixCellClass,
+      classes,
       widths: [widths, setWidths],
       heights: [heights, setHeights]
     }}>
@@ -33,7 +33,13 @@ Table.propTypes = {
   defaultRowHeight: PropTypes.number.isRequired,
   defaultColumnWidth: PropTypes.number.isRequired,
   fixRows: PropTypes.number,
-  fixColumns: PropTypes.number
+  fixColumns: PropTypes.number,
+  classes: PropTypes.shape({
+    fixRow: PropTypes.string,
+    fixColumn: PropTypes.string,
+    lastFixColumn: PropTypes.string,
+    lastFixRow: PropTypes.string
+  })
 };
 Table.defaultProps = {
   defaultRowHeight: 16,
@@ -60,26 +66,43 @@ const getFixedStyle = ({ index, fixCells, sizes, defaultSize, offsetProperty }) 
   return style;
 };
 
-export const TableHeaderCell = ({ className, style = {}, index, ...props }) => {
-  const { fixCellClass, defaultColumnWidth, widths: [widths], fixColumns } = useContext(TableContext);
-  const width = widths[index] || defaultColumnWidth;
-  const fixedStyle = getFixedStyle({
-    index,
+const getFixedClassName = ({ index, fixCells, className, fixClass, lastFixClass }) => {
+  const cellIsFixed = isFixed(index, fixCells);
+  return classNames(
+    { 
+      [fixClass]: cellIsFixed,
+      [lastFixClass]: lastFixClass && cellIsFixed && index === fixCells - 1,
+    },
+    className
+  )
+};
+
+export const TableHeaderCell = ({ className, style = {}, columnIndex, rowIndex, ...props }) => {
+  const { defaultColumnWidth, defaultRowHeight, widths: [widths], heights: [heights], fixColumns, fixRows, classes } = useContext(TableContext);
+
+  const columnFixedStyle = getFixedStyle({
+    index: columnIndex,
     fixCells: fixColumns,
     sizes: widths,
     defaultSize: defaultColumnWidth,
-    offsetProperty: 'left'
+    offsetProperty: 'left',
   });
-  const nextStyle = { ...style, width, ...fixedStyle };
-  return (
-    <th
-        {...props}
-        className={classNames(
-          { [fixCellClass]: isFixed(index, fixColumns) },
-          className
-        )}
-        style={nextStyle} />
-  );
+
+  const rowFixedStyle = getFixedStyle({
+    index: rowIndex,
+    fixCells: fixRows,
+    sizes: heights,
+    defaultSize: defaultRowHeight,
+    offsetProperty: 'top',
+  });
+
+  const width = widths[columnIndex] || defaultColumnWidth;
+  const nextStyle = { ...style, width, ...columnFixedStyle, ...rowFixedStyle };
+  
+  const columnClassName = getFixedClassName({ className, index: columnIndex, fixClass: classes.fixColumn, lastFixClass: classes.lastFixColumn, fixCells: fixColumns });
+  const rowClassName = getFixedClassName({ className, index: rowIndex, fixClass: classes.fixRow, lastFixClass: classes.lastFixRow, fixCells: fixRows });
+
+  return <th {...props} className={classNames(columnClassName, rowClassName)} style={nextStyle} />;
 };
 
 const useResize = (index, { defaultSize, size, coordinate }) => {
@@ -155,7 +178,26 @@ export const TableRowResizer = props => {
   return <div {...props} onMouseDown={handleMouseDown} />;
 };
 
-export const TableCell = props => <td {...props} />;
+export const TableCell = ({ columnIndex, rowIndex, className, style, ...props }) => {
+  const { defaultColumnWidth, widths: [widths], fixColumns, fixRows, classes } = useContext(TableContext);
+
+  const columnFixedStyle = getFixedStyle({
+    index: columnIndex,
+    fixCells: fixColumns,
+    sizes: widths,
+    defaultSize: defaultColumnWidth,
+    offsetProperty: 'left',
+  });
+
+  const columnClassName = getFixedClassName({ className, index: columnIndex, fixClass: classes.fixColumn, lastFixClass: classes.lastFixColumn, fixCells: fixColumns });
+  const rowClassName = getFixedClassName({ className, index: rowIndex, fixClass: classes.fixRow, lastFixClass: classes.lastFixRow, fixCells: fixRows });
+
+  const nextStyle = { ...style, ...columnFixedStyle };
+  return <td {...props} className={classNames(columnClassName/*, rowClassName*/)} style={nextStyle} />;
+};
+TableCell.propTypes = {
+  columnIndex: PropTypes.number.isRequired
+};
 
 export const TableCellValue = ({ mode, style, ...props }) => {
   const { defaultRowHeight, heights: [heights] } = useContext(TableContext);

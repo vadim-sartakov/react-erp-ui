@@ -26,10 +26,20 @@
     cursor: ns-resize
   td
     position: relative
-    border-bottom: 1px solid #dee2e6
+    border-bottom: solid 1px #dee2e6
   td, th
     padding: 16px 12px
 
-  .fixed
+  .fix-column
+    background-color: #fff
+    z-index: 3
+
+  th.fix-column
+    z-index: 4
+
+  .fix-row
     background-color: #fff
     z-index: 2
+  
+  tbody .last-fix-column
+    border-right: solid 1px #dee2e6

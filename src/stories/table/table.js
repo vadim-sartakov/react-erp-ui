@@ -37,16 +37,20 @@ const TestTable = ({ columnsCount, valuesCount, ...props }) => {
         className="table"
         defaultRowHeight={16}
         defaultColumnWidth={300}
-        fixCellClass="fixed"
+        classes={{
+          fixColumn: 'fix-column',
+          lastFixColumn: 'last-fix-column',
+          fixRow: 'fix-row'
+        }}
         {...props}>
       <TableHeader>
         <TableRow index={0}>
-          {columns.map((column, index) => (
-            <TableHeaderCell key={index} index={index}>
+          {columns.map((column, columnIndex) => (
+            <TableHeaderCell key={columnIndex} columnIndex={columnIndex} rowIndex={0}>
               <TableCellValue>
                 {column.title}
               </TableCellValue>
-              <TableColumnResizer index={index} className="resizer column-resizer" />
+              <TableColumnResizer index={columnIndex} className="resizer column-resizer" />
               <TableRowResizer className="resizer row-resizer" />
             </TableHeaderCell>
           ))}
@@ -57,7 +61,7 @@ const TestTable = ({ columnsCount, valuesCount, ...props }) => {
         {values.map((value, rowIndex) => (
           <TableRow key={rowIndex} index={rowIndex + 1}>
             {columns.map((column, columnIndex) => (
-              <TableCell key={columnIndex}>
+              <TableCell key={columnIndex} columnIndex={columnIndex} rowIndex={rowIndex}>
                 <TableCellValue>
                   {value[column.key]}
                 </TableCellValue>
@@ -73,4 +77,4 @@ const TestTable = ({ columnsCount, valuesCount, ...props }) => {
 
 storiesOf('Table', module)
   .add('default', () => <TestTable columnsCount={6} valuesCount={20} />)
-  .add('fixed columns', () => <TestTable columnsCount={6} valuesCount={20} fixColumns={2} />);
+  .add('fixed columns', () => <TestTable columnsCount={6} valuesCount={20} fixRows={1} fixColumns={2} />);
