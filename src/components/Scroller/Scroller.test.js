@@ -1,73 +1,39 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { shallow } from 'enzyme';
+import StaticScroller from './Scroller';
 
-describe('Scroller', () => {
+const createColumns = count => new Array(count).fill(1).reduce( (acc, item, index) => [...acc, `column${index}`], []);
+const createRows = (columns, count) => new Array(count).fill(1).map( (item, rowIndex) => {
+  return columns.reduce( (acc, column, columnIndex) => ({ ...acc, [column]: `Value - ${rowIndex} - ${columnIndex}` }), [] );
+});
 
-  it('renders root first page on initial scroll = 0', () => {
+describe.only('StaticScroller', () => {
 
-    const wrapper = shallow();
-    const result = 0;
-    expect(result).toBe({
-      columns: [0],
-      rows: [0]
-    })
-
-  });
-
-  it('renders root first and second pages when scrolled half of first page', () => {
-
-    const scrollTop = 50;
-    const wrapper = shallow();
-    const rowsMeta = {
-      // Maybe if there is no way to restore server-backed table structure, this property is redundant?
-      childrenCount: 64,
-      children: [
-        {
-          height: 20, // or default
-          childrenCount: 20
-        },
-        {
-          height: 20,
-        }
-      ]
-    };
-    const result = 0;
-    expect(result).toBe({
-      columns: [0],
-      rows: [0, 1]
-    })
-
-  });
-
-  it('renders child and root first pages', () => {
-
-    const scrollTop = 50;
-    const wrapper = shallow();
-    const rowsMeta = {
-      childrenCount: 64,
-      children: [
-        {
-          height: 20,
-          childrenCount: 20,
-          children: [
-            // ...
-            {
-              height: 20
-            }
-          ]
-        },
-        {
-          height: 20,
-          expanded: true
-        }
-      ]
-    };
-    const result = 0;
-    expect(result).toBe({
-      columns: [0],
-      rows: [0, [0], 1]
-    })
-
+  it('loads first root page on initial scroll', () => {
+    const columns = createColumns(5);
+    const value = createRows(columns, 50);
+    const child = jest.fn();
+    let wrapper;
+    act(() => {
+      wrapper = shallow((
+        <StaticScroller
+            defaultColumnWidth={50}
+            defaultRowHeight={20}
+            rowsPerPage={20}
+            columnsPerPage={20}
+            value={value}
+            scrollTop={10}
+            rows={{ totalCount: 50 }}
+            columns={{ totalCount: 5 }}>
+          {child}
+        </StaticScroller>
+      ));
+    });
+    
+    expect(child.mock.calls[0][0]).toEqual(value.slice(0, 20));
+    const style = wrapper.find('div').prop('style');
+    expect(style).toHaveProperty('paddingBottom', 600);
   });
 
 });
