@@ -1,15 +1,15 @@
-import React, { useState, useRef, useEffect, Children } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-const defaultLoadPage = (value, rowPage, visibleColumns, columnsPerPage, rowsPerPage) => {
+const defaultLoadPage = ({ value, rowPage, visibleColumns, columnsPerPage, rowsPerPage }) => {
   const rows = value.slice(rowPage * rowsPerPage, (rowPage + 1) * rowsPerPage);
   // TODO: Remove hidden columns from values
   return rows
 };
 
-const applyVisiblePages = (value, visibleColumns, visibleRows, columnsPerPage, rowsPerPage) => {
+const applyVisiblePages = ({ value, visibleColumns, visibleRows, columnsPerPage, rowsPerPage }) => {
   const result = [];
-  const firstPage = defaultLoadPage(value, visibleRows.pages[0], visibleColumns, columnsPerPage, rowsPerPage);
+  const firstPage = defaultLoadPage({ value, rowPage: visibleRows.pages[0], visibleColumns, columnsPerPage, rowsPerPage });
   result.push(...firstPage);
 
   if (visibleRows.children) {
@@ -24,26 +24,29 @@ const applyVisiblePages = (value, visibleColumns, visibleRows, columnsPerPage, r
   }
 
   if (visibleRows.pages[1]) {
-    const secondPage = defaultLoadPage(value, visibleRows.pages[1], visibleColumns, columnsPerPage, rowsPerPage);
+    const secondPage = defaultLoadPage({ value, rowPage: visibleRows.pages[1], visibleColumns, columnsPerPage, rowsPerPage });
     result.push(...secondPage);
   }
 
   return result;
 };
 
-const getVisiblePagesAndPaddings = (scroll, meta, defaultSize, itemsPerPage) => {
+const getVisiblePagesAndPaddings = ({ scroll, meta, value, defaultSize, itemsPerPage }) => {
   let page = 0, visiblePages = {}, startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
 
-  if (!meta.children) {
+  if (!meta || !meta.children) {
     const pageSize = defaultSize * itemsPerPage;
     page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
-    startSectionSize = page * pageSize;
 
-    const itemsOnFirstPage = Math.min(meta.totalCount, itemsPerPage);
-    const itemsOnSecondPage = Math.min(meta.totalCount - itemsOnFirstPage, itemsPerPage);
+    visiblePages.pages = page === 0 ? [page] : [page - 1, page];
+    startSectionSize = visiblePages.pages[0] * pageSize;
+
+    const totalCount = value.length || meta.totalCount;
+    const itemsOnFirstPage = Math.min(totalCount, itemsPerPage);
+    const itemsOnSecondPage = page > 0 ? Math.min(totalCount - itemsOnFirstPage, itemsPerPage) : 0;
 
     viewingPagesSize += (itemsOnFirstPage + itemsOnSecondPage) * defaultSize;
-    endSectionSize = defaultSize * meta.totalCount - startSectionSize - viewingPagesSize;
+    endSectionSize = defaultSize * totalCount - startSectionSize - viewingPagesSize;
   } else {
     
     let curScroll = 0, itemsOnPage = 0;
@@ -61,7 +64,7 @@ const getVisiblePagesAndPaddings = (scroll, meta, defaultSize, itemsPerPage) => 
       }
   
       if (curMeta.expanded) {
-        const [nestedVisiblePages, nestedPaddings] = getVisiblePagesAndPaddings(scroll - curScroll, meta.children, defaultSize, itemsOnPage);
+        const [nestedVisiblePages, nestedPaddings] = getVisiblePagesAndPaddings(scroll - curScroll, meta.children, value, defaultSize, itemsOnPage);
         if (!visiblePages.children) visiblePages.children = [];
         visiblePages.children.push({ [index]: nestedVisiblePages });
         startSectionSize += nestedPaddings.start;
@@ -81,7 +84,6 @@ const getVisiblePagesAndPaddings = (scroll, meta, defaultSize, itemsPerPage) => 
 };
 
 const Scroller = ({
-  style = {},
   scrollTop,
   scrollLeft,
   columns,
@@ -104,13 +106,36 @@ const Scroller = ({
     if (rootRef.current) rootRef.current.scrollLeft = scrollLeft
   }, [scrollLeft]);
 
-  const getPagedValueAndPaddings = (scrollLeft, scrollTop) => {
-    const { visiblePages: visibleColumns, paddings: horizontalPaddings } = getVisiblePagesAndPaddings(scrollLeft, columns, columnsPerPage, defaultColumnWidth);
-    const { visiblePages: visibleRows, paddings: verticalPaddings } = getVisiblePagesAndPaddings(scrollTop, rows, rowsPerPage, defaultRowHeight);
-    const pagedValue = applyVisiblePages(visibleColumns, visibleRows, value);
+  const getPagedValueAndPaddings = (scrollTop, scrollLeft) => {
+    const [visibleColumns, horizontalPaddings] = getVisiblePagesAndPaddings({
+      scroll: scrollLeft,
+      meta: columns,
+      itemsPerPage: columnsPerPage,
+      defaultSize: defaultColumnWidth,
+      value: Object.entries(value[0]),
+    });
+    const [visibleRows, verticalPaddings] = getVisiblePagesAndPaddings({
+      scroll: scrollTop,
+      meta: rows,
+      itemsPerPage: rowsPerPage,
+      defaultSize: defaultRowHeight,
+      value,
+    });
+    const pagedValue = applyVisiblePages({
+      visibleColumns,
+      visibleRows,
+      columnsPerPage,
+      rowsPerPage,
+      value
+    });
     return {
       pagedValue,
-      paddings: { ...horizontalPaddings, ...verticalPaddings }
+      paddings: {
+        top: verticalPaddings.start,
+        bottom: verticalPaddings.end,
+        left: horizontalPaddings.start,
+        right: horizontalPaddings.end
+      }
     };
   };
 
@@ -124,18 +149,17 @@ const Scroller = ({
     setState(nextState);
   };
 
-  const nextStyle = {
-    ...style,
-    paddingTop: state.paddings.top,
-    paddingBottom: state.paddings.bottom,
-    paddingLeft: state.paddings.left,
-    paddingRight: state.paddings.right
+  const margins = {
+    top: state.paddings.top,
+    bottom: state.paddings.bottom,
+    left: state.paddings.left,
+    right: state.paddings.right
   };
 
   // Should calculate paddings
   return state.pagedValue ? (
-    <div {...props} ref={rootRef} style={nextStyle} onScroll={handleScroll}>
-      {Children.only(children(state.pagedValue))}
+    <div {...props} ref={rootRef} onScroll={handleScroll}>
+      {children(state.pagedValue, margins)}
     </div>
   ) : null
 };
@@ -148,13 +172,13 @@ Scroller.propTypes = {
     size: PropTypes.number,
     expanded: PropTypes.bool,
     children: PropTypes.arrayOf(PropTypes.object)
-  }).isRequired,
+  }),
   rows: PropTypes.shape({
     totalCount: PropTypes.number,
     size: PropTypes.number,
     expanded: PropTypes.bool,
     children: PropTypes.arrayOf(PropTypes.object)
-  }).isRequired,
+  }),
   defaultColumnWidth: PropTypes.number.isRequired,
   defaultRowHeight: PropTypes.number.isRequired,
   columnsPerPage: PropTypes.number.isRequired,
