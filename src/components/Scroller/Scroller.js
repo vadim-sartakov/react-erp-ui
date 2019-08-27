@@ -31,6 +31,8 @@ const applyVisiblePages = ({ value, visibleColumns, visibleRows, columnsPerPage,
   return result;
 };
 
+const getVisiblePages = currentPage => currentPage === 0 ? [currentPage] : [currentPage - 1, currentPage];
+
 const getVisiblePagesAndPaddings = ({ scroll, meta, value, defaultSize, itemsPerPage }) => {
   let page = 0, visiblePages = {}, startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
 
@@ -38,7 +40,7 @@ const getVisiblePagesAndPaddings = ({ scroll, meta, value, defaultSize, itemsPer
     const pageSize = defaultSize * itemsPerPage;
     page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
 
-    visiblePages.pages = page === 0 ? [page] : [page - 1, page];
+    visiblePages.pages = getVisiblePages(page);
     startSectionSize = visiblePages.pages[0] * pageSize;
 
     const totalCount = value.length || meta.totalCount;
@@ -70,12 +72,12 @@ const getVisiblePagesAndPaddings = ({ scroll, meta, value, defaultSize, itemsPer
         startSectionSize += nestedPaddings.start;
         endSectionSize += nestedPaddings.end;
       }
+
+      visiblePages.pages = getVisiblePages(page);
       
     }
 
   }
-
-  visiblePages.pages = page === 0 ? [page] : [page - 1, page];
 
   return [
     visiblePages,
@@ -107,14 +109,14 @@ const Scroller = ({
   }, [scrollLeft]);
 
   const getPagedValueAndPaddings = (scrollTop, scrollLeft) => {
-    const [visibleColumns, horizontalPaddings] = getVisiblePagesAndPaddings({
+    const [visibleColumns, horizontalGaps] = getVisiblePagesAndPaddings({
       scroll: scrollLeft,
       meta: columns,
       itemsPerPage: columnsPerPage,
       defaultSize: defaultColumnWidth,
       value: Object.entries(value[0]),
     });
-    const [visibleRows, verticalPaddings] = getVisiblePagesAndPaddings({
+    const [visibleRows, verticalGaps] = getVisiblePagesAndPaddings({
       scroll: scrollTop,
       meta: rows,
       itemsPerPage: rowsPerPage,
@@ -130,11 +132,11 @@ const Scroller = ({
     });
     return {
       pagedValue,
-      paddings: {
-        top: verticalPaddings.start,
-        bottom: verticalPaddings.end,
-        left: horizontalPaddings.start,
-        right: horizontalPaddings.end
+      gaps: {
+        top: verticalGaps.start,
+        bottom: verticalGaps.end,
+        left: horizontalGaps.start,
+        right: horizontalGaps.end
       }
     };
   };
@@ -149,17 +151,17 @@ const Scroller = ({
     setState(nextState);
   };
 
-  const margins = {
-    top: state.paddings.top,
-    bottom: state.paddings.bottom,
-    left: state.paddings.left,
-    right: state.paddings.right
+  const gaps = {
+    top: state.gaps.top,
+    bottom: state.gaps.bottom,
+    left: state.gaps.left,
+    right: state.gaps.right
   };
 
   // Should calculate paddings
   return state.pagedValue ? (
     <div {...props} ref={rootRef} onScroll={handleScroll}>
-      {children(state.pagedValue, margins)}
+      {children(state.pagedValue, gaps)}
     </div>
   ) : null
 };

@@ -30,7 +30,7 @@ describe('StaticScroller', () => {
     expect(child.mock.calls[0][1]).toEqual({ top: 0, bottom: 600, left: 0, right: 0 });
   });
 
-  it('loads first and second root page on scroll', () => {
+  it('loads first and second root page on scroll forward', () => {
     const columns = createColumns(5);
     const value = createRows(columns, 50);
     const child = jest.fn();
@@ -72,7 +72,7 @@ describe('StaticScroller', () => {
     expect(child.mock.calls[0][1]).toEqual({ top: 400, bottom: 0, left: 0, right: 0 });
   });
 
-  it('scrolls and calculates values and paddings', () => {
+  it('scrolls to bottom and calculates values and paddings', () => {
     const columns = createColumns(5);
     const value = createRows(columns, 50);
     const child = jest.fn();
