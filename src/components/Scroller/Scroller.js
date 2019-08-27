@@ -1,15 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-const defaultLoadPage = ({ value, rowPage, visibleColumns, columnsPerPage, rowsPerPage }) => {
-  const rows = value.slice(rowPage * rowsPerPage, (rowPage + 1) * rowsPerPage);
-  // TODO: Remove hidden columns from values
-  return rows
+const defaultLoadPage = ({ rows, rowPage, visibleColumns, columnsPerPage, rowsPerPage }) => {
+  return rows.slice(rowPage * rowsPerPage, (rowPage + 1) * rowsPerPage);
 };
 
-const applyVisiblePages = ({ value, visibleColumns, visibleRows, columnsPerPage, rowsPerPage }) => {
+// Make it generic. It should accept array and shrink it according to visible pages
+const applyVisiblePages = ({ rows, visibleColumns, visibleRows, columnsPerPage, rowsPerPage }) => {
   const result = [];
-  const firstPage = defaultLoadPage({ value, rowPage: visibleRows.pages[0], visibleColumns, columnsPerPage, rowsPerPage });
+  const firstPage = defaultLoadPage({ rows, rowPage: visibleRows.pages[0], visibleColumns, columnsPerPage, rowsPerPage });
   result.push(...firstPage);
 
   if (visibleRows.children) {
@@ -17,14 +16,14 @@ const applyVisiblePages = ({ value, visibleColumns, visibleRows, columnsPerPage,
 
     for (let index = 0; index < entries.length; index++) {
       const [childIndex, childVisiblePages] = entries[index];
-      const nestedValue = applyVisiblePages(value.children[childIndex], visibleColumns, childVisiblePages, columnsPerPage, rowsPerPage);
+      const nestedValue = applyVisiblePages(rows.children[childIndex], visibleColumns, childVisiblePages, columnsPerPage, rowsPerPage);
       // Does it mutate origin object?
       result[childIndex].chilren = nestedValue;
     }
   }
 
   if (visibleRows.pages[1]) {
-    const secondPage = defaultLoadPage({ value, rowPage: visibleRows.pages[1], visibleColumns, columnsPerPage, rowsPerPage });
+    const secondPage = defaultLoadPage({ rows, rowPage: visibleRows.pages[1], visibleColumns, columnsPerPage, rowsPerPage });
     result.push(...secondPage);
   }
 
@@ -33,29 +32,31 @@ const applyVisiblePages = ({ value, visibleColumns, visibleRows, columnsPerPage,
 
 const getVisiblePages = currentPage => currentPage === 0 ? [currentPage] : [currentPage - 1, currentPage];
 
-const getVisiblePagesAndPaddings = ({ scroll, meta, value, defaultSize, itemsPerPage }) => {
+const getVisiblePagesAndPaddings = ({ scroll, entries, defaultSize, itemsPerPage, totalCount }) => {
   let page = 0, visiblePages = {}, startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
 
-  if (!meta || !meta.children) {
+  // Auto calculation mode. Involves default parameters
+  if (totalCount) {
     const pageSize = defaultSize * itemsPerPage;
     page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
 
     visiblePages.pages = getVisiblePages(page);
     startSectionSize = visiblePages.pages[0] * pageSize;
 
-    const totalCount = value.length || meta.totalCount;
     const itemsOnFirstPage = Math.min(totalCount, itemsPerPage);
     const itemsOnSecondPage = page > 0 ? Math.min(totalCount - (page * itemsPerPage), itemsPerPage) : 0;
 
     viewingPagesSize += (itemsOnFirstPage + itemsOnSecondPage) * defaultSize;
     endSectionSize = defaultSize * totalCount - startSectionSize - viewingPagesSize;
+
+  // Manual entries crawling mode
   } else {
     
     let curScroll = 0, itemsOnPage = 0;
-    for (let index = 0; index < meta.children.length; index++) {
+    for (let index = 0; index < entries.length; index++) {
       if (curScroll >= scroll) break;
-      const curMeta = meta.children[index];
-      const size = curMeta.size || defaultSize;
+      const curEntry = entries[index];
+      const size = curEntry.size || defaultSize;
   
       if (curScroll < scroll) {
         const isNextPage = index > 0 && index % itemsPerPage === 0;
@@ -65,17 +66,22 @@ const getVisiblePagesAndPaddings = ({ scroll, meta, value, defaultSize, itemsPer
         startSectionSize += size;
       }
   
-      if (curMeta.expanded) {
-        const [nestedVisiblePages, nestedPaddings] = getVisiblePagesAndPaddings(scroll - curScroll, meta.children, value, defaultSize, itemsOnPage);
+      if (curEntry.expanded) {
+        const [nestedVisiblePages, nestedPaddings] = getVisiblePagesAndPaddings({
+          scroll: scroll - curScroll,
+          entries: entries.children,
+          itemsPerPage,
+          defaultSize
+        });
         if (!visiblePages.children) visiblePages.children = [];
         visiblePages.children.push({ [index]: nestedVisiblePages });
         startSectionSize += nestedPaddings.start;
         endSectionSize += nestedPaddings.end;
       }
-
-      visiblePages.pages = getVisiblePages(page);
       
     }
+
+    visiblePages.pages = getVisiblePages(page);
 
   }
 
@@ -95,8 +101,9 @@ const Scroller = ({
   columnsPerPage,
   rowsPerPage,
   loadPage,
+  totalColumns,
+  totalRows,
   children,
-  value,
   ...props
 }) => {
   const rootRef = useRef();
@@ -111,24 +118,24 @@ const Scroller = ({
   const getPagedValueAndPaddings = (scrollTop, scrollLeft) => {
     const [visibleColumns, horizontalGaps] = getVisiblePagesAndPaddings({
       scroll: scrollLeft,
-      meta: columns,
+      entries: columns,
       itemsPerPage: columnsPerPage,
       defaultSize: defaultColumnWidth,
-      value: Object.entries(value[0]),
+      totalCount: totalColumns
     });
     const [visibleRows, verticalGaps] = getVisiblePagesAndPaddings({
       scroll: scrollTop,
-      meta: rows,
+      entries: rows,
       itemsPerPage: rowsPerPage,
       defaultSize: defaultRowHeight,
-      value,
+      totalCount: totalRows,
     });
     const pagedValue = applyVisiblePages({
       visibleColumns,
       visibleRows,
       columnsPerPage,
       rowsPerPage,
-      value
+      rows
     });
     return {
       pagedValue,
@@ -169,24 +176,28 @@ const Scroller = ({
 Scroller.propTypes = {
   scrollTop: PropTypes.number,
   scrollLeft: PropTypes.number,
-  columns: PropTypes.shape({
-    totalCount: PropTypes.number,
-    size: PropTypes.number,
+  columns: PropTypes.arrayOf(PropTypes.shape({
     expanded: PropTypes.bool,
     children: PropTypes.arrayOf(PropTypes.object)
-  }),
-  rows: PropTypes.shape({
-    totalCount: PropTypes.number,
-    size: PropTypes.number,
+  })),
+  rows: PropTypes.arrayOf(PropTypes.shape({
     expanded: PropTypes.bool,
     children: PropTypes.arrayOf(PropTypes.object)
-  }),
+  })),
   defaultColumnWidth: PropTypes.number.isRequired,
   defaultRowHeight: PropTypes.number.isRequired,
   columnsPerPage: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
+  
+  /**
+   * Component functions in 2 modes: Dynamic and static
+   * static involves traversing the columns and rows tree while
+   * dynamic fetches the data with 'loadPage' callback. With this mode total rows and column
+   * got to be specified.
+   * */
   loadPage: PropTypes.func,
-  value: PropTypes.arrayOf(PropTypes.object).isRequired
+  totalRows: PropTypes.number,
+  totalColumns: PropTypes.number,
 };
 
 Scroller.defaultProps = {
