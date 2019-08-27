@@ -43,7 +43,7 @@ const getVisiblePagesAndPaddings = ({ scroll, meta, value, defaultSize, itemsPer
 
     const totalCount = value.length || meta.totalCount;
     const itemsOnFirstPage = Math.min(totalCount, itemsPerPage);
-    const itemsOnSecondPage = page > 0 ? Math.min(totalCount - itemsOnFirstPage, itemsPerPage) : 0;
+    const itemsOnSecondPage = page > 0 ? Math.min(totalCount - (page * itemsPerPage), itemsPerPage) : 0;
 
     viewingPagesSize += (itemsOnFirstPage + itemsOnSecondPage) * defaultSize;
     endSectionSize = defaultSize * totalCount - startSectionSize - viewingPagesSize;
