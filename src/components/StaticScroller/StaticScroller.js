@@ -130,7 +130,7 @@ const useBufferedPages = (page, value, itemsPerPage, loadPage) => {
   const cache = useRef([]);
   const visiblePages = page === 0 ? [page] : [page - 1, page];
 
-  const getCacheValue = page => cache.find(item => item && item.page === page);
+  const getCacheValue = page => cache.current.find(item => item && item.page === page);
 
   const cachedPage = getCacheValue(page);
   if (!cachedPage) {
