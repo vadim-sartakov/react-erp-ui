@@ -2,7 +2,7 @@ import { useRef } from 'react';
 
 const loadPage = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 
-const useBufferedPagesSync = (value, page, itemsPerPage) => {
+const useBufferedPagesSync = (value, page, itemsPerPage, cacheSize = 3) => {
 
   // useEffect here will make it laggy
   // So using local variables
@@ -17,7 +17,7 @@ const useBufferedPagesSync = (value, page, itemsPerPage) => {
       const newPage = { page: visiblePage, value: loadPage(value, visiblePage, itemsPerPage) };
       cache.current.push(newPage);
       cachedPage = newPage;
-      if (cache.length > 2) cache.current.shift();
+      if (cache.current.length > cacheSize) cache.current.shift();
     }
     return [...acc, ...cachedPage.value]
   }, []);

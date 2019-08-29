@@ -79,4 +79,15 @@ describe('useBufferedPagesSync', () => {
     expect(spy).toHaveBeenCalledTimes(3);
   });
 
+  it('reusing and cleans cache when scrolling', () => {
+    const value = createValues(100);
+    const spy = jest.spyOn(value, 'slice');
+    const wrapper = shallow(<TestComponent value={value} page={0} itemsPerPage={20} />);
+    wrapper.setProps({ page: 1 });
+    wrapper.setProps({ page: 2 });
+    wrapper.setProps({ page: 3 });
+    wrapper.setProps({ page: 4 });
+    expect(spy).toHaveBeenCalledTimes(5);
+  });
+
 });
