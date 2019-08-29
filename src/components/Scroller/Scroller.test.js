@@ -8,7 +8,7 @@ const createRows = (columns, count) => new Array(count).fill(1).map( (item, rowI
   return columns.reduce( (acc, column, columnIndex) => ({ ...acc, [column.key]: `Value - ${rowIndex} - ${columnIndex}` }), [] );
 });
 
-describe('StaticScroller', () => {
+describe.skip('StaticScroller', () => {
 
   it('loads first root page on initial scroll', () => {
     const columns = createColumns(5);

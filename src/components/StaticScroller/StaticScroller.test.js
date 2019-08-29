@@ -1,29 +1,44 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { shallow } from 'enzyme';
 
-const rows = [
-  {
-    height: 10,
-    expanded: true,
-    children: [
-      // ...
-    ]
+const rows = {
+  gaps: {
+    start: 20,
+    end: 50
   },
+  page: 5,
+  rows: [ // Already shrinked visible rows meta
+    {
+      height: 10,
+      expanded: true,
+      gaps: {/* ... */},
+      rows: [
+        // ...
+      ]
+    }
+  ]
   // ...
-];
+};
 
-const columns = [
-  {
-    width: 20,
-    expanded: true,
-    children: [
-      // ...
-    ]
+const columns = {
+  gaps: {
+    start: 10,
+    end: 20
   },
+  columns: [
+    {
+      width: 20,
+      expanded: true,
+      gaps: {/* ... */},
+      columns: [
+        // ...
+      ]
+    }
+  ]
   // ...
-];
+};
 
-const data = [
+const value = [
   {
     columns: [
       {
@@ -45,48 +60,36 @@ const data = [
     columns: [
       //...
     ],
-    children: [
+    rows: [
       // ...
     ]
   }
 ];
 
-const gaps = {
-  top: 10,
-  bottom: 20,
-  left: 10,
-  right: 40,
-  children: [
-    // ...
-  ]
-}
+/*
+Apply visible pages to rows and columns.
+Than render as usual
 
-// Apply visible pages to rows and columns.
-// Than render as usual
-const render = (rows, columns, gaps) => {
-  return (
-    <table>
-      <tbody>
-        {rows.map((row, rowIndex) => {
-          return (
-            <tr key={rowIndex}>
-              {columns.map((column, columnIndex) => {
-                const cell = data[rowIndex][columnIndex];
-                return (
-                  <td>
-                    {cell.text}
-                  </td>
-                )
-              })}
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
-  )
-};
+ rows and columns here should be shrinked metas
+ combine it with data makes no sense.
 
-describe('StaticScroller', () => {
+ We have 2 options:
+- Combine meta and data.
+- Separate meta and data. Seems to be cleaner approach.
+
+How to structure gaps???????????????????????????????????????????????
+Shouldn't we combine it with meta?
+
+I think combining gaps and meta would be a bit cleaner approach !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Should component process the data??????????????????????????????????????????????
+Should it shrink according to visible pages or leave it to the client?
+
+Or we should combine result whole thing into one object?
+
+*/
+
+describe.skip('StaticScroller', () => {
   
   it('reners', () => {
 
