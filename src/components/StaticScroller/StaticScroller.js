@@ -23,7 +23,7 @@ StaticScroller.propTypes = {
 const rowsPerPage = 100;
 const columnsPerPage = 50;
 
-const useVisiblePages = (page, value) => {
+const useBufferedPages = (page, value) => {
 
   // useEffect here will make it laggy
   // So using local variables
@@ -39,7 +39,6 @@ const useVisiblePages = (page, value) => {
     if (cache.length > 2) cache.current.shift();
   }
 
-  // Maybe use meta here?
   const visibleValues = visiblePages.current.reduce((acc, visiblePage) => {
     const page = getCacheValue(visiblePage);
     return [...acc, ...page.value]
@@ -55,22 +54,21 @@ const ScrollColumns = ({ value, column: { pages, expanded, gaps, columns } }) =>
 
 const loadPage = (value, page, itemsOnPage) => value.slice(page * itemsOnPage, (page + 1) * itemsOnPage);
 
-                        // Here should be already visible rows only
 const ScrollRows = ({ value, rows: { page, expanded, gaps, rows } }) => {
-  const visibleValueRows = useVisiblePages(page, value);
+  const visibleValueRows = useBufferedPages(page, value);
+  const visibleRows = useBufferedPages(page, rows);
   return (
     <>
       {gaps.start && <tr style={{ height: gaps.start }} />}
       <tr>
-        {rows.map((row, index) => {
-          // ????
+        {visibleRows.map((row, index) => {
           const curValue = visibleValueRows[index];
           return (
             <React.Fragment key={index}>
               <tr>
                 <ScrollColumns value={curValue} columns={row.columns} />
               </tr>
-              {expanded ? rows.children.map((child, index) => <ScrollRows key={index} rows={child} />) : null}
+              {expanded ? <ScrollRows rows={rows.children} /> : null}
             </React.Fragment>
           )
         })}
