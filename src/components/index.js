@@ -1,4 +1,4 @@
 export * from './Highlight';
-export * from './StaticScroller';
+export * from './Scroller';
 export * from './Table';
 export * from './useBufferedPages';

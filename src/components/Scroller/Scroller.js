@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { useBufferedPages } from '../';
 
 const defaultLoadPage = ({ rows, rowPage, visibleColumns, columnsPerPage, rowsPerPage }) => {
   return rows.slice(rowPage * rowsPerPage, (rowPage + 1) * rowsPerPage);
@@ -92,112 +93,84 @@ const getVisiblePagesAndPaddings = ({ scroll, entries, defaultSize, itemsPerPage
 };
 
 const Scroller = ({
-  scrollTop,
-  scrollLeft,
-  columns,
   rows,
+  columns,
   defaultRowHeight,
   defaultColumnWidth,
   columnsPerPage,
   rowsPerPage,
+  scrollTop,
+  scrollLeft,
+  value,
   loadPage,
-  totalColumns,
-  totalRows,
   children,
   ...props
 }) => {
   const rootRef = useRef();
 
-  useEffect(() => {
-    if (rootRef.current) rootRef.current.scrollTop = scrollTop
-  }, [scrollTop]);
-  useEffect(() => {
-    if (rootRef.current) rootRef.current.scrollLeft = scrollLeft
-  }, [scrollLeft]);
+  const [rowPage, setRowPage] = useState(0);
+  const [columnPage, setColumnPage] = useState(0);
 
-  const getPagedValueAndPaddings = (scrollTop, scrollLeft) => {
-    const [visibleColumns, horizontalGaps] = getVisiblePagesAndPaddings({
-      scroll: scrollLeft,
-      entries: columns,
-      itemsPerPage: columnsPerPage,
-      defaultSize: defaultColumnWidth,
-      totalCount: totalColumns
-    });
-    const [visibleRows, verticalGaps] = getVisiblePagesAndPaddings({
-      scroll: scrollTop,
-      entries: rows,
-      itemsPerPage: rowsPerPage,
-      defaultSize: defaultRowHeight,
-      totalCount: totalRows,
-    });
-    const pagedValue = applyVisiblePages({
-      visibleColumns,
-      visibleRows,
-      columnsPerPage,
-      rowsPerPage,
-      rows
-    });
-    return {
-      pagedValue,
-      gaps: {
-        top: verticalGaps.start,
-        bottom: verticalGaps.end,
-        left: horizontalGaps.start,
-        right: horizontalGaps.end
-      }
-    };
-  };
+  const getCurrentPage = useCallback((scroll, meta, defaultSize, itemsPerPage) => {
+    let page;
+    if (!meta || !meta.children) {
+      const pageSize = defaultSize * itemsPerPage;
+      page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
+    } else {
 
-  const [state, setState] = useState(() => {
-    const initialState = getPagedValueAndPaddings(scrollTop, scrollLeft);
-    return initialState;
-  });
+    }
+    return page;
+  }, [])
+
+  // Hierarchy missed here
+  // Maybe move value buffering to children?
+  const visibleRowsMeta = useBufferedPages({ value: rows, loadPage, itemsPerPage: rowsPerPage });
+  const visibleColumnsMeta = useBufferedPages({ value: columns, loadPage, itemsPerPage: columnsPerPage });
+  const visibleValue = useBufferedPages({ value, loadPage, itemsPerPage: rowsPerPage });
+
+  const [state, setState] = useState(calculateState(scrollLeft, scrollTop));
+
+  useEffect(() => {
+    if (rootRef.current) {
+      rootRef.current.scrollTop = scrollTop;
+      rootRef.current.scrollLeft = scrollLeft;
+      setState(calculateState(scrollLeft, scrollTop));
+    }
+  }, [scrollLeft, scrollTop, calculateState]);
 
   const handleScroll = event => {
-    const nextState = getPagedValueAndPaddings(event.scrollTop, event.scrollLeft);
-    setState(nextState);
+    setState(calculateState(event.scrollLeft, event.scrollTop));
   };
 
-  const gaps = {
-    top: state.gaps.top,
-    bottom: state.gaps.bottom,
-    left: state.gaps.left,
-    right: state.gaps.right
-  };
-
-  // Should calculate paddings
-  return state.pagedValue ? (
+  return (
     <div {...props} ref={rootRef} onScroll={handleScroll}>
-      {children(state.pagedValue, gaps)}
+      {children(state)}
     </div>
-  ) : null
+  )
 };
 
 Scroller.propTypes = {
-  scrollTop: PropTypes.number,
-  scrollLeft: PropTypes.number,
-  columns: PropTypes.arrayOf(PropTypes.shape({
+  columns: PropTypes.shape({
     expanded: PropTypes.bool,
     children: PropTypes.arrayOf(PropTypes.object)
-  })),
-  rows: PropTypes.arrayOf(PropTypes.shape({
+  }),
+  rows: PropTypes.shape({
     expanded: PropTypes.bool,
     children: PropTypes.arrayOf(PropTypes.object)
-  })),
+  }),
   defaultColumnWidth: PropTypes.number.isRequired,
   defaultRowHeight: PropTypes.number.isRequired,
   columnsPerPage: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
+  scrollTop: PropTypes.number,
+  scrollLeft: PropTypes.number,
   
   /**
    * Component functions in 2 modes: Dynamic and static
    * static involves traversing the columns and rows tree while
-   * dynamic fetches the data with 'loadPage' callback. With this mode total rows and column
-   * got to be specified.
+   * dynamic fetches the data with 'loadPage' callback.
    * */
-  loadPage: PropTypes.func,
-  totalRows: PropTypes.number,
-  totalColumns: PropTypes.number,
+  loadPage: PropTypes.func
 };
 
 Scroller.defaultProps = {

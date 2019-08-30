@@ -1,5 +1,5 @@
 import React from 'react';
-import { StaticScroller, StaticScrollerItems } from '../../components';
+import { Scroller, ScrollerItems } from '../../components';
 
 const exampleRowsMeta = {
   totalCount: 10,
@@ -79,30 +79,30 @@ const exampleValue = [ // Rows
 
 const StaticTable = ({ value }) => {
   return (
-    <StaticScroller value={value}>
-      {/* already visible meta and value */}
-      {({ rowsMeta, columnsMeta, rootStyle, value }) => {
+    <Scroller value={value}>
+      {/* already visible meta */}
+      {({ rowsMeta, columnsMeta, rootStyle }) => {
         return (
           <table style={rootStyle}>
             <thead>
               {/* Should accept only meta prop */}
-              <StaticScrollerItems
+              <ScrollerItems
                   meta={columnsMeta}
                   renderPadding={size => <td style={{ width: size }} />}>
                 {({ meta: columnMeta, depth: columnDepth }) => {
                   return <th>{value.title}</th>
                 }}
-              </StaticScrollerItems>
+              </ScrollerItems>
             </thead>
             <tbody>
-              <StaticScrollerItems
+              <ScrollerItems
                   meta={rowsMeta}
                   value={value}
                   renderPadding={size => <tr style={{ height: size }} />}>
                 {({ value: rowValue, meta: rowMeta, depth: rowDepth }) => {
                   return (
                     <tr>
-                      <StaticScrollerItems
+                      <ScrollerItems
                           meta={columnsMeta}
                           value={rowValue.columns}
                           renderPadding={size => <td style={{ width: size }} />}>
@@ -110,16 +110,16 @@ const StaticTable = ({ value }) => {
                           // Loading items should appear when dynamic scrolling is involved with loadPage prop instead of static value
                           return rowValue.isLoading ? <td>Loading...</td> : <td>{columnValue}</td>
                         }}
-                      </StaticScrollerItems>
+                      </ScrollerItems>
                     </tr>
                   )
                 }}
-              </StaticScrollerItems>
+              </ScrollerItems>
             </tbody>
           </table>
         )
       }}
-    </StaticScroller>
+    </Scroller>
   )
 };
 
