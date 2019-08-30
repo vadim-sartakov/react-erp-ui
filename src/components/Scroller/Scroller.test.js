@@ -1,110 +1,131 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { shallow } from 'enzyme';
 import Scroller from './Scroller';
 
-const createColumns = count => new Array(count).fill(1).reduce( (acc, item, index) => [ ...acc, { key: `column${index}` } ], []);
-const createRows = (columns, count) => new Array(count).fill(1).map( (item, rowIndex) => {
-  return columns.reduce( (acc, column, columnIndex) => ({ ...acc, [column.key]: `Value - ${rowIndex} - ${columnIndex}` }), [] );
-});
-
 describe.skip('StaticScroller', () => {
 
-  it('loads first root page on initial scroll', () => {
-    const columns = createColumns(5);
-    const rows = createRows(columns, 50);
-    const child = jest.fn();
-    act(() => {
+  describe('with default sizes and total counts', () => {
+
+    it('renders page 0 and end paddings on initial scroll and flat source objects', () => {
+      const children = jest.fn();
+      const totalRows = {
+        totalCount: 2
+      };
+      const totalColumns = {
+        totalCount: 2
+      };
       shallow((
         <Scroller
-            defaultColumnWidth={50}
+            totalRows={totalRows}
+            totalColumns={totalColumns}
             defaultRowHeight={20}
-            rowsPerPage={20}
-            columnsPerPage={20}
-            columns={columns}
-            rows={rows}>
-          {child}
+            defaultColumnWidth={100}
+            rowsPerPage={1}
+            columnsPerPage={1}>
+          {children}
         </Scroller>
       ));
-    });
-    expect(child.mock.calls[0][0]).toEqual(rows.slice(0, 20));
-    expect(child.mock.calls[0][1]).toEqual({ top: 0, bottom: 600, left: 0, right: 0 });
-  });
+      expect(children).toBeCalledTimes(1);
+      const { rows, columns, rootStyle } = children.calls[0][0];
 
-  it('loads first and second root page on scroll forward', () => {
-    const columns = createColumns(5);
-    const rows = createRows(columns, 50);
-    const child = jest.fn();
-    act(() => {
+      expect(rows).toHaveProperty('pages');
+      expect(rows).toHaveProperty('paddings', { start: 0, end: 20 });
+      expect(columns).toHaveProperty('pages');
+      expect(columns).toHaveProperty('paddings', { start: 0, end: 100 });
+
+      expect(rootStyle).toEqual({
+        marginTop: 0,
+        merginBottom: 0,
+        marginLeft: 0,
+        marginRight: 0
+      });
+    });
+
+    it('renders page 1 and 2 with start and end paddings on non-zero scroll and flat source objects', () => {
+      const children = jest.fn();
+      const totalRows = {
+        totalCount: 4
+      };
+      const totalColumns = {
+        totalCount: 4
+      };
       shallow((
         <Scroller
-            defaultColumnWidth={50}
+            totalRows={totalRows}
+            totalColumns={totalColumns}
             defaultRowHeight={20}
-            rowsPerPage={20}
-            columnsPerPage={20}
-            scrollTop={300}
-            totalRows={50}
-            totalColumns={5}
-            columns={columns}
-            rows={rows}>
-          {child}
+            defaultColumnWidth={100}
+            rowsPerPage={1}
+            columnsPerPage={1}
+            scrollTop={50}
+            scrollLeft={250}>
+          {children}
         </Scroller>
       ));
+      expect(children).toBeCalledTimes(1);
+      const { rows, columns, rootStyle } = children.calls[0][0];
+      expect(rows).toHaveProperty('pages');
+      expect(rows).toHaveProperty('paddings', { start: 20, end: 20 });
+      expect(columns).toHaveProperty('pages');
+      expect(columns).toHaveProperty('paddings', { start: 100, end: 100 });
+      
+      expect(rootStyle).toEqual({
+        marginTop: -20,
+        merginBottom: 0,
+        marginLeft: -100,
+        marginRight: 0
+      });
     });
-    expect(child.mock.calls[0][0]).toEqual(rows.slice(0, 40));
-    expect(child.mock.calls[0][1]).toEqual({ top: 0, bottom: 200, left: 0, right: 0 });
+
   });
 
-  it('loads root last page', () => {
-    const columns = createColumns(5);
-    const rows = createRows(columns, 50);
-    const child = jest.fn();
-    act(() => {
+  describe.skip('with specific sizes', () => {
+
+    it('renders page 0 and end paddings with initial scroll, specific sizes and flat source objects', () => {
+      const children = jest.fn();
+      const rowHeights = [
+        { size: 10 },
+        { size: 20 }
+      ];
+      const columnsWidths = [
+        { size: 80 },
+        { size: 100 }
+      ];
       shallow((
         <Scroller
-            defaultColumnWidth={50}
-            defaultRowHeight={20}
-            rowsPerPage={20}
-            columnsPerPage={20}
-            scrollTop={600}
-            totalRows={50}
-            totalColumns={5}
-            columns={columns}
-            rows={rows}>
-          {child}
+            rowHeights={rowHeights}
+            columnsWidths={columnsWidths}
+            rowsPerPage={1}
+            columnsPerPage={1}>
+          {children}
         </Scroller>
       ));
+      expect(children).toBeCalledTimes(1);
+      const { rowsMeta, columnsMeta, rootStyle } = children.calls[0][0];
+      expect(rowsMeta).toEqual({
+        page: 0,
+        children: [
+          { size: 10 },
+          { size: 20 }
+        ]
+      });
+      expect(columnsMeta).toEqual({
+        page: 0,
+        children: [
+          { size: 80 },
+          { size: 100 }
+        ]
+      });
+      expect(rootStyle).toEqual({
+        marginLeft: -20,
+        merginBottom: 20
+      });
     });
-    expect(child.mock.calls[0][0]).toEqual(rows.slice(20, 50));
-    expect(child.mock.calls[0][1]).toEqual({ top: 400, bottom: 0, left: 0, right: 0 });
+
   });
 
-  it('scrolls to bottom and calculates values and paddings', () => {
-    const columns = createColumns(5);
-    const rows = createRows(columns, 50);
-    const child = jest.fn();
-    let wrapper;
-    act(() => {
-      wrapper = shallow((
-        <Scroller
-            defaultColumnWidth={50}
-            defaultRowHeight={20}
-            rowsPerPage={20}
-            columnsPerPage={20}
-            scrollTop={0}
-            totalRows={50}
-            totalColumns={5}
-            columns={columns}
-            rows={rows}>
-          {child}
-        </Scroller>
-      ));
-    });
-    act(() => {
-      wrapper.find('div').simulate('scroll', { scrollTop: 600, scrollLeft: 0 });
-    });
-    expect(child.mock.calls[1][0]).toEqual(rows.slice(20, 50));
-    expect(child.mock.calls[1][1]).toEqual({ top: 400, bottom: 0, left: 0, right: 0 });
-  });
+  describe.skip('mixed specific sizes and default sizes', () => {
 
+  });
+    
 });

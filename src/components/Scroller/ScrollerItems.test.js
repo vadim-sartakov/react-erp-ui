@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import StaticScrollerItems from './StaticScrollerItems';
+import ScrollerItems from './ScrollerItems';
 
 describe('StaticScrollerItems', () => {
 
@@ -22,11 +22,11 @@ describe('StaticScrollerItems', () => {
     };
     const children = jest.fn();
     mount((
-      <StaticScrollerItems
+      <ScrollerItems
           value={value}
           meta={meta}>
         {children}
-      </StaticScrollerItems>
+      </ScrollerItems>
     ));
     expect(children).toHaveBeenCalledTimes(2);
     expect(children.mock.calls[0][0]).toEqual({ value: 0 });
@@ -63,11 +63,11 @@ describe('StaticScrollerItems', () => {
     };
     const children = jest.fn();
     mount((
-      <StaticScrollerItems
+      <ScrollerItems
           value={value}
           meta={meta}>
         {children}
-      </StaticScrollerItems>
+      </ScrollerItems>
     ));
     expect(children).toHaveBeenCalledTimes(2);
     expect(children.mock.calls[0][0]).toEqual({ value: 0 });
@@ -113,11 +113,11 @@ describe('StaticScrollerItems', () => {
     };
     const children = jest.fn();
     mount((
-      <StaticScrollerItems
+      <ScrollerItems
           value={value}
           meta={meta}>
         {children}
-      </StaticScrollerItems>
+      </ScrollerItems>
     ));
     expect(children).toHaveBeenCalledTimes(4);
     expect(children.mock.calls[0][0]).toEqual({ value: 0 });

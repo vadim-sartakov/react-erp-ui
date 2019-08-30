@@ -1,6 +1,6 @@
 import React from 'react';
 
-const StaticScrollItems = ({
+const ScrollerItems = ({
   // Visible value
   value,
   meta: { children: metaChildren },
@@ -15,9 +15,9 @@ const StaticScrollItems = ({
           <React.Fragment key={index}>
             {children(curValue, curMeta, depth)}
             {curMeta.expanded ? (
-              <StaticScrollItems key={index} value={curValue.children} meta={curMeta} depth={depth + 1}>
+              <ScrollerItems key={index} value={curValue.children} meta={curMeta} depth={depth + 1}>
                 {children}
-              </StaticScrollItems>
+              </ScrollerItems>
             ) : null}
           </React.Fragment>
         )
@@ -26,4 +26,4 @@ const StaticScrollItems = ({
   );
 };
 
-export default StaticScrollItems;
+export default ScrollerItems;
