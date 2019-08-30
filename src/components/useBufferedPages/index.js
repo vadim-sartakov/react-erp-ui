@@ -1,2 +1,1 @@
-export * from './useBufferedPagesSync';
-export * from './useBufferedPagesAsync';
+export { default as useBufferedPages } from './useBufferedPages';
