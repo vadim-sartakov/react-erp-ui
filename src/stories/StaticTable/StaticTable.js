@@ -77,19 +77,11 @@ const exampleValue = [ // Rows
   },
 ];
 
-const LoadingPage = ({ colspan,  height }) => {
-  return (
-    <tr colspan={colspan} style={{ height }}>
-      Loading...
-    </tr>
-  )
-};
-
 const StaticTable = ({ value }) => {
   return (
     <StaticScroller value={value}>
-      {/* pages should contain page number, value and isLoading property. metas is already visible and not paginated */}
-      {({ rowsMeta, columnsMeta, rootStyle, valuePages }) => {
+      {/* already visible meta and value */}
+      {({ rowsMeta, columnsMeta, rootStyle, value }) => {
         return (
           <table style={rootStyle}>
             <thead>
@@ -97,7 +89,7 @@ const StaticTable = ({ value }) => {
               <StaticScrollerItems
                   meta={columnsMeta}
                   renderPadding={size => <td style={{ width: size }} />}>
-                {({ value, depth }) => {
+                {({ meta: columnMeta, depth: columnDepth }) => {
                   return <th>{value.title}</th>
                 }}
               </StaticScrollerItems>
@@ -105,16 +97,18 @@ const StaticTable = ({ value }) => {
             <tbody>
               <StaticScrollerItems
                   meta={rowsMeta}
-                  valuePages={valuePages}
-                  renderPadding={size => <tr style={{ height: size }} />}
-                  // Loading page should appear when dynamic scrolling is involved with loadPage prop instead of static value
-                  renderLoading={size => <LoadingPage height={size} />}>
-                {({ value, depth }) => {
+                  value={value}
+                  renderPadding={size => <tr style={{ height: size }} />}>
+                {({ value: rowValue, meta: rowMeta, depth: rowDepth }) => {
                   return (
                     <tr>
-                      <StaticScrollerItems meta={columnsMeta} value={value}>
-                        {({ value, depth }) => {
-                          return <td>{value}</td>
+                      <StaticScrollerItems
+                          meta={columnsMeta}
+                          value={rowValue.columns}
+                          renderPadding={size => <td style={{ width: size }} />}>
+                        {({ value: columnValue, meta: columnMeta, depth: columnDepth }) => {
+                          // Loading items should appear when dynamic scrolling is involved with loadPage prop instead of static value
+                          return rowValue.isLoading ? <td>Loading...</td> : <td>{columnValue}</td>
                         }}
                       </StaticScrollerItems>
                     </tr>
