@@ -148,69 +148,6 @@ const useBufferedPages = (page, value, itemsPerPage, loadPage) => {
 
 };
 
-const ScrollColumns = ({
-  columnsPerPage,
-  value,
-  columns: { page, expanded, paddings, columns }, 
-  children,
-  depth = 0
-}) => {
-  const visibleValueRows = useBufferedPages(page, value, columnsPerPage, loadPage);
-  const visibleRows = useBufferedPages(page, columns, columnsPerPage, loadPage);
-  return (
-    <>
-      {paddings.start && <td style={{ height: paddings.start }} />}
-      {visibleRows.map((row, index) => {
-        const rowValue = visibleValueRows[index];
-        return (
-          <React.Fragment key={index}>
-            {children(rowValue, row.columns)}
-            {expanded ? row.children.map((child, index) => {
-              const curChildValue = rowValue.children[index];
-              return <ScrollColumns key={index} value={curChildValue} rows={child} depth={depth + 1} />
-            }) : null}
-          </React.Fragment>
-        )
-      })}
-      {paddings.end && <td style={{ height: paddings.end }} />}
-    </>
-  );
-};
-
-const ScrollRows = ({
-  rowsPerPage,
-  value,
-  rows: { page, expanded, paddings, rows },
-  loadPage,
-  depth = 0,
-  children
-}) => {
-  const visibleValueRows = useBufferedPages(page, value, rowsPerPage, loadPage);
-  const visibleRows = useBufferedPages(page, rows, rowsPerPage, loadPage);
-  return (
-    <>
-      {paddings.start && <tr style={{ height: paddings.start }} />}
-      {visibleRows.map((row, index) => {
-        const rowValue = visibleValueRows[index];
-        return (
-          <React.Fragment key={index}>
-            {children(rowValue, row.columns)}
-            {expanded ? row.children.map((child, index) => {
-              const curChildValue = rowValue.children[index];
-              return (
-                <ScrollRows key={index} value={curChildValue} rows={child} depth={depth + 1}>
-                  {children}
-                </ScrollRows>
-              )
-            }) : null}
-          </React.Fragment>
-        )
-      })}
-      {paddings.end && <tr style={{ height: paddings.end }} />}
-    </>
-  );
-};
-
 const ScrollItems = ({
   itemsPerPage,
   value,
@@ -225,13 +162,13 @@ const ScrollItems = ({
   return (
     <>
       {paddings.start && renderPadding({ paddingTop: paddings.top })}
-      {visibleMeta.map((metaItem, index) => {
-        const value = visibleValue[index];
+      {visibleValue.map((curValue, index) => {
+        const curMeta = visibleMeta[index];
         return (
           <React.Fragment key={index}>
-            {children(value, depth)}
+            {children(curValue, curMeta, depth)}
             {expanded ? metaChildren.map((child, index) => {
-              const curChildValue = value.children[index];
+              const curChildValue = curValue.children[index];
               return (
                 <ScrollItems key={index} value={curChildValue} meta={child} depth={depth + 1}>
                   {children}
