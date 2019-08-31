@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { useBufferedPages } from '../';
+import useBufferedPages from './useBufferedPages';
 
 const getVisiblePages = currentPage => currentPage === 0 ? [currentPage] : [currentPage - 1, currentPage];
 
@@ -63,6 +63,11 @@ const getVisiblePagesAndPaddings = ({ scroll, entries, defaultSize, itemsPerPage
   ];
 };
 
+const directionToScrollEventMap = {
+  vertical: 'scrollTop',
+  horizontal: 'scrollLeft'
+};
+
 // Make scroller only for one dimension (either rows or column specific)
 const Scroller = ({
   meta,
@@ -80,7 +85,7 @@ const Scroller = ({
 
   const currentPage = useMemo(() => {
     let page;
-    if (!meta || !meta.children) {
+    if (!meta.children) {
       const pageSize = defaultSize * itemsPerPage;
       page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
     } else {
@@ -90,7 +95,7 @@ const Scroller = ({
   }, [scroll, meta, defaultSize, itemsPerPage]);
 
   // TODO: think about server side meta loading
-  const visibleMeta = useBufferedPages({
+  const visibleMetaPages = useBufferedPages({
     value: ( meta && meta.children ) || [],
     page: currentPage,
     itemsPerPage,
@@ -108,7 +113,7 @@ const Scroller = ({
     let startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
 
     const pageSize = defaultSize * itemsPerPage;
-    if (!meta || !meta.children) {
+    if (!meta.children) {
       startSectionSize = visiblePages[0].page * pageSize;
       viewingPagesSize = visiblePages.reduce((acc, page) => acc + page.value.length, 0) * defaultSize;
       endSectionSize = defaultSize * meta.totalCount - startSectionSize - viewingPagesSize;
@@ -123,18 +128,23 @@ const Scroller = ({
   }, [defaultSize, itemsPerPage, meta, visiblePages]);
 
   const handleScroll = useCallback(event => {
-    setScroll(event[scrollDirection] - relativeScroll);
+    setScroll(event[directionToScrollEventMap[scrollDirection]] - relativeScroll);
   }, [scrollDirection, relativeScroll]);
 
   useEffect(() => {
-    const node = scrollContainerRef.current;
-    node.addEventListener('scroll', handleScroll);
-    return () => {
-      node.removeEventListener('scroll', handleScroll);
-    };
+    if (scrollContainerRef) {
+      const node = scrollContainerRef.current;
+      node.addEventListener('scroll', handleScroll);
+      return () => {
+        node.removeEventListener('scroll', handleScroll);
+      };
+    }
   }, [scrollContainerRef, handleScroll]);
 
-  const visibleValue = visiblePages.reduce((acc, page) => [...acc, ...page.value], []);
+  const visibleValuesReducer = (acc, page) => [...acc, ...page.value];
+
+  const visibleValue = visiblePages.reduce(visibleValuesReducer, []);
+  const visibleMeta = visibleMetaPages.reduce(visibleValuesReducer, []);
 
   return (
     <>
@@ -167,18 +177,9 @@ Scroller.propTypes = {
 };
 
 Scroller.defaultProps = {
-  defaultHeight: 0,
-  defaultWidth: 0,
-  relativeScroll: {
-    top: 0,
-    left: 0
-  },
-  initialScroll: {
-    top: 0,
-    left: 0
-  },
-  rowsPerPage: 40,
-  columnsPerPage: 40
+  defaultSize: 0,
+  relativeScroll: 0,
+  itemsPerPage: 40
 };
 
 export default Scroller;

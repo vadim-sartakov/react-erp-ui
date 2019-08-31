@@ -1,79 +1,75 @@
-import React from 'react';
-import { shallow } from 'enzyme';
+import React, { useRef } from 'react';
+import { act } from 'react-dom/test-utils';
+import { shallow, mount } from 'enzyme';
 import Scroller from './Scroller';
 
-describe.skip('StaticScroller', () => {
+const TestComponent = props => {
+  const rootRef = useRef();
+  return (
+    <div className="scroller" ref={rootRef}>
+      <Scroller {...props} scrollContainerRef={rootRef} />
+    </div>
+  )
+};
 
-  describe('with default sizes and total counts', () => {
+describe('StaticScroller', () => {
 
-    it('renders page 0 and end paddings on initial scroll and flat source objects', () => {
+  describe('with default sizes', () => {
+
+    it('renders page 0 and end gap on initial scroll', () => {
       const children = jest.fn();
-      const totalRows = {
+      const sourceMeta = {
         totalCount: 2
       };
-      const totalColumns = {
-        totalCount: 2
-      };
-      shallow((
-        <Scroller
-            totalRows={totalRows}
-            totalColumns={totalColumns}
-            defaultRowHeight={20}
-            defaultColumnWidth={100}
-            rowsPerPage={1}
-            columnsPerPage={1}>
+      const sourceValue = [{}, {}];
+      mount((
+        <TestComponent
+            meta={sourceMeta}
+            value={sourceValue}
+            defaultSize={20}
+            itemsPerPage={1}
+            scrollDirection="vertical">
           {children}
-        </Scroller>
+        </TestComponent>
       ));
-      expect(children).toBeCalledTimes(1);
-      const { rows, columns, rootStyle } = children.calls[0][0];
+      const { value, meta, gaps } = children.mock.calls[0][0];
 
-      expect(rows).toHaveProperty('pages');
-      expect(rows).toHaveProperty('paddings', { start: 0, end: 20 });
-      expect(columns).toHaveProperty('pages');
-      expect(columns).toHaveProperty('paddings', { start: 0, end: 100 });
-
-      expect(rootStyle).toEqual({
-        marginTop: 0,
-        merginBottom: 0,
-        marginLeft: 0,
-        marginRight: 0
+      expect(value.length).toBe(1);
+      expect(meta).toEqual([]);
+      expect(gaps).toEqual({
+        start: 0,
+        end: 20
       });
     });
 
-    it('renders page 1 and 2 with start and end paddings on non-zero scroll and flat source objects', () => {
+    it('renders page 1 and 2 with start and end gaps on non-zero scroll', () => {
       const children = jest.fn();
-      const totalRows = {
+      const sourceMeta = {
         totalCount: 4
       };
-      const totalColumns = {
-        totalCount: 4
-      };
-      shallow((
-        <Scroller
-            totalRows={totalRows}
-            totalColumns={totalColumns}
-            defaultRowHeight={20}
-            defaultColumnWidth={100}
-            rowsPerPage={1}
-            columnsPerPage={1}
-            scrollTop={50}
-            scrollLeft={250}>
+      const sourceValue = [{}, {}, {}, {}];
+      const wrapper = mount((
+        <TestComponent
+            meta={sourceMeta}
+            value={sourceValue}
+            defaultSize={20}
+            itemsPerPage={1}
+            scrollDirection="vertical">
           {children}
-        </Scroller>
+        </TestComponent>
       ));
-      expect(children).toBeCalledTimes(1);
-      const { rows, columns, rootStyle } = children.calls[0][0];
-      expect(rows).toHaveProperty('pages');
-      expect(rows).toHaveProperty('paddings', { start: 20, end: 20 });
-      expect(columns).toHaveProperty('pages');
-      expect(columns).toHaveProperty('paddings', { start: 100, end: 100 });
-      
-      expect(rootStyle).toEqual({
-        marginTop: -20,
-        merginBottom: 0,
-        marginLeft: -100,
-        marginRight: 0
+      act(() => {
+        const event = new Event('scroll');
+        event.scrollTop = 40;
+        wrapper.find('.scroller').instance().dispatchEvent(event);
+      });
+      const { value, meta, gaps } = children.mock.calls[1][0];
+
+      expect(value.length).toBe(2);
+      expect(meta).toEqual([]);
+      expect(gaps).toEqual({
+        start: 20,
+        end: 20
       });
     });
 
