@@ -92,11 +92,6 @@ const getVisiblePagesAndPaddings = ({ scroll, entries, defaultSize, itemsPerPage
   ];
 };
 
-const marginStylePropsMap = {
-  horizontal: { start: 'merginLeft', end: 'marginRight' },
-  vertical: { start: 'merginTop', end: 'marginBottom' }
-}
-
 // Make scroller only for one dimension (either rows or column specific)
 const Scroller = ({
   meta,
@@ -107,7 +102,6 @@ const Scroller = ({
   relativeScroll,
   value,
   loadPage,
-  style,
   children,
   ...props
 }) => {
@@ -140,9 +134,8 @@ const Scroller = ({
     totalCount: meta.totalCount
   });
 
-  const margins = useMemo(() => {
+  const gaps = useMemo(() => {
     let startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
-    const marginStyleProps = marginStylePropsMap[scrollDirection];
 
     const pageSize = defaultSize * itemsPerPage;
     if (!meta || !meta.children) {
@@ -155,10 +148,10 @@ const Scroller = ({
     }
 
     return {
-      [marginStyleProps.start]: startSectionSize,
-      [marginStyleProps.end]: endSectionSize
+      start: startSectionSize,
+      end: endSectionSize
     };
-  }, [defaultSize, itemsPerPage, meta, visiblePages, scrollDirection]);
+  }, [defaultSize, itemsPerPage, meta, visiblePages]);
 
   const handleScroll = useCallback(event => {
     setScroll(event[scrollDirection] - relativeScroll);
@@ -172,16 +165,11 @@ const Scroller = ({
     };
   }, [scrollContainerRef, handleScroll]);
 
-  const nextStyle = {
-    ...style,
-    ...margins
-  };
-
   const visibleValue = visiblePages.reduce((acc, page) => [...acc, ...page.value], []);
 
   return (
-    <div {...props} style={nextStyle} onScroll={handleScroll}>
-      {children(visibleValue, visibleMeta)}
+    <div {...props} onScroll={handleScroll}>
+      {children({ value: visibleValue, meta: visibleMeta, gaps })}
     </div>
   )
 };
