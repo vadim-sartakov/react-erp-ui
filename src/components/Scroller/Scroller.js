@@ -2,35 +2,6 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useBufferedPages } from '../';
 
-const defaultLoadPage = ({ rows, rowPage, visibleColumns, columnsPerPage, rowsPerPage }) => {
-  return rows.slice(rowPage * rowsPerPage, (rowPage + 1) * rowsPerPage);
-};
-
-// Make it generic. It should accept array and shrink it according to visible pages
-const applyVisiblePages = ({ rows, visibleColumns, visibleRows, columnsPerPage, rowsPerPage }) => {
-  const result = [];
-  const firstPage = defaultLoadPage({ rows, rowPage: visibleRows.pages[0], visibleColumns, columnsPerPage, rowsPerPage });
-  result.push(...firstPage);
-
-  if (visibleRows.children) {
-    const entries = Object.entries(visibleRows);
-
-    for (let index = 0; index < entries.length; index++) {
-      const [childIndex, childVisiblePages] = entries[index];
-      const nestedValue = applyVisiblePages(rows.children[childIndex], visibleColumns, childVisiblePages, columnsPerPage, rowsPerPage);
-      // Does it mutate origin object?
-      result[childIndex].chilren = nestedValue;
-    }
-  }
-
-  if (visibleRows.pages[1]) {
-    const secondPage = defaultLoadPage({ rows, rowPage: visibleRows.pages[1], visibleColumns, columnsPerPage, rowsPerPage });
-    result.push(...secondPage);
-  }
-
-  return result;
-};
-
 const getVisiblePages = currentPage => currentPage === 0 ? [currentPage] : [currentPage - 1, currentPage];
 
 const getVisiblePagesAndPaddings = ({ scroll, entries, defaultSize, itemsPerPage, totalCount }) => {
