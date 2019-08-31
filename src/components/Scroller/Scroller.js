@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useBufferedPages } from '../';
 
@@ -92,63 +92,66 @@ const getVisiblePagesAndPaddings = ({ scroll, entries, defaultSize, itemsPerPage
   ];
 };
 
-const getCurrentPage = (scroll, meta, defaultSize, itemsPerPage) => {
-  let page;
-  if (!meta || !meta.children) {
-    const pageSize = defaultSize * itemsPerPage;
-    page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
-  } else {
-
-  }
-  return page;
-};
-
-const getMargins = (scroll, meta, defaultSize, ) => {
-
-};
+const marginStylePropsMap = {
+  horizontal: { start: 'merginLeft', end: 'marginRight' },
+  vertical: { start: 'merginTop', end: 'marginBottom' }
+}
 
 // Make scroller only for one dimension (either rows or column specific)
 const Scroller = ({
-  rows,
-  columns,
-  defaultRowHeight,
-  defaultColumnWidth,
-  columnsPerPage,
-  rowsPerPage,
+  meta,
+  defaultSize,
+  itemsPerPage,
   scrollContainerRef,
+  scrollDirection,
   relativeScroll,
   value,
   loadPage,
+  style,
   children,
   ...props
 }) => {
 
-  const getRelativeScroll = absoluteScroll => ({
-    top: absoluteScroll.top - relativeScroll.top,
-    teft: absoluteScroll.teft - relativeScroll.teft
-  });
-  const [scroll, setScroll] = useState(getRelativeScroll({
-    top: scrollContainerRef.current.scrollTop - relativeScroll.top,
-    teft: scrollContainerRef.current.scrollLeft - relativeScroll.teft
-  }));
+  const [scroll, setScroll] = useState(0);
 
-  const currentRowPage = getCurrentPage(scroll.top, rows, defaultRowHeight, rowsPerPage);
-  const currentColumnPage = getCurrentPage(scroll.left, columns, defaultColumnWidth, columnsPerPage);
+  const currentPage = useMemo(() => {
+    let page;
+    if (!meta || !meta.children) {
+      const pageSize = defaultSize * itemsPerPage;
+      page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
+    } else {
+      
+    }
+    return page;
+  }, [scroll, meta, defaultSize, itemsPerPage]);
 
-  const visibleRowsMeta = useBufferedPages({ value: rows, page: currentRowPage, loadPage, itemsPerPage: rowsPerPage });
-  const visibleColumnsMeta = useBufferedPages({ value: columns, page: currentColumnPage, loadPage, itemsPerPage: columnsPerPage });
-  const visibleValue = useBufferedPages({ value, page: currentRowPage, loadPage, itemsPerPage: rowsPerPage });
+  // TODO: think about server side meta loading
+  const visibleMeta = useBufferedPages({ value: meta.children, page: currentPage, itemsPerPage });
+  const visiblePages = useBufferedPages({ value, page: currentPage, loadPage, itemsPerPage });
 
-  const margins = getMargins();
+  const margins = useMemo(() => {
+    let startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
+    const marginStyleProps = marginStylePropsMap[scrollDirection];
 
-  const [state, setState] = useState({
-    margins,
-    value: visibleValue
-  });
+    const pageSize = defaultSize * itemsPerPage;
+    if (!meta || !meta.children) {
+      startSectionSize = visiblePages[0].page * pageSize;
+
+      viewingPagesSize = visiblePages.reduce((acc, page) => acc + page.value.length, 0) * defaultSize;
+      endSectionSize = defaultSize * meta.totalCount - startSectionSize - viewingPagesSize;
+    } else {
+      
+    }
+
+    return {
+      [marginStyleProps.start]: startSectionSize,
+      [marginStyleProps.end]: endSectionSize
+    };
+  }, [defaultSize, itemsPerPage, meta, visiblePages, scrollDirection]);
 
   const handleScroll = useCallback(event => {
-    setScroll({ top: event.scrollTop, left: event.scrollLeft });
-  }, []);
+    setScroll(event[scrollDirection]);
+  }, [scrollDirection]);
 
   useEffect(() => {
     const node = scrollContainerRef.current;
@@ -158,48 +161,40 @@ const Scroller = ({
     };
   }, [scrollContainerRef, handleScroll]);
 
+  const nextStyle = {
+    ...style,
+    ...margins
+  };
+
+  const visibleValue = visiblePages.reduce((acc, page) => [...acc, ...page.value], []);
+
   return (
-    <div {...props} onScroll={handleScroll}>
-      {children(state)}
+    <div {...props} style={nextStyle} onScroll={handleScroll}>
+      {children(visibleValue, visibleMeta)}
     </div>
   )
 };
 
 Scroller.propTypes = {
-  rows: PropTypes.shape({
-    height: PropTypes.number,
+  meta: PropTypes.shape({
+    size: PropTypes.number,
     expanded: PropTypes.bool,
     childrenCount: PropTypes.number,
     children: PropTypes.arrayOf(PropTypes.object)
   }),
-  columns: PropTypes.shape({
-    width: PropTypes.number,
-    expanded: PropTypes.bool,
-    childrenCount: PropTypes.number,
-    children: PropTypes.arrayOf(PropTypes.object)
-  }),
-  defaultColumnWidth: PropTypes.number.isRequired,
-  defaultRowHeight: PropTypes.number.isRequired,
-  columnsPerPage: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
+  defaultSize: PropTypes.number.isRequired,
+  itemsPerPage: PropTypes.number.isRequired,
   scrollContainerRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
   /** Offsets relative to scroll container */
-  relativeScroll: PropTypes.shape({
-    top: PropTypes.number,
-    left: PropTypes.number
-  }),
-  
+  relativeScroll: PropTypes.number,
+  scrollDirection: PropTypes.oneOf(['horizontal', 'vertical']).isRequired,
+
   /**
    * Component functions in 2 modes: Dynamic and static.
    * Static involves traversing the columns and rows tree while
    * dynamic fetches the data with 'loadPage' callback relying on children count property of rows and columns meta.
    * */
-  value: PropTypes.arrayOf(PropTypes.shape({
-    columns: PropTypes.arrayOf(PropTypes.shape({
-      children: PropTypes.arrayOf(PropTypes.object)
-    })),
-    children: PropTypes.arrayOf(PropTypes.object)
-  })),
+  value: PropTypes.arrayOf(PropTypes.object),
   loadPage: PropTypes.func
 };
 
