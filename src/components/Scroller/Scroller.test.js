@@ -73,6 +73,38 @@ describe('StaticScroller', () => {
       });
     });
 
+    it('renders page 0 and 1 with end gap on related scroll', () => {
+      const children = jest.fn();
+      const sourceMeta = {
+        totalCount: 4
+      };
+      const sourceValue = [{}, {}, {}, {}];
+      const wrapper = mount((
+        <TestComponent
+            meta={sourceMeta}
+            value={sourceValue}
+            defaultSize={20}
+            itemsPerPage={1}
+            relativeScroll={100}
+            scrollDirection="vertical">
+          {children}
+        </TestComponent>
+      ));
+      act(() => {
+        const event = new Event('scroll');
+        event.scrollTop = 120;
+        wrapper.find('.scroller').instance().dispatchEvent(event);
+      });
+      const { value, meta, gaps } = children.mock.calls[1][0];
+
+      expect(value.length).toBe(2);
+      expect(meta).toEqual([]);
+      expect(gaps).toEqual({
+        start: 0,
+        end: 40
+      });
+    });
+
   });
 
   describe.skip('with specific sizes', () => {
