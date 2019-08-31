@@ -2,11 +2,17 @@ import React from 'react';
 import { Scroller, ScrollerItems } from '../../components';
 
 const exampleRowsMeta = {
-  totalCount: 10,
-  paddings: { start: 10, end: 20 },
+  // We need children count property because children array will not always be available
+  childrenCount: 10,
+  expanded: true,
   children: [
     {
-
+      height: 100
+    },
+    {
+      height: 200,
+      childrenCount: 100,
+      expanded: true
     }
   ]
 };
