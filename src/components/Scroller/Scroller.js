@@ -161,8 +161,8 @@ const Scroller = ({
   }, [defaultSize, itemsPerPage, meta, visiblePages, scrollDirection]);
 
   const handleScroll = useCallback(event => {
-    setScroll(event[scrollDirection]);
-  }, [scrollDirection]);
+    setScroll(event[scrollDirection] - relativeScroll);
+  }, [scrollDirection, relativeScroll]);
 
   useEffect(() => {
     const node = scrollContainerRef.current;
