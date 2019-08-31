@@ -5,8 +5,8 @@ const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, cac
   const visiblePageNumbers = useMemo(() => page === 0 ? [page] : [page - 1, page], [page]);
 
   const itemsOnPage = useMemo(() => {
-    const itemsOnFirstPage = totalCount && Math.min(totalCount, itemsPerPage);
-    const itemsOnSecondPage = totalCount && page > 0 ? Math.min(totalCount - (page * itemsPerPage), itemsPerPage) : 0;
+    const itemsOnFirstPage = Math.min(totalCount, itemsPerPage);
+    const itemsOnSecondPage = page > 0 ? Math.min(totalCount - (page * itemsPerPage), itemsPerPage) : 0;
     return [itemsOnFirstPage, itemsOnSecondPage]
   }, [itemsPerPage, page, totalCount]);
 
@@ -22,9 +22,9 @@ const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, cac
   const cache = useRef([]);
 
   const loadPageSync = useCallback((page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage), [value]);
-  const getCacheValue = useCallback(key => cache.current.find(item => item && item.key === key), []);
-  const addToCacheAndClean = useCallback((key, value) => {
-    cache.current.push({ key, value });
+  const getCacheValue = useCallback(page => cache.current.find(item => item && item.page === page), []);
+  const addToCacheAndClean = useCallback((page, value) => {
+    cache.current.push({ page, value });
     if (cache.current.length > cacheSize) cache.current.shift();
   }, [cacheSize]);
 
@@ -59,9 +59,7 @@ const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, cac
     return [...acc, page]
   }, []);
 
-  const resultValue = value ? syncValue : asyncValue;
-
-  return resultValue.reduce((acc, page) => [...acc, ...page.value], []);
+  return value ? syncValue : asyncValue;
 
 };
 

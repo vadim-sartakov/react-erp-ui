@@ -126,8 +126,19 @@ const Scroller = ({
   }, [scroll, meta, defaultSize, itemsPerPage]);
 
   // TODO: think about server side meta loading
-  const visibleMeta = useBufferedPages({ value: meta.children, page: currentPage, itemsPerPage });
-  const visiblePages = useBufferedPages({ value, page: currentPage, loadPage, itemsPerPage });
+  const visibleMeta = useBufferedPages({
+    value: ( meta && meta.children ) || [],
+    page: currentPage,
+    itemsPerPage,
+    totalCount: meta.totalCount
+  });
+  const visiblePages = useBufferedPages({
+    value,
+    page: currentPage,
+    loadPage,
+    itemsPerPage,
+    totalCount: meta.totalCount
+  });
 
   const margins = useMemo(() => {
     let startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
@@ -177,11 +188,11 @@ const Scroller = ({
 
 Scroller.propTypes = {
   meta: PropTypes.shape({
+    totalCount: PropTypes.number.isRequired,
     size: PropTypes.number,
     expanded: PropTypes.bool,
-    childrenCount: PropTypes.number,
     children: PropTypes.arrayOf(PropTypes.object)
-  }),
+  }).isRequired,
   defaultSize: PropTypes.number.isRequired,
   itemsPerPage: PropTypes.number.isRequired,
   scrollContainerRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),

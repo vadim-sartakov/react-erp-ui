@@ -29,9 +29,9 @@ describe('useBufferedPages', () => {
       const spy = jest.spyOn(value, 'slice');
       const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} />);
       const result = JSON.parse(wrapper.find('div').text());
-      expect(result.length).toBe(20);
-      expect(result[0]).toBe(0);
-      expect(result[19]).toBe(19);
+      expect(result.length).toBe(1);
+      expect(result[0].value[0]).toBe(0);
+      expect(result[0].value[19]).toBe(19);
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -41,9 +41,9 @@ describe('useBufferedPages', () => {
       const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} />);
       wrapper.setProps({ page: 1 });
       const result = JSON.parse(wrapper.find('div').text());
-      expect(result.length).toBe(40);
-      expect(result[0]).toBe(0);
-      expect(result[39]).toBe(39);
+      expect(result.length).toBe(2);
+      expect(result[0].value[0]).toBe(0);
+      expect(result[1].value[19]).toBe(39);
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
@@ -53,9 +53,9 @@ describe('useBufferedPages', () => {
       const wrapper = mount(<TestComponent value={value} page={1} itemsPerPage={20} />);
       wrapper.setProps({ page: 2 });
       const result = JSON.parse(wrapper.find('div').text());
-      expect(result.length).toBe(40);
-      expect(result[0]).toBe(20);
-      expect(result[39]).toBe(59);
+      expect(result.length).toBe(2);
+      expect(result[0].value[0]).toBe(20);
+      expect(result[1].value[19]).toBe(59);
       expect(spy).toHaveBeenCalledTimes(3);
     });
 
@@ -65,9 +65,9 @@ describe('useBufferedPages', () => {
       const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} />);
       wrapper.setProps({ page: 4 });
       const result = JSON.parse(wrapper.find('div').text());
-      expect(result.length).toBe(30);
-      expect(result[0]).toBe(60);
-      expect(result[29]).toBe(89);
+      expect(result.length).toBe(2);
+      expect(result[0].value.length).toBe(20);
+      expect(result[1].value.length).toBe(10);
       expect(spy).toHaveBeenCalledTimes(3);
     });
 
@@ -78,9 +78,9 @@ describe('useBufferedPages', () => {
       wrapper.setProps({ page: 2 });
       wrapper.setProps({ page: 1 });
       const result = JSON.parse(wrapper.find('div').text());
-      expect(result.length).toBe(40);
-      expect(result[0]).toBe(0);
-      expect(result[39]).toBe(39);
+      expect(result.length).toBe(2);
+      expect(result[0].value[0]).toBe(0);
+      expect(result[1].value[19]).toBe(39);
       expect(spy).toHaveBeenCalledTimes(3);
     });
 
@@ -104,9 +104,9 @@ describe('useBufferedPages', () => {
       const wrapper = shallow(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} totalCount={80} />);
       const result = JSON.parse(wrapper.find('div').text());
       expect(loadPage).not.toHaveBeenCalled();
-      expect(result.length).toBe(40);
-      expect(result[0]).toHaveProperty('isLoading', true);
-      expect(result[1]).toHaveProperty('isLoading', true);
+      expect(result.length).toBe(2);
+      expect(result[0].value[0]).toHaveProperty('isLoading', true);
+      expect(result[1].value[0]).toHaveProperty('isLoading', true);
     });
 
     it('loads initial page 0', async () => {
@@ -114,7 +114,7 @@ describe('useBufferedPages', () => {
       let wrapper;
       await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={0} itemsPerPage={20} totalCount={80} />); });
       const result = JSON.parse(wrapper.find('div').text());
-      expect(result.length).toBe(20);
+      expect(result.length).toBe(1);
       expect(loadPage).toHaveBeenCalledTimes(1);
     });
 
@@ -124,7 +124,7 @@ describe('useBufferedPages', () => {
       await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={0} itemsPerPage={20} totalCount={80} />); });
       await act(async () => { wrapper.setProps({ page: 1 }); });
       const result = JSON.parse(wrapper.find('div').text());
-      expect(result.length).toBe(40);
+      expect(result.length).toBe(2);
       expect(loadPage).toHaveBeenCalledTimes(2);
     });
 
@@ -134,7 +134,7 @@ describe('useBufferedPages', () => {
       await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} totalCount={80} />); });
       await act(async () => { wrapper.setProps({ page: 2 }); });
       const result = JSON.parse(wrapper.find('div').text());
-      expect(result.length).toBe(40);
+      expect(result.length).toBe(2);
       expect(loadPage).toHaveBeenCalledTimes(3);
     });
 
@@ -145,7 +145,7 @@ describe('useBufferedPages', () => {
       await act(async () => { wrapper.setProps({ page: 2 }); });
       await act(async () => { wrapper.setProps({ page: 1 }); });
       const result = JSON.parse(wrapper.find('div').text());
-      expect(result.length).toBe(40);
+      expect(result.length).toBe(2);
       expect(loadPage).toHaveBeenCalledTimes(3);
     });
 
