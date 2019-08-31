@@ -42,7 +42,7 @@ const TestTable = ({
             {({ value: rowValue, meta: rowMeta, depth }) => (
               <tr>
                 <ScrollerTree
-                    value={rowValue}
+                    value={rowValue.columns}
                     meta={columns}
                     renderGap={width => <td style={{ width }} />}>
                   {({ value: columnValue, meta: columnMeta, depth }) => (

@@ -8,6 +8,7 @@ const ScrollerTree = ({
   renderGap,
   children
 }) => {
+  // TODO: calculate and pass relative scroll
   return (
     <Scroller value={sourceValue} meta={sourceMeta}>
       {({ value: visibleValue, meta: curVisibleMeta, gaps }) => (
