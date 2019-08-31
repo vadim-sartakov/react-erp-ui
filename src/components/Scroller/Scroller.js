@@ -102,8 +102,7 @@ const Scroller = ({
   relativeScroll,
   value,
   loadPage,
-  children,
-  ...props
+  children
 }) => {
 
   const [scroll, setScroll] = useState(0);
@@ -140,7 +139,6 @@ const Scroller = ({
     const pageSize = defaultSize * itemsPerPage;
     if (!meta || !meta.children) {
       startSectionSize = visiblePages[0].page * pageSize;
-
       viewingPagesSize = visiblePages.reduce((acc, page) => acc + page.value.length, 0) * defaultSize;
       endSectionSize = defaultSize * meta.totalCount - startSectionSize - viewingPagesSize;
     } else {
@@ -168,10 +166,10 @@ const Scroller = ({
   const visibleValue = visiblePages.reduce((acc, page) => [...acc, ...page.value], []);
 
   return (
-    <div {...props} onScroll={handleScroll}>
+    <>
       {children({ value: visibleValue, meta: visibleMeta, gaps })}
-    </div>
-  )
+    </>
+  );
 };
 
 Scroller.propTypes = {
