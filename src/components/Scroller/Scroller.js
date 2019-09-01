@@ -85,7 +85,7 @@ const Scroller = ({
 
   const currentPage = useMemo(() => {
     let page;
-    if (!meta || !meta.children.some(item => Boolean(item.size))) {
+    if (!meta || !meta.children || !meta.children.some(item => Boolean(item.size))) {
       const pageSize = defaultSize * itemsPerPage;
       page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
     } else {
@@ -111,7 +111,7 @@ const Scroller = ({
     let startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
 
     const pageSize = defaultSize * itemsPerPage;
-    if (!meta || !meta.children.some(item => Boolean(item.size))) {
+    if (!meta || !meta.children || !meta.children.some(item => Boolean(item.size))) {
       startSectionSize = visiblePages[0].page * pageSize;
       viewingPagesSize = visiblePages.reduce((acc, page) => acc + page.value.length, 0) * defaultSize;
       endSectionSize = defaultSize * totalCount - startSectionSize - viewingPagesSize;
