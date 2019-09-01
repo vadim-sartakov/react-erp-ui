@@ -16,7 +16,7 @@ const Table = ({
         ref={scrollerRef}
         style={{
           overflow: 'auto',
-          height: 400,
+          height: 600,
           // This is important for Chrome
           overflowAnchor: 'none'
         }}>
@@ -41,12 +41,12 @@ const Table = ({
               scrollDirection="vertical"
               relativeScroll={80}
               renderGap={height => <tr style={{ height }} />}>
-            {({ value: rowValue, meta: rowMeta, depth }) => rowValue.isLoading ? (
-              <tr style={{ height: 50 }} colSpan={columns.length}>
-                Loading...
+            {({ index, value: rowValue, meta: rowMeta, depth }) => rowValue.isLoading ? (
+              <tr key={index} style={{ height: 50 }}>
+                <td className={classes.loading} colSpan={columns.length}>Loading...</td>
               </tr>
             ) : (
-              <tr style={{ height: 50 }}>
+              <tr key={index} style={{ height: 50 }}>
                 {rowValue.columns.map((columnValue, index) => (
                   <td key={index}>
                     {columnValue.value}
