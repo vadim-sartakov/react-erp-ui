@@ -174,6 +174,7 @@ Scroller.propTypes = {
    * dynamic fetches the data with 'loadPage' callback relying on children count property of rows and columns meta.
    * */
   value: PropTypes.arrayOf(PropTypes.object),
+  /** (page, size) => array */
   loadPage: PropTypes.func
 };
 

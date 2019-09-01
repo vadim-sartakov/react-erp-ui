@@ -7,7 +7,8 @@ const Table = ({
   columns,
   rowsPerPage,
   defaultRowHeight,
-  value
+  value,
+  loadPage
 }) => {
   const scrollerRef = useRef();
   return (
@@ -32,6 +33,7 @@ const Table = ({
         <tbody>
           <ScrollerTree
               value={value}
+              loadPage={loadPage}
               meta={rows}
               itemsPerPage={rowsPerPage}
               defaultSize={defaultRowHeight}
@@ -39,7 +41,11 @@ const Table = ({
               scrollDirection="vertical"
               relativeScroll={80}
               renderGap={height => <tr style={{ height }} />}>
-            {({ value: rowValue, meta: rowMeta, depth }) => (
+            {({ value: rowValue, meta: rowMeta, depth }) => rowValue.isLoading ? (
+              <tr style={{ height: 50 }} colSpan={columns.length}>
+                Loading...
+              </tr>
+            ) : (
               <tr style={{ height: 50 }}>
                 {rowValue.columns.map((columnValue, index) => (
                   <td key={index}>
