@@ -52,7 +52,7 @@ describe('StaticScroller', () => {
       ));
       act(() => {
         const event = new Event('scroll');
-        event.scrollTop = 40;
+        Object.defineProperty(event, 'target', { value: { scrollTop: 40 } });
         wrapper.find('.scroller').instance().dispatchEvent(event);
       });
       const { value, meta, gaps } = children.mock.calls[1][0];
@@ -80,7 +80,7 @@ describe('StaticScroller', () => {
       ));
       act(() => {
         const event = new Event('scroll');
-        event.scrollTop = 120;
+        Object.defineProperty(event, 'target', { value: { scrollTop: 120 } });
         wrapper.find('.scroller').instance().dispatchEvent(event);
       });
       const { value, meta, gaps } = children.mock.calls[1][0];

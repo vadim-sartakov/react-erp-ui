@@ -21,9 +21,9 @@ const Table = ({
         }}>
       <table className={classes.table}>
         <thead>
-          <tr style={{ height: 60 }}>
+          <tr style={{ height: 80 }}>
             {columns.map((column, index) => (
-              <th key={index} style={{ width: column.size }}>
+              <th key={index} style={{ width: column.width }}>
                 {column.title}
               </th>
             ))}
@@ -37,11 +37,11 @@ const Table = ({
               defaultSize={defaultRowHeight}
               scrollContainerRef={scrollerRef}
               scrollDirection="vertical"
-              relativeScroll={60}
+              relativeScroll={80}
               renderGap={height => <tr style={{ height }} />}>
             {({ value: rowValue, meta: rowMeta, depth }) => (
-              <tr>
-                {rowValue.column.map((columnValue, index) => (
+              <tr style={{ height: 50 }}>
+                {rowValue.columns.map((columnValue, index) => (
                   <td key={index}>
                     {columnValue.value}
                   </td>

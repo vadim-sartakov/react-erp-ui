@@ -14,7 +14,7 @@ const ScrollerTree = ({
     <Scroller {...props} value={sourceValue} meta={sourceMeta} relativeScroll={relativeScroll}>
       {({ value: visibleValue, meta: curVisibleMeta, gaps }) => (
         <>
-          {renderGap(gaps.start)}
+          {gaps.start ? renderGap(gaps.start) : null}
           {visibleValue.map((curVisibleValue, index) => {
             const curMeta = curVisibleMeta[index];
             // TODO: calculate and pass children relative scroll
@@ -24,7 +24,7 @@ const ScrollerTree = ({
               </ScrollerTree>
             ) : children({ value: curVisibleValue, meta: curMeta, depth })
           })}
-          {renderGap(gaps.end)}
+          {gaps.end ? renderGap(gaps.end) : null}
         </>
       )}
     </Scroller>

@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 import Table from './Table';
 
 const generateColumns = count => {
-  return [...new Array(count).keys()].map(item => ({ title: `Column ${item}` }));
+  return [...new Array(count).keys()].map(item => ({ title: `Column ${item}`, width: 100 }));
 };
 
 const generateValues = (columns, count) => {
@@ -15,12 +15,12 @@ const generateValues = (columns, count) => {
 
 storiesOf('Scroller', module)
   .add('static table with scrollable rows', () => {
-    console.log(generateValues(generateColumns(8), 50));
-    return(<div />);
-    /*return (
+    const columns = generateColumns(8);
+    return (
       <Table
-          value={generateValues(generateColumns(8), 50)}
+          columns={columns}
+          value={generateValues(columns, 1000)}
           rowsPerPage={20}
-          defaultRowHeight={20} />
-    )*/
+          defaultRowHeight={50} />
+    )
   });

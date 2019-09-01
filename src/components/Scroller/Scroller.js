@@ -129,7 +129,7 @@ const Scroller = ({
   }, [defaultSize, itemsPerPage, meta, visiblePages, totalCount]);
 
   const handleScroll = useCallback(event => {
-    setScroll(event[directionToScrollEventMap[scrollDirection]] - relativeScroll);
+    setScroll(event.target[directionToScrollEventMap[scrollDirection]] - relativeScroll);
   }, [scrollDirection, relativeScroll]);
 
   useEffect(() => {
@@ -146,7 +146,7 @@ const Scroller = ({
 
   const visibleValue = visiblePages.reduce(visibleValuesReducer, []);
   const visibleMeta = visibleMetaPages.reduce(visibleValuesReducer, []);
-
+  
   return (
     <>
       {children({ value: visibleValue, meta: visibleMeta, gaps })}
