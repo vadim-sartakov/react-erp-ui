@@ -19,10 +19,10 @@ storiesOf('Scroller', module)
     const rows = { children: [] };
     const value = generateValues(columns, 1000);
     value[100].children = generateValues(columns, 200);
-    //rows.children[100] = { expanded: true };
+    rows.children[100] = { expanded: true };
     return (
       <Table
-          //rows={rows}
+          rows={rows}
           columns={columns}
           value={value}
           rowsPerPage={20}

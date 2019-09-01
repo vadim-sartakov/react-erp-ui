@@ -49,7 +49,7 @@ const Table = ({
               <tr key={index} style={{ height: 50 }}>
                 {rowValue.columns.map((columnValue, index) => (
                   <td key={index}>
-                    <span style={{ marginLeft: depth ? depth * 5 : undefined }}>
+                    <span style={{ marginLeft: depth && index === 0 ? depth * 15 : undefined }}>
                       {columnValue.value}
                     </span>
                   </td>
