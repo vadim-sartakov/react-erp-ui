@@ -107,6 +107,9 @@ const Scroller = ({
     itemsPerPage
   });
 
+
+  // TODO: take in count expanded groups on the top and bottom
+  // Shpuld calculate their heights recursively
   const gaps = useMemo(() => {
     let startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
 
