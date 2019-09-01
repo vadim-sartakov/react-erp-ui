@@ -82,7 +82,6 @@ const Scroller = ({
 }) => {
 
   const [scroll, setScroll] = useState(0);
-  const totalCount = (meta && meta.totalCount) || value.length;
 
   const currentPage = useMemo(() => {
     let page;
@@ -96,18 +95,16 @@ const Scroller = ({
   }, [scroll, meta, defaultSize, itemsPerPage]);
 
   // TODO: think about server side meta loading
-  const visibleMetaPages = useBufferedPages({
+  const [visibleMetaPages] = useBufferedPages({
     value: ( meta && meta.children ) || [],
     page: currentPage,
-    itemsPerPage,
-    totalCount
+    itemsPerPage
   });
-  const visiblePages = useBufferedPages({
+  const [visiblePages, totalCount] = useBufferedPages({
     value,
     page: currentPage,
     loadPage,
-    itemsPerPage,
-    totalCount
+    itemsPerPage
   });
 
   const gaps = useMemo(() => {

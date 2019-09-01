@@ -1,65 +1,84 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 
-const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, cacheSize = 3 }) => {
+const loadPageSync = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
+const getCacheValue = (cache, page) => cache.current.find(item => item && item.page === page);
+const addToCacheAndClean = (cache, cacheSize, page, value) => {
+  cache.current.push({ page, value });
+  if (cache.current.length > cacheSize) cache.current.shift();
+};
+
+const useBufferedPages = ({ value, page, itemsPerPage, loadPage, cacheSize = 3 }) => {
 
   const visiblePageNumbers = useMemo(() => page === 0 ? [page] : [page - 1, page], [page]);
 
-  const itemsOnPage = useMemo(() => {
+  const getLoadingPage = useCallback((totalCount, visiblePageNumber, index) => {
     const itemsOnFirstPage = Math.min(totalCount, itemsPerPage);
-    const itemsOnSecondPage = page > 0 ? Math.min(totalCount - (page * itemsPerPage), itemsPerPage) : 0;
-    return [itemsOnFirstPage, itemsOnSecondPage]
-  }, [itemsPerPage, page, totalCount]);
+    const itemsOnSecondPage = page > 0 ? Math.min(Math.max(totalCount - (page * itemsPerPage), 0), itemsPerPage) : 0;
+    const itemsOnPages = [itemsOnFirstPage, itemsOnSecondPage];
+    const itemsOnPage = itemsOnPages[index];
+    const value = [...new Array(itemsOnPage).keys()].map(() => ({ isLoading: true }));
+    return { page: visiblePageNumber, value };
+  }, [page, itemsPerPage]);
 
-  const getLoadingPage = useCallback(count => [...new Array(count).keys()].map(() => ({ isLoading: true })), []);
-  const [asyncValue, setAsyncValue] = useState(loadPage ? visiblePageNumbers.map((visiblePageNumber, index) => {
-    // Marking every row on visible page as loading
-    const value = [...getLoadingPage(itemsOnPage[index])];
-    return {
-      page: visiblePageNumber,
-      value: [...value]
-    }
-  }) : null);
+  const defaultTotalCount = useMemo(() => (value && value.length) || itemsPerPage * 2, [value, itemsPerPage]);
+  const getDefaultAsyncState = useCallback(() => {
+    return visiblePageNumbers.map((visiblePageNumber, index) => {
+      return getLoadingPage(defaultTotalCount, visiblePageNumber, index);
+    })
+  }, [defaultTotalCount, getLoadingPage, visiblePageNumbers]);
+  const [asyncValue, setAsyncValue] = useState(loadPage ? {
+    totalCount: defaultTotalCount,
+    value: getDefaultAsyncState()
+  } : {});
+
   const cache = useRef([]);
-
-  const loadPageSync = useCallback((page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage), [value]);
-  const getCacheValue = useCallback(page => cache.current.find(item => item && item.page === page), []);
-  const addToCacheAndClean = useCallback((page, value) => {
-    cache.current.push({ page, value });
-    if (cache.current.length > cacheSize) cache.current.shift();
-  }, [cacheSize]);
 
   useEffect(() => {
     if (loadPage) {
       const visibleValues = visiblePageNumbers.reduce((acc, visiblePageNumber, index) => {
-        let cachedPage = getCacheValue(visiblePageNumber);
+        let cachedPage = getCacheValue(cache, visiblePageNumber);
         if (cachedPage) {
           return [...acc, cachedPage];
         } else {
-          loadPage(visiblePageNumber, itemsPerPage).then(loadedValue => {
-            addToCacheAndClean(visiblePageNumber, loadedValue);
+          loadPage(visiblePageNumber, itemsPerPage).then(loadResult => {
+            addToCacheAndClean(cache, cacheSize, visiblePageNumber, loadResult.value);
             setAsyncValue(asyncValue => {
-              return asyncValue.map(asyncValueItem => {
-                return asyncValueItem.page === visiblePageNumber ? { ...asyncValueItem, value: loadedValue } : asyncValueItem
+              const visibleValue = asyncValue.value.map(asyncValueItem => {
+                return asyncValueItem.page === visiblePageNumber ?
+                    { page: visiblePageNumber, value: loadResult.value } :
+                    asyncValueItem
               })
+              return {
+                totalCount: loadResult.totalCount,
+                value: visibleValue
+              }
             });
           });
-          return [...acc, { page: visiblePageNumber, value: getLoadingPage(itemsOnPage[index]) }];
+          return [...acc, getLoadingPage(asyncValue.totalCount, visiblePageNumber, index)];
         }
       }, []);
-      setAsyncValue(visibleValues);
+      setAsyncValue(asyncValue => ({ ...asyncValue, value: visibleValues }));
     }
-  }, [getCacheValue, addToCacheAndClean, visiblePageNumbers, page, loadPage, itemsPerPage, cacheSize, getLoadingPage, itemsOnPage]);
+  }, [
+    visiblePageNumbers,
+    page,
+    loadPage,
+    itemsPerPage,
+    cacheSize,
+    getLoadingPage,
+    asyncValue.totalCount
+  ]);
 
   const syncValue = value && visiblePageNumbers.reduce((acc, visiblePageNumber) => {
-    let page = getCacheValue(visiblePageNumber);
+    let page = getCacheValue(cache, visiblePageNumber);
     if (!page) {
-      page = { page: visiblePageNumber, value: loadPageSync(visiblePageNumber, itemsPerPage) };
-      addToCacheAndClean(visiblePageNumber, page.value);
+      page = { page: visiblePageNumber, value: loadPageSync(value, visiblePageNumber, itemsPerPage) };
+      addToCacheAndClean(cache, cacheSize, visiblePageNumber, page.value);
     }
     return [...acc, page]
   }, []);
 
-  return value ? syncValue : asyncValue;
+  return value ? [syncValue, value.length] : [asyncValue.value, asyncValue.totalCount];
 
 };
 

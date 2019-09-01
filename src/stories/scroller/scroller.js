@@ -34,7 +34,7 @@ storiesOf('Scroller', module)
       return new Promise(resolve => {
         setTimeout(() => {
           const pagedValue = value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
-          resolve(pagedValue);
+          resolve({ totalCount: 1000, value: pagedValue });
         }, 1000)
       });
     };
