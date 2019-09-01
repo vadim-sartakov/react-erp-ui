@@ -85,7 +85,7 @@ const Scroller = ({
 
   const currentPage = useMemo(() => {
     let page;
-    if (!meta || !meta.children) {
+    if (!meta || !meta.children.some(item => Boolean(item.size))) {
       const pageSize = defaultSize * itemsPerPage;
       page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
     } else {
@@ -111,7 +111,7 @@ const Scroller = ({
     let startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
 
     const pageSize = defaultSize * itemsPerPage;
-    if (!meta || !meta.children) {
+    if (!meta || !meta.children.some(item => Boolean(item.size))) {
       startSectionSize = visiblePages[0].page * pageSize;
       viewingPagesSize = visiblePages.reduce((acc, page) => acc + page.value.length, 0) * defaultSize;
       endSectionSize = defaultSize * totalCount - startSectionSize - viewingPagesSize;
@@ -153,14 +153,13 @@ const Scroller = ({
 
 Scroller.propTypes = {
   meta: PropTypes.shape({
-    totalCount: PropTypes.number.isRequired,
     size: PropTypes.number,
     expanded: PropTypes.bool,
     children: PropTypes.arrayOf(PropTypes.object)
   }),
   defaultSize: PropTypes.number.isRequired,
   itemsPerPage: PropTypes.number.isRequired,
-  scrollContainerRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+  scrollContainerRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
   /** Offsets relative to scroll container */
   relativeScroll: PropTypes.number,
   scrollDirection: PropTypes.oneOf(['horizontal', 'vertical']).isRequired,

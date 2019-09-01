@@ -41,7 +41,7 @@ const Table = ({
               scrollDirection="vertical"
               relativeScroll={80}
               renderGap={height => <tr style={{ height }} />}>
-            {({ index, value: rowValue, meta: rowMeta, depth }) => rowValue.isLoading ? (
+            {({ index, value: rowValue, meta: rowMeta, depth, isGroup }) => rowValue.isLoading ? (
               <tr key={index} style={{ height: 50 }}>
                 <td className={classes.loading} colSpan={columns.length}>Loading...</td>
               </tr>
@@ -49,7 +49,9 @@ const Table = ({
               <tr key={index} style={{ height: 50 }}>
                 {rowValue.columns.map((columnValue, index) => (
                   <td key={index}>
-                    {columnValue.value}
+                    <span style={{ marginLeft: depth ? depth * 5 : undefined }}>
+                      {columnValue.value}
+                    </span>
                   </td>
                 ))}
               </tr>
