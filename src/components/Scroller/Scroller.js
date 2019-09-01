@@ -82,10 +82,11 @@ const Scroller = ({
 }) => {
 
   const [scroll, setScroll] = useState(0);
+  const totalCount = (meta && meta.totalCount) || value.length;
 
   const currentPage = useMemo(() => {
     let page;
-    if (!meta.children) {
+    if (!meta || !meta.children) {
       const pageSize = defaultSize * itemsPerPage;
       page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
     } else {
@@ -99,24 +100,24 @@ const Scroller = ({
     value: ( meta && meta.children ) || [],
     page: currentPage,
     itemsPerPage,
-    totalCount: meta.totalCount
+    totalCount
   });
   const visiblePages = useBufferedPages({
     value,
     page: currentPage,
     loadPage,
     itemsPerPage,
-    totalCount: meta.totalCount
+    totalCount
   });
 
   const gaps = useMemo(() => {
     let startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
 
     const pageSize = defaultSize * itemsPerPage;
-    if (!meta.children) {
+    if (!meta || !meta.children) {
       startSectionSize = visiblePages[0].page * pageSize;
       viewingPagesSize = visiblePages.reduce((acc, page) => acc + page.value.length, 0) * defaultSize;
-      endSectionSize = defaultSize * meta.totalCount - startSectionSize - viewingPagesSize;
+      endSectionSize = defaultSize * totalCount - startSectionSize - viewingPagesSize;
     } else {
       
     }
@@ -125,7 +126,7 @@ const Scroller = ({
       start: startSectionSize,
       end: endSectionSize
     };
-  }, [defaultSize, itemsPerPage, meta, visiblePages]);
+  }, [defaultSize, itemsPerPage, meta, visiblePages, totalCount]);
 
   const handleScroll = useCallback(event => {
     setScroll(event[directionToScrollEventMap[scrollDirection]] - relativeScroll);
@@ -159,7 +160,7 @@ Scroller.propTypes = {
     size: PropTypes.number,
     expanded: PropTypes.bool,
     children: PropTypes.arrayOf(PropTypes.object)
-  }).isRequired,
+  }),
   defaultSize: PropTypes.number.isRequired,
   itemsPerPage: PropTypes.number.isRequired,
   scrollContainerRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),

@@ -18,13 +18,9 @@ describe('StaticScroller', () => {
 
     it('renders page 0 and end gap on initial scroll', () => {
       const children = jest.fn();
-      const sourceMeta = {
-        totalCount: 2
-      };
       const sourceValue = [{}, {}];
       mount((
         <TestComponent
-            meta={sourceMeta}
             value={sourceValue}
             defaultSize={20}
             itemsPerPage={1}
@@ -44,13 +40,9 @@ describe('StaticScroller', () => {
 
     it('renders page 1 and 2 with start and end gaps on non-zero scroll', () => {
       const children = jest.fn();
-      const sourceMeta = {
-        totalCount: 4
-      };
       const sourceValue = [{}, {}, {}, {}];
       const wrapper = mount((
         <TestComponent
-            meta={sourceMeta}
             value={sourceValue}
             defaultSize={20}
             itemsPerPage={1}
@@ -75,13 +67,9 @@ describe('StaticScroller', () => {
 
     it('renders page 0 and 1 with end gap on related scroll', () => {
       const children = jest.fn();
-      const sourceMeta = {
-        totalCount: 4
-      };
       const sourceValue = [{}, {}, {}, {}];
       const wrapper = mount((
         <TestComponent
-            meta={sourceMeta}
             value={sourceValue}
             defaultSize={20}
             itemsPerPage={1}
