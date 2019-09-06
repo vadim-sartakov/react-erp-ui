@@ -1,7 +1,5 @@
 const getItemSize = (meta, defaultSize, selfSize) => {
-  if (!meta || !meta.children) {
-    return defaultSize;
-  } else {
+  if (meta && meta.children) {
     const values = [...new Array(meta.children.length).keys()];
     const size = values.reduce((acc, arrayItem, index) => {
       const metaChild = meta.children[index];
@@ -11,6 +9,8 @@ const getItemSize = (meta, defaultSize, selfSize) => {
       return result + childrenSize;
     }, selfSize);
     return size;
+  } else {
+    return (meta && meta.size) || defaultSize;
   }
 };
 
