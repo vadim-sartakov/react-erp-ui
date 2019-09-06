@@ -2,67 +2,6 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import useBufferedPages from './useBufferedPages';
 
-const getVisiblePages = currentPage => currentPage === 0 ? [currentPage] : [currentPage - 1, currentPage];
-
-const getVisiblePagesAndPaddings = ({ scroll, entries, defaultSize, itemsPerPage, totalCount }) => {
-  let page = 0, visiblePages = {}, startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
-
-  // Auto calculation mode. Involves default parameters
-  if (totalCount) {
-    const pageSize = defaultSize * itemsPerPage;
-    page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
-
-    visiblePages.pages = getVisiblePages(page);
-    startSectionSize = visiblePages.pages[0] * pageSize;
-
-    const itemsOnFirstPage = Math.min(totalCount, itemsPerPage);
-    const itemsOnSecondPage = page > 0 ? Math.min(totalCount - (page * itemsPerPage), itemsPerPage) : 0;
-
-    viewingPagesSize += (itemsOnFirstPage + itemsOnSecondPage) * defaultSize;
-    endSectionSize = defaultSize * totalCount - startSectionSize - viewingPagesSize;
-
-  // Manual entries crawling mode
-  } else {
-    
-    let curScroll = 0, itemsOnPage = 0;
-    for (let index = 0; index < entries.length; index++) {
-      if (curScroll >= scroll) break;
-      const curEntry = entries[index];
-      const size = curEntry.size || defaultSize;
-  
-      if (curScroll < scroll) {
-        const isNextPage = index > 0 && index % itemsPerPage === 0;
-        scroll = curScroll + size;
-        page = isNextPage ? page + 1 : page;
-        itemsOnPage = isNextPage ? 0 : itemsOnPage + 1;
-        startSectionSize += size;
-      }
-  
-      if (curEntry.expanded) {
-        const [nestedVisiblePages, nestedPaddings] = getVisiblePagesAndPaddings({
-          scroll: scroll - curScroll,
-          entries: entries.children,
-          itemsPerPage,
-          defaultSize
-        });
-        if (!visiblePages.children) visiblePages.children = [];
-        visiblePages.children.push({ [index]: nestedVisiblePages });
-        startSectionSize += nestedPaddings.start;
-        endSectionSize += nestedPaddings.end;
-      }
-      
-    }
-
-    visiblePages.pages = getVisiblePages(page);
-
-  }
-
-  return [
-    visiblePages,
-    { start: startSectionSize, end: endSectionSize }
-  ];
-};
-
 const directionToScrollEventMap = {
   vertical: 'scrollTop',
   horizontal: 'scrollLeft'
