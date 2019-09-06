@@ -46,7 +46,6 @@ const Scroller = ({
     itemsPerPage
   });
 
-
   // TODO: take in count expanded groups on the top and bottom
   // Shpuld calculate their heights recursively
   const gaps = useMemo(() => {
@@ -68,6 +67,7 @@ const Scroller = ({
   }, [defaultSize, itemsPerPage, meta, visiblePages, totalCount]);
 
   const handleScroll = useCallback(event => {
+    // TODO: calculate page here and set state only when page changes
     setScroll(event.target[directionToScrollEventMap[scrollDirection]] - relativeScroll);
   }, [scrollDirection, relativeScroll]);
 
