@@ -38,7 +38,6 @@ const Table = ({
               itemsPerPage={rowsPerPage}
               defaultSize={defaultRowHeight}
               scrollContainerRef={scrollerRef}
-              scrollDirection="vertical"
               relativeScroll={80}
               renderGap={height => <tr style={{ height }} />}>
             {({ index, value: rowValue, meta: rowMeta, depth, isGroup }) => rowValue.isLoading ? (
