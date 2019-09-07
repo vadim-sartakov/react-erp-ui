@@ -61,13 +61,15 @@ export const getPageNumberWithDefaultSize = (defaultSize, itemsPerPage, scroll) 
   return Math.floor( ( scroll + pageSize / 2 ) / pageSize);
 };
 
+const getVisiblePages = page => page === 0 ? [0] : [page - 1, page];
+
 export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, page }) => {
   const pageSize = defaultSize * itemsPerPage;
-  const itemsOnFirstPage = Math.min(totalCount, itemsPerPage);
-  const itemsOnSecondPage = page > 0 ? Math.min(Math.max(totalCount - (page * itemsPerPage), 0), itemsPerPage) : 0;
-  const startSectionSize = (page === 0 ? 0 : page - 1) * pageSize;
-  const viewingPagesSize = (itemsOnFirstPage + itemsOnSecondPage) * defaultSize;
-  const endSectionSize = defaultSize * totalCount - startSectionSize - viewingPagesSize;
+  const visiblePages = getVisiblePages(page);
+  const startSectionSize = visiblePages[0] * pageSize;
+  const totalPages = Math.floor(totalCount / itemsPerPage);
+  const scrolledItems = page < totalPages ? ((visiblePages[1] || 0) + 1) * itemsPerPage : totalCount;
+  const endSectionSize = (totalCount - scrolledItems) * defaultSize;
   return {
     start: startSectionSize,
     end: endSectionSize
@@ -77,7 +79,7 @@ export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, 
 const gapsReducer = (acc, scrollPage) => acc + (scrollPage.end - scrollPage.start);
 
 export const getGapsFromScrollPages = (scrollPages, page) => {
-  const visiblePages = page === 0 ? [0] : [page - 1, page];
+  const visiblePages = getVisiblePages(page);
   const startSectionSize = scrollPages.slice(0, visiblePages[0]).reduce(gapsReducer, 0);
   const endSectionSize = scrollPages.slice((visiblePages[1] || 0) + 1, scrollPages.lengh).reduce(gapsReducer, 0);
   return {

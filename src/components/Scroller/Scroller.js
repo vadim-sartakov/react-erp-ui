@@ -95,7 +95,8 @@ const Scroller = ({
 
 Scroller.propTypes = {
   meta: PropTypes.shape({
-    totalCount: PropTypes.number.isRequired,
+    isLoading: PropTypes.bool,
+    totalCount: PropTypes.number,
     size: PropTypes.number,
     expanded: PropTypes.bool,
     children: PropTypes.arrayOf(PropTypes.object)

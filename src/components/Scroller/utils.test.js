@@ -175,6 +175,12 @@ describe('Scroller utils', () => {
     it('last page', () => {
       expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 4 })).toEqual({ start: 60, end: 0 });
     });
+    it('middle page with 10 items per page', () => {
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 35, page: 2 })).toEqual({ start: 200, end: 100 });
+    });
+    it('last page with half content', () => {
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 15, page: 2 })).toEqual({ start: 200, end: 0 });
+    });
   });
 
   describe('getGapsFromScrollPages', () => {
