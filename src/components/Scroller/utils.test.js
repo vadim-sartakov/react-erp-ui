@@ -41,6 +41,7 @@ describe('Scroller utils', () => {
         ]
       });
     });
+
     it('preserves meta internal data if specified', () => {
       const meta = {
         totalCount: 5,
@@ -74,6 +75,17 @@ describe('Scroller utils', () => {
           },
           { size: 80 }
         ]
+      });
+    });
+
+    it('empty children not included', () => {
+      const value = [
+        {},
+        {},
+        {}
+      ]
+      expect(setSyncValueMetaTotalCounts(value)).toEqual({
+        totalCount: 3
       });
     });
   });

@@ -12,19 +12,18 @@ const TestComponent = props => {
   )
 };
 
-describe.skip('StaticScroller', () => {
+describe('StaticScroller', () => {
 
   describe('with default sizes', () => {
 
-    it('renders page 0 and end gap on initial scroll', () => {
+    it('initial scroll', () => {
       const children = jest.fn();
       const sourceValue = [{}, {}];
       mount((
         <TestComponent
             value={sourceValue}
             defaultSize={20}
-            itemsPerPage={1}
-            scrollDirection="vertical">
+            itemsPerPage={1}>
           {children}
         </TestComponent>
       ));
@@ -38,15 +37,14 @@ describe.skip('StaticScroller', () => {
       });
     });
 
-    it('renders page 1 and 2 with start and end gaps on non-zero scroll', () => {
+    it('page 2', () => {
       const children = jest.fn();
       const sourceValue = [{}, {}, {}, {}];
       const wrapper = mount((
         <TestComponent
             value={sourceValue}
             defaultSize={20}
-            itemsPerPage={1}
-            scrollDirection="vertical">
+            itemsPerPage={1}>
           {children}
         </TestComponent>
       ));
@@ -65,7 +63,7 @@ describe.skip('StaticScroller', () => {
       });
     });
 
-    it('renders page 0 and 1 with end gap on related scroll', () => {
+    it('related scroll', () => {
       const children = jest.fn();
       const sourceValue = [{}, {}, {}, {}];
       const wrapper = mount((
@@ -73,8 +71,7 @@ describe.skip('StaticScroller', () => {
             value={sourceValue}
             defaultSize={20}
             itemsPerPage={1}
-            relativeScroll={100}
-            scrollDirection="vertical">
+            relativeScroll={100}>
           {children}
         </TestComponent>
       ));
