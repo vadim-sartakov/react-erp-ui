@@ -3,7 +3,8 @@ import {
   getPageNumberFromScrollPages,
   shiftScrollPages,
   getPageNumberWithDefaultSize,
-  getGapsWithDefaultSize
+  getGapsWithDefaultSize,
+  getGapsFromScrollPages
 } from './utils';
 
 describe('Scroller utils', () => {
@@ -171,9 +172,27 @@ describe('Scroller utils', () => {
     it('middle page', () => {
       expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 3 })).toEqual({ start: 40, end: 20 });
     });
-    it('end page', () => {
+    it('last page', () => {
       expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 4 })).toEqual({ start: 60, end: 0 });
     });
-  })
+  });
+
+  describe('getGapsFromScrollPages', () => {
+    const scrollPages = [
+      { start: 0, end: 20 },
+      { start: 20, end: 60 },
+      { start: 60, end: 100 },
+      { start: 100, end: 150 }
+    ];
+    it('first page', () => {
+      expect(getGapsFromScrollPages(scrollPages, 0)).toEqual({ start: 0, end: 130 });
+    });
+    it('middle page', () => {
+      expect(getGapsFromScrollPages(scrollPages, 2)).toEqual({ start: 20, end: 50 });
+    });
+    it('last page', () => {
+      expect(getGapsFromScrollPages(scrollPages, 3)).toEqual({ start: 60, end: 0 });
+    });
+  });
 
 });

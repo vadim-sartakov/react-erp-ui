@@ -73,3 +73,15 @@ export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, 
     end: endSectionSize
   };
 };
+
+const gapsReducer = (acc, scrollPage) => acc + (scrollPage.end - scrollPage.start);
+
+export const getGapsFromScrollPages = (scrollPages, page) => {
+  const visiblePages = page === 0 ? [0] : [page - 1, page];
+  const startSectionSize = scrollPages.slice(0, visiblePages[0]).reduce(gapsReducer, 0);
+  const endSectionSize = scrollPages.slice((visiblePages[1] || 0) + 1, scrollPages.lengh).reduce(gapsReducer, 0);
+  return {
+    start: startSectionSize,
+    end: endSectionSize
+  }
+};
