@@ -92,7 +92,7 @@ describe('Scroller utils', () => {
 
   describe('getScrollPages', () => {
 
-    it('expanded second item should be bigger', () => {
+    it('expanded second item', () => {
       const meta = {
         totalCount: 3,
         children: [
@@ -104,10 +104,9 @@ describe('Scroller utils', () => {
           {}
         ]
       };
-      const result = getScrollPages(meta, 20, 1);
+      const result = getScrollPages(meta, 20, 2);
       expect(result).toEqual([
-        { start: 0, end: 20 },
-        { start: 20, end: 60 },
+        { start: 0, end: 60 },
         { start: 60, end: 80 }
       ]);
     });
@@ -130,10 +129,9 @@ describe('Scroller utils', () => {
           {}
         ]
       };
-      const result = getScrollPages(meta, 20, 1);
+      const result = getScrollPages(meta, 20, 2);
       expect(result).toEqual([
-        { start: 0, end: 20 },
-        { start: 20, end: 80 },
+        { start: 0, end: 80 },
         { start: 80, end: 100 }
       ]);
     });
@@ -147,10 +145,9 @@ describe('Scroller utils', () => {
           {}
         ]
       };
-      const result = getScrollPages(meta, 20, 1);
+      const result = getScrollPages(meta, 20, 2);
       expect(result).toEqual([
-        { start: 0, end: 20 },
-        { start: 20, end: 60 },
+        { start: 0, end: 60 },
         { start: 60, end: 80 }
       ]);
     });
@@ -169,10 +166,9 @@ describe('Scroller utils', () => {
           {}
         ]
       };
-      const result = getScrollPages(meta, 20, 1);
+      const result = getScrollPages(meta, 20, 2);
       expect(result).toEqual([
-        { start: 0, end: 20 },
-        { start: 20, end: 80 },
+        { start: 0, end: 80 },
         { start: 80, end: 100 }
       ]);
     });
@@ -191,10 +187,9 @@ describe('Scroller utils', () => {
           {}
         ]
       };
-      const result = getScrollPages(meta, 20, 1);
+      const result = getScrollPages(meta, 20, 2);
       expect(result).toEqual([
-        { start: 0, end: 20 },
-        { start: 20, end: 100 },
+        { start: 0, end: 100 },
         { start: 100, end: 120 }
       ]);
     });

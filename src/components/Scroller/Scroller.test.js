@@ -90,6 +90,9 @@ describe('StaticScroller', () => {
       });
     });
 
+    // TODO:
+    it.skip('Does not update on negative scroll value', () => {});
+
   });
 
   describe.skip('with specific sizes', () => {

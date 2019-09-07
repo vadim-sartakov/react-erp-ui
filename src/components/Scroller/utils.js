@@ -53,14 +53,16 @@ const getItemSize = (meta, defaultSize, selfSize) => {
 
 export const getScrollPages = (meta, defaultSize, itemsPerPage) => {
   const values = [...new Array(meta.totalCount).keys()];
-  const result = values.reduce(({ curPage, pages }, arrayItem, index) => {
+  const result = values.reduce(({ curPage, pages }, arrayItem, index, values) => {
     const metaChild = meta.children[index];
     const size = getItemSize(metaChild, defaultSize, (metaChild && metaChild.size) || defaultSize);
     const isNextPage = index > 0 && index % itemsPerPage === 0;
+    
+    let nextPages = isNextPage ? [...pages, curPage] : pages;
     const nextCurPage = isNextPage ?
         { start: curPage.end, end: curPage.end + size } :
         { start: curPage.start, end: curPage.end + size };
-    const nextPages = isNextPage || index === 0 ? [...pages, nextCurPage] : pages;
+    if (index === values.length - 1) nextPages = [...nextPages, nextCurPage];
     return {
       curPage: nextCurPage,
       pages: nextPages
