@@ -51,8 +51,7 @@ const Scroller = ({
     let result;
     if (meta && meta.children && meta.children.length) {
       const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
-      const shiftedScrollPages = shiftScrollPages(scrollPages);
-      result = getGapsFromScrollPages(shiftedScrollPages, page);
+      result = getGapsFromScrollPages(scrollPages, page);
     } else {
       result = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount: meta.totalCount, page });
     }
