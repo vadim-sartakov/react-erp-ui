@@ -1,6 +1,15 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import useBufferedPages from './useBufferedPages';
+import {
+  setSyncValueMetaTotalCounts,
+  getScrollPages,
+  shiftScrollPages,
+  getPageNumberFromScrollPages,
+  getPageNumberWithDefaultSize,
+  getGapsFromScrollPages,
+  getGapsWithDefaultSize
+} from './utils';
 
 const directionToScrollEventMap = {
   vertical: 'scrollTop',
@@ -8,7 +17,7 @@ const directionToScrollEventMap = {
 };
 
 const Scroller = ({
-  meta,
+  meta: metaProp,
   defaultSize,
   itemsPerPage,
   scrollContainerRef,
@@ -19,56 +28,49 @@ const Scroller = ({
   children
 }) => {
 
-  const [scroll, setScroll] = useState(0);
-
-  const currentPage = useMemo(() => {
-    let page;
-    if (!meta || !meta.children || !meta.children.some(item => Boolean(item.size))) {
-      const pageSize = defaultSize * itemsPerPage;
-      page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
-    } else {
-      
-    }
-    return page;
-  }, [scroll, meta, defaultSize, itemsPerPage]);
+  const [page, setPage] = useState(0);
+  
+  const meta = useMemo(() => loadPage ? setSyncValueMetaTotalCounts(value, metaProp) : undefined, [loadPage, value, metaProp]);
 
   // TODO: think about server side meta loading
   const [visibleMetaPages] = useBufferedPages({
     value: ( meta && meta.children ) || [],
-    page: currentPage,
-    itemsPerPage
+    page,
+    itemsPerPage,
+    totalCount: meta.totalCount
   });
   const [visiblePages, totalCount] = useBufferedPages({
     value,
-    page: currentPage,
+    page,
     loadPage,
-    itemsPerPage
+    itemsPerPage,
+    totalCount: meta.totalCount
   });
 
-  // TODO: take in count expanded groups on the top and bottom
-  // Sopuld calculate their heights recursively
   const gaps = useMemo(() => {
-    let startSectionSize = 0, viewingPagesSize = 0, endSectionSize = 0;
-
-    const pageSize = defaultSize * itemsPerPage;
-    if (!meta || !meta.children || !meta.children.some(item => Boolean(item.size))) {
-      startSectionSize = visiblePages[0].page * pageSize;
-      viewingPagesSize = visiblePages.reduce((acc, page) => acc + page.value.length, 0) * defaultSize;
-      endSectionSize = defaultSize * totalCount - startSectionSize - viewingPagesSize;
+    let result;
+    if (meta && meta.children) {
+      const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
+      const shiftedScrollPages = shiftScrollPages(scrollPages);
+      result = getGapsFromScrollPages(shiftedScrollPages, page);
     } else {
-      
+      result = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount, page });
     }
-
-    return {
-      start: startSectionSize,
-      end: endSectionSize
-    };
-  }, [defaultSize, itemsPerPage, meta, visiblePages, totalCount]);
+    return result;
+  }, [page, defaultSize, itemsPerPage, meta, totalCount]);
 
   const handleScroll = useCallback(event => {
-    // TODO: calculate page here and set state only when page changes
-    setScroll(event.target[directionToScrollEventMap[scrollDirection]] - relativeScroll);
-  }, [scrollDirection, relativeScroll]);
+    const scroll = event.target[directionToScrollEventMap[scrollDirection]] - relativeScroll;
+    let currentPage;
+    if (meta && meta.children) {
+      const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
+      const shiftedScrollPages = shiftScrollPages(scrollPages);
+      currentPage = getPageNumberFromScrollPages(shiftedScrollPages, scroll);
+    } else {
+      currentPage = getPageNumberWithDefaultSize(defaultSize, itemsPerPage, scroll);
+    }
+    if (page !== currentPage) setPage(currentPage);
+  }, [meta, page, defaultSize, itemsPerPage, scrollDirection, relativeScroll]);
 
   useEffect(() => {
     if (scrollContainerRef) {

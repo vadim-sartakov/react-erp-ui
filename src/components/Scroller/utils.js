@@ -6,6 +6,33 @@ export const getItemsOnPage = (page, itemsPerPage, totalCount) => {
   return page < totalPages - 1 ? itemsPerPage : totalCount - (page * itemsPerPage);
 };
 
+export const setSyncValueMetaTotalCounts = (value, meta = { totalCount: 0 }) => {
+  return Object.entries(meta).reduce((acc, [metaKey, metaValue]) => {
+    const children = value.reduce((acc, valueItem, index) => {
+      const curMeta = meta.children && meta.children[index];
+      let result;
+      if (valueItem.children) {
+        result = {
+          ...curMeta,
+          totalCount: valueItem.children.length
+        };
+        const children = setSyncValueMetaTotalCounts(valueItem.children, curMeta);
+        if (children.length) result.children = children;
+      } else {
+        result = curMeta;
+      }
+      return [...acc, result];
+    }, []);
+    const result = {
+      ...acc,
+      [metaKey]: metaValue,
+      totalCount: value.length
+    };
+    if (children.length) result.children = children;
+    return result;
+  }, {});
+};
+
 const getItemSize = (meta, defaultSize, selfSize) => {
   if (meta && meta.children) {
     const values = [...new Array(meta.totalCount).keys()];
@@ -90,7 +117,7 @@ const gapsReducer = (acc, scrollPage) => acc + (scrollPage.end - scrollPage.star
 export const getGapsFromScrollPages = (scrollPages, page) => {
   const visiblePages = getVisiblePages(page);
   const startSectionSize = scrollPages.slice(0, visiblePages[0]).reduce(gapsReducer, 0);
-  const endSectionSize = scrollPages.slice((visiblePages[1] || 0) + 1, scrollPages.lengh).reduce(gapsReducer, 0);
+  const endSectionSize = scrollPages.slice((visiblePages[1] || 0) + 1, scrollPages.length).reduce(gapsReducer, 0);
   return {
     start: startSectionSize,
     end: endSectionSize
