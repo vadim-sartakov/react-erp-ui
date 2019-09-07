@@ -36,13 +36,13 @@ export const setSyncValueMetaTotalCounts = (value, meta = { totalCount: 0 }) => 
 };
 
 const getItemSize = (meta, defaultSize, selfSize) => {
-  if (meta && meta.children) {
+  if (meta && meta.expanded) {
     const values = [...new Array(meta.totalCount).keys()];
     const size = values.reduce((acc, arrayItem, index) => {
-      const metaChild = meta.children[index];
+      const metaChild = meta.children && meta.children[index];
       let result = acc;
       result += (metaChild && metaChild.size) || defaultSize;
-      const childrenSize = metaChild.children ? getItemSize(metaChild.children, defaultSize) : 0;
+      const childrenSize = metaChild && metaChild.children ? getItemSize(metaChild.children, defaultSize) : 0;
       return result + childrenSize;
     }, selfSize);
     return size;
