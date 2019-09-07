@@ -49,7 +49,7 @@ const Scroller = ({
 
   const gaps = useMemo(() => {
     let result;
-    if (meta && meta.children) {
+    if (meta && meta.children && meta.children.length) {
       const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
       const shiftedScrollPages = shiftScrollPages(scrollPages);
       result = getGapsFromScrollPages(shiftedScrollPages, page);
@@ -61,8 +61,9 @@ const Scroller = ({
 
   const handleScroll = useCallback(event => {
     const scroll = event.target[directionToScrollEventMap[scrollDirection]] - relativeScroll;
+    if (scroll < 0) return;
     let currentPage;
-    if (meta && meta.children) {
+    if (meta && meta.children && meta.children.length) {
       const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
       const shiftedScrollPages = shiftScrollPages(scrollPages);
       currentPage = getPageNumberFromScrollPages(shiftedScrollPages, scroll);
