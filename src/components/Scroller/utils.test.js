@@ -164,9 +164,15 @@ describe('Scroller utils', () => {
     });
   });
 
-  describe.skip('getGapsWithDefaultSize', () => {
-    it('should return gaps start: 0, end: 100 when arguments defaultSize: 20, itemsPerPage: 1, totalCount: 2, page: 0', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 2, page: 0 })).toEqual({ start: 0, end: 100 });
+  describe('getGapsWithDefaultSize', () => {
+    it('start page', () => {
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 0 })).toEqual({ start: 0, end: 80 });
+    });
+    it('middle page', () => {
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 3 })).toEqual({ start: 40, end: 20 });
+    });
+    it('end page', () => {
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 4 })).toEqual({ start: 60, end: 0 });
     });
   })
 

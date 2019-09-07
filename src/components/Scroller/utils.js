@@ -66,7 +66,7 @@ export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, 
   const itemsOnFirstPage = Math.min(totalCount, itemsPerPage);
   const itemsOnSecondPage = page > 0 ? Math.min(Math.max(totalCount - (page * itemsPerPage), 0), itemsPerPage) : 0;
   const startSectionSize = (page === 0 ? 0 : page - 1) * pageSize;
-  const viewingPagesSize = itemsOnFirstPage + itemsOnSecondPage;
+  const viewingPagesSize = (itemsOnFirstPage + itemsOnSecondPage) * defaultSize;
   const endSectionSize = defaultSize * totalCount - startSectionSize - viewingPagesSize;
   return {
     start: startSectionSize,
