@@ -8,7 +8,7 @@ const TestComponent = ({
   page,
   itemsPerPage,
   loadPage,
-  totalCount
+  totalCount = 0
 }) => {
   const visibleValues = useBufferedPages({ value, page, itemsPerPage, loadPage, totalCount });
   return (
@@ -20,7 +20,7 @@ const TestComponent = ({
 
 const createValues = count => [...Array(count).keys()];
 
-describe.skip('useBufferedPages', () => {
+describe('useBufferedPages', () => {
 
   describe('sync', () => {
 
@@ -28,8 +28,7 @@ describe.skip('useBufferedPages', () => {
       const value = createValues(100);
       const spy = jest.spyOn(value, 'slice');
       const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} />);
-      const [result, totalCount] = JSON.parse(wrapper.find('div').text());
-      expect(totalCount).toBe(100);
+      const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(1);
       expect(result[0].value[0]).toBe(0);
       expect(result[0].value[19]).toBe(19);
@@ -41,8 +40,7 @@ describe.skip('useBufferedPages', () => {
       const spy = jest.spyOn(value, 'slice');
       const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} />);
       wrapper.setProps({ page: 1 });
-      const [result, totalCount] = JSON.parse(wrapper.find('div').text());
-      expect(totalCount).toBe(100);
+      const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(2);
       expect(result[0].value[0]).toBe(0);
       expect(result[1].value[19]).toBe(39);
@@ -54,8 +52,7 @@ describe.skip('useBufferedPages', () => {
       const spy = jest.spyOn(value, 'slice');
       const wrapper = mount(<TestComponent value={value} page={1} itemsPerPage={20} />);
       wrapper.setProps({ page: 2 });
-      const [result, totalCount] = JSON.parse(wrapper.find('div').text());
-      expect(totalCount).toBe(100);
+      const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(2);
       expect(result[0].value[0]).toBe(20);
       expect(result[1].value[19]).toBe(59);
@@ -67,8 +64,7 @@ describe.skip('useBufferedPages', () => {
       const spy = jest.spyOn(value, 'slice');
       const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} />);
       wrapper.setProps({ page: 4 });
-      const [result, totalCount] = JSON.parse(wrapper.find('div').text());
-      expect(totalCount).toBe(90);
+      const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(2);
       expect(result[0].value.length).toBe(20);
       expect(result[1].value.length).toBe(10);
@@ -81,8 +77,7 @@ describe.skip('useBufferedPages', () => {
       const wrapper = mount(<TestComponent value={value} page={1} itemsPerPage={20} />);
       wrapper.setProps({ page: 2 });
       wrapper.setProps({ page: 1 });
-      const [result, totalCount] = JSON.parse(wrapper.find('div').text());
-      expect(totalCount).toBe(100);
+      const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(2);
       expect(result[0].value[0]).toBe(0);
       expect(result[1].value[19]).toBe(39);
@@ -104,45 +99,41 @@ describe.skip('useBufferedPages', () => {
 
   describe('async', () => {
 
+    it('loads initial page 0', async () => {
+      const loadPage = jest.fn(async () => [...new Array(20).keys()]);
+      let wrapper;
+      await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={0} itemsPerPage={20} totalCount={100} />); });
+      const result = JSON.parse(wrapper.find('div').text());
+      expect(result.length).toBe(1);
+      expect(loadPage).toHaveBeenCalledTimes(1);
+    });
+
     it('initialy loading 0 and 1 pages', () => {
       const loadPage = jest.fn(async () => {});
-      const wrapper = shallow(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} />);
-      const [result, totalCount] = JSON.parse(wrapper.find('div').text());
-      expect(totalCount).toBe(40);
+      const wrapper = shallow(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} totalCount={100} />);
+      const result = JSON.parse(wrapper.find('div').text());
       expect(loadPage).not.toHaveBeenCalled();
       expect(result.length).toBe(2);
       expect(result[0].value[0]).toHaveProperty('isLoading', true);
       expect(result[1].value[0]).toHaveProperty('isLoading', true);
     });
 
-    it('loads initial page 0', async () => {
-      const loadPage = jest.fn(async () => ({ totalCount: 80, value: [...new Array(20).keys()] }));
-      let wrapper;
-      await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={0} itemsPerPage={20} />); });
-      const [result, totalCount] = JSON.parse(wrapper.find('div').text());
-      expect(totalCount).toBe(80);
-      expect(result.length).toBe(1);
-      expect(loadPage).toHaveBeenCalledTimes(1);
-    });
-
     it('scrolls from page 0 to 1', async () => {
-      const loadPage = jest.fn(async () => ({ totalCount: 80, value: [...new Array(20).keys()] }));
+      const loadPage = jest.fn(async () => [...new Array(20).keys()]);
       let wrapper;
-      await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={0} itemsPerPage={20} />); });
+      await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={0} itemsPerPage={20} totalCount={80} />); });
       await act(async () => { wrapper.setProps({ page: 1 }); });
-      const [result, totalCount] = JSON.parse(wrapper.find('div').text());
-      expect(totalCount).toBe(80);
+      const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(2);
       expect(loadPage).toHaveBeenCalledTimes(2);
     });
 
     it('scrolls from page 1 to 2', async () => {
-      const loadPage = jest.fn(async () => ({ totalCount: 80, value: [...new Array(20).keys()] }));
+      const loadPage = jest.fn(async () => [...new Array(20).keys()]);
       let wrapper;
-      await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} />); });
+      await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} totalCount={80} />); });
       await act(async () => { wrapper.setProps({ page: 2 }); });
-      const [result, totalCount] = JSON.parse(wrapper.find('div').text());
-      expect(totalCount).toBe(80);
+      const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(2);
       expect(loadPage).toHaveBeenCalledTimes(3);
     });
@@ -150,20 +141,19 @@ describe.skip('useBufferedPages', () => {
     it('scrolls from page 1 to 2 and back to 1', async () => {
       const loadPage = jest.fn(async () => ({ totalCount: 80, value: [...new Array(20).keys()] }));
       let wrapper;
-      await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} />); });
+      await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} totalCount={80} />); });
       await act(async () => { wrapper.setProps({ page: 2 }); });
       await act(async () => { wrapper.setProps({ page: 1 }); });
-      const [result, totalCount] = JSON.parse(wrapper.find('div').text());
-      expect(totalCount).toBe(80);
+      const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(2);
       expect(loadPage).toHaveBeenCalledTimes(3);
     });
 
     it('reuses and cleans cache when scrolling', async () => {
-      const loadPage = jest.fn(async () => ({ totalCount: 200, value: [...new Array(20).keys()] }));
+      const loadPage = jest.fn(async () => [...new Array(20).keys()]);
       let wrapper;
       await act(async () => {
-        wrapper = mount(<TestComponent loadPage={loadPage} page={0} itemsPerPage={20} />);
+        wrapper = mount(<TestComponent loadPage={loadPage} page={0} itemsPerPage={20} totalCount={200} />);
       });
       await act(async () => { wrapper.setProps({ page: 1 }); });
       await act(async () => { wrapper.setProps({ page: 2 }); });
