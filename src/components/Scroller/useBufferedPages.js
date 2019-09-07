@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { getItemsOnPage, getVisiblePages } from './utils';
 
-const loadPageSync = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
+export const loadPageSync = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 const getCacheValue = (cache, page) => cache.current.find(item => item && item.page === page);
 const addToCacheAndClean = (cache, cacheSize, page, value) => {
   cache.current.push({ page, value });
@@ -9,28 +10,15 @@ const addToCacheAndClean = (cache, cacheSize, page, value) => {
 
 const useBufferedPages = ({ value, page, itemsPerPage, loadPage, cacheSize = 3 }) => {
 
-  const visiblePageNumbers = useMemo(() => page === 0 ? [page] : [page - 1, page], [page]);
-
-  const getLoadingPage = useCallback((totalCount, visiblePageNumber, index) => {
-    const itemsOnFirstPage = Math.min(totalCount, itemsPerPage);
-    const itemsOnSecondPage = page > 0 ? Math.min(Math.max(totalCount - (page * itemsPerPage), 0), itemsPerPage) : 0;
-    const itemsOnPages = [itemsOnFirstPage, itemsOnSecondPage];
-    const itemsOnPage = itemsOnPages[index];
-    const value = [...new Array(itemsOnPage).keys()].map(() => ({ isLoading: true }));
-    return { page: visiblePageNumber, value };
-  }, [page, itemsPerPage]);
-
-  const defaultTotalCount = useMemo(() => (value && value.length) || itemsPerPage * 2, [value, itemsPerPage]);
-  const getDefaultAsyncState = useCallback(() => {
-    return visiblePageNumbers.map((visiblePageNumber, index) => {
-      return getLoadingPage(defaultTotalCount, visiblePageNumber, index);
-    })
-  }, [defaultTotalCount, getLoadingPage, visiblePageNumbers]);
-  const [asyncValue, setAsyncValue] = useState(loadPage ? {
-    totalCount: defaultTotalCount,
-    value: getDefaultAsyncState()
-  } : {});
-
+  const visiblePageNumbers = useMemo(() => getVisiblePages(page), [page]);
+  const loadingPage = useMemo(() => {
+    if (loadPage) {
+      const itemsOnPage = getItemsOnPage(page, itemsPerPage);
+      return [...new Array(itemsOnPage).keys()].map(() => ({ isLoading: true }));
+    }
+  }, [loadPage, itemsPerPage, page]);
+  const [asyncValue, setAsyncValue] = useState(loadPage ? loadingPage : undefined);
+  
   const cache = useRef([]);
 
   useEffect(() => {
@@ -48,13 +36,10 @@ const useBufferedPages = ({ value, page, itemsPerPage, loadPage, cacheSize = 3 }
                     { page: visiblePageNumber, value: loadResult.value } :
                     asyncValueItem
               })
-              return {
-                totalCount: loadResult.totalCount,
-                value: visibleValue
-              }
+              return visibleValue;
             });
           });
-          return [...acc, getLoadingPage(asyncValue.totalCount, visiblePageNumber, index)];
+          return [...acc, { page: visiblePageNumber, value: loadingPage }];
         }
       }, []);
       setAsyncValue(asyncValue => ({ ...asyncValue, value: visibleValues }));
@@ -63,10 +48,9 @@ const useBufferedPages = ({ value, page, itemsPerPage, loadPage, cacheSize = 3 }
     visiblePageNumbers,
     page,
     loadPage,
+    loadingPage,
     itemsPerPage,
-    cacheSize,
-    getLoadingPage,
-    asyncValue.totalCount
+    cacheSize
   ]);
 
   const syncValue = value && visiblePageNumbers.reduce((acc, visiblePageNumber) => {
@@ -78,7 +62,7 @@ const useBufferedPages = ({ value, page, itemsPerPage, loadPage, cacheSize = 3 }
     return [...acc, page]
   }, []);
 
-  return value ? [syncValue, value.length] : [asyncValue.value, asyncValue.totalCount];
+  return loadPage ? asyncValue : syncValue;
 
 };
 

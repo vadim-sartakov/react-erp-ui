@@ -1,4 +1,5 @@
 import {
+  getItemsOnPage,
   getScrollPages,
   getPageNumberFromScrollPages,
   shiftScrollPages,
@@ -9,6 +10,15 @@ import {
 
 describe('Scroller utils', () => {
   
+  describe('getItemsOnPage', () => {
+    it('middle page', () => {
+      expect(getItemsOnPage(1, 10, 35)).toBe(10);
+    });
+    it('last page', () => {
+      expect(getItemsOnPage(3, 10, 35)).toBe(5);
+    });
+  });
+
   describe('getScrollPages', () => {
 
     it('expanded second item should be bigger', () => {
@@ -179,7 +189,7 @@ describe('Scroller utils', () => {
       expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 35, page: 2 })).toEqual({ start: 200, end: 100 });
     });
     it('last page with half content', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 15, page: 2 })).toEqual({ start: 200, end: 0 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 25, page: 2 })).toEqual({ start: 200, end: 0 });
     });
   });
 

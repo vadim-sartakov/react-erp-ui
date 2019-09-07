@@ -12,7 +12,7 @@ const TestComponent = props => {
   )
 };
 
-describe('StaticScroller', () => {
+describe.skip('StaticScroller', () => {
 
   describe('with default sizes', () => {
 

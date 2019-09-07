@@ -7,7 +7,6 @@ const directionToScrollEventMap = {
   horizontal: 'scrollLeft'
 };
 
-// Make scroller only for one dimension (either rows or column specific)
 const Scroller = ({
   meta,
   defaultSize,

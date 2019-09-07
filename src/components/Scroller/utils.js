@@ -1,3 +1,11 @@
+export const getVisiblePages = page => page === 0 ? [0] : [page - 1, page];
+export const getTotalPages = (totalCount, itemsPerPage) => Math.ceil(totalCount / itemsPerPage);
+export const getItemsOnPage = (page, itemsPerPage, totalCount) => {
+  if (page === undefined) return 0;
+  const totalPages = getTotalPages(totalCount, itemsPerPage);
+  return page < totalPages - 1 ? itemsPerPage : totalCount - (page * itemsPerPage);
+};
+
 const getItemSize = (meta, defaultSize, selfSize) => {
   if (meta && meta.children) {
     const values = [...new Array(meta.totalCount).keys()];
@@ -61,15 +69,16 @@ export const getPageNumberWithDefaultSize = (defaultSize, itemsPerPage, scroll) 
   return Math.floor( ( scroll + pageSize / 2 ) / pageSize);
 };
 
-const getVisiblePages = page => page === 0 ? [0] : [page - 1, page];
-
 export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, page }) => {
   const pageSize = defaultSize * itemsPerPage;
   const visiblePages = getVisiblePages(page);
   const startSectionSize = visiblePages[0] * pageSize;
-  const totalPages = Math.floor(totalCount / itemsPerPage);
-  const scrolledItems = page < totalPages ? ((visiblePages[1] || 0) + 1) * itemsPerPage : totalCount;
-  const endSectionSize = (totalCount - scrolledItems) * defaultSize;
+  const totalSize = totalCount * defaultSize;
+  const visibleItems =
+      getItemsOnPage(visiblePages[0], itemsPerPage, totalCount) +
+      getItemsOnPage(visiblePages[1], itemsPerPage, totalCount);
+  const visibleSectionSize = visibleItems * defaultSize;
+  const endSectionSize = totalSize - (startSectionSize + visibleSectionSize);
   return {
     start: startSectionSize,
     end: endSectionSize
