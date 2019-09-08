@@ -68,14 +68,25 @@ export const getScrollPages = (meta, defaultSize, itemsPerPage) => {
       ...curPage,
       end: curPage.end + selfSize + childrenSize
     };
-    if (isNextPage) nextCurPage.start = curPage.end;
+    if (isNextPage) {
+      nextCurPage.start = curPage.end;
+      delete nextCurPage.children
+    }
+    if (childrenSize) {
+      nextCurPage.children = [
+        ...(curPage.children || []),
+        {
+          start: curPage.start + curPage.end + selfSize,
+          end: curPage.start + curPage.end + selfSize + childrenSize
+        }
+      ];
+    }
     if (index === values.length - 1) nextPages = [...nextPages, nextCurPage];
     return {
       curPage: nextCurPage,
       pages: nextPages
     }
   }, {
-    childrenSize: 0,
     curPage: { start: 0, end: 0 },
     pages: []
   });

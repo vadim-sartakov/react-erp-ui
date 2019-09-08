@@ -106,8 +106,30 @@ describe('Scroller utils', () => {
       };
       const result = getScrollPages(meta, 20, 2);
       expect(result).toEqual([
-        { start: 0, end: 60 },
+        { start: 0, end: 60, children: [{ start: 40, end: 60 }] },
         { start: 60, end: 80 }
+      ]);
+    });
+
+    it('multiple expanded per page', () => {
+      const meta = {
+        totalCount: 3,
+        children: [
+          {
+            expanded: true,
+            children: [{}]
+          },
+          {
+            expanded: true,
+            children: [{}]
+          },
+          {}
+        ]
+      };
+      const result = getScrollPages(meta, 20, 2);
+      expect(result).toEqual([
+        { start: 0, end: 80, children: [{ start: 20, end: 40 }, { start: 60, end: 80 }] },
+        { start: 80, end: 100 }
       ]);
     });
 
@@ -131,7 +153,7 @@ describe('Scroller utils', () => {
       };
       const result = getScrollPages(meta, 20, 2);
       expect(result).toEqual([
-        { start: 0, end: 80 },
+        { start: 0, end: 80, children: [{ start: 40, end: 80 }] },
         { start: 80, end: 100 }
       ]);
     });
@@ -168,7 +190,7 @@ describe('Scroller utils', () => {
       };
       const result = getScrollPages(meta, 20, 2);
       expect(result).toEqual([
-        { start: 0, end: 80 },
+        { start: 0, end: 80, children: [{ start: 60, end: 80 }] },
         { start: 80, end: 100 }
       ]);
     });
@@ -189,7 +211,7 @@ describe('Scroller utils', () => {
       };
       const result = getScrollPages(meta, 20, 2);
       expect(result).toEqual([
-        { start: 0, end: 100 },
+        { start: 0, end: 100, children: [{ start: 60, end: 100 }] },
         { start: 100, end: 120 }
       ]);
     });
