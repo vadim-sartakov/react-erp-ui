@@ -35,19 +35,22 @@ export const setSyncValueMetaTotalCounts = (value, meta = { totalCount: 0 }) => 
   }, {});
 };
 
-const getItemSize = (meta, defaultSize, selfSize) => {
+const getSelfSize = (meta, defaultSize) => (meta && meta.size) || defaultSize;
+
+const getChilrenSize = (meta, defaultSize) => {
   if (meta && meta.expanded) {
     const values = [...new Array(meta.totalCount).keys()];
     const size = values.reduce((acc, arrayItem, index) => {
       const metaChild = meta.children && meta.children[index];
       let result = acc;
-      result += (metaChild && metaChild.size) || defaultSize;
-      const childrenSize = metaChild && metaChild.children ? getItemSize(metaChild.children, defaultSize) : 0;
+      const selfSize = getSelfSize(metaChild, defaultSize);
+      result += selfSize;
+      const childrenSize = metaChild && metaChild.children ? getChilrenSize(metaChild, defaultSize) : 0;
       return result + childrenSize;
-    }, selfSize);
+    }, 0);
     return size;
   } else {
-    return (meta && meta.size) || defaultSize;
+    return 0;
   }
 };
 
@@ -55,19 +58,24 @@ export const getScrollPages = (meta, defaultSize, itemsPerPage) => {
   const values = [...new Array(meta.totalCount).keys()];
   const result = values.reduce(({ curPage, pages }, arrayItem, index, values) => {
     const metaChild = meta.children[index];
-    const size = getItemSize(metaChild, defaultSize, (metaChild && metaChild.size) || defaultSize);
+
+    const selfSize = getSelfSize(metaChild, defaultSize);
+    const childrenSize = getChilrenSize(metaChild, defaultSize);
     const isNextPage = index > 0 && index % itemsPerPage === 0;
     
     let nextPages = isNextPage ? [...pages, curPage] : pages;
-    const nextCurPage = isNextPage ?
-        { start: curPage.end, end: curPage.end + size } :
-        { start: curPage.start, end: curPage.end + size };
+    const nextCurPage = {
+      ...curPage,
+      end: curPage.end + selfSize + childrenSize
+    };
+    if (isNextPage) nextCurPage.start = curPage.end;
     if (index === values.length - 1) nextPages = [...nextPages, nextCurPage];
     return {
       curPage: nextCurPage,
       pages: nextPages
     }
   }, {
+    childrenSize: 0,
     curPage: { start: 0, end: 0 },
     pages: []
   });
