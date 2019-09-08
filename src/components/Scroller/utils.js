@@ -76,8 +76,8 @@ export const getScrollPages = (meta, defaultSize, itemsPerPage) => {
       nextCurPage.children = [
         ...(curPage.children || []),
         {
-          start: curPage.start + curPage.end + selfSize,
-          end: curPage.start + curPage.end + selfSize + childrenSize
+          start: curPage.end + selfSize,
+          end: curPage.end + selfSize + childrenSize
         }
       ];
     }

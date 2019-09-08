@@ -110,6 +110,26 @@ describe('Scroller utils', () => {
       ]);
     });
 
+    it('expanded item in the end', () => {
+      const meta = {
+        totalCount: 4,
+        children: [
+          {},
+          {},
+          {},
+          {
+            expanded: true,
+            children: [{}]
+          }
+        ]
+      };
+      const result = getScrollPages(meta, 20, 2);
+      expect(result).toEqual([
+        { start: 0, end: 40 },
+        { start: 40, end: 100, children: [{ start: 80, end: 100 }] }
+      ]);
+    });
+
     it('multiple expanded per page', () => {
       const meta = {
         totalCount: 3,

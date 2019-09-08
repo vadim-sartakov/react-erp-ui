@@ -28,7 +28,7 @@ const Scroller = ({
 }) => {
 
   const [page, setPage] = useState(0);
-  
+  //console.log(relativeScroll);
   const meta = useMemo(() => loadPage ? undefined : setSyncValueMetaTotalCounts(value, metaProp), [loadPage, value, metaProp]);
 
   // TODO: think about server side meta loading
@@ -59,12 +59,11 @@ const Scroller = ({
 
   const handleScroll = useCallback(event => {
     const scroll = event.target[directionToScrollEventMap[scrollDirection]] - relativeScroll;
-    if (scroll < 0) return;
     let currentPage;
     if (meta && meta.children && meta.children.length) {
       const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
       currentPage = getPageNumberFromScrollPages(scrollPages, scroll);
-      //console.log('relativeScroll=%s, scroll=%s, currentPage=%s, scrollPages=%o, shiftedScrollPages=%o', relativeScroll, scroll, currentPage, scrollPages, shiftedScrollPages);
+      //console.log('relativeScroll=%s, scroll=%s, currentPage=%s, scrollPages=%o', relativeScroll, scroll, currentPage, scrollPages);
     } else {
       currentPage = getPageNumberWithDefaultSize(defaultSize, itemsPerPage, scroll);
     }
