@@ -233,7 +233,7 @@ describe('Scroller utils', () => {
     })
   });
 
-  describe.skip('getPageNumberFromScrollPages', () => {
+  describe.only('getPageNumberFromScrollPages', () => {
 
     it('returns initial page - 0 on scroll 0', () => {
       const scrollPages = [

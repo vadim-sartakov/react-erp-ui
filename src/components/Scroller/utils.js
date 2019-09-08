@@ -110,8 +110,28 @@ export const shiftScrollPages = scrollPages => {
   }, []);
 };
 
+const inRange = (scroll, range) => scroll >= range.start && scroll < range.end;
+
 export const getPageNumberFromScrollPages = (scrollPages, scroll = 0) => {
-  return scrollPages.findIndex(page => scroll >= page.start && scroll < page.end);
+  if (scroll < 0) return 0;
+
+  const lastPageIndex = scrollPages.length - 1;
+  if (scroll > scrollPages[lastPageIndex].end) return lastPageIndex;
+
+  const currentPage = scrollPages.reduce((acc, page, index) => {
+    if (acc !== -1) return acc;
+
+    const isInRange = inRange(scroll, page);
+    if (!isInRange) return acc;
+
+    const onChildren = page.children && page.children.some(child => inRange(scroll, child));
+    if (onChildren) return index;
+
+    const pageSize = page.end - page.start;
+    const pageHalf = pageSize / 2;
+    return scroll > pageHalf ? index + 1 : index;
+  }, -1);
+  return currentPage;
 };
 
 export const getPageNumberWithDefaultSize = (defaultSize, itemsPerPage, scroll) => {
