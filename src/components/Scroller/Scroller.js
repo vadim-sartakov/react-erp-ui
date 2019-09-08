@@ -29,7 +29,7 @@ const Scroller = ({
 
   const [page, setPage] = useState(0);
   const meta = useMemo(() => loadPage ? undefined : setSyncValueMetaTotalCounts(value, metaProp), [loadPage, value, metaProp]);
-
+  //console.log(meta)
   // TODO: think about server side meta loading
   const visibleMetaPages = useBufferedPages({
     value: ( meta && meta.children ) || [],
@@ -56,18 +56,14 @@ const Scroller = ({
     return result;
   }, [page, defaultSize, itemsPerPage, meta]);
 
-  console.log('relativeScroll = %s, currentPage = %s', relativeScroll, page);
-
   const handleScroll = useCallback(event => {
     const scroll = event.target[directionToScrollEventMap[scrollDirection]] - relativeScroll;
     let currentPage;
     if (meta && meta.children && meta.children.length) {
       const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
       currentPage = getPageNumberFromScrollPages(scrollPages, scroll);
-      //console.log('relativeScroll = %s, scroll = %s, currentPage = %s', relativeScroll, scroll, currentPage);
     } else {
       currentPage = getPageNumberWithDefaultSize({ defaultSize, itemsPerPage, scroll, totalCount: meta.totalCount });
-      //console.log('relativeScroll = %s, scroll = %s, currentPage = %s', relativeScroll, scroll, currentPage);
     }
     if (page !== currentPage && currentPage !== -1) setPage(currentPage);
   }, [meta, page, defaultSize, itemsPerPage, scrollDirection, relativeScroll]);

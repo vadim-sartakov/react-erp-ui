@@ -77,6 +77,32 @@ describe('Scroller utils', () => {
       });
     });
 
+    it('deep nested item', () => {
+      const value = [
+        {},
+        {
+          children: [
+            {
+              children: [{}, {}]
+            },
+            {}
+          ]
+        },
+        {}
+      ]
+      expect(setSyncValueMetaTotalCounts(value)).toEqual({
+        totalCount: 3,
+        children: [
+          undefined,
+          {
+            totalCount: 2,
+            children: [{ totalCount: 2 }, undefined]
+          },
+          undefined
+        ]
+      });
+    });
+
     it('empty children not included', () => {
       const value = [
         {},
