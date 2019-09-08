@@ -117,9 +117,12 @@ export const getPageNumberFromScrollPages = (scrollPages, scroll = 0) => {
   return currentPage;
 };
 
-export const getPageNumberWithDefaultSize = (defaultSize, itemsPerPage, scroll) => {
+export const getPageNumberWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, scroll }) => {
+  if (scroll < 0) return 0;
+  const totalPages = getTotalPages(totalCount, itemsPerPage);
   const pageSize = defaultSize * itemsPerPage;
-  return Math.floor( ( scroll + pageSize / 2 ) / pageSize);
+  const page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
+  return Math.min(totalPages - 1, page);
 };
 
 export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, page }) => {

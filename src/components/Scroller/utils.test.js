@@ -290,13 +290,19 @@ describe('Scroller utils', () => {
 
   describe('getPageNumberWithDefaultSize', () => {
     it('should return 0 on scroll 0', () => {
-      expect(getPageNumberWithDefaultSize(20, 1, 0)).toBe(0);
+      expect(getPageNumberWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, scroll: 0, totalCount: 10 })).toBe(0);
     });
     it('should return 1 on scroll 10, default size - 20 and items per page - 1', () => {
-      expect(getPageNumberWithDefaultSize(20, 1, 10)).toBe(1);
+      expect(getPageNumberWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, scroll: 10, totalCount: 10 })).toBe(1);
     });
     it('should return 2 on scroll 20, default size - 20 and items per page - 1', () => {
-      expect(getPageNumberWithDefaultSize(20, 1, 20)).toBe(1);
+      expect(getPageNumberWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, scroll: 20, totalCount: 10 })).toBe(1);
+    });
+    it('should return first page when scroll is negative', () => {
+      expect(getPageNumberWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, scroll: -20, totalCount: 10 })).toBe(0);
+    });
+    it('should return last page when scroll is exceeded', () => {
+      expect(getPageNumberWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, scroll: 500, totalCount: 10 })).toBe(9);
     });
   });
 

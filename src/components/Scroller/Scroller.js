@@ -65,7 +65,7 @@ const Scroller = ({
       currentPage = getPageNumberFromScrollPages(scrollPages, scroll);
       //console.log('relativeScroll=%s, scroll=%s, currentPage=%s, scrollPages=%o', relativeScroll, scroll, currentPage, scrollPages);
     } else {
-      currentPage = getPageNumberWithDefaultSize(defaultSize, itemsPerPage, scroll);
+      currentPage = getPageNumberWithDefaultSize({ defaultSize, itemsPerPage, scroll, totalCount: meta.totalCount });
     }
     if (page !== currentPage) setPage(currentPage);
   }, [meta, page, defaultSize, itemsPerPage, scrollDirection, relativeScroll]);
