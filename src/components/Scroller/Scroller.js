@@ -4,7 +4,6 @@ import useBufferedPages from './useBufferedPages';
 import {
   setSyncValueMetaTotalCounts,
   getScrollPages,
-  shiftScrollPages,
   getPageNumberFromScrollPages,
   getPageNumberWithDefaultSize,
   getGapsFromScrollPages,
@@ -64,9 +63,7 @@ const Scroller = ({
     let currentPage;
     if (meta && meta.children && meta.children.length) {
       const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
-      //if (scroll > scrollPages[scrollPages.length - 1].end) return;
-      const shiftedScrollPages = shiftScrollPages(scrollPages);
-      currentPage = getPageNumberFromScrollPages(shiftedScrollPages, scroll);
+      currentPage = getPageNumberFromScrollPages(scrollPages, scroll);
       //console.log('relativeScroll=%s, scroll=%s, currentPage=%s, scrollPages=%o, shiftedScrollPages=%o', relativeScroll, scroll, currentPage, scrollPages, shiftedScrollPages);
     } else {
       currentPage = getPageNumberWithDefaultSize(defaultSize, itemsPerPage, scroll);

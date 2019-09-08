@@ -93,23 +93,6 @@ export const getScrollPages = (meta, defaultSize, itemsPerPage) => {
   return result.pages;
 };
 
-/**
- * Shifts start and end scroll borders by half of each page towards the array start.
- * Serves to simplify buffering.
- * @param {object} scrollPages - getScrollPages() result
- */
-export const shiftScrollPages = scrollPages => {
-  return scrollPages.reduce((acc, scrollPage, index) => {
-    return [
-      ...acc,
-      {
-        start: index === 0 ? scrollPage.start : acc[index - 1].end,
-        end: scrollPage.start + Math.round((scrollPage.end - scrollPage.start) / 2)
-      }
-    ]
-  }, []);
-};
-
 const inRange = (scroll, range) => scroll >= range.start && scroll < range.end;
 
 export const getPageNumberFromScrollPages = (scrollPages, scroll = 0) => {

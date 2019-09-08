@@ -3,7 +3,6 @@ import {
   setSyncValueMetaTotalCounts,
   getScrollPages,
   getPageNumberFromScrollPages,
-  shiftScrollPages,
   getPageNumberWithDefaultSize,
   getGapsWithDefaultSize,
   getGapsFromScrollPages
@@ -218,22 +217,7 @@ describe('Scroller utils', () => {
 
   });
 
-  describe('shiftScrollPages', () => {
-    const scrollPages = [
-      { start: 0, end: 20 },
-      { start: 20, end: 60 },
-      { start: 60, end: 80 }
-    ];
-    it('shifts bounds', () => {
-      expect(shiftScrollPages(scrollPages)).toEqual([
-        { start: 0, end: 10 },
-        { start: 10, end: 40 },
-        { start: 40, end: 70 }
-      ]);
-    })
-  });
-
-  describe.only('getPageNumberFromScrollPages', () => {
+  describe('getPageNumberFromScrollPages', () => {
 
     it('returns initial page - 0 on scroll 0', () => {
       const scrollPages = [
