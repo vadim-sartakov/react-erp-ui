@@ -22,9 +22,9 @@ storiesOf('Scroller', module)
     rows.children[100] = { expanded: true, children: [] };
 
     /*value[100].children[50].children = generateValues(columns, 100);
-    rows.children[100].children[50] = { expanded: true, children: [] };
+    rows.children[100].children[50] = { expanded: true, children: [] };*/
 
-    value[100].children[50].children[1].children = generateValues(columns, 1);
+    /*value[100].children[50].children[1].children = generateValues(columns, 1);
     rows.children[100].children[50].children[1] = { expanded: true, children: [] };
 
     value[100].children[50].children[1].children[0].children = generateValues(columns, 1);

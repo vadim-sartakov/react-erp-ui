@@ -255,12 +255,12 @@ describe('Scroller utils', () => {
       expect(getPageNumberFromScrollPages(scrollPages, 15)).toBe(1);
     });
 
-    it('returns same page when scrolled on children', () => {
+    it('returns -1 when scrolled on children', () => {
       const scrollPages = [
         { start: 0, end: 20, children: [{ start: 10, end: 20 }] },
         { start: 20, end: 40 }
       ];
-      expect(getPageNumberFromScrollPages(scrollPages, 15)).toBe(0);
+      expect(getPageNumberFromScrollPages(scrollPages, 15)).toBe(-1);
     });
 
     it('returns initial page - 0 on negative scroll', () => {
