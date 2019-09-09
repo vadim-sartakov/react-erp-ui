@@ -21,6 +21,7 @@ describe('StaticScroller', () => {
       const sourceValue = [{}, {}];
       mount((
         <TestComponent
+            scroll={{ top: 0, left: 0 }}
             meta={{ totalCount: 2 }}
             value={sourceValue}
             defaultSize={20}
@@ -41,8 +42,9 @@ describe('StaticScroller', () => {
     it('page 2', () => {
       const children = jest.fn();
       const sourceValue = [{}, {}, {}, {}];
-      const wrapper = mount((
+      mount((
         <TestComponent
+            scroll={{ top: 40, left: 0 }}
             meta={{ totalCount: 4 }}
             value={sourceValue}
             defaultSize={20}
@@ -50,12 +52,7 @@ describe('StaticScroller', () => {
           {children}
         </TestComponent>
       ));
-      act(() => {
-        const event = new Event('scroll');
-        Object.defineProperty(event, 'target', { value: { scrollTop: 40 } });
-        wrapper.find('.scroller').instance().dispatchEvent(event);
-      });
-      const { value, meta, gaps } = children.mock.calls[1][0];
+      const { value, meta, gaps } = children.mock.calls[0][0];
 
       expect(value.length).toBe(2);
       expect(meta).toEqual([]);
@@ -68,8 +65,9 @@ describe('StaticScroller', () => {
     it('related scroll', () => {
       const children = jest.fn();
       const sourceValue = [{}, {}, {}, {}];
-      const wrapper = mount((
+      mount((
         <TestComponent
+            scroll={{ top: 120, left: 0 }}
             meta={{ totalCount: 4 }}
             value={sourceValue}
             defaultSize={20}
@@ -78,12 +76,7 @@ describe('StaticScroller', () => {
           {children}
         </TestComponent>
       ));
-      act(() => {
-        const event = new Event('scroll');
-        Object.defineProperty(event, 'target', { value: { scrollTop: 120 } });
-        wrapper.find('.scroller').instance().dispatchEvent(event);
-      });
-      const { value, meta, gaps } = children.mock.calls[1][0];
+      const { value, meta, gaps } = children.mock.calls[0][0];
 
       expect(value.length).toBe(2);
       expect(meta).toEqual([]);

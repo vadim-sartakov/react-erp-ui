@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { ScrollerTree } from '../../components';
 import classes from './Table.module.sass';
 
@@ -11,6 +11,7 @@ const Table = ({
   loadPage
 }) => {
   const scrollerRef = useRef();
+  const [scroll, setScroll] = useState({ top: 0, left: 0 });
   return (
     <div
         ref={scrollerRef}
@@ -19,7 +20,8 @@ const Table = ({
           height: 600,
           // This is important for Chrome
           overflowAnchor: 'none'
-        }}>
+        }}
+        onScroll={e => setScroll({ top: e.target.scrollTop, left: e.target.scrollLeft })}>
       <table className={classes.table}>
         <thead>
           <tr style={{ height: 80 }}>
@@ -39,7 +41,8 @@ const Table = ({
               defaultSize={defaultRowHeight}
               scrollContainerRef={scrollerRef}
               relativeScroll={80}
-              renderGap={height => <tr style={{ height }} />}>
+              renderGap={height => <tr style={{ height }} />}
+              scroll={scroll}>
                                   {/*Row loading supposed to be here, in meta*/}
             {({ index, value: rowValue, meta: rowMeta, depth, isGroup }) => rowValue.isLoading ? (
               <tr key={index} style={{ height: 50 }}>

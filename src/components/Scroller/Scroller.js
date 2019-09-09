@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import useBufferedPages from './useBufferedPages';
 import {
@@ -10,24 +10,36 @@ import {
 } from './utils';
 
 const directionToScrollEventMap = {
-  vertical: 'scrollTop',
-  horizontal: 'scrollLeft'
+  vertical: 'top',
+  horizontal: 'left'
 };
 
 const Scroller = ({
+  scroll: scrollProp,
   meta,
   defaultSize,
   itemsPerPage,
-  scrollContainerRef,
   scrollDirection,
   relativeScroll,
   value,
   loadPage,
-  children
+  children  
 }) => {
 
-  const [page, setPage] = useState(0);
-  //console.log('relativeScroll = %s, page = %s', relativeScroll, page);
+  const getPage = useCallback(scroll => {
+    let currentPage;
+    if (meta && meta.children && meta.children.length) {
+      const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
+      currentPage = getPageNumberFromScrollPages(scrollPages, scroll);
+    } else {
+      currentPage = getPageNumberWithDefaultSize({ defaultSize, itemsPerPage, scroll, totalCount: meta.totalCount });
+    }
+    return currentPage;
+  }, [meta, defaultSize, itemsPerPage]);
+
+  const scroll = scrollProp[directionToScrollEventMap[scrollDirection]] - relativeScroll;
+  const page = useMemo(() => getPage(scroll), [scroll, getPage]);
+
   // TODO: think about server side meta loading
   const visibleMetaPages = useBufferedPages({
     value: ( meta && meta.children ) || [],
@@ -54,30 +66,6 @@ const Scroller = ({
     return result;
   }, [page, defaultSize, itemsPerPage, meta]);
 
-  const handleScroll = useCallback(event => {
-    const scroll = event.target[directionToScrollEventMap[scrollDirection]] - relativeScroll;
-    let currentPage;
-    if (meta && meta.children && meta.children.length) {
-      const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
-      currentPage = getPageNumberFromScrollPages(scrollPages, scroll);
-      //console.log('relativeScroll = %s, scroll = %s, currentPage = %s, scrollPages = %o', relativeScroll, scroll, currentPage/*, scrollPages*/);
-    } else {
-      currentPage = getPageNumberWithDefaultSize({ defaultSize, itemsPerPage, scroll, totalCount: meta.totalCount });
-      //console.log('relativeScroll = %s, scroll = %s, currentPage = %s', relativeScroll, scroll, currentPage);
-    }
-    if (page !== currentPage) setPage(currentPage);
-  }, [meta, page, defaultSize, itemsPerPage, scrollDirection, relativeScroll]);
-
-  useEffect(() => {
-    if (scrollContainerRef) {
-      const node = scrollContainerRef.current;
-      node.addEventListener('scroll', handleScroll);
-      return () => {
-        node.removeEventListener('scroll', handleScroll);
-      };
-    }
-  }, [scrollContainerRef, handleScroll]);
-
   const visibleValuesReducer = (acc, page) => [...acc, ...page.value];
 
   const visibleValue = visiblePages.reduce(visibleValuesReducer, []);
@@ -100,7 +88,10 @@ Scroller.propTypes = {
   }),
   defaultSize: PropTypes.number.isRequired,
   itemsPerPage: PropTypes.number.isRequired,
-  scrollContainerRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
+  scroll: PropTypes.shape({
+    top: PropTypes.number.isRequired,
+    left: PropTypes.number.isRequired
+  }).isRequired,
   /** Offsets relative to scroll container */
   relativeScroll: PropTypes.number,
   scrollDirection: PropTypes.oneOf(['horizontal', 'vertical']).isRequired,
