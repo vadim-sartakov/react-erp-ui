@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import useBufferedPages from './useBufferedPages';
 import {
-  setSyncValueMetaTotalCounts,
   getScrollPages,
   getPageNumberFromScrollPages,
   getPageNumberWithDefaultSize,
@@ -16,7 +15,7 @@ const directionToScrollEventMap = {
 };
 
 const Scroller = ({
-  meta: metaProp,
+  meta,
   defaultSize,
   itemsPerPage,
   scrollContainerRef,
@@ -28,8 +27,7 @@ const Scroller = ({
 }) => {
 
   const [page, setPage] = useState(0);
-  const meta = useMemo(() => loadPage ? undefined : setSyncValueMetaTotalCounts(value, metaProp), [loadPage, value, metaProp]);
-  //console.log(meta)
+
   // TODO: think about server side meta loading
   const visibleMetaPages = useBufferedPages({
     value: ( meta && meta.children ) || [],
@@ -93,7 +91,7 @@ const Scroller = ({
 Scroller.propTypes = {
   meta: PropTypes.shape({
     isLoading: PropTypes.bool,
-    totalCount: PropTypes.number,
+    totalCount: PropTypes.number.isRequired,
     size: PropTypes.number,
     expanded: PropTypes.bool,
     children: PropTypes.arrayOf(PropTypes.object)

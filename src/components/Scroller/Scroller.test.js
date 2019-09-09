@@ -21,6 +21,7 @@ describe('StaticScroller', () => {
       const sourceValue = [{}, {}];
       mount((
         <TestComponent
+            meta={{ totalCount: 2 }}
             value={sourceValue}
             defaultSize={20}
             itemsPerPage={1}>
@@ -42,6 +43,7 @@ describe('StaticScroller', () => {
       const sourceValue = [{}, {}, {}, {}];
       const wrapper = mount((
         <TestComponent
+            meta={{ totalCount: 4 }}
             value={sourceValue}
             defaultSize={20}
             itemsPerPage={1}>
@@ -68,6 +70,7 @@ describe('StaticScroller', () => {
       const sourceValue = [{}, {}, {}, {}];
       const wrapper = mount((
         <TestComponent
+            meta={{ totalCount: 4 }}
             value={sourceValue}
             defaultSize={20}
             itemsPerPage={1}
@@ -89,9 +92,6 @@ describe('StaticScroller', () => {
         end: 40
       });
     });
-
-    // TODO:
-    it.skip('Does not update on negative scroll value', () => {});
 
   });
 

@@ -6,35 +6,6 @@ export const getItemsOnPage = (page, itemsPerPage, totalCount) => {
   return page < totalPages - 1 ? itemsPerPage : totalCount - (page * itemsPerPage);
 };
 
-const childrenHaveValues = children => children.length && children.some(child => child !== undefined);
-
-export const setSyncValueMetaTotalCounts = (value, meta = { totalCount: 0 }) => {
-  return Object.entries(meta).reduce((acc, [metaKey, metaValue]) => {
-    const children = value.reduce((acc, valueItem, index) => {
-      const curMeta = meta.children && meta.children[index];
-      let result;
-      if (valueItem.children) {
-        result = {
-          ...curMeta,
-          totalCount: valueItem.children.length
-        };
-        const children = setSyncValueMetaTotalCounts(valueItem.children, curMeta);
-        if (childrenHaveValues(children)) result.children = children;
-      } else {
-        result = curMeta;
-      }
-      return [...acc, result];
-    }, []);
-    const result = {
-      ...acc,
-      [metaKey]: metaValue,
-      totalCount: value.length
-    };
-    if (childrenHaveValues(children)) result.children = children;
-    return result;
-  }, {});
-};
-
 const getSelfSize = (meta, defaultSize) => (meta && meta.size) || defaultSize;
 
 const getChilrenSize = (meta, defaultSize) => {

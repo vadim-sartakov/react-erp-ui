@@ -1,6 +1,5 @@
 import {
   getItemsOnPage,
-  setSyncValueMetaTotalCounts,
   getScrollPages,
   getPageNumberFromScrollPages,
   getPageNumberWithDefaultSize,
@@ -16,102 +15,6 @@ describe('Scroller utils', () => {
     });
     it('last page', () => {
       expect(getItemsOnPage(3, 10, 35)).toBe(5);
-    });
-  });
-
-  describe('setSyncValueMetaTotalCounts', () => {
-    it('generates meta object and sets sync value total counts when no initial meta specified', () => {
-      const value = [
-        {},
-        {
-          children: [
-            {},
-            {}
-          ]
-        },
-        {}
-      ]
-      expect(setSyncValueMetaTotalCounts(value)).toEqual({
-        totalCount: 3,
-        children: [
-          undefined,
-          { totalCount: 2 },
-          undefined
-        ]
-      });
-    });
-
-    it('preserves meta internal data if specified', () => {
-      const meta = {
-        totalCount: 5,
-        children: [
-          { size: 100 },
-          {
-            size: 50,
-            expanded: true
-          },
-          { size: 80 }
-        ]
-      };
-      const value = [
-        {},
-        {
-          children: [
-            {},
-            {}
-          ]
-        },
-        {}
-      ]
-      expect(setSyncValueMetaTotalCounts(value, meta)).toEqual({
-        totalCount: 3,
-        children: [
-          { size: 100 },
-          {
-            size: 50,
-            expanded: true,
-            totalCount: 2
-          },
-          { size: 80 }
-        ]
-      });
-    });
-
-    it('deep nested item', () => {
-      const value = [
-        {},
-        {
-          children: [
-            {
-              children: [{}, {}]
-            },
-            {}
-          ]
-        },
-        {}
-      ]
-      expect(setSyncValueMetaTotalCounts(value)).toEqual({
-        totalCount: 3,
-        children: [
-          undefined,
-          {
-            totalCount: 2,
-            children: [{ totalCount: 2 }, undefined]
-          },
-          undefined
-        ]
-      });
-    });
-
-    it('empty children not included', () => {
-      const value = [
-        {},
-        {},
-        {}
-      ]
-      expect(setSyncValueMetaTotalCounts(value)).toEqual({
-        totalCount: 3
-      });
     });
   });
 
