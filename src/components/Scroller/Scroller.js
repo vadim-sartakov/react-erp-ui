@@ -27,7 +27,7 @@ const Scroller = ({
 }) => {
 
   const [page, setPage] = useState(0);
-
+  //console.log('relativeScroll = %s, page = %s', relativeScroll, page);
   // TODO: think about server side meta loading
   const visibleMetaPages = useBufferedPages({
     value: ( meta && meta.children ) || [],
@@ -60,10 +60,12 @@ const Scroller = ({
     if (meta && meta.children && meta.children.length) {
       const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
       currentPage = getPageNumberFromScrollPages(scrollPages, scroll);
+      //console.log('relativeScroll = %s, scroll = %s, currentPage = %s, scrollPages = %o', relativeScroll, scroll, currentPage/*, scrollPages*/);
     } else {
       currentPage = getPageNumberWithDefaultSize({ defaultSize, itemsPerPage, scroll, totalCount: meta.totalCount });
+      //console.log('relativeScroll = %s, scroll = %s, currentPage = %s', relativeScroll, scroll, currentPage);
     }
-    if (page !== currentPage && currentPage !== -1) setPage(currentPage);
+    if (page !== currentPage) setPage(currentPage);
   }, [meta, page, defaultSize, itemsPerPage, scrollDirection, relativeScroll]);
 
   useEffect(() => {

@@ -78,11 +78,20 @@ export const getPageNumberFromScrollPages = (scrollPages, scroll = 0) => {
     const isInRange = inRange(scroll, page);
     if (!isInRange) return acc;
 
-    const onChildren = page.children && page.children.some(child => inRange(scroll, child));
-    if (onChildren) return acc;
-
     const pageSize = page.end - page.start;
     const pageHalf = pageSize / 2;
+
+    const pageFromChildren = page.children && page.children.reduce((acc, child) => {
+      if (acc !== -1) return acc;
+
+      if (inRange(scroll, child)) {
+        return child.start < pageHalf ? index : index + 1;
+      }
+
+      return acc;
+    }, -1);
+    if (pageFromChildren !== undefined && pageFromChildren !== -1) return pageFromChildren;
+
     return scroll > pageHalf ? index + 1 : index;
   }, -1);
   return currentPage;

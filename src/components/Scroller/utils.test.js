@@ -184,12 +184,20 @@ describe('Scroller utils', () => {
       expect(getPageNumberFromScrollPages(scrollPages, 15)).toBe(1);
     });
 
-    it('returns -1 when scrolled on children', () => {
+    it('returns current page when scrolled on children which starts in page\'s first half', () => {
       const scrollPages = [
-        { start: 0, end: 20, children: [{ start: 10, end: 20 }] },
+        { start: 0, end: 20, children: [{ start: 2, end: 15 }] },
         { start: 20, end: 40 }
       ];
-      expect(getPageNumberFromScrollPages(scrollPages, 15)).toBe(-1);
+      expect(getPageNumberFromScrollPages(scrollPages, 5)).toBe(0);
+    });
+
+    it('returns next page when scrolled on children which starts in page\'s second half', () => {
+      const scrollPages = [
+        { start: 0, end: 20, children: [{ start: 15, end: 20 }] },
+        { start: 20, end: 40 }
+      ];
+      expect(getPageNumberFromScrollPages(scrollPages, 15)).toBe(1);
     });
 
     it('returns initial page - 0 on negative scroll', () => {
