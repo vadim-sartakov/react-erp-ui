@@ -24,7 +24,7 @@ describe('useBufferedPages', () => {
 
   describe('sync', () => {
 
-    it('loads initial page 0', () => {
+    it('should load initial page 0 and call load page only once', () => {
       const value = createValues(100);
       const spy = jest.spyOn(value, 'slice');
       const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} />);
@@ -35,7 +35,7 @@ describe('useBufferedPages', () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('srolls from page 0 to 1', () => {
+    it('should load 2 pages and call load page 2 times when srolling from page 0 to 1', () => {
       const value = createValues(100);
       const spy = jest.spyOn(value, 'slice');
       const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} />);
@@ -47,7 +47,7 @@ describe('useBufferedPages', () => {
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
-    it('srolls from page 1 to 2', () => {
+    it('should load 3 pages when srolling from page 1 to 2', () => {
       const value = createValues(100);
       const spy = jest.spyOn(value, 'slice');
       const wrapper = mount(<TestComponent value={value} page={1} itemsPerPage={20} />);
@@ -59,7 +59,7 @@ describe('useBufferedPages', () => {
       expect(spy).toHaveBeenCalledTimes(3);
     });
 
-    it('srolls to last page', () => {
+    it('should correctly sroll to last page', () => {
       const value = createValues(90);
       const spy = jest.spyOn(value, 'slice');
       const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} />);
@@ -71,7 +71,7 @@ describe('useBufferedPages', () => {
       expect(spy).toHaveBeenCalledTimes(3);
     });
 
-    it('scrolls from page 1 to 2 and back to 1', () => {
+    it('should reuse cache when scrolling from page 1 to 2 and back to 1', () => {
       const value = createValues(100);
       const spy = jest.spyOn(value, 'slice');
       const wrapper = mount(<TestComponent value={value} page={1} itemsPerPage={20} />);
@@ -84,7 +84,7 @@ describe('useBufferedPages', () => {
       expect(spy).toHaveBeenCalledTimes(3);
     });
 
-    it('reusing and cleans cache when scrolling', () => {
+    it('should use cache and clean it when scrolling forward', () => {
       const value = createValues(100);
       const spy = jest.spyOn(value, 'slice');
       const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} />);
@@ -99,7 +99,7 @@ describe('useBufferedPages', () => {
 
   describe('async', () => {
 
-    it('loads initial page 0', async () => {
+    it('should load initial page 0 and call load page only once', async () => {
       const loadPage = jest.fn(async () => [...new Array(20).keys()]);
       let wrapper;
       await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={0} itemsPerPage={20} totalCount={100} />); });
@@ -108,7 +108,7 @@ describe('useBufferedPages', () => {
       expect(loadPage).toHaveBeenCalledTimes(1);
     });
 
-    it('initialy loading 0 and 1 pages', () => {
+    it('should load pages 0 and 1 with \'isLoading\' property when current page is 1', () => {
       const loadPage = jest.fn(async () => {});
       const wrapper = shallow(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} totalCount={100} />);
       const result = JSON.parse(wrapper.find('div').text());
@@ -118,7 +118,7 @@ describe('useBufferedPages', () => {
       expect(result[1].value[0]).toHaveProperty('isLoading', true);
     });
 
-    it('scrolls from page 0 to 1', async () => {
+    it('should correctly scroll from page 0 to 1', async () => {
       const loadPage = jest.fn(async () => [...new Array(20).keys()]);
       let wrapper;
       await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={0} itemsPerPage={20} totalCount={80} />); });
@@ -128,7 +128,7 @@ describe('useBufferedPages', () => {
       expect(loadPage).toHaveBeenCalledTimes(2);
     });
 
-    it('scrolls from page 1 to 2', async () => {
+    it('should corrently scroll from page 1 to 2', async () => {
       const loadPage = jest.fn(async () => [...new Array(20).keys()]);
       let wrapper;
       await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} totalCount={80} />); });
@@ -138,7 +138,7 @@ describe('useBufferedPages', () => {
       expect(loadPage).toHaveBeenCalledTimes(3);
     });
 
-    it('scrolls from page 1 to 2 and back to 1', async () => {
+    it('should reuse cache and call loadPage only 3 times when scrolling from page 1 to 2 and back to 1', async () => {
       const loadPage = jest.fn(async () => ({ totalCount: 80, value: [...new Array(20).keys()] }));
       let wrapper;
       await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} totalCount={80} />); });
@@ -149,7 +149,7 @@ describe('useBufferedPages', () => {
       expect(loadPage).toHaveBeenCalledTimes(3);
     });
 
-    it('reuses and cleans cache when scrolling', async () => {
+    it('should reuse and clean cache when scrolling', async () => {
       const loadPage = jest.fn(async () => [...new Array(20).keys()]);
       let wrapper;
       await act(async () => {
