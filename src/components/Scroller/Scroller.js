@@ -82,13 +82,13 @@ Scroller.propTypes = {
   itemsPerPage: PropTypes.number.isRequired,
   scroll: PropTypes.number.isRequired,
 
-  /**
+  /*
    * Component functions in 2 modes: Dynamic and static.
    * Static involves traversing the columns and rows tree while
    * dynamic fetches the data with 'loadPage' callback relying on children count property of rows and columns meta.
-   * */
+  */
   value: PropTypes.any,
-  /** (page, size) => array */
+  /* (page, size) => array */
   loadPage: PropTypes.func
 };
 

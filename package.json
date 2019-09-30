@@ -15,7 +15,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "build-docs": "jsdoc -r src -d docs"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -39,6 +40,7 @@
     "@storybook/react": "^5.1.11",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
+    "jsdoc": "^3.6.3",
     "node-sass": "^4.12.0",
     "react-scripts": "3.1.1"
   }

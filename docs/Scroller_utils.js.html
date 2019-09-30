@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Scroller/utils.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Scroller/utils.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>export const getVisiblePages = page => page === 0 ? [0] : [page - 1, page];
+export const getTotalPages = (totalCount, itemsPerPage) => Math.ceil(totalCount / itemsPerPage);
+
+export const getItemsCountOnPage = (page, itemsPerPage, totalCount) => {
+  if (page === undefined) return 0;
+  const totalPages = getTotalPages(totalCount, itemsPerPage);
+  return page &lt; totalPages - 1 ? itemsPerPage : totalCount - (page * itemsPerPage);
+};
+
+const getSelfSize = (meta, defaultSize) => (meta &amp;&amp; meta.size) || defaultSize;
+
+const getChilrenSize = (meta, defaultSize) => {
+  if (meta &amp;&amp; meta.expanded) {
+    const values = [...new Array(meta.totalCount).keys()];
+    const size = values.reduce((acc, arrayItem, index) => {
+      const metaChild = meta.children &amp;&amp; meta.children[index];
+      let result = acc;
+      const selfSize = getSelfSize(metaChild, defaultSize);
+      result += selfSize;
+      const childrenSize = metaChild &amp;&amp; metaChild.children ? getChilrenSize(metaChild, defaultSize) : 0;
+      return result + childrenSize;
+    }, 0);
+    return size;
+  } else {
+    return 0;
+  }
+};
+
+/**
+ * Creates scroll page object structure
+ * It helps to find current page depending on scroll position
+ * @param {*} meta 
+ * @param {*} defaultSize 
+ * @param {*} itemsPerPage 
+ */
+export const getScrollPages = (meta, defaultSize, itemsPerPage) => {
+  const values = [...new Array(meta.totalCount).keys()];
+  const result = values.reduce(({ curPage, pages }, arrayItem, index, values) => {
+    const metaChild = meta.children[index];
+
+    const selfSize = getSelfSize(metaChild, defaultSize);
+    const childrenSize = getChilrenSize(metaChild, defaultSize);
+    const isNextPage = index > 0 &amp;&amp; index % itemsPerPage === 0;
+    
+    let nextPages = isNextPage ? [...pages, curPage] : pages;
+    const nextCurPage = {
+      ...curPage,
+      end: curPage.end + selfSize + childrenSize
+    };
+    if (isNextPage) {
+      nextCurPage.start = curPage.end;
+      delete nextCurPage.children
+    }
+    if (childrenSize) {
+      nextCurPage.children = [
+        ...(curPage.children || []),
+        {
+          start: curPage.end + selfSize,
+          end: curPage.end + selfSize + childrenSize
+        }
+      ];
+    }
+    if (index === values.length - 1) nextPages = [...nextPages, nextCurPage];
+    return {
+      curPage: nextCurPage,
+      pages: nextPages
+    }
+  }, {
+    curPage: { start: 0, end: 0 },
+    pages: []
+  });
+  return result.pages;
+};
+
+const inRange = (scroll, range) => scroll >= range.start &amp;&amp; scroll &lt; range.end;
+
+export const getPageNumberFromScrollPages = (scrollPages, scroll = 0) => {
+  if (scroll &lt; 0) return 0;
+
+  const lastPageIndex = scrollPages.length - 1;
+  if (scroll > scrollPages[lastPageIndex].end) return lastPageIndex;
+
+  const currentPage = scrollPages.reduce((acc, page, index) => {
+    if (acc !== -1) return acc;
+
+    const isInRange = inRange(scroll, page);
+    if (!isInRange) return acc;
+
+    const pageSize = page.end - page.start;
+    const pageHalf = pageSize / 2;
+
+    const pageFromChildren = page.children &amp;&amp; page.children.reduce((acc, child) => {
+      if (acc !== -1) return acc;
+
+      if (inRange(scroll, child)) {
+        return child.start &lt; pageHalf ? index : index + 1;
+      }
+
+      return acc;
+    }, -1);
+    if (pageFromChildren !== undefined &amp;&amp; pageFromChildren !== -1) return pageFromChildren;
+
+    return scroll > pageHalf ? index + 1 : index;
+  }, -1);
+  return currentPage;
+};
+
+export const getPageNumberWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, scroll }) => {
+  if (scroll &lt; 0) return 0;
+  const totalPages = getTotalPages(totalCount, itemsPerPage);
+  const pageSize = defaultSize * itemsPerPage;
+  const page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
+  return Math.min(totalPages - 1, page);
+};
+
+export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, page }) => {
+  const pageSize = defaultSize * itemsPerPage;
+  const visiblePages = getVisiblePages(page);
+  const startSectionSize = visiblePages[0] * pageSize;
+  const totalSize = totalCount * defaultSize;
+  const visibleItems =
+      getItemsCountOnPage(visiblePages[0], itemsPerPage, totalCount) +
+      getItemsCountOnPage(visiblePages[1], itemsPerPage, totalCount);
+  const visibleSectionSize = visibleItems * defaultSize;
+  const endSectionSize = totalSize - (startSectionSize + visibleSectionSize);
+  return {
+    start: startSectionSize,
+    end: endSectionSize
+  };
+};
+
+const gapsReducer = (acc, scrollPage) => acc + (scrollPage.end - scrollPage.start);
+
+export const getGapsFromScrollPages = (scrollPages, page) => {
+  const visiblePages = getVisiblePages(page);
+  const startSectionSize = scrollPages.slice(0, visiblePages[0]).reduce(gapsReducer, 0);
+  const endSectionSize = scrollPages.slice((visiblePages[1] || 0) + 1, scrollPages.length).reduce(gapsReducer, 0);
+  return {
+    start: startSectionSize,
+    end: endSectionSize
+  }
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#getScrollPages">getScrollPages</a></li><li><a href="global.html#useResize">useResize</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Sep 30 2019 15:13:32 GMT+0500 (GMT+05:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
