@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { getItemsOnPage, getVisiblePages } from './utils';
+import { getItemsCountOnPage, getVisiblePages } from './utils';
 
 export const loadPageSync = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 const getCacheValue = (cache, page) => cache.current.find(item => item && item.page === page);
@@ -13,7 +13,7 @@ const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, cac
   const visiblePageNumbers = useMemo(() => getVisiblePages(page), [page]);
   const getLoadingPage = useCallback(page => {
     if (loadPage) {
-      const itemsOnPage = getItemsOnPage(page, itemsPerPage, totalCount);
+      const itemsOnPage = getItemsCountOnPage(page, itemsPerPage, totalCount);
       return [...new Array(itemsOnPage).keys()].map(() => ({ isLoading: true }));
     }
   }, [loadPage, itemsPerPage, totalCount]);

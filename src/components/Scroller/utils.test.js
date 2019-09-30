@@ -1,5 +1,5 @@
 import {
-  getItemsOnPage,
+  getItemsCountOnPage,
   getScrollPages,
   getPageNumberFromScrollPages,
   getPageNumberWithDefaultSize,
@@ -9,18 +9,18 @@ import {
 
 describe('Scroller utils', () => {
   
-  describe('getItemsOnPage', () => {
-    it('middle page', () => {
-      expect(getItemsOnPage(1, 10, 35)).toBe(10);
+  describe('getItemsCountOnPage', () => {
+    it('should return items per page count on middle page', () => {
+      expect(getItemsCountOnPage(1, 10, 35)).toBe(10);
     });
-    it('last page', () => {
-      expect(getItemsOnPage(3, 10, 35)).toBe(5);
+    it('should return only remained items on last page', () => {
+      expect(getItemsCountOnPage(3, 10, 35)).toBe(5);
     });
   });
 
   describe('getScrollPages', () => {
 
-    it('expanded second item', () => {
+    it('should include children with default size when second item is expanded and has no custom size', () => {
       const meta = {
         totalCount: 3,
         children: [
@@ -39,7 +39,7 @@ describe('Scroller utils', () => {
       ]);
     });
 
-    it('expanded item in the end', () => {
+    it('should correctly include children with default size when item is expanded at the end', () => {
       const meta = {
         totalCount: 4,
         children: [
@@ -59,7 +59,7 @@ describe('Scroller utils', () => {
       ]);
     });
 
-    it('multiple expanded per page', () => {
+    it('should include multiple children per page when multiple items expanded', () => {
       const meta = {
         totalCount: 3,
         children: [
@@ -81,7 +81,7 @@ describe('Scroller utils', () => {
       ]);
     });
 
-    it('expanded second nested item should be twice bigger', () => {
+    it('should extend child range when second nested item is expanded', () => {
       const meta = {
         totalCount: 3,
         children: [
@@ -106,7 +106,7 @@ describe('Scroller utils', () => {
       ]);
     });
 
-    it('second page should be with longer scroll range when custom size specified', () => {
+    it('should return longer range when custom suze specified', () => {
       const meta = {
         totalCount: 3,
         children: [
@@ -122,7 +122,7 @@ describe('Scroller utils', () => {
       ]);
     });
 
-    it('second page should be with longer scroll range when custom size specified and expanded', () => {
+    it('should have longer range when when custom size specified and item expanded', () => {
       const meta = {
         totalCount: 3,
         children: [
@@ -143,7 +143,7 @@ describe('Scroller utils', () => {
       ]);
     });
 
-    it('second page should be with longer scroll range when custom size specified for self and expanded items', () => {
+    it('should have longer range when custom size specified for self and expanded items', () => {
       const meta = {
         totalCount: 3,
         children: [
@@ -168,7 +168,7 @@ describe('Scroller utils', () => {
 
   describe('getPageNumberFromScrollPages', () => {
 
-    it('returns initial page - 0 on scroll 0', () => {
+    it('should return initial page - 0 on scroll 0', () => {
       const scrollPages = [
         { start: 0, end: 20 },
         { start: 20, end: 40 }
@@ -176,7 +176,7 @@ describe('Scroller utils', () => {
       expect(getPageNumberFromScrollPages(scrollPages, 0)).toBe(0);
     });
 
-    it('returns next page when scrolled half of current', () => {
+    it('should return next page when scrolled half of current', () => {
       const scrollPages = [
         { start: 0, end: 20 },
         { start: 20, end: 40 }
@@ -184,7 +184,7 @@ describe('Scroller utils', () => {
       expect(getPageNumberFromScrollPages(scrollPages, 15)).toBe(1);
     });
 
-    it('returns current page when scrolled on children which starts in page\'s first half', () => {
+    it('should return current page when scrolled on children which starts in page\'s first half', () => {
       const scrollPages = [
         { start: 0, end: 20, children: [{ start: 2, end: 15 }] },
         { start: 20, end: 40 }
@@ -192,7 +192,7 @@ describe('Scroller utils', () => {
       expect(getPageNumberFromScrollPages(scrollPages, 5)).toBe(0);
     });
 
-    it('returns next page when scrolled on children which starts in page\'s second half', () => {
+    it('should return next page when scrolled on children which starts in page\'s second half', () => {
       const scrollPages = [
         { start: 0, end: 20, children: [{ start: 15, end: 20 }] },
         { start: 20, end: 40 }
@@ -200,7 +200,7 @@ describe('Scroller utils', () => {
       expect(getPageNumberFromScrollPages(scrollPages, 15)).toBe(1);
     });
 
-    it('returns initial page - 0 on negative scroll', () => {
+    it('should return initial page - 0 on negative scroll', () => {
       const scrollPages = [
         { start: 0, end: 20 },
         { start: 20, end: 40 }
@@ -208,7 +208,7 @@ describe('Scroller utils', () => {
       expect(getPageNumberFromScrollPages(scrollPages, -20)).toBe(0);
     });
 
-    it('returns last page when next page is more than page count', () => {
+    it('should return last page when next page is more than page count', () => {
       const scrollPages = [
         { start: 0, end: 20 },
         { start: 20, end: 40 }
@@ -216,7 +216,7 @@ describe('Scroller utils', () => {
       expect(getPageNumberFromScrollPages(scrollPages, 200)).toBe(1);
     });
 
-    it('returns last page when scroll value is more than the whole scroll range size', () => {
+    it('should return last page when scroll value is more than the whole scroll range size', () => {
       const scrollPages = [
         { start: 0, end: 20 },
         { start: 20, end: 40 }
