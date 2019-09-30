@@ -38,14 +38,14 @@ describe('useResize', () => {
       document.dispatchEvent(new MouseEvent('mousemove', { clientX: 50, clientY: 0 }));
     });
     wrapper.update();
-    expect(wrapper.find('div').prop('style')).toEqual({ width: 150, height: 100 });
+    expect(wrapper.find('div').prop('style')).toEqual({ width: 150, height: 75 });
   });
 
   it('should preserve aspect ratio when desreasing size and preserveAspectRatio set to true', () => {
     const wrapper = mount(<TestComponent startingSizes={{ width: 50, height: 100 }} preserveAspectRatio />);
-    wrapper.find('div').simulate('mousedown', { clientX: 0, clientY: 0 });
+    wrapper.find('div').simulate('mousedown', { clientX: 50, clientY: 50 });
     act(() => {
-      document.dispatchEvent(new MouseEvent('mousemove', { clientX: 0, clientY: -50 }));
+      document.dispatchEvent(new MouseEvent('mousemove', { clientX: 0, clientY: 0 }));
     });
     wrapper.update();
     expect(wrapper.find('div').prop('style')).toEqual({ width: 25, height: 50 });

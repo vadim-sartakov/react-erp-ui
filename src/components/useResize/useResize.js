@@ -39,14 +39,21 @@ const useResize = ({ sizes, onSizesChange, preserveAspectRatio }) => {
         const diffX = event.clientX - interaction.startCoordinates.x;
         const diffY = event.clientY - interaction.startCoordinates.y;
 
-        let nextWidth = interaction.startSizes.width + (preserveAspectRatio ? Math.max(diffX, diffY) : diffX);
-        let nextHeight = interaction.startSizes.height + (preserveAspectRatio ? Math.max(diffX, diffY) : diffY);
+        let nextWidth = interaction.startSizes.width + diffX;
+        let nextHeight = interaction.startSizes.height + diffY;
 
-        const nextSizes =
-            {
-              width: nextWidth,
-              height: nextHeight
-            };
+        if (preserveAspectRatio) {
+          const widthRatio = nextWidth / interaction.startSizes.width;
+          const heightRatio = nextHeight / interaction.startSizes.height;
+          const maxRatio = Math.max(widthRatio, heightRatio);
+          nextWidth = interaction.startSizes.width * maxRatio;
+          nextHeight = interaction.startSizes.height * maxRatio;
+        }
+
+        const nextSizes = {
+          width: nextWidth,
+          height: nextHeight
+        };
         onSizesChange(nextSizes);
       }
     };
