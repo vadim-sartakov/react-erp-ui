@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { act } from 'react-dom/test-utils';
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import Scroller from './Scroller';
 
 const TestComponent = props => {
@@ -12,13 +12,13 @@ const TestComponent = props => {
   )
 };
 
-describe('StaticScroller', () => {
+describe('Scroller', () => {
 
-  describe('with default sizes', () => {
+  describe('sync', () => {
 
-    it('initial scroll', () => {
+    it('should call child with correct arguments on initial scroll without meta', () => {
       const children = jest.fn();
-      const sourceValue = [{}, {}];
+      const sourceValue = [0, 1];
       mount((
         <TestComponent
             scroll={0}
@@ -32,6 +32,7 @@ describe('StaticScroller', () => {
       const { value, meta, gaps } = children.mock.calls[0][0];
 
       expect(value.length).toBe(1);
+      expect(value[0]).toBe(0);
       expect(meta).toEqual([]);
       expect(gaps).toEqual({
         start: 0,
@@ -39,13 +40,13 @@ describe('StaticScroller', () => {
       });
     });
 
-    it('page 2', () => {
+    it('should call child with correct arguments on middle-scroll and meta included', () => {
       const children = jest.fn();
-      const sourceValue = [{}, {}, {}, {}];
+      const sourceValue = [0, 1, 2, 3];
       mount((
         <TestComponent
-            scroll={40}
-            meta={{ totalCount: 4 }}
+            scroll={30}
+            meta={{ totalCount: 4, children: [{}, {}, { size: 20 }, {}] }}
             value={sourceValue}
             defaultSize={20}
             itemsPerPage={1}>
@@ -53,9 +54,10 @@ describe('StaticScroller', () => {
         </TestComponent>
       ));
       const { value, meta, gaps } = children.mock.calls[0][0];
-
       expect(value.length).toBe(2);
-      expect(meta).toEqual([]);
+      expect(value[0]).toBe(1);
+      expect(value[1]).toBe(2);
+      expect(meta).toEqual([{}, { size: 20 }]);
       expect(gaps).toEqual({
         start: 20,
         end: 20
@@ -64,52 +66,33 @@ describe('StaticScroller', () => {
 
   });
 
-  describe.skip('with specific sizes', () => {
+  describe('async', () => {
 
-    it('renders page 0 and end paddings with initial scroll, specific sizes and flat source objects', () => {
+    it('should render loading page and then set loaded data', async () => {
       const children = jest.fn();
-      const rowHeights = [
-        { size: 10 },
-        { size: 20 }
-      ];
-      const columnsWidths = [
-        { size: 80 },
-        { size: 100 }
-      ];
-      shallow((
-        <Scroller
-            rowHeights={rowHeights}
-            columnsWidths={columnsWidths}
-            rowsPerPage={1}
-            columnsPerPage={1}>
-          {children}
-        </Scroller>
-      ));
-      expect(children).toBeCalledTimes(1);
-      const { rowsMeta, columnsMeta, rootStyle } = children.calls[0][0];
-      expect(rowsMeta).toEqual({
-        page: 0,
-        children: [
-          { size: 10 },
-          { size: 20 }
-        ]
+      const loadPage = jest.fn(async () => [0, 1, 2]);
+      await act(async () => {
+        mount((
+          <TestComponent
+              scroll={0}
+              meta={{ totalCount: 4 }}
+              loadPage={loadPage}
+              defaultSize={20}
+              itemsPerPage={3}>
+            {children}
+          </TestComponent>
+        ));
       });
-      expect(columnsMeta).toEqual({
-        page: 0,
-        children: [
-          { size: 80 },
-          { size: 100 }
-        ]
-      });
-      expect(rootStyle).toEqual({
-        marginLeft: -20,
-        merginBottom: 20
-      });
+      const { value: loadingValue } = children.mock.calls[0][0];
+      expect(loadingValue.length).toBe(3);
+      expect(loadingValue[0].isLoading).toBeTruthy();
+      expect(loadingValue[2].isLoading).toBeTruthy();
+
+      const { value } = children.mock.calls[2][0];
+      expect(value.length).toBe(3);
+      expect(value[0]).toBe(0);
+      expect(value[2]).toBe(2);
     });
-
-  });
-
-  describe.skip('mixed specific sizes and default sizes', () => {
 
   });
     

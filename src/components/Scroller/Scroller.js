@@ -62,7 +62,7 @@ const Scroller = ({
 
   const visibleValue = visiblePages.reduce(visibleValuesReducer, []);
   const visibleMeta = visibleMetaPages.reduce(visibleValuesReducer, []);
-  
+
   return (
     <>
       {children({ value: visibleValue, meta: visibleMeta, gaps })}
@@ -87,7 +87,7 @@ Scroller.propTypes = {
    * Static involves traversing the columns and rows tree while
    * dynamic fetches the data with 'loadPage' callback relying on children count property of rows and columns meta.
    * */
-  value: PropTypes.arrayOf(PropTypes.object),
+  value: PropTypes.any,
   /** (page, size) => array */
   loadPage: PropTypes.func
 };
