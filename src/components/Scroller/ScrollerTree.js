@@ -6,12 +6,13 @@ const ScrollerTree = ({
   meta: sourceMeta,
   depth = 0,
   renderGap,
-  relativeScroll,
+  scroll = 0,
+  relativeScroll = 0,
   children,
   ...props
 }) => {
   return (
-    <Scroller {...props} value={sourceValue} meta={sourceMeta} relativeScroll={relativeScroll}>
+    <Scroller {...props} value={sourceValue} meta={sourceMeta} scroll={scroll - relativeScroll}>
       {({ value: visibleValue, meta: curVisibleMeta, gaps }) => {
         let nestedRelativeScroll = gaps.start + relativeScroll;
         return (
@@ -29,9 +30,9 @@ const ScrollerTree = ({
                       value={curVisibleValue.children}
                       meta={curMeta}
                       depth={depth + 1}
+                      scroll={scroll}
                       relativeScroll={nestedRelativeScroll}
-                      renderGap={renderGap}
-                      {...props}>
+                      renderGap={renderGap}>
                     {children}
                   </ScrollerTree>
                 </React.Fragment>    
@@ -43,10 +44,6 @@ const ScrollerTree = ({
       }}
     </Scroller>
   );
-};
-
-ScrollerTree.defaultProps = {
-  relativeScroll: 0
 };
 
 export default ScrollerTree;

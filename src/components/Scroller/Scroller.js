@@ -9,18 +9,11 @@ import {
   getGapsWithDefaultSize
 } from './utils';
 
-const directionToScrollEventMap = {
-  vertical: 'top',
-  horizontal: 'left'
-};
-
 const Scroller = ({
-  scroll: scrollProp,
+  scroll,
   meta,
   defaultSize,
   itemsPerPage,
-  scrollDirection,
-  relativeScroll,
   value,
   loadPage,
   children  
@@ -37,7 +30,6 @@ const Scroller = ({
     return currentPage;
   }, [meta, defaultSize, itemsPerPage]);
 
-  const scroll = scrollProp[directionToScrollEventMap[scrollDirection]] - relativeScroll;
   const page = useMemo(() => getPage(scroll), [scroll, getPage]);
 
   // TODO: think about server side meta loading
@@ -88,13 +80,7 @@ Scroller.propTypes = {
   }),
   defaultSize: PropTypes.number.isRequired,
   itemsPerPage: PropTypes.number.isRequired,
-  scroll: PropTypes.shape({
-    top: PropTypes.number.isRequired,
-    left: PropTypes.number.isRequired
-  }).isRequired,
-  /** Offsets relative to scroll container */
-  relativeScroll: PropTypes.number,
-  scrollDirection: PropTypes.oneOf(['horizontal', 'vertical']).isRequired,
+  scroll: PropTypes.number.isRequired,
 
   /**
    * Component functions in 2 modes: Dynamic and static.

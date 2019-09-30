@@ -43,7 +43,7 @@ const Table = ({
               scrollContainerRef={scrollerRef}
               relativeScroll={80}
               renderGap={height => <tr style={{ height }} />}
-              scroll={scroll}>
+              scroll={scroll.top}>
                                   {/*Row loading supposed to be here, in meta*/}
             {({ index, value: rowValue, meta: rowMeta, depth, isGroup }) => rowValue.isLoading ? (
               <tr key={index} style={{ height: 50 }}>

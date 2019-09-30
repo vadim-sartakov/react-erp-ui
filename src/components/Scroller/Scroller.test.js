@@ -21,7 +21,7 @@ describe('StaticScroller', () => {
       const sourceValue = [{}, {}];
       mount((
         <TestComponent
-            scroll={{ top: 0, left: 0 }}
+            scroll={0}
             meta={{ totalCount: 2 }}
             value={sourceValue}
             defaultSize={20}
@@ -44,7 +44,7 @@ describe('StaticScroller', () => {
       const sourceValue = [{}, {}, {}, {}];
       mount((
         <TestComponent
-            scroll={{ top: 40, left: 0 }}
+            scroll={40}
             meta={{ totalCount: 4 }}
             value={sourceValue}
             defaultSize={20}
@@ -59,30 +59,6 @@ describe('StaticScroller', () => {
       expect(gaps).toEqual({
         start: 20,
         end: 20
-      });
-    });
-
-    it('related scroll', () => {
-      const children = jest.fn();
-      const sourceValue = [{}, {}, {}, {}];
-      mount((
-        <TestComponent
-            scroll={{ top: 120, left: 0 }}
-            meta={{ totalCount: 4 }}
-            value={sourceValue}
-            defaultSize={20}
-            itemsPerPage={1}
-            relativeScroll={100}>
-          {children}
-        </TestComponent>
-      ));
-      const { value, meta, gaps } = children.mock.calls[0][0];
-
-      expect(value.length).toBe(2);
-      expect(meta).toEqual([]);
-      expect(gaps).toEqual({
-        start: 0,
-        end: 40
       });
     });
 
