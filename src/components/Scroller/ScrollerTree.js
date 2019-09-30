@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Scroller from './Scroller';
 
 const ScrollerTree = ({
@@ -7,31 +8,31 @@ const ScrollerTree = ({
   depth = 0,
   renderGap,
   scroll = 0,
-  relativeScroll = 0,
+  relativePosition = 0,
   children,
   ...props
 }) => {
   return (
-    <Scroller {...props} value={sourceValue} meta={sourceMeta} scroll={scroll - relativeScroll}>
+    <Scroller {...props} value={sourceValue} meta={sourceMeta} scroll={scroll - relativePosition}>
       {({ value: visibleValue, meta: curVisibleMeta, gaps }) => {
-        let nestedRelativeScroll = gaps.start + relativeScroll;
+        let nestedRelativePosition = gaps.start + relativePosition;
         return (
           <>
             {gaps.start ? renderGap(gaps.start) : null}
             {visibleValue.map((curVisibleValue, index) => {
               const curMeta = curVisibleMeta[index];
-              nestedRelativeScroll += (curMeta && curMeta.size) || props.defaultSize;
+              nestedRelativePosition += (curMeta && curMeta.size) || props.defaultSize;
               const childrenProps = { index, value: curVisibleValue, meta: curMeta, depth };
               return curMeta && curMeta.expanded ? (
                 <React.Fragment key={index}>
-                  {children({ ...childrenProps, index, isGroup: true })}
+                  {children({ ...childrenProps, isGroup: true })}
                   <ScrollerTree
                       {...props}
                       value={curVisibleValue.children}
                       meta={curMeta}
                       depth={depth + 1}
                       scroll={scroll}
-                      relativeScroll={nestedRelativeScroll}
+                      relativePosition={nestedRelativePosition}
                       renderGap={renderGap}>
                     {children}
                   </ScrollerTree>
