@@ -40,7 +40,6 @@ const Table = ({
               meta={rows}
               itemsPerPage={rowsPerPage}
               defaultSize={defaultRowHeight}
-              scrollContainerRef={scrollerRef}
               relativeScroll={80}
               renderGap={height => <tr style={{ height }} />}
               scroll={scroll.top}>
