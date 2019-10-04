@@ -9,7 +9,7 @@ import {
   SpreadsheetColumnNumbersRow,
   SpreadsheetRowNumbersColumn
 } from './';
-import classes from './Spreadsheet.stories.module.sass';
+import classes from './Spreadsheet-stories.module.sass';
 
 const generateColumns = count => {
   return [...new Array(count).keys()].map(item => ({ title: `Column ${item}`, width: 200 }));
@@ -28,9 +28,11 @@ const value = generateValues(columns, 1000);
 const SpreadsheetComponent = () => {
   return (
     <Spreadsheet
+        columnsMeta={{ children: columns }}
         value={value}
         className={classes.root}
-        height={500}>
+        height={600}
+        rowNumbersColumnWidth={50}>
       <thead>
         <SpreadsheetColumnNumbersRow>
           <SpreadsheetRowNumbersColumn />
@@ -58,7 +60,7 @@ const SpreadsheetComponent = () => {
                   {({ index: columnIndex, value: cellValue, meta: columnMeta }) => {
                     return (
                       <td key={columnIndex}>
-                        {cellValue}
+                        {cellValue.value}
                       </td>
                     )
                   }}

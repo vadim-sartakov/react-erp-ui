@@ -15,8 +15,11 @@ export const Spreadsheet = ({
   height,
   initialScroll,
   columnNumbersRowHeight,
+  rowNumbersColumnWidth,
   defaultColumnWidth,
   defaultRowHeight,
+  rowsPerPage,
+  columnsPerPage,
   ...props
 }) => {
   const scrollerRef = useRef();
@@ -37,6 +40,9 @@ export const Spreadsheet = ({
           columnsMeta,
           onColumnsMetaChange,
           columnNumbersRowHeight,
+          rowNumbersColumnWidth,
+          rowsPerPage,
+          columnsPerPage,
           defaultColumnWidth,
           defaultRowHeight
         }}>
@@ -50,7 +56,7 @@ export const Spreadsheet = ({
             overflowAnchor: 'none'
           }}
           onScroll={e => setScroll({ top: e.target.scrollTop, left: e.target.scrollLeft })}>
-        <table {...props} style={{ ...style, tableLayout: 'fixed' }} />
+        <table {...props} style={{ tableLayout: 'fixed', width: 'min-content', ...style }} />
       </div>
     </SpreadsheetContext.Provider>
   )
@@ -95,7 +101,7 @@ export const SpreadsheetColumnNumbersRow = ({ style = {}, ...props }) => {
 
 export const SpreadsheetRowNumbersColumn = ({ style = {}, ...props }) => {
   const { rowNumbersColumnWidth } = useContext(SpreadsheetContext);
-  return <tr {...props} style={{ ...style, width: rowNumbersColumnWidth }} />;
+  return <td {...props} style={{ ...style, width: rowNumbersColumnWidth }} />;
 };
 
 export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, meta, ...props }) => {
@@ -104,12 +110,14 @@ export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, meta,
 };
 
 export const SpreadsheetScrollableHeaderColumns = ({ children }) => {
-  const { columnsMeta, scroll, rowNumbersColumnWidth } = useContext(SpreadsheetContext);
+  const { columnsPerPage, defaultColumnWidth, columnsMeta, scroll, rowNumbersColumnWidth } = useContext(SpreadsheetContext);
   return (
     <ScrollerTree
-        value={columnsMeta}
+        value={columnsMeta.children}
         // TODO: Duplicate meta passing here. Can we omit this?
         meta={columnsMeta}
+        itemsPerPage={columnsPerPage}
+        defaultSize={defaultColumnWidth}
         scroll={scroll.left}
         relativePosition={rowNumbersColumnWidth}
         renderGap={width => <th style={{ width }} />}>
@@ -119,12 +127,14 @@ export const SpreadsheetScrollableHeaderColumns = ({ children }) => {
 };
 
 export const SpreadsheetScrollableRows = ({ children }) => {
-  const { scroll, value, rowsMeta, columnNumbersRowHeight } = useContext(SpreadsheetContext);
+  const { rowsPerPage, defaultRowHeight, scroll, value, rowsMeta, columnNumbersRowHeight } = useContext(SpreadsheetContext);
   return (
     <ScrollerTree
         value={value}
         meta={rowsMeta}
         scroll={scroll.top}
+        itemsPerPage={rowsPerPage}
+        defaultSize={defaultRowHeight}
         relativePosition={columnNumbersRowHeight}
         renderGap={height => <tr style={{ height }} />}>
       {children}
@@ -133,12 +143,14 @@ export const SpreadsheetScrollableRows = ({ children }) => {
 };
 
 export const SpreadsheetScrollableRowColumns = ({ row, children }) => {
-  const { scroll, columnsMeta } = useContext(SpreadsheetContext);
+  const { columnsPerPage, defaultColumnWidth, scroll, columnsMeta } = useContext(SpreadsheetContext);
   return (
     <ScrollerTree
         value={row.columns}
         meta={columnsMeta}
         scroll={scroll.left}
+        itemsPerPage={columnsPerPage}
+        defaultSize={defaultColumnWidth}
         renderGap={width => <td style={{ width }} />}>
       {children}
     </ScrollerTree>
