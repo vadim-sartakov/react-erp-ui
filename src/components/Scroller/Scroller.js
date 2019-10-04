@@ -6,18 +6,21 @@ import {
   getPageNumberFromScrollPages,
   getPageNumberWithDefaultSize,
   getGapsFromScrollPages,
-  getGapsWithDefaultSize
+  getGapsWithDefaultSize,
+  setMetaTotalCount
 } from './utils';
 
 const Scroller = ({
   scroll,
-  meta,
+  meta: metaProp,
   defaultSize,
   itemsPerPage,
   value,
   loadPage,
   children  
 }) => {
+
+  const meta = useMemo(() => value ? setMetaTotalCount(value, metaProp) : metaProp, [value, metaProp]);
 
   const getPage = useCallback(scroll => {
     let currentPage;
@@ -73,7 +76,8 @@ const Scroller = ({
 Scroller.propTypes = {
   meta: PropTypes.shape({
     isLoading: PropTypes.bool,
-    totalCount: PropTypes.number.isRequired,
+    /* It's required for async value. For sync it's calculated depending on values children count */
+    totalCount: PropTypes.number,
     size: PropTypes.number,
     expanded: PropTypes.bool,
     children: PropTypes.arrayOf(PropTypes.object)

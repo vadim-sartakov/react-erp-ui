@@ -13,7 +13,6 @@ describe('ScrollTree', () => {
       mount((
         <ScrollerTree
             scroll={0}
-            meta={{ totalCount: 3 }}
             defaultSize={20}
             itemsPerPage={2}
             renderGap={renderGap}
@@ -36,7 +35,7 @@ describe('ScrollTree', () => {
       mount((
         <ScrollerTree
             scroll={0}
-            meta={{ totalCount: 3, children: [{ size: 20 }] }}
+            meta={{ children: [{ size: 20 }] }}
             defaultSize={20}
             itemsPerPage={2}
             renderGap={renderGap}
@@ -59,7 +58,6 @@ describe('ScrollTree', () => {
       mount((
         <ScrollerTree
             scroll={0}
-            meta={{ totalCount: 3 }}
             defaultSize={20}
             itemsPerPage={2}
             renderGap={renderGap}
@@ -68,7 +66,7 @@ describe('ScrollTree', () => {
         </ScrollerTree>
       ));
       expect(children).toHaveBeenCalledTimes(2);
-      expect(children.mock.calls[0][0]).toEqual({ index: 0, depth: 0, value: { value: 0 } });
+      expect(children.mock.calls[0][0]).toEqual({ index: 0, depth: 0, value: { value: 0 }, meta: { totalCount: 1 } });
       expect(children.mock.calls[1][0]).toEqual({ index: 1, depth: 0, value: { value: 1, children: [{ value: 0 }] } });
       
       expect(renderGap).toHaveBeenCalledTimes(1);

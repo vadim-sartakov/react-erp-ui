@@ -22,7 +22,6 @@ describe('Scroller', () => {
       mount((
         <TestComponent
             scroll={0}
-            meta={{ totalCount: 2 }}
             value={sourceValue}
             defaultSize={20}
             itemsPerPage={1}>
@@ -46,7 +45,7 @@ describe('Scroller', () => {
       mount((
         <TestComponent
             scroll={30}
-            meta={{ totalCount: 4, children: [{}, {}, { size: 20 }, {}] }}
+            meta={{ children: [{}, {}, { size: 20 }, {}] }}
             value={sourceValue}
             defaultSize={20}
             itemsPerPage={1}>
