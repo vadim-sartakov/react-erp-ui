@@ -6,7 +6,7 @@ import {
   getPageNumberWithDefaultSize,
   getGapsWithDefaultSize,
   getGapsFromScrollPages,
-  setSyncTotalCount
+  setMetaTotalCount
 } from './utils';
 
 describe('Scroller utils', () => {
@@ -281,7 +281,7 @@ describe('Scroller utils', () => {
     });
   });
 
-  describe('setSyncTotalCount', () => {
+  describe('setMetaTotalCount', () => {
 
     it('should create meta values when it\'s empty', () => {
       const value = [
@@ -294,7 +294,7 @@ describe('Scroller utils', () => {
         },
         {}
       ];
-      expect(setSyncTotalCount(value)).toBe({
+      expect(setMetaTotalCount(value)).toEqual({
         totalCount: 2,
         children: [
           { totalCount: 3 }
@@ -327,11 +327,12 @@ describe('Scroller utils', () => {
           { size: 20 }
         ]
       };
-      expect(setSyncTotalCount(value, meta)).toBe({
+      expect(setMetaTotalCount(value, meta)).toEqual({
         totalCount: 2,
         children: [
           {
             totalCount: 3,
+            size: 10,
             children: [
               { size: 10 },
               { size: 20 },
@@ -346,7 +347,7 @@ describe('Scroller utils', () => {
     it('should not mutate value', () => {
       const value = [{}, {}, {}];
       const sourceValue = _.cloneDeep(value);
-      setSyncTotalCount(value);
+      setMetaTotalCount(value);
       expect(value).toEqual(sourceValue);
     });
 
