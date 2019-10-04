@@ -2,7 +2,11 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import {
   Spreadsheet,
-  SpreadsheetHeader
+  SpreadsheetHeaderColumnsRow,
+  SpreadsheetTableHeaderCell,
+  SpreadsheetScrollableHeaderColumns,
+  SpreadsheetScrollableRows,
+  SpreadsheetScrollableRowColumns
 } from './';
 import classes from './Spreadsheet.stories.module.sass';
 
@@ -22,12 +26,41 @@ const value = generateValues(columns, 1000);
 
 const SpreadsheetComponent = () => {
   return (
-    <Spreadsheet value={value}>
-      <SpreadsheetHeader>
-        {({ index, value, meta, depth, isGroup }) => (
-          
-        )}
-      </SpreadsheetHeader>
+    <Spreadsheet
+        value={value}
+        className={classes.root}
+        height={500}>
+      <thead>
+        <SpreadsheetHeaderColumnsRow>
+          <SpreadsheetScrollableHeaderColumns>
+             {({ index, value, depth, isGroup }) => (
+                <SpreadsheetTableHeaderCell key={index} meta={value}>
+                  {index + 1}
+                </SpreadsheetTableHeaderCell>
+             )}
+          </SpreadsheetScrollableHeaderColumns>
+        </SpreadsheetHeaderColumnsRow>
+      </thead>
+
+      <tbody>
+        <SpreadsheetScrollableRows>
+          {({ index: rowIndex, value: rowValue, meta: rowMeta, isGroup, depth }) => {
+            return (
+              <tr key={rowIndex}>
+                <SpreadsheetScrollableRowColumns row={rowValue}>
+                  {({ index: columnIndex, value: cellValue, meta: columnMeta }) => {
+                    return (
+                      <td key={columnIndex}>
+
+                      </td>
+                    )
+                  }}
+                </SpreadsheetScrollableRowColumns>
+              </tr>
+            )
+          }}
+        </SpreadsheetScrollableRows>
+      </tbody>
     </Spreadsheet>
   );
 };
