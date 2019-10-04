@@ -140,3 +140,9 @@ export const getGapsFromScrollPages = (scrollPages, page) => {
     end: endSectionSize
   }
 };
+
+export const setSyncTotalCount = (value, meta) => {
+  return value.reduce((acc, ) => {
+
+  });
+};

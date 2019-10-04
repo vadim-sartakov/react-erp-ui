@@ -1,10 +1,12 @@
+import _ from 'lodash';
 import {
   getItemsCountOnPage,
   getScrollPages,
   getPageNumberFromScrollPages,
   getPageNumberWithDefaultSize,
   getGapsWithDefaultSize,
-  getGapsFromScrollPages
+  getGapsFromScrollPages,
+  setSyncTotalCount
 } from './utils';
 
 describe('Scroller utils', () => {
@@ -277,6 +279,77 @@ describe('Scroller utils', () => {
     it('last page', () => {
       expect(getGapsFromScrollPages(scrollPages, 3)).toEqual({ start: 60, end: 0 });
     });
+  });
+
+  describe('setSyncTotalCount', () => {
+
+    it('should create meta values when it\'s empty', () => {
+      const value = [
+        {
+          children: [
+            {},
+            {},
+            {}
+          ]
+        },
+        {}
+      ];
+      expect(setSyncTotalCount(value)).toBe({
+        totalCount: 2,
+        children: [
+          { totalCount: 3 }
+        ]
+      });
+    });
+
+    it('should preserve meta values', () => {
+      const value = [
+        {
+          value: 0,
+          children: [
+            { value: 0 },
+            { value: 1 },
+            { value: 2 }
+          ]
+        },
+        { value: 1 }
+      ];
+      const meta = {
+        children: [
+          {
+            size: 10,
+            children: [
+              { size: 10 },
+              { size: 20 },
+              { size: 30 }
+            ]
+          },
+          { size: 20 }
+        ]
+      };
+      expect(setSyncTotalCount(value, meta)).toBe({
+        totalCount: 2,
+        children: [
+          {
+            totalCount: 3,
+            children: [
+              { size: 10 },
+              { size: 20 },
+              { size: 30 }
+            ]
+          },
+          { size: 20 }
+        ]
+      });
+    });
+
+    it('should not mutate value', () => {
+      const value = [{}, {}, {}];
+      const sourceValue = _.cloneDeep(value);
+      setSyncTotalCount(value);
+      expect(value).toEqual(sourceValue);
+    });
+
   });
 
 });
