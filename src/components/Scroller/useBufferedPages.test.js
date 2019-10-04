@@ -8,9 +8,10 @@ const TestComponent = ({
   page,
   itemsPerPage,
   loadPage,
-  totalCount = 0
+  totalCount = 0,
+  disableCache
 }) => {
-  const visibleValues = useBufferedPages({ value, page, itemsPerPage, loadPage, totalCount });
+  const visibleValues = useBufferedPages({ value, page, itemsPerPage, loadPage, totalCount, disableCache });
   return (
     <>
       <div>{typeof visibleValues === 'object' ? JSON.stringify(visibleValues) : visibleValues}</div>
@@ -93,6 +94,17 @@ describe('useBufferedPages', () => {
       wrapper.setProps({ page: 3 });
       wrapper.setProps({ page: 4 });
       expect(spy).toHaveBeenCalledTimes(5);
+    });
+
+    it('should not use cache when disabled', () => {
+      const value = createValues(100);
+      const spy = jest.spyOn(value, 'slice');
+      const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} disableCache />);
+      wrapper.setProps({ page: 1 });
+      wrapper.setProps({ page: 2 });
+      wrapper.setProps({ page: 3 });
+      wrapper.setProps({ page: 4 });
+      expect(spy).toHaveBeenCalledTimes(9);
     });
 
   });

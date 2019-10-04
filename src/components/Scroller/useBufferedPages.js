@@ -8,7 +8,7 @@ const addToCacheAndClean = (cache, cacheSize, page, value) => {
   if (cache.current.length > cacheSize) cache.current.shift();
 };
 
-const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, cacheSize = 3 }) => {
+const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, disableCache, cacheSize = 3 }) => {
 
   const visiblePageNumbers = useMemo(() => getVisiblePages(page), [page]);
   const getLoadingPage = useCallback(page => {
@@ -28,12 +28,12 @@ const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, cac
   useEffect(() => {
     if (loadPage) {
       const visibleValues = visiblePageNumbers.reduce((acc, visiblePageNumber) => {
-        let cachedPage = getCacheValue(cache, visiblePageNumber);
+        let cachedPage = !disableCache && getCacheValue(cache, visiblePageNumber);
         if (cachedPage) {
           return [...acc, cachedPage];
         } else {
           loadPage(visiblePageNumber, itemsPerPage).then(loadResult => {
-            addToCacheAndClean(cache, cacheSize, visiblePageNumber, loadResult);
+            !disableCache && addToCacheAndClean(cache, cacheSize, visiblePageNumber, loadResult);
             setAsyncValue(asyncValue => {
               const visibleValue = asyncValue.map(asyncValueItem => {
                 return asyncValueItem.page === visiblePageNumber ?
@@ -54,14 +54,15 @@ const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, cac
     loadPage,
     getLoadingPage,
     itemsPerPage,
-    cacheSize
+    cacheSize,
+    disableCache
   ]);
 
   const syncValue = value && visiblePageNumbers.reduce((acc, visiblePageNumber) => {
-    let page = getCacheValue(cache, visiblePageNumber);
+    let page = !disableCache && getCacheValue(cache, visiblePageNumber);
     if (!page) {
       page = { page: visiblePageNumber, value: loadPageSync(value, visiblePageNumber, itemsPerPage) };
-      addToCacheAndClean(cache, cacheSize, visiblePageNumber, page.value);
+      !disableCache && addToCacheAndClean(cache, cacheSize, visiblePageNumber, page.value);
     }
     return [...acc, page]
   }, []);

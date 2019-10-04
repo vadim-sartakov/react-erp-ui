@@ -24,6 +24,8 @@ const generateValues = (columns, count) => {
 
 const columns = generateColumns(15);
 const value = generateValues(columns, 1000);
+//value[100].children = generateValues(columns, 100);
+//columns[100] = { ...columns[100], expanded: true };
 
 const SpreadsheetComponent = () => {
   return (
@@ -31,11 +33,12 @@ const SpreadsheetComponent = () => {
         columnsMeta={{ children: columns }}
         value={value}
         className={classes.root}
+        defaultColumnWidth={120}
         height={600}
         rowNumbersColumnWidth={50}>
       <thead>
         <SpreadsheetColumnNumbersRow>
-          <SpreadsheetRowNumbersColumn />
+          <SpreadsheetRowNumbersColumn Component="th" />
           <SpreadsheetScrollableHeaderColumns>
              {({ index, value, depth, isGroup }) => (
                 <SpreadsheetTableHeaderCell key={index} meta={value}>

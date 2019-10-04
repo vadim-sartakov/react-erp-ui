@@ -99,9 +99,9 @@ export const SpreadsheetColumnNumbersRow = ({ style = {}, ...props }) => {
   return <tr {...props} style={{ ...style, height: columnNumbersRowHeight }} />;
 };
 
-export const SpreadsheetRowNumbersColumn = ({ style = {}, ...props }) => {
+export const SpreadsheetRowNumbersColumn = ({ Component = 'td', style = {}, ...props }) => {
   const { rowNumbersColumnWidth } = useContext(SpreadsheetContext);
-  return <td {...props} style={{ ...style, width: rowNumbersColumnWidth }} />;
+  return <Component {...props} style={{ ...style, width: rowNumbersColumnWidth }} />;
 };
 
 export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, meta, ...props }) => {
@@ -151,7 +151,8 @@ export const SpreadsheetScrollableRowColumns = ({ row, children }) => {
         scroll={scroll.left}
         itemsPerPage={columnsPerPage}
         defaultSize={defaultColumnWidth}
-        renderGap={width => <td style={{ width }} />}>
+        renderGap={width => <td style={{ width }} />}
+        disableCache>
       {children}
     </ScrollerTree>
   )

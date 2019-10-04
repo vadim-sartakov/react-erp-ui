@@ -17,7 +17,8 @@ const Scroller = ({
   itemsPerPage,
   value,
   loadPage,
-  children  
+  disableCache,
+  children
 }) => {
   
   const meta = useMemo(() => value ? setMetaTotalCount(value, metaProp) : metaProp, [value, metaProp]);
@@ -47,7 +48,8 @@ const Scroller = ({
     page,
     loadPage,
     itemsPerPage,
-    totalCount: meta.totalCount
+    totalCount: meta.totalCount,
+    disableCache
   });
 
   const gaps = useMemo(() => {
