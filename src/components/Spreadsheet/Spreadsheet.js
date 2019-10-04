@@ -88,9 +88,14 @@ Spreadsheet.defaultProps = {
   rowNumbersColumnWidth: 20
 };
 
-export const SpreadsheetHeaderColumnsRow = ({ style = {}, ...props }) => {
+export const SpreadsheetColumnNumbersRow = ({ style = {}, ...props }) => {
   const { columnNumbersRowHeight } = useContext(SpreadsheetContext);
-  return <tr {...props} style={{ ...style, height: columnNumbersRowHeight }} />
+  return <tr {...props} style={{ ...style, height: columnNumbersRowHeight }} />;
+};
+
+export const SpreadsheetRowNumbersColumn = ({ style = {}, ...props }) => {
+  const { rowNumbersColumnWidth } = useContext(SpreadsheetContext);
+  return <tr {...props} style={{ ...style, width: rowNumbersColumnWidth }} />;
 };
 
 export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, meta, ...props }) => {
@@ -99,16 +104,16 @@ export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, meta,
 };
 
 export const SpreadsheetScrollableHeaderColumns = ({ children }) => {
-  const { columnsMeta, scroll } = useContext(SpreadsheetContext);
+  const { columnsMeta, scroll, rowNumbersColumnWidth } = useContext(SpreadsheetContext);
   return (
     <ScrollerTree
         value={columnsMeta}
         // TODO: Duplicate meta passing here. Can we omit this?
         meta={columnsMeta}
         scroll={scroll.left}
+        relativePosition={rowNumbersColumnWidth}
         renderGap={width => <th style={{ width }} />}>
       {children}
-      {/** Put column resizer here */}
     </ScrollerTree>
   )
 };
@@ -123,7 +128,6 @@ export const SpreadsheetScrollableRows = ({ children }) => {
         relativePosition={columnNumbersRowHeight}
         renderGap={height => <tr style={{ height }} />}>
       {children}
-      {/** Rows resizer goes here */}
     </ScrollerTree>
   )
 };

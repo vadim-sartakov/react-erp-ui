@@ -2,11 +2,12 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import {
   Spreadsheet,
-  SpreadsheetHeaderColumnsRow,
   SpreadsheetTableHeaderCell,
   SpreadsheetScrollableHeaderColumns,
   SpreadsheetScrollableRows,
-  SpreadsheetScrollableRowColumns
+  SpreadsheetScrollableRowColumns,
+  SpreadsheetColumnNumbersRow,
+  SpreadsheetRowNumbersColumn
 } from './';
 import classes from './Spreadsheet.stories.module.sass';
 
@@ -31,7 +32,8 @@ const SpreadsheetComponent = () => {
         className={classes.root}
         height={500}>
       <thead>
-        <SpreadsheetHeaderColumnsRow>
+        <SpreadsheetColumnNumbersRow>
+          <SpreadsheetRowNumbersColumn />
           <SpreadsheetScrollableHeaderColumns>
              {({ index, value, depth, isGroup }) => (
                 <SpreadsheetTableHeaderCell key={index} meta={value}>
@@ -39,7 +41,7 @@ const SpreadsheetComponent = () => {
                 </SpreadsheetTableHeaderCell>
              )}
           </SpreadsheetScrollableHeaderColumns>
-        </SpreadsheetHeaderColumnsRow>
+        </SpreadsheetColumnNumbersRow>
       </thead>
 
       <tbody>
@@ -47,6 +49,10 @@ const SpreadsheetComponent = () => {
           {({ index: rowIndex, value: rowValue, meta: rowMeta, isGroup, depth }) => {
             return (
               <tr key={rowIndex}>
+                <SpreadsheetRowNumbersColumn>
+                  {/* TODO: This row index does not maintatn row number. It's visible value's index only */}
+                  {rowIndex + 1}
+                </SpreadsheetRowNumbersColumn>
                 <SpreadsheetScrollableRowColumns row={rowValue}>
                   {({ index: columnIndex, value: cellValue, meta: columnMeta }) => {
                     return (
