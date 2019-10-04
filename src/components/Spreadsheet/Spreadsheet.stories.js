@@ -7,7 +7,8 @@ import {
   SpreadsheetScrollableRows,
   SpreadsheetScrollableRowColumns,
   SpreadsheetColumnNumbersRow,
-  SpreadsheetRowNumbersColumn
+  SpreadsheetRowNumbersColumn,
+  SpreadsheetCellValue
 } from './';
 import classes from './Spreadsheet-stories.module.sass';
 
@@ -24,18 +25,24 @@ const generateValues = (columns, count) => {
 
 const columns = generateColumns(15);
 const value = generateValues(columns, 1000);
-//value[100].children = generateValues(columns, 100);
-//columns[100] = { ...columns[100], expanded: true };
+value[100].children = generateValues(columns, 100);
+
+const rows = [];
+rows[100] = { expanded: true };
 
 const SpreadsheetComponent = () => {
   return (
     <Spreadsheet
         columnsMeta={{ children: columns }}
+        rowsMeta={{ children: rows }}
         value={value}
         className={classes.root}
         defaultColumnWidth={120}
         height={600}
-        rowNumbersColumnWidth={50}>
+        rowNumbersColumnWidth={50}
+        defaultRowHeight={16}
+        rowVerticalPadding={8}
+        rowBorderHeight={1}>
       <thead>
         <SpreadsheetColumnNumbersRow>
           <SpreadsheetRowNumbersColumn Component="th" />
@@ -55,15 +62,17 @@ const SpreadsheetComponent = () => {
           {({ index: rowIndex, value: rowValue, meta: rowMeta, isGroup, depth }) => {
             return (
               <tr key={rowIndex}>
-                <SpreadsheetRowNumbersColumn>
+                <td>
                   {/* TODO: This row index does not maintatn row number. It's visible value's index only */}
                   {rowIndex + 1}
-                </SpreadsheetRowNumbersColumn>
+                </td>
                 <SpreadsheetScrollableRowColumns row={rowValue}>
                   {({ index: columnIndex, value: cellValue, meta: columnMeta }) => {
                     return (
                       <td key={columnIndex}>
-                        {cellValue.value}
+                        <SpreadsheetCellValue meta={columnMeta} style={{ marginLeft: depth && columnIndex === 0 ? depth * 15 : undefined }}>
+                          {cellValue.value}
+                        </SpreadsheetCellValue>
                       </td>
                     )
                   }}

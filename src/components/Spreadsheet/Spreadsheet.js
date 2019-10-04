@@ -20,6 +20,8 @@ export const Spreadsheet = ({
   defaultRowHeight,
   rowsPerPage,
   columnsPerPage,
+  rowVerticalPadding,
+  rowBorderHeight,
   ...props
 }) => {
   const scrollerRef = useRef();
@@ -44,7 +46,9 @@ export const Spreadsheet = ({
           rowsPerPage,
           columnsPerPage,
           defaultColumnWidth,
-          defaultRowHeight
+          defaultRowHeight,
+          rowVerticalPadding,
+          rowBorderHeight
         }}>
       {/* TODO: Maybe extract scroller into separate component? */}
       <div
@@ -56,7 +60,7 @@ export const Spreadsheet = ({
             overflowAnchor: 'none'
           }}
           onScroll={e => setScroll({ top: e.target.scrollTop, left: e.target.scrollLeft })}>
-        <table {...props} style={{ tableLayout: 'fixed', width: 'min-content', ...style }} />
+        <table {...props} style={{ ...style, tableLayout: 'fixed', width: 'min-content' }} />
       </div>
     </SpreadsheetContext.Provider>
   )
@@ -81,17 +85,20 @@ Spreadsheet.propTypes = {
   defaultRowHeight: PropTypes.number.isRequired,
   columnNumbersRowHeight: PropTypes.number.isRequired,
   rowNumbersColumnWidth: PropTypes.number.isRequired,
+  rowVerticalPadding: PropTypes.number,
+  rowBorderHeight: PropTypes.number,
   fixRows: PropTypes.number,
   fixColumns: PropTypes.number,
 };
 Spreadsheet.defaultProps = {
   initialScroll: { top: 0, left: 0 },
-  rowsPerPage: 60,
-  columnsPerPage: 40,
+  rowsPerPage: 30,
+  columnsPerPage: 20,
   defaultRowHeight: 20,
   defaultColumnWidth: 100,
   columnNumbersRowHeight: 20,
-  rowNumbersColumnWidth: 20
+  rowVerticalPadding: 0,
+  rowBorderHeight: 1
 };
 
 export const SpreadsheetColumnNumbersRow = ({ style = {}, ...props }) => {
@@ -127,14 +134,14 @@ export const SpreadsheetScrollableHeaderColumns = ({ children }) => {
 };
 
 export const SpreadsheetScrollableRows = ({ children }) => {
-  const { rowsPerPage, defaultRowHeight, scroll, value, rowsMeta, columnNumbersRowHeight } = useContext(SpreadsheetContext);
+  const { rowsPerPage, defaultRowHeight, scroll, value, rowsMeta, columnNumbersRowHeight, rowVerticalPadding, rowBorderHeight } = useContext(SpreadsheetContext);
   return (
     <ScrollerTree
         value={value}
         meta={rowsMeta}
         scroll={scroll.top}
         itemsPerPage={rowsPerPage}
-        defaultSize={defaultRowHeight}
+        defaultSize={defaultRowHeight + (rowVerticalPadding * 2) + rowBorderHeight}
         relativePosition={columnNumbersRowHeight}
         renderGap={height => <tr style={{ height }} />}>
       {children}
@@ -156,4 +163,10 @@ export const SpreadsheetScrollableRowColumns = ({ row, children }) => {
       {children}
     </ScrollerTree>
   )
+};
+
+export const SpreadsheetCellValue = ({ mode, style, meta, ...props }) => {
+  const { defaultRowHeight } = useContext(SpreadsheetContext);
+  const nextStyle = { ...style, height: meta.size || defaultRowHeight, overflow: 'hidden' };
+  return <div style={nextStyle} {...props} />;
 };
