@@ -19,8 +19,9 @@ const Scroller = ({
   loadPage,
   children  
 }) => {
-
+  //console.log(value);
   const meta = useMemo(() => value ? setMetaTotalCount(value, metaProp) : metaProp, [value, metaProp]);
+  //console.log(meta)
 
   const getPage = useCallback(scroll => {
     let currentPage;

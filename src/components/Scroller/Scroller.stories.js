@@ -80,20 +80,20 @@ const generateValues = (columns, count) => {
 storiesOf('Scroller', module)
   .add('static table with scrollable rows', () => {
     const columns = generateColumns(8);
-    const rows = { children: [], totalCount: 1000 };
+    const rows = { children: [] };
     const value = generateValues(columns, 1000);
     value[100].children = generateValues(columns, 200);
-    rows.children[100] = { expanded: true, children: [], totalCount: 200 };
+    rows.children[100] = { expanded: true, children: [] };
 
     // Total count is not set here for some reason
     value[100].children[50].children = generateValues(columns, 100);
-    rows.children[100].children[50] = { expanded: true, children: [], totalCount: 100 };
+    rows.children[100].children[50] = { expanded: true, children: [] };
 
     value[100].children[50].children[1].children = generateValues(columns, 1);
-    rows.children[100].children[50].children[1] = { expanded: true, children: [], totalCount: 1 };
+    rows.children[100].children[50].children[1] = { expanded: true, children: [] };
 
     value[100].children[50].children[1].children[0].children = generateValues(columns, 1);
-    rows.children[100].children[50].children[1].children[0] = { expanded: true, children: [], totalCount: 1 };
+    rows.children[100].children[50].children[1].children[0] = { expanded: true, children: [] };
     return (
       <Table
           rows={rows}

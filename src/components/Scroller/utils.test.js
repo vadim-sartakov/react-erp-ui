@@ -302,6 +302,47 @@ describe('Scroller utils', () => {
       });
     });
 
+    it('should create meta values in the middle of children', () => {
+      const value = [
+        {
+          children: [
+            {},
+            {},
+            {}
+          ]
+        },
+        {}
+      ];
+      const meta = {
+        children: [
+          {
+            size: 10,
+            children: [
+              undefined,
+              undefined,
+              { size: 30 }
+            ]
+          },
+          { size: 20 }
+        ]
+      };
+      expect(setMetaTotalCount(value, meta)).toEqual({
+        totalCount: 2,
+        children: [
+          {
+            totalCount: 3,
+            size: 10,
+            children: [
+              undefined,
+              undefined,
+              { size: 30 }
+            ]
+          },
+          { size: 20 }
+        ]
+      });
+    });
+
     it('should preserve meta values', () => {
       const value = [
         {

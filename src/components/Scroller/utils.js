@@ -144,8 +144,11 @@ export const getGapsFromScrollPages = (scrollPages, page) => {
 export const setMetaTotalCount = (value, meta = {}) => {
   const children = value.reduce((acc, valueItem, index) => {
     const currentMeta = meta.children && meta.children[index];
-    return valueItem.children ? [...acc, setMetaTotalCount(valueItem.children, currentMeta)] : currentMeta ? [...acc, currentMeta] : acc;
-  }, []);
+    const nextAcc = [...acc];
+    const nextMeta = valueItem.children ? setMetaTotalCount(valueItem.children, currentMeta) : currentMeta;
+    if (nextMeta) nextAcc[index] = nextMeta;
+    return nextAcc;
+  }, meta.children || []);
   const result = {
     ...meta,
     totalCount: value.length
