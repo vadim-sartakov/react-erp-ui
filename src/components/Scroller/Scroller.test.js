@@ -18,7 +18,7 @@ describe('Scroller', () => {
 
     it('should call child with correct arguments on initial scroll without meta', () => {
       const children = jest.fn();
-      const sourceValue = [0, 1];
+      const sourceValue = [{ value: 0 }, { value: 1 }];
       mount((
         <TestComponent
             scroll={0}
@@ -31,7 +31,7 @@ describe('Scroller', () => {
       const { value, meta, gaps } = children.mock.calls[0][0];
 
       expect(value.length).toBe(1);
-      expect(value[0]).toBe(0);
+      expect(value[0]).toEqual({ index: 0, value: 0 });
       expect(meta).toEqual([]);
       expect(gaps).toEqual({
         start: 0,
@@ -41,7 +41,7 @@ describe('Scroller', () => {
 
     it('should call child with correct arguments on middle-scroll and meta included', () => {
       const children = jest.fn();
-      const sourceValue = [0, 1, 2, 3];
+      const sourceValue = [{ value: 0 }, { value: 1 }, { value: 2 }, { value: 3 }];
       mount((
         <TestComponent
             scroll={30}
@@ -54,9 +54,9 @@ describe('Scroller', () => {
       ));
       const { value, meta, gaps } = children.mock.calls[0][0];
       expect(value.length).toBe(2);
-      expect(value[0]).toBe(1);
-      expect(value[1]).toBe(2);
-      expect(meta).toEqual([{}, { size: 20 }]);
+      expect(value[0]).toEqual({ index: 1, value: 1 });
+      expect(value[1]).toEqual({ index: 2, value: 2 });
+      expect(meta).toEqual([{ index: 1 }, { index: 2, size: 20 }]);
       expect(gaps).toEqual({
         start: 20,
         end: 20
@@ -69,7 +69,7 @@ describe('Scroller', () => {
 
     it('should render loading page and then set loaded data', async () => {
       const children = jest.fn();
-      const loadPage = jest.fn(async () => [0, 1, 2]);
+      const loadPage = jest.fn(async () => [{ value: 0 }, { value: 1 }, { value: 2 }]);
       await act(async () => {
         mount((
           <TestComponent
@@ -89,8 +89,8 @@ describe('Scroller', () => {
 
       const { value } = children.mock.calls[2][0];
       expect(value.length).toBe(3);
-      expect(value[0]).toBe(0);
-      expect(value[2]).toBe(2);
+      expect(value[0]).toEqual({ index: 0, value: 0 });
+      expect(value[2]).toEqual({ index: 2, value: 2 });
     });
 
   });

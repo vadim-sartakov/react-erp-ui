@@ -49,8 +49,7 @@ const SpreadsheetComponent = () => {
           <SpreadsheetScrollableHeaderColumns>
              {({ index, value, depth, isGroup }) => (
                 <SpreadsheetTableHeaderCell key={index} meta={value}>
-                  {/* TODO: This row index does not maintatn column number. It's visible value's index only */}
-                  {index + 1}
+                  {value.index + 1}
                 </SpreadsheetTableHeaderCell>
              )}
           </SpreadsheetScrollableHeaderColumns>
@@ -63,8 +62,7 @@ const SpreadsheetComponent = () => {
             return (
               <tr key={rowIndex}>
                 <td>
-                  {/* TODO: This row index does not maintatn row number. It's visible value's index only */}
-                  {rowIndex + 1}
+                  {rowValue.index + 1}
                 </td>
                 <SpreadsheetScrollableRowColumns row={rowValue}>
                   {({ index: columnIndex, value: cellValue, meta: columnMeta }) => {

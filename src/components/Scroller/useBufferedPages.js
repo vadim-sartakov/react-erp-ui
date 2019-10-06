@@ -8,6 +8,11 @@ const addToCacheAndClean = (cache, cacheSize, page, value) => {
   if (cache.current.length > cacheSize) cache.current.shift();
 };
 
+const setValueIndexes = (pageNumber, itemsPerPage, value) => {
+  const index = pageNumber * itemsPerPage;
+  return value.map((valueItem, itemIndex) => ({ index: index + itemIndex, ...valueItem }));
+};
+
 const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, disableCache, cacheSize = 3 }) => {
 
   const visiblePageNumbers = useMemo(() => getVisiblePages(page), [page]);
@@ -33,11 +38,12 @@ const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, dis
           return [...acc, cachedPage];
         } else {
           loadPage(visiblePageNumber, itemsPerPage).then(loadResult => {
-            !disableCache && addToCacheAndClean(cache, cacheSize, visiblePageNumber, loadResult);
+            const pageValue = setValueIndexes(visiblePageNumber, itemsPerPage, loadResult);
+            !disableCache && addToCacheAndClean(cache, cacheSize, visiblePageNumber, pageValue);
             setAsyncValue(asyncValue => {
               const visibleValue = asyncValue.map(asyncValueItem => {
                 return asyncValueItem.page === visiblePageNumber ?
-                    { page: visiblePageNumber, value: loadResult } :
+                    { page: visiblePageNumber, value: pageValue } :
                     asyncValueItem
               })
               return visibleValue;
@@ -61,7 +67,9 @@ const useBufferedPages = ({ value, page, itemsPerPage, loadPage, totalCount, dis
   const syncValue = value && visiblePageNumbers.reduce((acc, visiblePageNumber) => {
     let page = !disableCache && getCacheValue(cache, visiblePageNumber);
     if (!page) {
-      page = { page: visiblePageNumber, value: loadPageSync(value, visiblePageNumber, itemsPerPage) };
+      let pageValue = loadPageSync(value, visiblePageNumber, itemsPerPage);
+      pageValue = setValueIndexes(visiblePageNumber, itemsPerPage, pageValue);
+      page = { page: visiblePageNumber, value: pageValue };
       !disableCache && addToCacheAndClean(cache, cacheSize, visiblePageNumber, page.value);
     }
     return [...acc, page]
