@@ -1,6 +1,12 @@
 import React from 'react';
 import Scroller from './Scroller';
 
+const scrolledItemsReducer = (acc, metaChild) => {
+  if (!metaChild) return acc;
+  const children = (metaChild.children && metaChild.children.reduce(scrolledItemsReducer, 0)) || 0;
+  return acc + (metaChild.totalCount || 0) + children;
+};
+
 const ScrollerTree = ({
   value: sourceValue,
   meta: sourceMeta,
@@ -14,9 +20,8 @@ const ScrollerTree = ({
 }) => {
   return (
     <Scroller {...props} value={sourceValue} meta={sourceMeta} scroll={scroll - relativePosition}>
-      {({ value: visibleValue, meta: curVisibleMeta, gaps }) => {
+      {({ value: visibleValue, meta: curVisibleMeta, gaps, originMeta }) => {
         let nestedRelativePosition = gaps.start + relativePosition;
-        let indexOffset = 0;
         return (
           <>
             {gaps.start ? renderGap(gaps.start) : null}
@@ -24,8 +29,9 @@ const ScrollerTree = ({
               const curMeta = curVisibleMeta[visibleValueIndex];
               nestedRelativePosition += (curMeta && curMeta.size) || props.defaultSize;
 
-              const globalIndex = indexOffset + index + curVisibleValue.index;
-              indexOffset = indexOffset + ((curMeta && curMeta.totalCount) || 0);
+              let globalIndex = index + curVisibleValue.index;
+              const scrolledItemsCount = (originMeta && originMeta.children && originMeta.children.slice(0, globalIndex).reduce(scrolledItemsReducer, 0)) || 0;
+              globalIndex = globalIndex + scrolledItemsCount;
 
               const childrenProps = { index: globalIndex, value: curVisibleValue, meta: curMeta, depth };
               return curMeta && curMeta.expanded ? (

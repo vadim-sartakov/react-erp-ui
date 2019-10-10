@@ -69,7 +69,7 @@ const Scroller = ({
 
   return (
     <>
-      {children({ value: visibleValue, meta: visibleMeta, gaps })}
+      {children({ value: visibleValue, meta: visibleMeta, gaps, originMeta: meta })}
     </>
   );
 };
