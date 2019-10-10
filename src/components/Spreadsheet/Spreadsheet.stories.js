@@ -42,7 +42,8 @@ const SpreadsheetComponent = () => {
         rowNumbersColumnWidth={50}
         defaultRowHeight={16}
         rowVerticalPadding={8}
-        rowBorderHeight={1}>
+        rowBorderHeight={1}
+        rowsPerPage={40}>
       <thead>
         <SpreadsheetColumnNumbersRow>
           <SpreadsheetRowNumbersColumn Component="th" />
