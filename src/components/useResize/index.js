@@ -1,1 +1,1 @@
-export { default } from './useResize';
+export { default as useResize } from './useResize';

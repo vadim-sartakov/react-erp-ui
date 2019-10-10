@@ -1,6 +1,7 @@
-import React, { useRef, useState, useEffect, createContext, useContext } from 'react';
+import React, { useRef, useState, useEffect, createContext, useContext, useCallback } from 'react';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { ScrollerTree } from '../Scroller';
+import { ScrollerTree, useResize } from '../';
 
 export const SpreadsheetContext = createContext();
 
@@ -169,4 +170,17 @@ export const SpreadsheetCellValue = ({ mode, style, meta, ...props }) => {
   const { defaultRowHeight } = useContext(SpreadsheetContext);
   const nextStyle = { ...style, height: meta.size || defaultRowHeight, overflow: 'hidden' };
   return <div style={nextStyle} {...props} />;
+};
+
+export const SpreadsheetColumnResizer = ({ meta, originMeta, onMetaChange, ...props }) => {
+  const { onColumnsMetaChange } = useContext(SpreadsheetContext);
+  const sizes = { width: meta.size, height: 0 };
+  const handleSizesChange = useCallback(({ width }) => {
+    onColumnsMetaChange(meta => {
+      const nextMeta = _.cloneDeep(originMeta);
+
+    });
+  }, [onColumnsMetaChange, originMeta]);
+  const onStartResize = useResize({ sizes, onSizesChange: handleSizesChange });
+  return <div {...props} onMouseDown={onStartResize} />;
 };
