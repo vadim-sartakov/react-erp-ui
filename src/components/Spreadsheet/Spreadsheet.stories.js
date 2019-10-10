@@ -62,7 +62,7 @@ const SpreadsheetComponent = () => {
             return (
               <tr key={rowIndex}>
                 <td>
-                  {rowValue.index + 1}
+                  {rowIndex + 1}
                 </td>
                 <SpreadsheetScrollableRowColumns row={rowValue}>
                   {({ index: columnIndex, value: cellValue, meta: columnMeta }) => {
