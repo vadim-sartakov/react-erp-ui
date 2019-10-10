@@ -22,17 +22,17 @@ const Scroller = ({
 }) => {
   
   const meta = useMemo(() => value ? setMetaTotalCount(value, metaProp) : metaProp, [value, metaProp]);
+  const scrollPages = useMemo(() => meta && meta.children && meta.children.length && getScrollPages(meta, defaultSize, itemsPerPage), [meta, defaultSize, itemsPerPage]);
 
   const getPage = useCallback(scroll => {
     let currentPage;
     if (meta && meta.children && meta.children.length) {
-      const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
       currentPage = getPageNumberFromScrollPages(scrollPages, scroll);
     } else {
       currentPage = getPageNumberWithDefaultSize({ defaultSize, itemsPerPage, scroll, totalCount: meta.totalCount });
     }
     return currentPage;
-  }, [meta, defaultSize, itemsPerPage]);
+  }, [meta, defaultSize, itemsPerPage, scrollPages]);
 
   const page = useMemo(() => getPage(scroll), [scroll, getPage]);
 
@@ -55,13 +55,12 @@ const Scroller = ({
   const gaps = useMemo(() => {
     let result;
     if (meta && meta.children && meta.children.length) {
-      const scrollPages = getScrollPages(meta, defaultSize, itemsPerPage);
       result = getGapsFromScrollPages(scrollPages, page);
     } else {
       result = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount: meta.totalCount, page });
     }
     return result;
-  }, [page, defaultSize, itemsPerPage, meta]);
+  }, [page, defaultSize, itemsPerPage, meta, scrollPages]);
 
   const visibleValuesReducer = (acc, page) => [...acc, ...page.value];
 

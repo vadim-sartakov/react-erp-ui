@@ -99,6 +99,25 @@ describe('ScrollTree', () => {
       expect(renderGap.mock.calls[0][0]).toEqual(20);
     });
 
+    it('should preserve index when items with children scrolled', () => {
+      const value = [{ value: 0 }, { value: 1, children: [{ value: 0 }] }, { value: 2 }, { value: 3 }, { value: 4 }];
+      const children = jest.fn();
+      const renderGap = jest.fn();
+      mount((
+        <ScrollerTree
+            scroll={100}
+            meta={{ children: [{}, { expanded: true }] }}
+            defaultSize={20}
+            itemsPerPage={4}
+            renderGap={renderGap}
+            value={value}>
+          {children}
+        </ScrollerTree>
+      ));
+      expect(children).toHaveBeenCalledTimes(1);
+      expect(children.mock.calls[0][0]).toEqual({ index: 5, depth: 0, value: { index: 4, value: 4 } });
+    });
+
   });
 
 });
