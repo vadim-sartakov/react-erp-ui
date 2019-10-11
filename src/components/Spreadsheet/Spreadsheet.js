@@ -67,14 +67,32 @@ export const Spreadsheet = ({
   )
 };
 Spreadsheet.propTypes = {
-  value: PropTypes.arrayOf(PropTypes.shape({
-    columns: PropTypes.arrayOf(PropTypes.shape({
-      children: PropTypes.arrayOf(PropTypes.object)
-    })),
-    children: PropTypes.arrayOf(PropTypes.object)
+  value: PropTypes.arrayOf(PropTypes.arrayOfType([PropTypes.number, PropTypes.string, PropTypes.shape({
+    value: PropTypes.any,
+    format: PropTypes.func,
+    formula: PropTypes.string,
+    text: PropTypes.string,
+    style: PropTypes.shape({
+      backgroundColor: PropTypes.string,
+      border: PropTypes.arrayOf(
+        PropTypes.shape({
+          position: PropTypes.oneOf(['top', 'bottom', 'right', 'left', 'all']),
+          size: PropTypes.number,
+          color: PropTypes.string
+        })
+      )
+    })
+  })])),
+  rowsMeta: PropTypes.arrayOf(PropTypes.shape({
+    size: PropTypes.number,
+    hidden: PropTypes.bool,
+    level: PropTypes.number
   })),
-  rowsMeta: PropTypes.object,
-  columnsMeta: PropTypes.object,
+  columnsMeta: PropTypes.arrayOf(PropTypes.shape({
+    size: PropTypes.number,
+    hidden: PropTypes.bool,
+    level: PropTypes.number
+  })),
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   initialScroll: PropTypes.shape({
     top: PropTypes.number.isRequired,

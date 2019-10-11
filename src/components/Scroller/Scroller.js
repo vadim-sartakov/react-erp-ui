@@ -80,7 +80,8 @@ Scroller.propTypes = {
   relativePosition: PropTypes.number,
   meta: PropTypes.arrayOf(PropTypes.shape({
     size: PropTypes.number,
-    expanded: PropTypes.bool
+    hidden: PropTypes.bool,
+    level: PropTypes.number
   })),
   totalCount: PropTypes.number.isRequired,
   defaultSize: PropTypes.number.isRequired,
