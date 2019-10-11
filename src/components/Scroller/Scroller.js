@@ -6,13 +6,12 @@ import {
   getPageNumberFromScrollPages,
   getPageNumberWithDefaultSize,
   getGapsFromScrollPages,
-  getGapsWithDefaultSize,
-  setMetaTotalCount
+  getGapsWithDefaultSize
 } from './utils';
 
 const Scroller = ({
   scroll,
-  meta: metaProp,
+  meta,
   defaultSize,
   itemsPerPage,
   value,
@@ -21,7 +20,6 @@ const Scroller = ({
   children
 }) => {
   
-  const meta = useMemo(() => value ? setMetaTotalCount(value, metaProp) : metaProp, [value, metaProp]);
   const scrollPages = useMemo(() => meta && meta.children && meta.children.length && getScrollPages(meta, defaultSize, itemsPerPage), [meta, defaultSize, itemsPerPage]);
 
   const getPage = useCallback(scroll => {

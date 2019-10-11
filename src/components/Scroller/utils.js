@@ -7,25 +7,6 @@ export const getItemsCountOnPage = (page, itemsPerPage, totalCount) => {
   return page < totalPages - 1 ? itemsPerPage : totalCount - (page * itemsPerPage);
 };
 
-const getSelfSize = (meta, defaultSize) => (meta && meta.size) || defaultSize;
-
-const getChilrenSize = (meta, defaultSize) => {
-  if (meta && meta.expanded) {
-    const values = [...new Array(meta.totalCount).keys()];
-    const size = values.reduce((acc, arrayItem, index) => {
-      const metaChild = meta.children && meta.children[index];
-      let result = acc;
-      const selfSize = getSelfSize(metaChild, defaultSize);
-      result += selfSize;
-      const childrenSize = metaChild && metaChild.children ? getChilrenSize(metaChild, defaultSize) : 0;
-      return result + childrenSize;
-    }, 0);
-    return size;
-  } else {
-    return 0;
-  }
-};
-
 /**
  * Creates scroll page object structure
  * It helps to find current page depending on scroll position
@@ -38,28 +19,19 @@ export const getScrollPages = (meta, defaultSize, itemsPerPage) => {
   const result = values.reduce(({ curPage, pages }, arrayItem, index, values) => {
     const metaChild = meta.children[index];
 
-    const selfSize = getSelfSize(metaChild, defaultSize);
-    const childrenSize = getChilrenSize(metaChild, defaultSize);
+    const selfSize = (metaChild && metaChild.size) || defaultSize;
     const isNextPage = index > 0 && index % itemsPerPage === 0;
     
     let nextPages = isNextPage ? [...pages, curPage] : pages;
     const nextCurPage = {
       ...curPage,
-      end: curPage.end + selfSize + childrenSize
+      end: curPage.end + selfSize
     };
     if (isNextPage) {
       nextCurPage.start = curPage.end;
       delete nextCurPage.children
     }
-    if (childrenSize) {
-      nextCurPage.children = [
-        ...(curPage.children || []),
-        {
-          start: curPage.end + selfSize,
-          end: curPage.end + selfSize + childrenSize
-        }
-      ];
-    }
+    
     if (index === values.length - 1) nextPages = [...nextPages, nextCurPage];
     return {
       curPage: nextCurPage,
@@ -72,8 +44,6 @@ export const getScrollPages = (meta, defaultSize, itemsPerPage) => {
   return result.pages;
 };
 
-const inRange = (scroll, range) => scroll >= range.start && scroll < range.end;
-
 export const getPageNumberFromScrollPages = (scrollPages, scroll = 0) => {
   if (scroll < 0) return 0;
 
@@ -83,22 +53,11 @@ export const getPageNumberFromScrollPages = (scrollPages, scroll = 0) => {
   const currentPage = scrollPages.reduce((acc, page, index) => {
     if (acc !== -1) return acc;
 
-    const isInRange = inRange(scroll, page);
+    const isInRange = scroll >= page.start && scroll < page.end;
     if (!isInRange) return acc;
 
     const pageSize = page.end - page.start;
     const pageHalf = pageSize / 2;
-
-    const pageFromChildren = page.children && page.children.reduce((acc, child) => {
-      if (acc !== -1) return acc;
-
-      if (inRange(scroll, child)) {
-        return child.start < pageHalf ? index : index + 1;
-      }
-
-      return acc;
-    }, -1);
-    if (pageFromChildren !== undefined && pageFromChildren !== -1) return pageFromChildren;
 
     return scroll > pageHalf ? index + 1 : index;
   }, -1);
@@ -139,20 +98,4 @@ export const getGapsFromScrollPages = (scrollPages, page) => {
     start: startSectionSize,
     end: endSectionSize
   }
-};
-
-export const setMetaTotalCount = (value, meta = {}) => {
-  const children = value.reduce((acc, valueItem, index) => {
-    const currentMeta = meta.children && meta.children[index];
-    const nextAcc = [...acc];
-    const nextMeta = valueItem.children ? setMetaTotalCount(valueItem.children, currentMeta) : currentMeta;
-    if (nextMeta) nextAcc[index] = nextMeta;
-    return nextAcc;
-  }, meta.children || []);
-  const result = {
-    ...meta,
-    totalCount: value.length
-  };
-  if (children.length) result.children = children;
-  return result;
 };
