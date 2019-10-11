@@ -65,6 +65,25 @@ describe('Scroller', () => {
       });
     });
 
+    it('should render initial page when relative position specified and calculated relative scroll is negative', () => {
+      const children = jest.fn();
+      const sourceValue = [0, 1, 2, 3];
+      mount((
+        <TestComponent
+            scroll={30}
+            relativePosition={100}
+            totalCount={4}
+            value={sourceValue}
+            defaultSize={20}
+            itemsPerPage={2}>
+          {children}
+        </TestComponent>
+      ));
+      const { value } = children.mock.calls[0][0];
+      expect(value.length).toBe(2);
+      expect(value[0]).toBe(0);
+    });
+
   });
 
   describe('async', () => {

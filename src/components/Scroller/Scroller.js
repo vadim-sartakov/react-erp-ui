@@ -10,7 +10,8 @@ import {
 } from './utils';
 
 const Scroller = ({
-  scroll,
+  scroll: scrollProp,
+  relativePosition,
   meta,
   totalCount,
   defaultSize,
@@ -21,6 +22,7 @@ const Scroller = ({
   children
 }) => {
   
+  const scroll = scrollProp - relativePosition;
   const scrollPages = useMemo(() => meta && getScrollPages({ meta, defaultSize, itemsPerPage, totalCount }), [meta, defaultSize, itemsPerPage, totalCount]);
 
   const getPage = useCallback(scroll => {
@@ -74,6 +76,8 @@ const Scroller = ({
 };
 
 Scroller.propTypes = {
+  scroll: PropTypes.number.isRequired,
+  relativePosition: PropTypes.number,
   meta: PropTypes.arrayOf(PropTypes.shape({
     size: PropTypes.number,
     expanded: PropTypes.bool
@@ -81,7 +85,6 @@ Scroller.propTypes = {
   totalCount: PropTypes.number.isRequired,
   defaultSize: PropTypes.number.isRequired,
   itemsPerPage: PropTypes.number.isRequired,
-  scroll: PropTypes.number.isRequired,
 
   /*
    * Component functions in 2 modes: Dynamic and static.
@@ -94,6 +97,8 @@ Scroller.propTypes = {
 };
 
 Scroller.defaultProps = {
+  scroll: 0,
+  relativePosition: 0,
   meta: [],
   defaultSize: 0,
   relativeScroll: 0,

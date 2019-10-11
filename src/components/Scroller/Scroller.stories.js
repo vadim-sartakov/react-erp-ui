@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import ScrollerTree from './ScrollerTree';
+import Scroller from './Scroller';
 import classes from './Scroller-stories.module.sass';
 
 const Table = ({
@@ -34,7 +34,7 @@ const Table = ({
           </tr>
         </thead>
         <tbody>
-          <ScrollerTree
+          <Scroller
               value={value}
               loadPage={loadPage}
               meta={rows}
@@ -59,7 +59,7 @@ const Table = ({
                 ))}
               </tr>
             )}
-          </ScrollerTree>
+          </Scroller>
         </tbody>
       </table>
     </div>
@@ -77,7 +77,7 @@ const generateValues = (columns, count) => {
   });
 };
 
-storiesOf('Scroller', module)
+/*storiesOf('Scroller', module)
   .add('static table with scrollable rows', () => {
     const columns = generateColumns(8);
     const rows = { children: [] };
@@ -124,4 +124,4 @@ storiesOf('Scroller', module)
           rowsPerPage={20}
           defaultRowHeight={50} />
     )
-  });
+  });*/

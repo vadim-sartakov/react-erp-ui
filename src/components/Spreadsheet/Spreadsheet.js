@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, createContext, useContext, useCallback } from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { ScrollerTree, useResize } from '../';
+import { Scroller, useResize } from '../';
 
 export const SpreadsheetContext = createContext();
 
@@ -120,24 +120,22 @@ export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, meta,
 export const SpreadsheetScrollableHeaderColumns = ({ children }) => {
   const { columnsPerPage, defaultColumnWidth, columnsMeta, scroll, rowNumbersColumnWidth } = useContext(SpreadsheetContext);
   return (
-    <ScrollerTree
-        value={columnsMeta.children}
-        // TODO: Duplicate meta passing here. Can we omit this?
-        meta={columnsMeta}
+    <Scroller
+        value={columnsMeta}
         itemsPerPage={columnsPerPage}
         defaultSize={defaultColumnWidth}
         scroll={scroll.left}
         relativePosition={rowNumbersColumnWidth}
         renderGap={width => <th style={{ width }} />}>
       {children}
-    </ScrollerTree>
+    </Scroller>
   )
 };
 
 export const SpreadsheetScrollableRows = ({ children }) => {
   const { rowsPerPage, defaultRowHeight, scroll, value, rowsMeta, columnNumbersRowHeight, rowVerticalPadding, rowBorderHeight } = useContext(SpreadsheetContext);
   return (
-    <ScrollerTree
+    <Scroller
         value={value}
         meta={rowsMeta}
         scroll={scroll.top}
@@ -146,14 +144,14 @@ export const SpreadsheetScrollableRows = ({ children }) => {
         relativePosition={columnNumbersRowHeight}
         renderGap={height => <tr style={{ height }} />}>
       {children}
-    </ScrollerTree>
+    </Scroller>
   )
 };
 
 export const SpreadsheetScrollableRowColumns = ({ row, children }) => {
   const { columnsPerPage, defaultColumnWidth, scroll, columnsMeta } = useContext(SpreadsheetContext);
   return (
-    <ScrollerTree
+    <Scroller
         value={row.columns}
         meta={columnsMeta}
         scroll={scroll.left}
@@ -162,7 +160,7 @@ export const SpreadsheetScrollableRowColumns = ({ row, children }) => {
         renderGap={width => <td style={{ width }} />}
         disableCache>
       {children}
-    </ScrollerTree>
+    </Scroller>
   )
 };
 
