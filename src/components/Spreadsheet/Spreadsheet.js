@@ -7,12 +7,12 @@ export const SpreadsheetContext = createContext();
 
 export const Spreadsheet = ({
   style = {},
-  value,
-  onChange,
-  rowsMeta,
-  onRowsMetaChange,
-  columnsMeta,
-  onColumnsMetaChange,
+  data,
+  onDataChange,
+  rows,
+  onRowsChange,
+  columns,
+  onColumnsChange,
   height,
   initialScroll,
   columnNumbersRowHeight,
@@ -36,12 +36,13 @@ export const Spreadsheet = ({
   return (
     <SpreadsheetContext.Provider
         value={{
-          value,
+          data,
+          onDataChange,
           scroll,
-          rowsMeta,
-          onRowsMetaChange,
-          columnsMeta,
-          onColumnsMetaChange,
+          rows,
+          onRowsChange,
+          columns,
+          onColumnsChange,
           columnNumbersRowHeight,
           rowNumbersColumnWidth,
           rowsPerPage,
@@ -67,7 +68,7 @@ export const Spreadsheet = ({
   )
 };
 Spreadsheet.propTypes = {
-  value: PropTypes.arrayOf(PropTypes.arrayOfType([PropTypes.number, PropTypes.string, PropTypes.shape({
+  data: PropTypes.arrayOf(PropTypes.arrayOfType([PropTypes.number, PropTypes.string, PropTypes.shape({
     value: PropTypes.any,
     format: PropTypes.func,
     formula: PropTypes.string,
@@ -83,12 +84,12 @@ Spreadsheet.propTypes = {
       )
     })
   })])),
-  rowsMeta: PropTypes.arrayOf(PropTypes.shape({
+  rows: PropTypes.arrayOf(PropTypes.shape({
     size: PropTypes.number,
     hidden: PropTypes.bool,
     level: PropTypes.number
   })),
-  columnsMeta: PropTypes.arrayOf(PropTypes.shape({
+  columns: PropTypes.arrayOf(PropTypes.shape({
     size: PropTypes.number,
     hidden: PropTypes.bool,
     level: PropTypes.number
@@ -136,32 +137,42 @@ export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, meta,
 };
 
 export const SpreadsheetScrollableHeaderColumns = ({ children }) => {
-  const { columnsPerPage, defaultColumnWidth, columnsMeta, scroll, rowNumbersColumnWidth } = useContext(SpreadsheetContext);
+  const { columnsPerPage, defaultColumnWidth, columns, scroll, rowNumbersColumnWidth } = useContext(SpreadsheetContext);
   return (
     <Scroller
-        value={columnsMeta}
+        value={columns}
         itemsPerPage={columnsPerPage}
         defaultSize={defaultColumnWidth}
         scroll={scroll.left}
-        relativePosition={rowNumbersColumnWidth}
-        renderGap={width => <th style={{ width }} />}>
-      {children}
+        relativePosition={rowNumbersColumnWidth}>
+      {args => (
+        <>
+          {args.gaps.start ? <th style={{ width: args.gaps.start }} /> : null}
+          {children(args)}
+          {args.gaps.end ? <th style={{ width: args.gaps.end }} /> : null}
+        </>
+      )}
     </Scroller>
   )
 };
 
 export const SpreadsheetScrollableRows = ({ children }) => {
-  const { rowsPerPage, defaultRowHeight, scroll, value, rowsMeta, columnNumbersRowHeight, rowVerticalPadding, rowBorderHeight } = useContext(SpreadsheetContext);
+  const { rowsPerPage, defaultRowHeight, scroll, data, rows, columnNumbersRowHeight, rowVerticalPadding, rowBorderHeight } = useContext(SpreadsheetContext);
   return (
     <Scroller
-        value={value}
-        meta={rowsMeta}
+        value={data}
+        meta={rows}
         scroll={scroll.top}
         itemsPerPage={rowsPerPage}
         defaultSize={defaultRowHeight + (rowVerticalPadding * 2) + rowBorderHeight}
-        relativePosition={columnNumbersRowHeight}
-        renderGap={height => <tr style={{ height }} />}>
-      {children}
+        relativePosition={columnNumbersRowHeight}>
+      {args => (
+        <>
+          {args.gaps.start ? <tr style={{ height: args.gaps.start }} /> : null}
+          {children(args)}
+          {args.gaps.end ? <tr style={{ height: args.gaps.end }} /> : null}
+        </>
+      )}
     </Scroller>
   )
 };
@@ -170,14 +181,19 @@ export const SpreadsheetScrollableRowColumns = ({ row, children }) => {
   const { columnsPerPage, defaultColumnWidth, scroll, columnsMeta } = useContext(SpreadsheetContext);
   return (
     <Scroller
-        value={row.columns}
+        value={row}
         meta={columnsMeta}
         scroll={scroll.left}
         itemsPerPage={columnsPerPage}
         defaultSize={defaultColumnWidth}
-        renderGap={width => <td style={{ width }} />}
         disableCache>
-      {children}
+      {args => (
+        <>
+          {args.gaps.start ? <td style={{ width: args.gaps.start }} /> : null}
+          {children(args)}
+          {args.gaps.end ? <td style={{ width: args.gaps.end }} /> : null}
+        </>
+      )}
     </Scroller>
   )
 };

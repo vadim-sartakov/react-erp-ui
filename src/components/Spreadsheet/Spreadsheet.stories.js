@@ -19,23 +19,28 @@ const generateColumns = count => {
 const generateValues = (columns, count) => {
   return [...new Array(count).keys()].map((rowItem, rowIndex) => {
     const rowColumns = columns.map((column, columnIndex) => ({ value: `Value ${rowIndex} - ${columnIndex}` }));
-    return { columns: rowColumns };
+    return rowColumns;
   });
 };
 
 const columns = generateColumns(15);
-const value = generateValues(columns, 1000);
-value[100].children = generateValues(columns, 100);
+const data = generateValues(columns, 1000);
 
 const rows = [];
-rows[100] = { expanded: true };
+for (let i = 100; i < 200; i++) {
+  rows[i] = { level: 1 };
+}
+
+for (let i = 50; i < 70; i++) {
+  rows[i] = { level: 2 };
+}
 
 const SpreadsheetComponent = () => {
   return (
     <Spreadsheet
-        columnsMeta={{ children: columns }}
-        rowsMeta={{ children: rows }}
-        value={value}
+        columns={columns}
+        rows={rows}
+        data={data}
         className={classes.root}
         defaultColumnWidth={120}
         height={600}
@@ -50,7 +55,6 @@ const SpreadsheetComponent = () => {
           <SpreadsheetScrollableHeaderColumns>
              {({ index, value, depth, isGroup }) => (
                 <SpreadsheetTableHeaderCell key={index} meta={value}>
-                  {/* TODO: This row index does not maintatn column number. It's visible value's index only */}
                   {index + 1}
                 </SpreadsheetTableHeaderCell>
              )}
