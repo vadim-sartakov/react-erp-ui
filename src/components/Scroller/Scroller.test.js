@@ -29,9 +29,10 @@ describe('Scroller', () => {
           {children}
         </TestComponent>
       ));
-      const { value, meta, gaps } = children.mock.calls[0][0];
+      const { value, meta, gaps, startIndex } = children.mock.calls[0][0];
 
       expect(value.length).toBe(1);
+      expect(startIndex).toBe(0);
       expect(value[0]).toBe(0);
       expect(meta).toEqual([]);
       expect(gaps).toEqual({
@@ -54,8 +55,9 @@ describe('Scroller', () => {
           {children}
         </TestComponent>
       ));
-      const { value, meta, gaps } = children.mock.calls[0][0];
+      const { value, meta, gaps, startIndex } = children.mock.calls[0][0];
       expect(value.length).toBe(2);
+      expect(startIndex).toBe(1);
       expect(value[0]).toBe(1);
       expect(value[1]).toBe(2);
       expect(meta).toEqual([{}, { size: 20 }]);

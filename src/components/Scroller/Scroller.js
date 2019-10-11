@@ -68,9 +68,11 @@ const Scroller = ({
   const visibleValue = visiblePages.reduce(visibleValuesReducer, []);
   const visibleMeta = visibleMetaPages.reduce(visibleValuesReducer, []);
 
+  const startIndex = visiblePages[0].page * itemsPerPage;
+
   return (
     <>
-      {children({ value: visibleValue, meta: visibleMeta, gaps, originMeta: meta })}
+      {children({ value: visibleValue, meta: visibleMeta, gaps, originMeta: meta, startIndex })}
     </>
   );
 };
