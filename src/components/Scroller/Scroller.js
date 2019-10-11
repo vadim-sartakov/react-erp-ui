@@ -37,13 +37,6 @@ const Scroller = ({
 
   const page = useMemo(() => getPage(scroll), [scroll, getPage]);
 
-  // TODO: think about server side meta loading
-  const visibleMetaPages = useBufferedPages({
-    value: meta,
-    page,
-    itemsPerPage,
-    totalCount: totalCount
-  });
   const visiblePages = useBufferedPages({
     value,
     page,
@@ -64,15 +57,12 @@ const Scroller = ({
   }, [page, defaultSize, itemsPerPage, meta, scrollPages, totalCount]);
 
   const visibleValuesReducer = (acc, page) => [...acc, ...page.value];
-
   const visibleValue = visiblePages.reduce(visibleValuesReducer, []);
-  const visibleMeta = visibleMetaPages.reduce(visibleValuesReducer, []);
-
   const startIndex = visiblePages[0].page * itemsPerPage;
 
   return (
     <>
-      {children({ value: visibleValue, meta: visibleMeta, gaps, originMeta: meta, startIndex })}
+      {children({ value: visibleValue, gaps, startIndex })}
     </>
   );
 };

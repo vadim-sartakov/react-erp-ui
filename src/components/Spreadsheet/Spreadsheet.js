@@ -145,11 +145,13 @@ export const SpreadsheetScrollableHeaderColumns = ({ children }) => {
         defaultSize={defaultColumnWidth}
         scroll={scroll.left}
         relativePosition={rowNumbersColumnWidth}>
-      {args => (
+      {({ gaps, value, startIndex }) => (
         <>
-          {args.gaps.start ? <th style={{ width: args.gaps.start }} /> : null}
-          {children(args)}
-          {args.gaps.end ? <th style={{ width: args.gaps.end }} /> : null}
+          {gaps.start ? <th style={{ width: gaps.start }} /> : null}
+          {value.map((column, columnIndex) => {
+            return children({ column, index: startIndex + columnIndex });
+          })}
+          {gaps.end ? <th style={{ width: gaps.end }} /> : null}
         </>
       )}
     </Scroller>

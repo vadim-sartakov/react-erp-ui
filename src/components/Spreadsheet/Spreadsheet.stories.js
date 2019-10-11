@@ -54,7 +54,7 @@ const SpreadsheetComponent = () => {
           <SpreadsheetRowNumbersColumn Component="th" />
           <SpreadsheetScrollableHeaderColumns>
              {({ index, value, depth, isGroup }) => (
-                <SpreadsheetTableHeaderCell key={index} meta={value}>
+                <SpreadsheetTableHeaderCell key={index} index={index}>
                   {index + 1}
                 </SpreadsheetTableHeaderCell>
              )}
