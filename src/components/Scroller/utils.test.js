@@ -9,7 +9,7 @@ import {
   setMetaTotalCount
 } from './utils';
 
-describe('Scroller utils', () => {
+describe.only('Scroller utils', () => {
   
   describe('getItemsCountOnPage', () => {
     it('should return items per page count on middle page', () => {
@@ -23,15 +23,12 @@ describe('Scroller utils', () => {
   describe('getScrollPages', () => {
 
     it('should return equal ranges with default sizes and total count 3', () => {
-      const meta = {
-        totalCount: 3,
-        children: [
-          {},
-          {},
-          {}
-        ]
-      };
-      const result = getScrollPages(meta, 20, 2);
+      const meta = [
+        {},
+        {},
+        {}
+      ];
+      const result = getScrollPages({ meta, totalCount: 3, defaultSize: 20, itemsPerPage: 2 });
       expect(result).toEqual([
         { start: 0, end: 40 },
         { start: 40, end: 60 }
@@ -39,16 +36,13 @@ describe('Scroller utils', () => {
     });
 
     it('should return equal ranges with default sizes and total count 4', () => {
-      const meta = {
-        totalCount: 4,
-        children: [
-          {},
-          {},
-          {},
-          {}
-        ]
-      };
-      const result = getScrollPages(meta, 20, 2);
+      const meta = [
+        {},
+        {},
+        {},
+        {}
+      ];
+      const result = getScrollPages({ meta, defaultSize: 20, itemsPerPage: 2, totalCount: 4 });
       expect(result).toEqual([
         { start: 0, end: 40 },
         { start: 40, end: 80 }
@@ -56,15 +50,12 @@ describe('Scroller utils', () => {
     });
 
     it('should return longer range when custom size in the middle is specified', () => {
-      const meta = {
-        totalCount: 3,
-        children: [
-          {},
-          { size: 40 },
-          {}
-        ]
-      };
-      const result = getScrollPages(meta, 20, 2);
+      const meta = [
+        {},
+        { size: 40 },
+        {}
+      ];
+      const result = getScrollPages({ meta, defaultSize: 20, itemsPerPage: 2, totalCount: 3 });
       expect(result).toEqual([
         { start: 0, end: 60 },
         { start: 60, end: 80 }
@@ -72,15 +63,12 @@ describe('Scroller utils', () => {
     });
 
     it('should return longer ranges when custom size is specified in multiple places', () => {
-      const meta = {
-        totalCount: 3,
-        children: [
-          {},
-          { size: 40 },
-          { size: 60 }
-        ]
-      };
-      const result = getScrollPages(meta, 20, 2);
+      const meta = [
+        {},
+        { size: 40 },
+        { size: 60 }
+      ];
+      const result = getScrollPages({ meta, defaultSize: 20, itemsPerPage: 2, totalCount: 3 });
       expect(result).toEqual([
         { start: 0, end: 60 },
         { start: 60, end: 120 }

@@ -12,6 +12,7 @@ import {
 const Scroller = ({
   scroll,
   meta,
+  totalCount,
   defaultSize,
   itemsPerPage,
   value,
@@ -20,45 +21,45 @@ const Scroller = ({
   children
 }) => {
   
-  const scrollPages = useMemo(() => meta && meta.children && meta.children.length && getScrollPages(meta, defaultSize, itemsPerPage), [meta, defaultSize, itemsPerPage]);
+  const scrollPages = useMemo(() => meta && getScrollPages({ meta, defaultSize, itemsPerPage, totalCount }), [meta, defaultSize, itemsPerPage, totalCount]);
 
   const getPage = useCallback(scroll => {
     let currentPage;
-    if (meta && meta.children && meta.children.length) {
+    if (meta && meta.length) {
       currentPage = getPageNumberFromScrollPages(scrollPages, scroll);
     } else {
-      currentPage = getPageNumberWithDefaultSize({ defaultSize, itemsPerPage, scroll, totalCount: meta.totalCount });
+      currentPage = getPageNumberWithDefaultSize({ defaultSize, itemsPerPage, scroll, totalCount });
     }
     return currentPage;
-  }, [meta, defaultSize, itemsPerPage, scrollPages]);
+  }, [meta, defaultSize, itemsPerPage, scrollPages, totalCount]);
 
   const page = useMemo(() => getPage(scroll), [scroll, getPage]);
 
   // TODO: think about server side meta loading
   const visibleMetaPages = useBufferedPages({
-    value: ( meta && meta.children ) || [],
+    value: meta,
     page,
     itemsPerPage,
-    totalCount: meta.totalCount
+    totalCount: totalCount
   });
   const visiblePages = useBufferedPages({
     value,
     page,
     loadPage,
     itemsPerPage,
-    totalCount: meta.totalCount,
+    totalCount: totalCount,
     disableCache
   });
 
   const gaps = useMemo(() => {
     let result;
-    if (meta && meta.children && meta.children.length) {
+    if (meta && meta.length) {
       result = getGapsFromScrollPages(scrollPages, page);
     } else {
-      result = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount: meta.totalCount, page });
+      result = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount, page });
     }
     return result;
-  }, [page, defaultSize, itemsPerPage, meta, scrollPages]);
+  }, [page, defaultSize, itemsPerPage, meta, scrollPages, totalCount]);
 
   const visibleValuesReducer = (acc, page) => [...acc, ...page.value];
 
@@ -73,14 +74,11 @@ const Scroller = ({
 };
 
 Scroller.propTypes = {
-  meta: PropTypes.shape({
-    isLoading: PropTypes.bool,
-    /* It's required for async value. For sync it's calculated depending on values children count */
-    totalCount: PropTypes.number,
+  meta: PropTypes.arrayOf(PropTypes.shape({
     size: PropTypes.number,
-    expanded: PropTypes.bool,
-    children: PropTypes.arrayOf(PropTypes.object)
-  }),
+    expanded: PropTypes.bool
+  })),
+  totalCount: PropTypes.number.isRequired,
   defaultSize: PropTypes.number.isRequired,
   itemsPerPage: PropTypes.number.isRequired,
   scroll: PropTypes.number.isRequired,
@@ -96,6 +94,7 @@ Scroller.propTypes = {
 };
 
 Scroller.defaultProps = {
+  meta: [],
   defaultSize: 0,
   relativeScroll: 0,
   itemsPerPage: 40,

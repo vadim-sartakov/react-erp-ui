@@ -14,12 +14,12 @@ export const getItemsCountOnPage = (page, itemsPerPage, totalCount) => {
  * @param {*} defaultSize 
  * @param {*} itemsPerPage 
  */
-export const getScrollPages = (meta, defaultSize, itemsPerPage) => {
-  const values = [...new Array(meta.totalCount).keys()];
+export const getScrollPages = ({ meta, totalCount, defaultSize, itemsPerPage }) => {
+  const values = [...new Array(totalCount).keys()];
   const result = values.reduce(({ curPage, pages }, arrayItem, index, values) => {
-    const metaChild = meta.children[index];
+    const curMeta = meta && meta[index];
 
-    const selfSize = (metaChild && metaChild.size) || defaultSize;
+    const selfSize = ( curMeta && curMeta.size ) || defaultSize;
     const isNextPage = index > 0 && index % itemsPerPage === 0;
     
     let nextPages = isNextPage ? [...pages, curPage] : pages;
