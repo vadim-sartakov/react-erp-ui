@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect, createContext, useContext, useCallback } from 'react';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { Scroller, useResize } from '../';
 
@@ -131,9 +130,10 @@ export const SpreadsheetRowNumbersColumn = ({ Component = 'td', style = {}, ...p
   return <Component {...props} style={{ ...style, width: rowNumbersColumnWidth }} />;
 };
 
-export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, meta, ...props }) => {
-  const { defaultColumnWidth } = useContext(SpreadsheetContext);
-  return <Component {...props} style={{ ...style, width: meta.size || defaultColumnWidth }} />;
+export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, index, ...props }) => {
+  const { columns, defaultColumnWidth } = useContext(SpreadsheetContext);
+  const column = columns[index];
+  return <Component {...props} style={{ ...style, width: (column && column.size) || defaultColumnWidth }} />;
 };
 
 export const SpreadsheetScrollableHeaderColumns = ({ children }) => {
@@ -168,11 +168,13 @@ export const SpreadsheetScrollableRows = ({ children }) => {
         itemsPerPage={rowsPerPage}
         defaultSize={defaultRowHeight + (rowVerticalPadding * 2) + rowBorderHeight}
         relativePosition={columnNumbersRowHeight}>
-      {args => (
+      {({ gaps, value, startIndex }) => (
         <>
-          {args.gaps.start ? <tr style={{ height: args.gaps.start }} /> : null}
-          {children(args)}
-          {args.gaps.end ? <tr style={{ height: args.gaps.end }} /> : null}
+          {gaps.start ? <tr style={{ height: gaps.start }} /> : null}
+          {value.map((row, rowIndex) => {
+            return children({ value: row, index: startIndex + rowIndex });
+          })}
+          {gaps.end ? <tr style={{ height: gaps.end }} /> : null}
         </>
       )}
     </Scroller>
@@ -200,21 +202,22 @@ export const SpreadsheetScrollableRowColumns = ({ row, children }) => {
   )
 };
 
-export const SpreadsheetCellValue = ({ mode, style, meta, ...props }) => {
-  const { defaultRowHeight } = useContext(SpreadsheetContext);
-  const nextStyle = { ...style, height: meta.size || defaultRowHeight, overflow: 'hidden' };
+export const SpreadsheetCellValue = ({ mode, style, index, ...props }) => {
+  const { rows, defaultRowHeight } = useContext(SpreadsheetContext);
+  const row = rows[index];
+  const nextStyle = { ...style, height: ( row && row.size ) || defaultRowHeight, overflow: 'hidden' };
   return <div style={nextStyle} {...props} />;
 };
 
-export const SpreadsheetColumnResizer = ({ meta, originMeta, onMetaChange, ...props }) => {
-  const { onColumnsMetaChange } = useContext(SpreadsheetContext);
-  const sizes = { width: meta.size, height: 0 };
+export const SpreadsheetColumnResizer = ({ index, ...props }) => {
+  const { columns, onColumnsChange, defaultColumnWidth } = useContext(SpreadsheetContext);
+  const column = columns[index];
+  const sizes = { width: (column && column.size) || defaultColumnWidth, height: 0 };
   const handleSizesChange = useCallback(({ width }) => {
-    onColumnsMetaChange(meta => {
-      const nextMeta = _.cloneDeep(originMeta);
-
+    onColumnsChange(columns => {
+      return columns.map((column, curIndex) => curIndex === index ? { ...column, size: width } : column);
     });
-  }, [onColumnsMetaChange, originMeta]);
+  }, [index, onColumnsChange]);
   const onStartResize = useResize({ sizes, onSizesChange: handleSizesChange });
   return <div {...props} onMouseDown={onStartResize} />;
 };
