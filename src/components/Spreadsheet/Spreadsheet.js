@@ -67,7 +67,7 @@ export const Spreadsheet = ({
   )
 };
 Spreadsheet.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.arrayOfType([PropTypes.number, PropTypes.string, PropTypes.shape({
+  data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.shape({
     value: PropTypes.any,
     format: PropTypes.func,
     formula: PropTypes.string,
@@ -82,7 +82,7 @@ Spreadsheet.propTypes = {
         })
       )
     })
-  })])),
+  })]))),
   rows: PropTypes.arrayOf(PropTypes.shape({
     size: PropTypes.number,
     hidden: PropTypes.bool,
@@ -136,34 +136,13 @@ export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, index
   return <Component {...props} style={{ ...style, width: (column && column.size) || defaultColumnWidth }} />;
 };
 
-export const SpreadsheetScrollableHeaderColumns = ({ children }) => {
-  const { columnsPerPage, defaultColumnWidth, columns, scroll, rowNumbersColumnWidth } = useContext(SpreadsheetContext);
-  return (
-    <Scroller
-        value={columns}
-        itemsPerPage={columnsPerPage}
-        defaultSize={defaultColumnWidth}
-        scroll={scroll.left}
-        relativePosition={rowNumbersColumnWidth}>
-      {({ gaps, value, startIndex }) => (
-        <>
-          {gaps.start ? <th style={{ width: gaps.start }} /> : null}
-          {value.map((column, columnIndex) => {
-            return children({ column, index: startIndex + columnIndex });
-          })}
-          {gaps.end ? <th style={{ width: gaps.end }} /> : null}
-        </>
-      )}
-    </Scroller>
-  )
-};
-
 export const SpreadsheetScrollableRows = ({ children }) => {
   const { rowsPerPage, defaultRowHeight, scroll, data, rows, columnNumbersRowHeight, rowVerticalPadding, rowBorderHeight } = useContext(SpreadsheetContext);
   return (
     <Scroller
         value={data}
         meta={rows}
+        totalCount={data.length}
         scroll={scroll.top}
         itemsPerPage={rowsPerPage}
         defaultSize={defaultRowHeight + (rowVerticalPadding * 2) + rowBorderHeight}
@@ -175,27 +154,6 @@ export const SpreadsheetScrollableRows = ({ children }) => {
             return children({ value: row, index: startIndex + rowIndex });
           })}
           {gaps.end ? <tr style={{ height: gaps.end }} /> : null}
-        </>
-      )}
-    </Scroller>
-  )
-};
-
-export const SpreadsheetScrollableRowColumns = ({ row, children }) => {
-  const { columnsPerPage, defaultColumnWidth, scroll, columnsMeta } = useContext(SpreadsheetContext);
-  return (
-    <Scroller
-        value={row}
-        meta={columnsMeta}
-        scroll={scroll.left}
-        itemsPerPage={columnsPerPage}
-        defaultSize={defaultColumnWidth}
-        disableCache>
-      {args => (
-        <>
-          {args.gaps.start ? <td style={{ width: args.gaps.start }} /> : null}
-          {children(args)}
-          {args.gaps.end ? <td style={{ width: args.gaps.end }} /> : null}
         </>
       )}
     </Scroller>

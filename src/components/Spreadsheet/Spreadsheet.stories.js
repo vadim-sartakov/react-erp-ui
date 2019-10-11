@@ -3,9 +3,7 @@ import { storiesOf } from '@storybook/react';
 import {
   Spreadsheet,
   SpreadsheetTableHeaderCell,
-  SpreadsheetScrollableHeaderColumns,
   SpreadsheetScrollableRows,
-  SpreadsheetScrollableRowColumns,
   SpreadsheetColumnNumbersRow,
   SpreadsheetRowNumbersColumn,
   SpreadsheetCellValue
@@ -31,7 +29,7 @@ for (let i = 100; i < 200; i++) {
   rows[i] = { level: 1 };
 }
 
-for (let i = 50; i < 70; i++) {
+for (let i = 120; i < 170; i++) {
   rows[i] = { level: 2 };
 }
 
@@ -52,35 +50,36 @@ const SpreadsheetComponent = () => {
       <thead>
         <SpreadsheetColumnNumbersRow>
           <SpreadsheetRowNumbersColumn Component="th" />
-          <SpreadsheetScrollableHeaderColumns>
-             {({ index, value, depth, isGroup }) => (
-                <SpreadsheetTableHeaderCell key={index} index={index}>
-                  {index + 1}
-                </SpreadsheetTableHeaderCell>
-             )}
-          </SpreadsheetScrollableHeaderColumns>
+          {columns.map((column, columnIndex) => {
+            return (
+              <SpreadsheetTableHeaderCell key={columnIndex} index={columnIndex}>
+                {columnIndex + 1}
+              </SpreadsheetTableHeaderCell>
+            )
+          })}
         </SpreadsheetColumnNumbersRow>
       </thead>
 
       <tbody>
         <SpreadsheetScrollableRows>
-          {({ index: rowIndex, value: rowValue, meta: rowMeta, isGroup, depth }) => {
+          {({ index: rowIndex, value: rowValue }) => {
+            const row = rows[rowIndex];
+            const level = row && row.level;
             return (
               <tr key={rowIndex}>
                 <td>
                   {rowIndex + 1}
                 </td>
-                <SpreadsheetScrollableRowColumns row={rowValue}>
-                  {({ index: columnIndex, value: cellValue, meta: columnMeta }) => {
-                    return (
-                      <td key={columnIndex}>
-                        <SpreadsheetCellValue meta={columnMeta} style={{ marginLeft: depth && columnIndex === 0 ? depth * 15 : undefined }}>
-                          {cellValue.value}
-                        </SpreadsheetCellValue>
-                      </td>
-                    )
-                  }}
-                </SpreadsheetScrollableRowColumns>
+                {columns.map((column, columnIndex) => {
+                  const cellValue = rowValue[columnIndex];
+                  return (
+                    <td key={columnIndex}>
+                      <SpreadsheetCellValue index={columnIndex} style={{ marginLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
+                        {cellValue.value}
+                      </SpreadsheetCellValue>
+                    </td>
+                  )
+                })}
               </tr>
             )
           }}
