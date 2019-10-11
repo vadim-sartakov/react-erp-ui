@@ -19,7 +19,7 @@ const TestComponent = ({
   );
 };
 
-const createValues = count => [...Array(count).keys()].map(value => ({ value }));
+const createValues = count => [...Array(count).keys()];
 
 describe('useBufferedPages', () => {
 
@@ -31,8 +31,8 @@ describe('useBufferedPages', () => {
       const wrapper = mount(<TestComponent value={value} page={0} itemsPerPage={20} />);
       const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(1);
-      expect(result[0].value[0]).toEqual({ index: 0, value: 0 });
-      expect(result[0].value[19]).toEqual({ index: 19, value: 19 });
+      expect(result[0].value[0]).toBe(0);
+      expect(result[0].value[19]).toBe(19);
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -43,8 +43,8 @@ describe('useBufferedPages', () => {
       wrapper.setProps({ page: 1 });
       const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(2);
-      expect(result[0].value[0]).toEqual({ index: 0, value: 0 });
-      expect(result[1].value[19]).toEqual({ index: 39, value: 39 });
+      expect(result[0].value[0]).toBe(0);
+      expect(result[1].value[19]).toBe(39);
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
@@ -55,8 +55,8 @@ describe('useBufferedPages', () => {
       wrapper.setProps({ page: 2 });
       const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(2);
-      expect(result[0].value[0]).toEqual({ index: 20, value: 20 });
-      expect(result[1].value[19]).toEqual({ index: 59, value: 59 });
+      expect(result[0].value[0]).toBe(20);
+      expect(result[1].value[19]).toBe(59);
       expect(spy).toHaveBeenCalledTimes(3);
     });
 
@@ -80,8 +80,8 @@ describe('useBufferedPages', () => {
       wrapper.setProps({ page: 1 });
       const result = JSON.parse(wrapper.find('div').text());
       expect(result.length).toBe(2);
-      expect(result[0].value[0]).toEqual({ index: 0, value: 0 });
-      expect(result[1].value[19]).toEqual({ index: 39, value: 39 });
+      expect(result[0].value[0]).toBe(0);
+      expect(result[1].value[19]).toBe(39);
       expect(spy).toHaveBeenCalledTimes(3);
     });
 
@@ -131,14 +131,12 @@ describe('useBufferedPages', () => {
     });
 
     it('should correctly scroll from page 0 to 1', async () => {
-      const loadPage = jest.fn(async () => [...new Array(20).keys()].map(value => ({ value })));
+      const loadPage = jest.fn(async () => [...new Array(20).keys()]);
       let wrapper;
       await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={0} itemsPerPage={20} totalCount={80} />); });
       await act(async () => { wrapper.setProps({ page: 1 }); });
       const result = JSON.parse(wrapper.find('div').text());
-      expect(result.length).toBe(2);      
-      expect(result[0].value[0]).toEqual({ index: 0, value: 0 });
-      expect(result[1].value[0]).toEqual({ index: 20, value: 0 });
+      expect(result.length).toBe(2);
       expect(loadPage).toHaveBeenCalledTimes(2);
     });
 
@@ -153,7 +151,7 @@ describe('useBufferedPages', () => {
     });
 
     it('should reuse cache and call loadPage only 3 times when scrolling from page 1 to 2 and back to 1', async () => {
-      const loadPage = jest.fn(async () => [...new Array(20).keys()]);
+      const loadPage = jest.fn(async () => ({ totalCount: 80, value: [...new Array(20).keys()] }));
       let wrapper;
       await act(async () => { wrapper = mount(<TestComponent loadPage={loadPage} page={1} itemsPerPage={20} totalCount={80} />); });
       await act(async () => { wrapper.setProps({ page: 2 }); });
