@@ -143,10 +143,9 @@ export const SpreadsheetScrollableRows = ({ children }) => {
         value={data}
         meta={rows}
         totalCount={data.length}
-        scroll={scroll.top}
+        scroll={scroll.top - columnNumbersRowHeight}
         itemsPerPage={rowsPerPage}
-        defaultSize={defaultRowHeight + (rowVerticalPadding * 2) + rowBorderHeight}
-        relativePosition={columnNumbersRowHeight}>
+        defaultSize={defaultRowHeight + (rowVerticalPadding * 2) + rowBorderHeight}>
       {({ gaps, value, startIndex }) => (
         <>
           {gaps.start ? <tr style={{ height: gaps.start }} /> : null}
