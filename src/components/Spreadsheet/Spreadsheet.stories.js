@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import {
   Spreadsheet,
   SpreadsheetTableHeaderCell,
   SpreadsheetScrollableRows,
-  SpreadsheetColumnNumbersRow,
-  SpreadsheetRowNumbersColumn,
-  SpreadsheetCellValue
+  SpreadsheetCellValue,
+  SpreadsheetColumnResizer,
+  SpreadsheetRowResizer
 } from './';
 import classes from './Spreadsheet-stories.module.sass';
 
@@ -34,15 +34,18 @@ for (let i = 120; i < 170; i++) {
 }
 
 const SpreadsheetComponent = () => {
+  const [columnsValue, setColumnsValue] = useState(columns);
+  const [rowsValue, setRowsValue] = useState(rows);
   return (
     <Spreadsheet
-        columns={columns}
-        rows={rows}
+        columns={columnsValue}
+        onColumnsChange={setColumnsValue}
+        rows={rowsValue}
+        onRowsChange={setRowsValue}
         data={data}
         className={classes.root}
         defaultColumnWidth={120}
         height={650}
-        rowNumbersColumnWidth={50}
         defaultRowHeight={16}
         rowVerticalPadding={4}
         rowBorderHeight={1}
@@ -54,6 +57,7 @@ const SpreadsheetComponent = () => {
             return (
               <SpreadsheetTableHeaderCell key={columnIndex} index={columnIndex}>
                 {columnIndex + 1}
+                <SpreadsheetColumnResizer index={columnIndex} className={classes.columnResizer} />
               </SpreadsheetTableHeaderCell>
             )
           })}
@@ -69,12 +73,13 @@ const SpreadsheetComponent = () => {
               <tr key={rowIndex}>
                 <td>
                   {rowIndex + 1}
+                  <SpreadsheetRowResizer index={rowIndex} className={classes.rowResizer} />
                 </td>
                 {columns.map((column, columnIndex) => {
                   const cellValue = rowValue[columnIndex];
                   return (
                     <td key={columnIndex}>
-                      <SpreadsheetCellValue index={columnIndex} style={{ marginLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
+                      <SpreadsheetCellValue rowIndex={rowIndex} style={{ marginLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
                         {cellValue.value}
                       </SpreadsheetCellValue>
                     </td>

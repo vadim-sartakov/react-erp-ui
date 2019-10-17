@@ -4,6 +4,7 @@
   font-size: 14px
 
   thead th
+    position: relative
     text-align: center
     border-bottom: 2px solid #dee2e6
     border-right: 1px solid #dee2e6
@@ -19,14 +20,15 @@
   position: absolute
   z-index: 1
   user-select: none
-.column-resizer
+.columnResizer
+  composes: resizer
   right: 0
   top: 0
   bottom: 0
   width: 8px
-  border-right: solid 1px #dee2e6
   cursor: col-resize
-.row-resizer
+.rowResizer
+  composes: resizer
   left: 0
   right: 0
   bottom: 0

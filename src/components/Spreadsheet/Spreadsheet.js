@@ -142,9 +142,9 @@ export const SpreadsheetScrollableRows = ({ children }) => {
   )
 };
 
-export const SpreadsheetCellValue = ({ mode, style, index, ...props }) => {
+export const SpreadsheetCellValue = ({ mode, style, rowIndex, ...props }) => {
   const { rows, defaultRowHeight } = useContext(SpreadsheetContext);
-  const row = rows[index];
+  const row = rows[rowIndex];
   const nextStyle = { ...style, height: ( row && row.size ) || defaultRowHeight, overflow: 'hidden' };
   return <div style={nextStyle} {...props} />;
 };
@@ -158,6 +158,21 @@ export const SpreadsheetColumnResizer = ({ index, ...props }) => {
       return columns.map((column, curIndex) => curIndex === index ? { ...column, size: width } : column);
     });
   }, [index, onColumnsChange]);
+  const onStartResize = useResize({ sizes, onSizesChange: handleSizesChange });
+  return <div {...props} onMouseDown={onStartResize} />;
+};
+
+export const SpreadsheetRowResizer = ({ index, ...props }) => {
+  const { rows, onRowsChange, defaultRowHeight } = useContext(SpreadsheetContext);
+  const row = rows[index];
+  const sizes = { height: (row && row.size) || defaultRowHeight, width: 0 };
+  const handleSizesChange = useCallback(({ height }) => {
+    onRowsChange(rows => {
+      const nextRows = [...(rows || [])];
+      nextRows[index] = { ...(nextRows[index] || {}), size: height };
+      return nextRows;
+    });
+  }, [index, onRowsChange]);
   const onStartResize = useResize({ sizes, onSizesChange: handleSizesChange });
   return <div {...props} onMouseDown={onStartResize} />;
 };
