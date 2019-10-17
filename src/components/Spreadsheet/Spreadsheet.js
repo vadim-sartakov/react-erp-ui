@@ -113,10 +113,11 @@ Spreadsheet.defaultProps = {
   rowBorderHeight: 1
 };
 
-export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, index, ...props }) => {
-  const { columns, defaultColumnWidth } = useContext(SpreadsheetContext);
-  const column = columns[index];
-  return <Component {...props} style={{ ...style, width: (column && column.size) || defaultColumnWidth }} />;
+export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, columnIndex, rowIndex, ...props }) => {
+  const { columns, defaultColumnWidth, rows, defaultRowHeight } = useContext(SpreadsheetContext);
+  const column = columns[columnIndex];
+  const row = rows[rowIndex];
+  return <Component {...props} style={{ ...style, width: (column && column.size) || defaultColumnWidth, height: (row && row.size) || defaultRowHeight }} />;
 };
 
 export const SpreadsheetScrollableRows = ({ children }) => {
@@ -133,7 +134,8 @@ export const SpreadsheetScrollableRows = ({ children }) => {
         <>
           {gaps.start ? <tr style={{ height: gaps.start }} /> : null}
           {value.map((row, rowIndex) => {
-            return children({ value: row, index: startIndex + rowIndex });
+            const index = startIndex + rowIndex;
+            return children({ value: row, index, row: rows[index] });
           })}
           {gaps.end ? <tr style={{ height: gaps.end }} /> : null}
         </>

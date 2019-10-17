@@ -21,27 +21,27 @@ const generateValues = (columns, count) => {
   });
 };
 
-const columns = generateColumns(15);
-const data = generateValues(columns, 1000);
+const initialColumns = generateColumns(15);
+const data = generateValues(initialColumns, 1000);
 
-const rows = [];
+const initialRows = [];
 for (let i = 100; i < 200; i++) {
-  rows[i] = { level: 1 };
+  initialRows[i] = { level: 1 };
 }
 
 for (let i = 120; i < 170; i++) {
-  rows[i] = { level: 2 };
+  initialRows[i] = { level: 2 };
 }
 
 const SpreadsheetComponent = () => {
-  const [columnsValue, setColumnsValue] = useState(columns);
-  const [rowsValue, setRowsValue] = useState(rows);
+  const [columns, setColumns] = useState([{ size: 50 }, ...initialColumns]);
+  const [rows, setRows] = useState([{ size: 30 }, ...initialRows]);
   return (
     <Spreadsheet
-        columns={columnsValue}
-        onColumnsChange={setColumnsValue}
-        rows={rowsValue}
-        onRowsChange={setRowsValue}
+        columns={columns}
+        onColumnsChange={setColumns}
+        rows={rows}
+        onRowsChange={setRows}
         data={data}
         className={classes.root}
         defaultColumnWidth={120}
@@ -51,13 +51,13 @@ const SpreadsheetComponent = () => {
         rowBorderHeight={1}
         rowsPerPage={60}>
       <thead>
-        <tr style={{ height: 20 }}>
-          <th style={{ width: 50 }} />
-          {columns.map((column, columnIndex) => {
+        <tr>
+          <SpreadsheetTableHeaderCell columnIndex={0} rowIndex={0} />
+          {columns.slice(1, columns.length).map((column, columnIndex) => {
             return (
-              <SpreadsheetTableHeaderCell key={columnIndex} index={columnIndex}>
+              <SpreadsheetTableHeaderCell key={columnIndex} columnIndex={columnIndex + 1} rowIndex={0}>
                 {columnIndex + 1}
-                <SpreadsheetColumnResizer index={columnIndex} className={classes.columnResizer} />
+                <SpreadsheetColumnResizer index={columnIndex + 1} className={classes.columnResizer} />
               </SpreadsheetTableHeaderCell>
             )
           })}
@@ -66,20 +66,19 @@ const SpreadsheetComponent = () => {
 
       <tbody>
         <SpreadsheetScrollableRows>
-          {({ index: rowIndex, value: rowValue }) => {
-            const row = rows[rowIndex];
+          {({ index: rowIndex, value: rowValue, row }) => {
             const level = row && row.level;
             return (
               <tr key={rowIndex}>
                 <td>
                   {rowIndex + 1}
-                  <SpreadsheetRowResizer index={rowIndex} className={classes.rowResizer} />
+                  <SpreadsheetRowResizer index={rowIndex + 1} className={classes.rowResizer} />
                 </td>
-                {columns.map((column, columnIndex) => {
+                {columns.slice(1, columns.length).map((column, columnIndex) => {
                   const cellValue = rowValue[columnIndex];
                   return (
-                    <td key={columnIndex}>
-                      <SpreadsheetCellValue rowIndex={rowIndex} style={{ marginLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
+                    <td key={columnIndex + 1}>
+                      <SpreadsheetCellValue rowIndex={rowIndex + 1} style={{ marginLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
                         {cellValue.value}
                       </SpreadsheetCellValue>
                     </td>
