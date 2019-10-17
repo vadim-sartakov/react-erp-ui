@@ -41,15 +41,15 @@ const SpreadsheetComponent = () => {
         data={data}
         className={classes.root}
         defaultColumnWidth={120}
-        height={600}
+        height={650}
         rowNumbersColumnWidth={50}
         defaultRowHeight={16}
-        rowVerticalPadding={8}
+        rowVerticalPadding={4}
         rowBorderHeight={1}
-        rowsPerPage={40}>
+        rowsPerPage={60}>
       <thead>
-        <SpreadsheetColumnNumbersRow>
-          <SpreadsheetRowNumbersColumn Component="th" />
+        <tr style={{ height: 20 }}>
+          <th style={{ width: 50 }} />
           {columns.map((column, columnIndex) => {
             return (
               <SpreadsheetTableHeaderCell key={columnIndex} index={columnIndex}>
@@ -57,7 +57,7 @@ const SpreadsheetComponent = () => {
               </SpreadsheetTableHeaderCell>
             )
           })}
-        </SpreadsheetColumnNumbersRow>
+        </tr>
       </thead>
 
       <tbody>

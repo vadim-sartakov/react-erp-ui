@@ -14,8 +14,6 @@ export const Spreadsheet = ({
   onColumnsChange,
   height,
   initialScroll,
-  columnNumbersRowHeight,
-  rowNumbersColumnWidth,
   defaultColumnWidth,
   defaultRowHeight,
   rowsPerPage,
@@ -42,8 +40,6 @@ export const Spreadsheet = ({
           onRowsChange,
           columns,
           onColumnsChange,
-          columnNumbersRowHeight,
-          rowNumbersColumnWidth,
           rowsPerPage,
           columnsPerPage,
           defaultColumnWidth,
@@ -102,8 +98,6 @@ Spreadsheet.propTypes = {
   columnsPerPage: PropTypes.number.isRequired,
   defaultColumnWidth: PropTypes.number.isRequired,
   defaultRowHeight: PropTypes.number.isRequired,
-  columnNumbersRowHeight: PropTypes.number.isRequired,
-  rowNumbersColumnWidth: PropTypes.number.isRequired,
   rowVerticalPadding: PropTypes.number,
   rowBorderHeight: PropTypes.number,
   fixRows: PropTypes.number,
@@ -115,19 +109,8 @@ Spreadsheet.defaultProps = {
   columnsPerPage: 20,
   defaultRowHeight: 20,
   defaultColumnWidth: 100,
-  columnNumbersRowHeight: 20,
   rowVerticalPadding: 0,
   rowBorderHeight: 1
-};
-
-export const SpreadsheetColumnNumbersRow = ({ style = {}, ...props }) => {
-  const { columnNumbersRowHeight } = useContext(SpreadsheetContext);
-  return <tr {...props} style={{ ...style, height: columnNumbersRowHeight }} />;
-};
-
-export const SpreadsheetRowNumbersColumn = ({ Component = 'td', style = {}, ...props }) => {
-  const { rowNumbersColumnWidth } = useContext(SpreadsheetContext);
-  return <Component {...props} style={{ ...style, width: rowNumbersColumnWidth }} />;
 };
 
 export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, index, ...props }) => {
@@ -137,13 +120,13 @@ export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, index
 };
 
 export const SpreadsheetScrollableRows = ({ children }) => {
-  const { rowsPerPage, defaultRowHeight, scroll, data, rows, columnNumbersRowHeight, rowVerticalPadding, rowBorderHeight } = useContext(SpreadsheetContext);
+  const { rowsPerPage, defaultRowHeight, scroll, data, rows, rowVerticalPadding, rowBorderHeight } = useContext(SpreadsheetContext);
   return (
     <Scroller
         value={data}
         meta={rows}
         totalCount={data.length}
-        scroll={scroll.top - columnNumbersRowHeight}
+        scroll={scroll.top}
         itemsPerPage={rowsPerPage}
         defaultSize={defaultRowHeight + (rowVerticalPadding * 2) + rowBorderHeight}>
       {({ gaps, value, startIndex }) => (
