@@ -35,6 +35,11 @@ for (let i = 120; i < 170; i++) {
   initialRows[i] = { level: 2 };
 }
 
+initialColumns[0] = { fixed: true };
+initialColumns[1] = { fixed: true };
+
+initialRows[0] = { fixed: true };
+
 //const initialScroll = { top: 5000, left: 0 };
 
 const SpreadsheetComponent = () => {

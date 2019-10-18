@@ -1,15 +1,13 @@
-import _ from 'lodash';
 import {
   getItemsCountOnPage,
   getScrollPages,
   getPageNumberFromScrollPages,
   getPageNumberWithDefaultSize,
   getGapsWithDefaultSize,
-  getGapsFromScrollPages,
-  setMetaTotalCount
+  getGapsFromScrollPages
 } from './utils';
 
-describe.only('Scroller utils', () => {
+describe('Scroller utils', () => {
   
   describe('getItemsCountOnPage', () => {
     it('should return items per page count on middle page', () => {

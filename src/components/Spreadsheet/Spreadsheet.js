@@ -1,6 +1,7 @@
-import React, { useRef, useState, useEffect, createContext, useContext, useCallback } from 'react';
+import React, { useRef, useState, useEffect, createContext, useContext, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { getFixedCellOffset } from './utils';
 import { Scroller, useResize } from '../';
 
 export const useSpreadsheet = ({
@@ -154,7 +155,7 @@ export const SpreadsheetTableCell = ({
   rowIndex,
   ...props
 }) => {
-  const { classes, columns, defaultColumnWidth, rows } = useContext(SpreadsheetContext);
+  const { classes, columns, defaultColumnWidth, rows, defaultRowHeight } = useContext(SpreadsheetContext);
   const column = columns[columnIndex];
   const row = rows[rowIndex];
 
@@ -170,15 +171,21 @@ export const SpreadsheetTableCell = ({
     nextStyle.position = 'sticky';
   }
 
+  const fixedRowOffset = useMemo(() => {
+    return fixedRow && getFixedCellOffset({ meta: rows, defaultSize: defaultRowHeight, index: rowIndex })
+  }, [rows, defaultRowHeight, rowIndex, fixedRow]);
+
+  const fixedColumnOffset = useMemo(() => {
+    return fixedColumn && getFixedCellOffset({ meta: columns, defaultSize: defaultColumnWidth, index: columnIndex })
+  }, [columns, defaultColumnWidth, columnIndex, fixedColumn]);
+
   if (fixedRow) {
     nextStyle.zIndex = 3;
-    // TODO: Calculate offsets somewhere in parent components
-    nextStyle.top = 0;
+    nextStyle.top = fixedRowOffset;
   };
   if (fixedColumn) {
     nextStyle.zIndex = 2;
-    // TODO: Calculate offsets somewhere in parent components
-    nextStyle.left = 0;
+    nextStyle.left = fixedColumnOffset;
   };
   if (fixedRow && fixedColumn) {
     nextStyle.zIndex = 4;
