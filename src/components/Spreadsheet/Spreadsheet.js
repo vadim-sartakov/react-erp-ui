@@ -70,7 +70,7 @@ export const Spreadsheet = ({
   rowsPerPage,
   columnsPerPage,
   rowVerticalPadding,
-  rowBorderHeight,
+  defaultRowBorderHeight,
   classes,
   ...props
 }) => {
@@ -89,7 +89,7 @@ export const Spreadsheet = ({
           defaultColumnWidth,
           defaultRowHeight,
           rowVerticalPadding,
-          rowBorderHeight,
+          defaultRowBorderHeight,
           classes
         }}>
       <table {...props} style={{ ...style, tableLayout: 'fixed', width: 'min-content' }} />
@@ -128,7 +128,7 @@ Spreadsheet.propTypes = {
   defaultColumnWidth: PropTypes.number.isRequired,
   defaultRowHeight: PropTypes.number.isRequired,
   rowVerticalPadding: PropTypes.number,
-  rowBorderHeight: PropTypes.number,
+  defaultRowBorderHeight: PropTypes.number,
   fixRows: PropTypes.number,
   fixColumns: PropTypes.number,
   classes: PropTypes.shape({
@@ -143,7 +143,7 @@ Spreadsheet.defaultProps = {
   defaultRowHeight: 20,
   defaultColumnWidth: 100,
   rowVerticalPadding: 0,
-  rowBorderHeight: 1,
+  defaultRowBorderHeight: 1,
   classes: {}
 };
 
@@ -199,7 +199,7 @@ export const SpreadsheetTableCell = ({
 };
 
 export const SpreadsheetScrollableRows = ({ children }) => {
-  const { rowsPerPage, defaultRowHeight, scroll, data, rows, rowVerticalPadding, rowBorderHeight } = useContext(SpreadsheetContext);
+  const { rowsPerPage, scroll, data, rows, defaultRowHeight } = useContext(SpreadsheetContext);
   return (
     <Scroller
         value={data}
@@ -207,7 +207,7 @@ export const SpreadsheetScrollableRows = ({ children }) => {
         totalCount={data.length}
         scroll={scroll.top}
         itemsPerPage={rowsPerPage}
-        defaultSize={defaultRowHeight + (rowVerticalPadding * 2) + rowBorderHeight}>
+        defaultSize={defaultRowHeight}>
       {({ gaps, value, startIndex }) => (
         <>
           {gaps.start ? <tr style={{ height: gaps.start }} /> : null}
@@ -223,9 +223,10 @@ export const SpreadsheetScrollableRows = ({ children }) => {
 };
 
 export const SpreadsheetCellValue = ({ mode, style, rowIndex, ...props }) => {
-  const { rows, defaultRowHeight } = useContext(SpreadsheetContext);
+  const { rows, defaultRowHeight, rowVerticalPadding, defaultRowBorderHeight } = useContext(SpreadsheetContext);
   const row = rows[rowIndex];
-  const nextStyle = { ...style, height: ( row && row.size ) || defaultRowHeight, overflow: 'hidden' };
+  const height = (( row && row.size ) || defaultRowHeight) - rowVerticalPadding * 2 - defaultRowBorderHeight;
+  const nextStyle = { ...style, height, overflow: 'hidden' };
   return <div style={nextStyle} {...props} />;
 };
 

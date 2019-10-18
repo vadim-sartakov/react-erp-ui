@@ -38,13 +38,13 @@ for (let i = 120; i < 170; i++) {
 initialColumns[0] = { fixed: true };
 initialColumns[1] = { fixed: true };
 
-initialRows[0] = { fixed: true };
+initialRows[0] = { fixed: true, borderSize: 2 };
 
 //const initialScroll = { top: 5000, left: 0 };
 
 const SpreadsheetComponent = () => {
   const [columns, setColumns] = useState([{ size: 50, fixed: true }, ...initialColumns]);
-  const [rows, setRows] = useState([{ size: 16, fixed: true }, ...initialRows]);
+  const [rows, setRows] = useState([{ size: 25, fixed: true }, ...initialRows]);
 
   const {
     scroll,
@@ -62,9 +62,9 @@ const SpreadsheetComponent = () => {
           data={data}
           className={classes.root}
           defaultColumnWidth={120}
-          defaultRowHeight={16}
+          defaultRowHeight={25}
           rowVerticalPadding={4}
-          rowBorderHeight={1}
+          defaultRowBorderHeight={1}
           rowsPerPage={60}
           classes={{
             fixed: classes.fixed,
