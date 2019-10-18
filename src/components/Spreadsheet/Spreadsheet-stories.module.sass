@@ -9,10 +9,17 @@
   border-bottom: solid 1px #dee2e6
   border-right: 1px solid #dee2e6
 
-.headerCell
-  composes: cellValue
+.rowColumnNumberCell
+  border-color: #c3c3c3
+  background-color: #f1f1f1
+
+.columnNumberCell
+  composes: rowColumnNumberCell
   text-align: center
-  border-bottom-width: 2px
+
+.rowNumberCell
+  composes: rowColumnNumberCell
+  text-align: right
 
 .resizer
   position: absolute

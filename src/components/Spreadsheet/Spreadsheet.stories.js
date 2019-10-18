@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import classNames from 'classnames';
 import { storiesOf } from '@storybook/react';
 import {
   useSpreadsheet,
@@ -74,7 +75,7 @@ const SpreadsheetComponent = () => {
         <thead>
           <tr>
             <SpreadsheetTableCell header columnIndex={0} rowIndex={0}>
-              <SpreadsheetCellValue rowIndex={0} className={classes.headerCell} />
+              <SpreadsheetCellValue rowIndex={0} className={classNames(classes.cellValue, classes.columnNumberCell)} />
             </SpreadsheetTableCell>
             {columns.slice(1, columns.length).map((column, columnIndex) => {
               return (
@@ -83,7 +84,7 @@ const SpreadsheetComponent = () => {
                     header
                     columnIndex={columnIndex + 1}
                     rowIndex={0}>
-                  <SpreadsheetCellValue rowIndex={0} className={classes.headerCell}>
+                  <SpreadsheetCellValue rowIndex={0} className={classNames(classes.cellValue, classes.columnNumberCell)}>
                     {columnIndex + 1}
                     <SpreadsheetColumnResizer index={columnIndex + 1} className={classes.columnResizer} />
                   </SpreadsheetCellValue>
@@ -100,7 +101,7 @@ const SpreadsheetComponent = () => {
               return (
                 <tr key={rowIndex}>
                   <SpreadsheetTableCell rowIndex={rowIndex + 1} columnIndex={0}>
-                    <SpreadsheetCellValue rowIndex={rowIndex + 1} className={classes.cellValue}>
+                    <SpreadsheetCellValue rowIndex={rowIndex + 1} className={classNames(classes.cellValue, classes.rowNumberCell)}>
                       {rowIndex + 1}
                       <SpreadsheetRowResizer index={rowIndex + 1} className={classes.rowResizer} />
                     </SpreadsheetCellValue>
