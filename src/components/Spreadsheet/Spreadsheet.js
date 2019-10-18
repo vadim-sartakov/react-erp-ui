@@ -2,10 +2,61 @@ import React, { useRef, useState, useEffect, createContext, useContext, useCallb
 import PropTypes from 'prop-types';
 import { Scroller, useResize } from '../';
 
+export const useSpreadsheet = ({
+  initialScroll = { top: 0, left: 0 }
+}) => {
+  const [scroll, setScroll] = useState(initialScroll);
+  return {
+    scroll,
+    onScroll: setScroll
+  };
+};
+
 export const SpreadsheetContext = createContext();
+
+export const SpreadsheetScroller = ({
+  height,
+  onScroll,
+  style = {},
+  initialScroll,
+  ...props
+}) => {
+  const scrollerRef = useRef();
+
+  useEffect(() => {
+    if (initialScroll) {
+      scrollerRef.current.scrollTop = initialScroll.top;
+      scrollerRef.current.scrollLeft = initialScroll.left;
+    }
+  }, [initialScroll]);
+
+  return (
+    <div
+        ref={scrollerRef}
+        {...props}
+        style={{
+          ...style,
+          overflow: 'auto',
+          height,
+          // This is important for Chrome
+          overflowAnchor: 'none'
+        }}
+        onScroll={e => onScroll({ top: e.target.scrollTop, left: e.target.scrollLeft })} />
+  )
+};
+
+SpreadsheetScroller.propTypes = {
+  initialScroll: PropTypes.shape({
+    top: PropTypes.number.isRequired,
+    left: PropTypes.number.isRequired
+  }),
+  onScroll: PropTypes.func,
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+};
 
 export const Spreadsheet = ({
   style = {},
+  scroll,
   data,
   onDataChange,
   rows,
@@ -22,14 +73,6 @@ export const Spreadsheet = ({
   rowBorderHeight,
   ...props
 }) => {
-  const scrollerRef = useRef();
-  const [scroll, setScroll] = useState(initialScroll);
-
-  useEffect(() => {
-    scrollerRef.current.scrollTop = initialScroll.top;
-    scrollerRef.current.scrollLeft = initialScroll.left;
-  }, [initialScroll]);
-
   return (
     <SpreadsheetContext.Provider
         value={{
@@ -47,18 +90,7 @@ export const Spreadsheet = ({
           rowVerticalPadding,
           rowBorderHeight
         }}>
-      {/* TODO: Maybe extract scroller into separate component? */}
-      <div
-          ref={scrollerRef}
-          style={{
-            overflow: 'auto',
-            height,
-            // This is important for Chrome
-            overflowAnchor: 'none'
-          }}
-          onScroll={e => setScroll({ top: e.target.scrollTop, left: e.target.scrollLeft })}>
-        <table {...props} style={{ ...style, tableLayout: 'fixed', width: 'min-content' }} />
-      </div>
+      <table {...props} style={{ ...style, tableLayout: 'fixed', width: 'min-content' }} />
     </SpreadsheetContext.Provider>
   )
 };
@@ -89,11 +121,6 @@ Spreadsheet.propTypes = {
     hidden: PropTypes.bool,
     level: PropTypes.number
   })),
-  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  initialScroll: PropTypes.shape({
-    top: PropTypes.number.isRequired,
-    left: PropTypes.number.isRequired
-  }),
   rowsPerPage: PropTypes.number.isRequired,
   columnsPerPage: PropTypes.number.isRequired,
   defaultColumnWidth: PropTypes.number.isRequired,
@@ -104,7 +131,6 @@ Spreadsheet.propTypes = {
   fixColumns: PropTypes.number,
 };
 Spreadsheet.defaultProps = {
-  initialScroll: { top: 0, left: 0 },
   rowsPerPage: 30,
   columnsPerPage: 20,
   defaultRowHeight: 20,
