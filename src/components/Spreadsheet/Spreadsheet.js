@@ -69,8 +69,6 @@ export const Spreadsheet = ({
   defaultRowHeight,
   rowsPerPage,
   columnsPerPage,
-  rowVerticalPadding,
-  defaultRowBorderHeight,
   classes,
   ...props
 }) => {
@@ -88,8 +86,6 @@ export const Spreadsheet = ({
           columnsPerPage,
           defaultColumnWidth,
           defaultRowHeight,
-          rowVerticalPadding,
-          defaultRowBorderHeight,
           classes
         }}>
       <table {...props} style={{ ...style, tableLayout: 'fixed', width: 'min-content' }} />
@@ -127,8 +123,6 @@ Spreadsheet.propTypes = {
   columnsPerPage: PropTypes.number.isRequired,
   defaultColumnWidth: PropTypes.number.isRequired,
   defaultRowHeight: PropTypes.number.isRequired,
-  rowVerticalPadding: PropTypes.number,
-  defaultRowBorderHeight: PropTypes.number,
   fixRows: PropTypes.number,
   fixColumns: PropTypes.number,
   classes: PropTypes.shape({
@@ -142,8 +136,6 @@ Spreadsheet.defaultProps = {
   columnsPerPage: 20,
   defaultRowHeight: 20,
   defaultColumnWidth: 100,
-  rowVerticalPadding: 0,
-  defaultRowBorderHeight: 1,
   classes: {}
 };
 
@@ -223,9 +215,9 @@ export const SpreadsheetScrollableRows = ({ children }) => {
 };
 
 export const SpreadsheetCellValue = ({ mode, style, rowIndex, ...props }) => {
-  const { rows, defaultRowHeight, rowVerticalPadding, defaultRowBorderHeight } = useContext(SpreadsheetContext);
+  const { rows, defaultRowHeight } = useContext(SpreadsheetContext);
   const row = rows[rowIndex];
-  const height = (( row && row.size ) || defaultRowHeight) - rowVerticalPadding * 2 - defaultRowBorderHeight;
+  const height = (( row && row.size ) || defaultRowHeight);
   const nextStyle = { ...style, height, overflow: 'hidden' };
   return <div style={nextStyle} {...props} />;
 };

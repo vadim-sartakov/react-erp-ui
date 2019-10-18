@@ -73,7 +73,9 @@ const SpreadsheetComponent = () => {
           }}>
         <thead>
           <tr>
-            <SpreadsheetTableCell header columnIndex={0} rowIndex={0} />
+            <SpreadsheetTableCell header columnIndex={0} rowIndex={0}>
+              <SpreadsheetCellValue rowIndex={0} className={classes.headerCell} />
+            </SpreadsheetTableCell>
             {columns.slice(1, columns.length).map((column, columnIndex) => {
               return (
                 <SpreadsheetTableCell
@@ -81,7 +83,7 @@ const SpreadsheetComponent = () => {
                     header
                     columnIndex={columnIndex + 1}
                     rowIndex={0}>
-                  <SpreadsheetCellValue rowIndex={0}>
+                  <SpreadsheetCellValue rowIndex={0} className={classes.headerCell}>
                     {columnIndex + 1}
                     <SpreadsheetColumnResizer index={columnIndex + 1} className={classes.columnResizer} />
                   </SpreadsheetCellValue>
@@ -98,14 +100,16 @@ const SpreadsheetComponent = () => {
               return (
                 <tr key={rowIndex}>
                   <SpreadsheetTableCell rowIndex={rowIndex + 1} columnIndex={0}>
-                    {rowIndex + 1}
-                    <SpreadsheetRowResizer index={rowIndex + 1} className={classes.rowResizer} />
+                    <SpreadsheetCellValue rowIndex={rowIndex + 1} className={classes.cellValue}>
+                      {rowIndex + 1}
+                      <SpreadsheetRowResizer index={rowIndex + 1} className={classes.rowResizer} />
+                    </SpreadsheetCellValue>
                   </SpreadsheetTableCell>
                   {columns.slice(1, columns.length).map((column, columnIndex) => {
                     const cellValue = rowValue[columnIndex];
                     return (
                       <SpreadsheetTableCell key={columnIndex + 1} rowIndex={rowIndex + 1} columnIndex={columnIndex + 1}>
-                        <SpreadsheetCellValue rowIndex={rowIndex + 1} style={{ marginLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
+                        <SpreadsheetCellValue className={classes.cellValue} rowIndex={rowIndex + 1} style={{ paddingLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
                           {cellValue.value}
                         </SpreadsheetCellValue>
                       </SpreadsheetTableCell>

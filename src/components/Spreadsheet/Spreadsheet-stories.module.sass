@@ -3,18 +3,16 @@
   border-spacing: 0
   font-size: 14px
 
-  thead th
-    position: relative
-    text-align: center
-    border-bottom: 2px solid #dee2e6
-    border-right: 1px solid #dee2e6
+.cellValue
+  position: relative
+  padding: 4px 6px
+  border-bottom: solid 1px #dee2e6
+  border-right: 1px solid #dee2e6
 
-  td
-    position: relative
-    border-bottom: solid 1px #dee2e6
-    border-right: 1px solid #dee2e6
-  td, th
-    padding: 4px 6px
+.headerCell
+  composes: cellValue
+  text-align: center
+  border-bottom-width: 2px
 
 .resizer
   position: absolute
