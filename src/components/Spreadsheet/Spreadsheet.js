@@ -139,11 +139,13 @@ Spreadsheet.defaultProps = {
   rowBorderHeight: 1
 };
 
-export const SpreadsheetTableHeaderCell = ({ Component = 'th', style = {}, columnIndex, rowIndex, ...props }) => {
-  const { columns, defaultColumnWidth, rows, defaultRowHeight } = useContext(SpreadsheetContext);
+export const SpreadsheetTableCell = ({ header, style = {}, columnIndex, ...props }) => {
+  const { columns, defaultColumnWidth } = useContext(SpreadsheetContext);
   const column = columns[columnIndex];
-  const row = rows[rowIndex];
-  return <Component {...props} style={{ ...style, width: (column && column.size) || defaultColumnWidth, height: (row && row.size) || defaultRowHeight }} />;
+  const Component = header ? 'th' : 'td';
+  const nextStyle = { ...style };
+  if (header) nextStyle.width = (column && column.size) || defaultColumnWidth;
+  return <Component {...props} style={nextStyle} />;
 };
 
 export const SpreadsheetScrollableRows = ({ children }) => {

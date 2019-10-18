@@ -4,7 +4,7 @@ import {
   useSpreadsheet,
   SpreadsheetScroller,
   Spreadsheet,
-  SpreadsheetTableHeaderCell,
+  SpreadsheetTableCell,
   SpreadsheetScrollableRows,
   SpreadsheetCellValue,
   SpreadsheetColumnResizer,
@@ -38,9 +38,14 @@ for (let i = 120; i < 170; i++) {
 //const initialScroll = { top: 5000, left: 0 };
 
 const SpreadsheetComponent = () => {
-  const { scroll, onScroll } = useSpreadsheet({ });
-  const [columns, setColumns] = useState([{ size: 50 }, ...initialColumns]);
-  const [rows, setRows] = useState([{ size: 30 }, ...initialRows]);
+  const [columns, setColumns] = useState([{ size: 50, fixed: true }, ...initialColumns]);
+  const [rows, setRows] = useState([{ size: 16, fixed: true }, ...initialRows]);
+
+  const {
+    scroll,
+    onScroll
+  } = useSpreadsheet({ });
+  
   return (
     <SpreadsheetScroller height={650} onScroll={onScroll}>
       <Spreadsheet
@@ -58,13 +63,15 @@ const SpreadsheetComponent = () => {
           rowsPerPage={60}>
         <thead>
           <tr>
-            <SpreadsheetTableHeaderCell columnIndex={0} rowIndex={0} />
+            <SpreadsheetTableCell header columnIndex={0} rowIndex={0} />
             {columns.slice(1, columns.length).map((column, columnIndex) => {
               return (
-                <SpreadsheetTableHeaderCell key={columnIndex} columnIndex={columnIndex + 1} rowIndex={0}>
-                  {columnIndex + 1}
-                  <SpreadsheetColumnResizer index={columnIndex + 1} className={classes.columnResizer} />
-                </SpreadsheetTableHeaderCell>
+                <SpreadsheetTableCell key={columnIndex} header columnIndex={columnIndex + 1}>
+                  <SpreadsheetCellValue rowIndex={0}>
+                    {columnIndex + 1}
+                    <SpreadsheetColumnResizer index={columnIndex + 1} className={classes.columnResizer} />
+                  </SpreadsheetCellValue>
+                </SpreadsheetTableCell>
               )
             })}
           </tr>
@@ -76,10 +83,10 @@ const SpreadsheetComponent = () => {
               const level = row && row.level;
               return (
                 <tr key={rowIndex}>
-                  <td>
+                  <SpreadsheetTableCell>
                     {rowIndex + 1}
                     <SpreadsheetRowResizer index={rowIndex + 1} className={classes.rowResizer} />
-                  </td>
+                  </SpreadsheetTableCell>
                   {columns.slice(1, columns.length).map((column, columnIndex) => {
                     const cellValue = rowValue[columnIndex];
                     return (
