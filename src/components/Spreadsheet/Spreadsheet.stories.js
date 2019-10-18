@@ -60,13 +60,22 @@ const SpreadsheetComponent = () => {
           defaultRowHeight={16}
           rowVerticalPadding={4}
           rowBorderHeight={1}
-          rowsPerPage={60}>
+          rowsPerPage={60}
+          classes={{
+            fixed: classes.fixed,
+            lastFixedRowCell: classes.lastFixedRowCell,
+            lastFixedColumnCell: classes.lastFixedColumnCell
+          }}>
         <thead>
           <tr>
             <SpreadsheetTableCell header columnIndex={0} rowIndex={0} />
             {columns.slice(1, columns.length).map((column, columnIndex) => {
               return (
-                <SpreadsheetTableCell key={columnIndex} header columnIndex={columnIndex + 1}>
+                <SpreadsheetTableCell
+                    key={columnIndex}
+                    header
+                    columnIndex={columnIndex + 1}
+                    rowIndex={0}>
                   <SpreadsheetCellValue rowIndex={0}>
                     {columnIndex + 1}
                     <SpreadsheetColumnResizer index={columnIndex + 1} className={classes.columnResizer} />
@@ -83,18 +92,18 @@ const SpreadsheetComponent = () => {
               const level = row && row.level;
               return (
                 <tr key={rowIndex}>
-                  <SpreadsheetTableCell>
+                  <SpreadsheetTableCell rowIndex={rowIndex + 1} columnIndex={0}>
                     {rowIndex + 1}
                     <SpreadsheetRowResizer index={rowIndex + 1} className={classes.rowResizer} />
                   </SpreadsheetTableCell>
                   {columns.slice(1, columns.length).map((column, columnIndex) => {
                     const cellValue = rowValue[columnIndex];
                     return (
-                      <td key={columnIndex + 1}>
+                      <SpreadsheetTableCell key={columnIndex + 1} rowIndex={rowIndex + 1} columnIndex={columnIndex + 1}>
                         <SpreadsheetCellValue rowIndex={rowIndex + 1} style={{ marginLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
                           {cellValue.value}
                         </SpreadsheetCellValue>
-                      </td>
+                      </SpreadsheetTableCell>
                     )
                   })}
                 </tr>

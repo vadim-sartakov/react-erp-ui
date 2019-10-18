@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, createContext, useContext, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { Scroller, useResize } from '../';
 
 export const useSpreadsheet = ({
@@ -22,14 +23,12 @@ export const SpreadsheetScroller = ({
   ...props
 }) => {
   const scrollerRef = useRef();
-
   useEffect(() => {
     if (initialScroll) {
       scrollerRef.current.scrollTop = initialScroll.top;
       scrollerRef.current.scrollLeft = initialScroll.left;
     }
   }, [initialScroll]);
-
   return (
     <div
         ref={scrollerRef}
@@ -71,6 +70,7 @@ export const Spreadsheet = ({
   columnsPerPage,
   rowVerticalPadding,
   rowBorderHeight,
+  classes,
   ...props
 }) => {
   return (
@@ -88,7 +88,8 @@ export const Spreadsheet = ({
           defaultColumnWidth,
           defaultRowHeight,
           rowVerticalPadding,
-          rowBorderHeight
+          rowBorderHeight,
+          classes
         }}>
       <table {...props} style={{ ...style, tableLayout: 'fixed', width: 'min-content' }} />
     </SpreadsheetContext.Provider>
@@ -129,6 +130,11 @@ Spreadsheet.propTypes = {
   rowBorderHeight: PropTypes.number,
   fixRows: PropTypes.number,
   fixColumns: PropTypes.number,
+  classes: PropTypes.shape({
+    fixed: PropTypes.string,
+    lastFixedRowCell: PropTypes.string,
+    lastFixedColumnCell: PropTypes.string
+  })
 };
 Spreadsheet.defaultProps = {
   rowsPerPage: 30,
@@ -136,16 +142,53 @@ Spreadsheet.defaultProps = {
   defaultRowHeight: 20,
   defaultColumnWidth: 100,
   rowVerticalPadding: 0,
-  rowBorderHeight: 1
+  rowBorderHeight: 1,
+  classes: {}
 };
 
-export const SpreadsheetTableCell = ({ header, style = {}, columnIndex, ...props }) => {
-  const { columns, defaultColumnWidth } = useContext(SpreadsheetContext);
+export const SpreadsheetTableCell = ({
+  className,
+  style = {},
+  header,
+  columnIndex,
+  rowIndex,
+  ...props
+}) => {
+  const { classes, columns, defaultColumnWidth, rows } = useContext(SpreadsheetContext);
   const column = columns[columnIndex];
+  const row = rows[rowIndex];
+
   const Component = header ? 'th' : 'td';
   const nextStyle = { ...style };
+  let nextClassName = classNames(className);
   if (header) nextStyle.width = (column && column.size) || defaultColumnWidth;
-  return <Component {...props} style={nextStyle} />;
+
+  const fixedRow = row && row.fixed;
+  const fixedColumn = column && column.fixed;
+  if (fixedRow || fixedColumn) {
+    nextClassName = classNames(nextClassName, classes.fixed);
+    nextStyle.position = 'sticky';
+  }
+
+  if (fixedRow) {
+    nextStyle.zIndex = 3;
+    // TODO: Calculate offsets somewhere in parent components
+    nextStyle.top = 0;
+  };
+  if (fixedColumn) {
+    nextStyle.zIndex = 2;
+    // TODO: Calculate offsets somewhere in parent components
+    nextStyle.left = 0;
+  };
+  if (fixedRow && fixedColumn) {
+    nextStyle.zIndex = 4;
+  }
+  return (
+    <Component
+        {...props}
+        className={nextClassName}
+        style={nextStyle} />
+  );
 };
 
 export const SpreadsheetScrollableRows = ({ children }) => {
