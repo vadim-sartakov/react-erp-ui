@@ -28,18 +28,20 @@ const initialColumns = generateColumns(15);
 const data = generateValues(initialColumns, 1000);
 
 const initialRows = [];
-for (let i = 100; i < 200; i++) {
+for (let i = 1; i < 20; i++) {
   initialRows[i] = { level: 1 };
 }
+initialRows[0] = { isGroup: true };
+initialRows[4] = { level: 1, isGroup: true };
 
-for (let i = 120; i < 170; i++) {
+for (let i = 5; i < 10; i++) {
   initialRows[i] = { level: 2 };
 }
 
 initialColumns[0] = { fixed: true };
 initialColumns[1] = { fixed: true };
 
-initialRows[0] = { fixed: true, borderSize: 2 };
+//initialRows[0] = { fixed: true };
 
 //const initialScroll = { top: 5000, left: 0 };
 
@@ -64,8 +66,6 @@ const SpreadsheetComponent = () => {
           className={classes.root}
           defaultColumnWidth={120}
           defaultRowHeight={25}
-          rowVerticalPadding={4}
-          defaultRowBorderHeight={1}
           rowsPerPage={60}
           classes={{
             fixed: classes.fixed,
@@ -96,7 +96,8 @@ const SpreadsheetComponent = () => {
 
         <tbody>
           <SpreadsheetScrollableRows>
-            {({ index: rowIndex, value: rowValue, row }) => {
+            {({ index: rowIndex, value: rowValue }) => {
+              const row = rows[rowIndex + 1];
               const level = row && row.level;
               return (
                 <tr key={rowIndex}>

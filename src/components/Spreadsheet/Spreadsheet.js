@@ -156,8 +156,8 @@ export const SpreadsheetTableCell = ({
   let nextClassName = classNames(className);
   if (header) nextStyle.width = (column && column.size) || defaultColumnWidth;
 
-  const fixedRow = row && row.fixed;
-  const fixedColumn = column && column.fixed;
+  const fixedRow = row && (row.fixed || row.isGroup);
+  const fixedColumn = column && (column.fixed || column.isGroup);
   if (fixedRow || fixedColumn) {
     nextClassName = classNames(nextClassName, classes.fixed);
     nextStyle.position = 'sticky';

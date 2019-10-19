@@ -22,6 +22,7 @@ describe('Spreadsheet utils', () => {
       const meta = [
         { size: 30, fixed: true },
         { fixed: true },
+        { isGroup: true },
         { level: 1, size: 50 },
         { level: 1, isGroup: true, size: 30 },
         { level: 2 },
@@ -32,9 +33,9 @@ describe('Spreadsheet utils', () => {
         { level: 2 },
         { level: 2 }
       ];
-      expect(getFixedCellOffset({ meta, defaultSize, index: 3 })).toEqual(50);
-      expect(getFixedCellOffset({ meta, defaultSize, index: 5 })).toEqual(80);
-      expect(getFixedCellOffset({ meta, defaultSize, index: 8 })).toEqual(50);
+      expect(getFixedCellOffset({ meta, defaultSize, index: 4 })).toEqual(70);
+      expect(getFixedCellOffset({ meta, defaultSize, index: 6 })).toEqual(100);
+      expect(getFixedCellOffset({ meta, defaultSize, index: 9 })).toEqual(70);
     });
 
   });
