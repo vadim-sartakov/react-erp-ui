@@ -14,10 +14,12 @@ export const useSpreadsheet = ({
   };
 };
 
-export const SpreadsheetContext = createContext();
+const SpreadsheetContext = createContext();
+const ScrollContext = createContext();
 
 export const SpreadsheetScroller = ({
   height,
+  scroll,
   onScroll,
   style = {},
   initialScroll,
@@ -31,17 +33,19 @@ export const SpreadsheetScroller = ({
     }
   }, [initialScroll]);
   return (
-    <div
-        ref={scrollerRef}
-        {...props}
-        style={{
-          ...style,
-          overflow: 'auto',
-          height,
-          // This is important for Chrome
-          overflowAnchor: 'none'
-        }}
-        onScroll={e => onScroll({ top: e.target.scrollTop, left: e.target.scrollLeft })} />
+    <ScrollContext.Provider value={scroll}>
+      <div
+          ref={scrollerRef}
+          {...props}
+          style={{
+            ...style,
+            overflow: 'auto',
+            height,
+            // This is important for Chrome
+            overflowAnchor: 'none'
+          }}
+          onScroll={e => onScroll({ top: e.target.scrollTop, left: e.target.scrollLeft })} />
+    </ScrollContext.Provider>
   )
 };
 
@@ -56,7 +60,6 @@ SpreadsheetScroller.propTypes = {
 
 export const Spreadsheet = ({
   style = {},
-  scroll,
   data,
   onDataChange,
   rows,
@@ -77,7 +80,6 @@ export const Spreadsheet = ({
         value={{
           data,
           onDataChange,
-          scroll,
           rows,
           onRowsChange,
           columns,
@@ -191,7 +193,8 @@ export const SpreadsheetTableCell = ({
 };
 
 export const SpreadsheetScrollableRows = ({ children }) => {
-  const { rowsPerPage, scroll, data, rows, defaultRowHeight } = useContext(SpreadsheetContext);
+  const { rowsPerPage, data, rows, defaultRowHeight } = useContext(SpreadsheetContext);
+  const scroll = useContext(ScrollContext);
   return (
     <Scroller
         value={data}

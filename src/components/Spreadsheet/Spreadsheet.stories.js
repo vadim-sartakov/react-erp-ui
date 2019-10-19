@@ -55,9 +55,8 @@ const SpreadsheetComponent = () => {
   } = useSpreadsheet({ });
   
   return (
-    <SpreadsheetScroller height={650} onScroll={onScroll}>
+    <SpreadsheetScroller height={650} scroll={scroll} onScroll={onScroll}>
       <Spreadsheet
-          scroll={scroll}
           columns={columns}
           onColumnsChange={setColumns}
           rows={rows}
