@@ -28,26 +28,24 @@ const initialColumns = generateColumns(15);
 const data = generateValues(initialColumns, 1000);
 
 const initialRows = [];
-for (let i = 1; i < 20; i++) {
+for (let i = 5; i < 100; i++) {
   initialRows[i] = { level: 1 };
 }
-initialRows[0] = { isGroup: true };
-initialRows[4] = { level: 1, isGroup: true };
+initialRows[0] = { fixed: true };
+initialRows[1] = { fixed: true };
 
-for (let i = 5; i < 10; i++) {
+for (let i = 20; i < 50; i++) {
   initialRows[i] = { level: 2 };
 }
 
 initialColumns[0] = { fixed: true };
 initialColumns[1] = { fixed: true };
 
-//initialRows[0] = { fixed: true };
-
 //const initialScroll = { top: 5000, left: 0 };
 
 const SpreadsheetComponent = () => {
-  const [columns, setColumns] = useState([{ size: 50, fixed: true }, ...initialColumns]);
-  const [rows, setRows] = useState([{ size: 25, fixed: true }, ...initialRows]);
+  const [columns, setColumns] = useState([{ size: 50, fixed: true, special: true }, ...initialColumns]);
+  const [rows, setRows] = useState([{ size: 25, fixed: true, special: true }, ...initialRows]);
 
   const {
     scroll,

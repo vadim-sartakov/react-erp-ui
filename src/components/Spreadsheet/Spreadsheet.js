@@ -158,8 +158,8 @@ export const SpreadsheetTableCell = ({
   let nextClassName = classNames(className);
   if (header) nextStyle.width = (column && column.size) || defaultColumnWidth;
 
-  const fixedRow = row && (row.fixed || row.isGroup);
-  const fixedColumn = column && (column.fixed || column.isGroup);
+  const fixedRow = row && row.fixed;
+  const fixedColumn = column && column.fixed;
   if (fixedRow || fixedColumn) {
     nextClassName = classNames(nextClassName, classes.fixed);
     nextStyle.position = 'sticky';
@@ -195,6 +195,18 @@ export const SpreadsheetTableCell = ({
 export const SpreadsheetScrollableRows = ({ children }) => {
   const { rowsPerPage, data, rows, defaultRowHeight } = useContext(SpreadsheetContext);
   const scroll = useContext(ScrollContext);
+
+  const fixedRowsValues = useMemo(() => {
+    const fixedRows = rows.filter(row => row && row.fixed && !row.special);
+    const fixedData = fixedRows.map((row, index) => data[index]);
+    const fixedDataSize = fixedRows.reduce((acc, fixedRow) => acc + (fixedRow.size || defaultRowHeight), 0);
+    return {
+      fixedData,
+      fixedRows,
+      fixedDataSize
+    };
+  }, [rows, data, defaultRowHeight]);
+
   return (
     <Scroller
         value={data}
@@ -203,16 +215,20 @@ export const SpreadsheetScrollableRows = ({ children }) => {
         scroll={scroll.top}
         itemsPerPage={rowsPerPage}
         defaultSize={defaultRowHeight}>
-      {({ gaps, value, startIndex }) => (
-        <>
-          {gaps.start ? <tr style={{ height: gaps.start }} /> : null}
-          {value.map((row, rowIndex) => {
-            const index = startIndex + rowIndex;
-            return children({ value: row, index, row: rows[index] });
-          })}
-          {gaps.end ? <tr style={{ height: gaps.end }} /> : null}
-        </>
-      )}
+      {({ gaps, value, startIndex }) => {
+        const shouldRenderFixed = fixedRowsValues.fixedRows.length > 0 && startIndex > 0;
+        return (
+          <>
+            {gaps.start ? <tr style={{ height: gaps.start - (shouldRenderFixed ? fixedRowsValues.fixedDataSize : 0) }} /> : null}
+            {shouldRenderFixed && fixedRowsValues.fixedData.map((fixedRow, index) => children({ value: fixedRow, index }))}
+            {value.map((row, rowIndex) => {
+              const index = row.index || (startIndex + rowIndex);
+              return children({ value: row, index });
+            })}
+            {gaps.end ? <tr style={{ height: gaps.end }} /> : null}
+          </>
+        )
+      }}
     </Scroller>
   )
 };
