@@ -17,6 +17,13 @@ export const useSpreadsheet = ({
 const SpreadsheetContext = createContext();
 const ScrollContext = createContext();
 
+export const SpreadsheetTableRow = ({
+  style = {},
+  ...props
+}) => {
+  return <div {...props} style={{ ...style, display: 'flex' }} />
+};
+
 export const SpreadsheetScroller = ({
   height,
   scroll,
@@ -90,7 +97,7 @@ export const Spreadsheet = ({
           defaultRowHeight,
           classes
         }}>
-      <table {...props} style={{ ...style, tableLayout: 'fixed', width: 'min-content' }} />
+      <div {...props} style={{ ...style, display: 'inline-block' }} />
     </SpreadsheetContext.Provider>
   )
 };
@@ -144,7 +151,6 @@ Spreadsheet.defaultProps = {
 export const SpreadsheetTableCell = ({
   className,
   style = {},
-  header,
   columnIndex,
   rowIndex,
   ...props
@@ -153,10 +159,8 @@ export const SpreadsheetTableCell = ({
   const column = columns[columnIndex];
   const row = rows[rowIndex];
 
-  const Component = header ? 'th' : 'td';
-  const nextStyle = { ...style };
+  const nextStyle = { ...style, width: (column && column.size) || defaultColumnWidth };
   let nextClassName = classNames(className);
-  if (header) nextStyle.width = (column && column.size) || defaultColumnWidth;
 
   const fixedRow = row && row.fixed;
   const fixedColumn = column && column.fixed;
@@ -185,7 +189,7 @@ export const SpreadsheetTableCell = ({
     nextStyle.zIndex = 4;
   }
   return (
-    <Component
+    <div
         {...props}
         className={nextClassName}
         style={nextStyle} />
@@ -219,13 +223,13 @@ export const SpreadsheetScrollableRows = ({ children }) => {
         const shouldRenderFixed = fixedRowsValues.fixedRows.length > 0 && startIndex > 0;
         return (
           <>
-            {gaps.start ? <tr style={{ height: gaps.start - (shouldRenderFixed ? fixedRowsValues.fixedDataSize : 0) }} /> : null}
+            {gaps.start ? <div style={{ height: gaps.start - (shouldRenderFixed ? fixedRowsValues.fixedDataSize : 0) }} /> : null}
             {shouldRenderFixed && fixedRowsValues.fixedData.map((fixedRow, index) => children({ value: fixedRow, index }))}
             {value.map((row, rowIndex) => {
               const index = row.index || (startIndex + rowIndex);
               return children({ value: row, index });
             })}
-            {gaps.end ? <tr style={{ height: gaps.end }} /> : null}
+            {gaps.end ? <div style={{ height: gaps.end }} /> : null}
           </>
         )
       }}

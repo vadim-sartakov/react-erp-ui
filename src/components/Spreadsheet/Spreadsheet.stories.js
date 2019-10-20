@@ -5,6 +5,7 @@ import {
   useSpreadsheet,
   SpreadsheetScroller,
   Spreadsheet,
+  SpreadsheetTableRow,
   SpreadsheetTableCell,
   SpreadsheetScrollableRows,
   SpreadsheetCellValue,
@@ -69,16 +70,15 @@ const SpreadsheetComponent = () => {
             lastFixedRowCell: classes.lastFixedRowCell,
             lastFixedColumnCell: classes.lastFixedColumnCell
           }}>
-        <thead>
-          <tr>
-            <SpreadsheetTableCell header columnIndex={0} rowIndex={0}>
+        <div>
+          <SpreadsheetTableRow>
+            <SpreadsheetTableCell columnIndex={0} rowIndex={0}>
               <SpreadsheetCellValue rowIndex={0} className={classNames(classes.cellValue, classes.columnNumberCell)} />
             </SpreadsheetTableCell>
             {columns.slice(1, columns.length).map((column, columnIndex) => {
               return (
                 <SpreadsheetTableCell
                     key={columnIndex}
-                    header
                     columnIndex={columnIndex + 1}
                     rowIndex={0}>
                   <SpreadsheetCellValue rowIndex={0} className={classNames(classes.cellValue, classes.columnNumberCell)}>
@@ -88,16 +88,16 @@ const SpreadsheetComponent = () => {
                 </SpreadsheetTableCell>
               )
             })}
-          </tr>
-        </thead>
+          </SpreadsheetTableRow>
+        </div>
 
-        <tbody>
+        <div>
           <SpreadsheetScrollableRows>
             {({ index: rowIndex, value: rowValue }) => {
               const row = rows[rowIndex + 1];
               const level = row && row.level;
               return (
-                <tr key={rowIndex}>
+                <SpreadsheetTableRow key={rowIndex}>
                   <SpreadsheetTableCell rowIndex={rowIndex + 1} columnIndex={0}>
                     <SpreadsheetCellValue rowIndex={rowIndex + 1} className={classNames(classes.cellValue, classes.rowNumberCell)}>
                       {rowIndex + 1}
@@ -114,11 +114,11 @@ const SpreadsheetComponent = () => {
                       </SpreadsheetTableCell>
                     )
                   })}
-                </tr>
+                </SpreadsheetTableRow>
               )
             }}
           </SpreadsheetScrollableRows>
-        </tbody>
+        </div>
       </Spreadsheet>
     </SpreadsheetScroller>
   );
