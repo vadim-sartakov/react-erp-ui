@@ -82,8 +82,10 @@ export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, 
       getItemsCountOnPage(visiblePages[1], itemsPerPage, totalCount);
   const visibleSectionSize = visibleItems * defaultSize;
   const endSectionSize = totalSize - (startSectionSize + visibleSectionSize);
+  const middleSectionSize = totalSize - startSectionSize - endSectionSize;
   return {
     start: startSectionSize,
+    middle: middleSectionSize,
     end: endSectionSize
   };
 };
@@ -93,9 +95,11 @@ const gapsReducer = (acc, scrollPage) => acc + (scrollPage.end - scrollPage.star
 export const getGapsFromScrollPages = (scrollPages, page) => {
   const visiblePages = getVisiblePages(page);
   const startSectionSize = scrollPages.slice(0, visiblePages[0]).reduce(gapsReducer, 0);
+  const middleSectionSize = scrollPages.slice(visiblePages[0], ((visiblePages[1] || 0) + 1)).reduce(gapsReducer, 0);
   const endSectionSize = scrollPages.slice((visiblePages[1] || 0) + 1, scrollPages.length).reduce(gapsReducer, 0);
   return {
     start: startSectionSize,
+    middle: middleSectionSize,
     end: endSectionSize
   }
 };

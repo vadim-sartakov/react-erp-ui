@@ -36,6 +36,7 @@ describe('Scroller', () => {
       expect(value[0]).toBe(0);
       expect(gaps).toEqual({
         start: 0,
+        middle: 20,
         end: 20
       });
     });
@@ -61,6 +62,7 @@ describe('Scroller', () => {
       expect(value[1]).toBe(2);
       expect(gaps).toEqual({
         start: 20,
+        middle: 40,
         end: 20
       });
     });

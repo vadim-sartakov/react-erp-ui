@@ -138,19 +138,19 @@ describe('Scroller utils', () => {
 
   describe('getGapsWithDefaultSize', () => {
     it('start page', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 0 })).toEqual({ start: 0, end: 80 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 0 })).toEqual({ start: 0, middle: 20, end: 80 });
     });
     it('middle page', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 3 })).toEqual({ start: 40, end: 20 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 3 })).toEqual({ start: 40, middle: 40, end: 20 });
     });
     it('last page', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 4 })).toEqual({ start: 60, end: 0 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 4 })).toEqual({ start: 60, middle: 40, end: 0 });
     });
     it('middle page with 10 items per page', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 35, page: 2 })).toEqual({ start: 200, end: 100 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 35, page: 2 })).toEqual({ start: 200, middle: 400, end: 100 });
     });
     it('last page with half content', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 25, page: 2 })).toEqual({ start: 200, end: 0 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 25, page: 2 })).toEqual({ start: 200, middle: 300, end: 0 });
     });
   });
 
@@ -162,13 +162,13 @@ describe('Scroller utils', () => {
       { start: 100, end: 150 }
     ];
     it('first page', () => {
-      expect(getGapsFromScrollPages(scrollPages, 0)).toEqual({ start: 0, end: 130 });
+      expect(getGapsFromScrollPages(scrollPages, 0)).toEqual({ start: 0, middle: 20, end: 130 });
     });
     it('middle page', () => {
-      expect(getGapsFromScrollPages(scrollPages, 2)).toEqual({ start: 20, end: 50 });
+      expect(getGapsFromScrollPages(scrollPages, 2)).toEqual({ start: 20, middle: 80, end: 50 });
     });
     it('last page', () => {
-      expect(getGapsFromScrollPages(scrollPages, 3)).toEqual({ start: 60, end: 0 });
+      expect(getGapsFromScrollPages(scrollPages, 3)).toEqual({ start: 60, middle: 90, end: 0 });
     });
   });
 
