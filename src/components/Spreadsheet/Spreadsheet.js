@@ -19,9 +19,32 @@ const ScrollContext = createContext();
 
 export const SpreadsheetTableRow = ({
   style = {},
+  className,
+  rowIndex,
   ...props
 }) => {
-  return <div {...props} style={{ ...style, display: 'flex' }} />
+  const { classes, rows, defaultRowHeight } = useContext(SpreadsheetContext);
+  const row = rows[rowIndex];
+
+  const nextStyle = { ...style, height: (row && row.size) || defaultRowHeight, whiteSpace: 'nowrap' };
+  let nextClassName = classNames(className);
+
+  const fixedRow = row && row.fixed;
+  if (fixedRow) {
+    nextClassName = classNames(nextClassName, classes.fixed);
+    nextStyle.position = 'sticky';
+  }
+
+  const fixedRowOffset = useMemo(() => {
+    return fixedRow && getFixedCellOffset({ meta: rows, defaultSize: defaultRowHeight, index: rowIndex })
+  }, [rows, defaultRowHeight, rowIndex, fixedRow]);
+
+  if (fixedRow) {
+    nextStyle.zIndex = 3;
+    nextStyle.top = fixedRowOffset;
+  };
+
+  return <div {...props} className={nextClassName} style={nextStyle} />
 };
 
 export const SpreadsheetScroller = ({
@@ -97,7 +120,7 @@ export const Spreadsheet = ({
           defaultRowHeight,
           classes
         }}>
-      <div {...props} style={{ ...style, display: 'inline-block' }} />
+      <div {...props} style={{ ...style, display: 'inline-block', position: 'relative' }} />
     </SpreadsheetContext.Provider>
   )
 };
@@ -155,32 +178,28 @@ export const SpreadsheetTableCell = ({
   rowIndex,
   ...props
 }) => {
-  const { classes, columns, defaultColumnWidth, rows, defaultRowHeight } = useContext(SpreadsheetContext);
+  const { classes, columns, defaultColumnWidth, rows } = useContext(SpreadsheetContext);
   const column = columns[columnIndex];
   const row = rows[rowIndex];
 
-  const nextStyle = { ...style, width: (column && column.size) || defaultColumnWidth };
+  const nextStyle = {
+    ...style,
+    display: 'inline-block',
+    width: (column && column.size) || defaultColumnWidth
+  };
   let nextClassName = classNames(className);
 
-  const fixedRow = row && row.fixed;
   const fixedColumn = column && column.fixed;
-  if (fixedRow || fixedColumn) {
+  const fixedRow = row && row.fixed;
+  if (fixedColumn) {
     nextClassName = classNames(nextClassName, classes.fixed);
     nextStyle.position = 'sticky';
   }
-
-  const fixedRowOffset = useMemo(() => {
-    return fixedRow && getFixedCellOffset({ meta: rows, defaultSize: defaultRowHeight, index: rowIndex })
-  }, [rows, defaultRowHeight, rowIndex, fixedRow]);
 
   const fixedColumnOffset = useMemo(() => {
     return fixedColumn && getFixedCellOffset({ meta: columns, defaultSize: defaultColumnWidth, index: columnIndex })
   }, [columns, defaultColumnWidth, columnIndex, fixedColumn]);
 
-  if (fixedRow) {
-    nextStyle.zIndex = 3;
-    nextStyle.top = fixedRowOffset;
-  };
   if (fixedColumn) {
     nextStyle.zIndex = 2;
     nextStyle.left = fixedColumnOffset;
@@ -240,9 +259,12 @@ export const SpreadsheetScrollableRows = ({ children }) => {
 export const SpreadsheetCellValue = ({ mode, style, rowIndex, ...props }) => {
   const { rows, defaultRowHeight } = useContext(SpreadsheetContext);
   const row = rows[rowIndex];
-  const height = (( row && row.size ) || defaultRowHeight);
-  const nextStyle = { ...style, height, overflow: 'hidden' };
-  return <div style={nextStyle} {...props} />;
+  const nextStyle = {
+    ...style,
+    height: (row && row.size) || defaultRowHeight,
+    overflow: 'hidden'
+  };
+  return <div {...props} style={nextStyle} />;
 };
 
 export const SpreadsheetColumnResizer = ({ index, ...props }) => {

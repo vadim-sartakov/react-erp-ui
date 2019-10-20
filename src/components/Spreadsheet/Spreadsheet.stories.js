@@ -70,8 +70,7 @@ const SpreadsheetComponent = () => {
             lastFixedRowCell: classes.lastFixedRowCell,
             lastFixedColumnCell: classes.lastFixedColumnCell
           }}>
-        <div>
-          <SpreadsheetTableRow>
+        <SpreadsheetTableRow rowIndex={0}>
             <SpreadsheetTableCell columnIndex={0} rowIndex={0}>
               <SpreadsheetCellValue rowIndex={0} className={classNames(classes.cellValue, classes.columnNumberCell)} />
             </SpreadsheetTableCell>
@@ -89,7 +88,6 @@ const SpreadsheetComponent = () => {
               )
             })}
           </SpreadsheetTableRow>
-        </div>
 
         <div>
           <SpreadsheetScrollableRows>
@@ -97,7 +95,7 @@ const SpreadsheetComponent = () => {
               const row = rows[rowIndex + 1];
               const level = row && row.level;
               return (
-                <SpreadsheetTableRow key={rowIndex}>
+                <SpreadsheetTableRow key={rowIndex} rowIndex={rowIndex + 1}>
                   <SpreadsheetTableCell rowIndex={rowIndex + 1} columnIndex={0}>
                     <SpreadsheetCellValue rowIndex={rowIndex + 1} className={classNames(classes.cellValue, classes.rowNumberCell)}>
                       {rowIndex + 1}
@@ -108,7 +106,7 @@ const SpreadsheetComponent = () => {
                     const cellValue = rowValue[columnIndex];
                     return (
                       <SpreadsheetTableCell key={columnIndex + 1} rowIndex={rowIndex + 1} columnIndex={columnIndex + 1}>
-                        <SpreadsheetCellValue className={classes.cellValue} rowIndex={rowIndex + 1} style={{ paddingLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
+                        <SpreadsheetCellValue rowIndex={rowIndex + 1} className={classes.cellValue} style={{ paddingLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
                           {cellValue.value}
                         </SpreadsheetCellValue>
                       </SpreadsheetTableCell>
