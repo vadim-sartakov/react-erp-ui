@@ -6,11 +6,11 @@ import {
   getGaps
 } from './utils';
 
-export const loadPageSync = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
-const getCacheValue = (cache, page) => cache.current.find(item => item && item.page === page);
-const addToCacheAndClean = (cache, cacheSize, page, value) => {
-  cache.current.push({ page, value });
-  if (cache.current.length > cacheSize) cache.current.shift();
+const getCacheValue = (cache, page) => cache.find(item => item && item.page === page);
+const addToCacheAndClean = (cache, cacheSize, value) => {
+  const nextCache = [...cache, value];
+  if (nextCache.length > cacheSize) nextCache.shift();
+  return nextCache;
 };
 
 const useScroller = ({
@@ -63,23 +63,28 @@ const useScroller = ({
     }
   }, [async, totalColumns, rowsPerPage, totalRows]);
 
-  // TODO: maybe make async cache state?
-  const [asyncLoadResult, setAsyncLoadResult] = useState([]);
-  const cache = useRef([]);
+  const [asyncCache, setAsyncCache] = useState([]);
+  const syncCache = useRef([]);
 
   useEffect(() => {
     if (async) {
+
       visibleRowsPageNumbers.forEach(visiblePageNumber => {
-        if (!getCacheValue(cache, visiblePageNumber)) {
+
+        if (!getCacheValue(asyncCache, visiblePageNumber)) {
+
           loadRowsPage(visiblePageNumber, rowsPerPage).then(loadResult => {
-            addToCacheAndClean(cache, cacheSize, visiblePageNumber, loadResult);
-            setAsyncLoadResult(loadResult);
+            const nextAsyncCache = addToCacheAndClean(asyncCache, cacheSize, { page: visiblePageNumber, value: loadResult });
+            setAsyncCache(nextAsyncCache);
           });
+
         }
+
       }, []);
     }
   }, [
     async,
+    asyncCache,
     visibleRowsPageNumbers,
     rowsPage,
     loadRowsPage,
@@ -89,19 +94,15 @@ const useScroller = ({
   ]);
 
   const visibleRowsPages = useMemo(() => visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
-    let page = getCacheValue(cache, visiblePageNumber);
-    if (!page) {
-      let pageValue = async ? getLoadingPage(visiblePageNumber) : loadRowsPage(visiblePageNumber, rowsPerPage);
-      if (async && asyncLoadResult) {
-        pageValue = getLoadingPage(visiblePageNumber);
-      } else {
-        pageValue = loadRowsPage(visiblePageNumber, rowsPerPage);
-        addToCacheAndClean(cache, cacheSize, visiblePageNumber, pageValue);
-      }
-      page = { page: visiblePageNumber, value: pageValue };
-    }
+    let page;
+    if (async) {
+      page = getCacheValue(asyncCache, visiblePageNumber) || { page: visiblePageNumber, value: getLoadingPage(visiblePageNumber) };
+    } else {
+      page = getCacheValue(asyncCache, visiblePageNumber) || { page: visiblePageNumber, value: loadRowsPage(visiblePageNumber, rowsPerPage) };
+      addToCacheAndClean(syncCache.current, cacheSize, page);
+    };
     return [...acc, page]
-  }, []), [async, asyncLoadResult, cacheSize, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, getLoadingPage]);
+  }, []), [async, asyncCache, cacheSize, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, getLoadingPage]);
 
   const rowsGaps = useMemo(() => {
     return getGaps({
