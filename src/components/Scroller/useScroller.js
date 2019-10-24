@@ -56,44 +56,27 @@ const useScroller = ({
   const getLoadingPage = useCallback(rowsPage => {
     if (async) {
       const rowsOnPage = getItemsCountOnPage(rowsPage, rowsPerPage, totalRows);
-      const columnsOnPage = getItemsCountOnPage(columnsPage, columnsPerPage, totalColumns);
       return [...new Array(rowsOnPage).keys()].map(() => {
-        const columns = [...new Array(columnsOnPage).keys()].map(() => ({ isLoading: true }));
+        const columns = [...new Array(totalColumns).keys()].map(() => ({ isLoading: true }));
         return columns;
       });
     }
-  }, [async, columnsPage, columnsPerPage, totalColumns, rowsPerPage, totalRows]);
+  }, [async, totalColumns, rowsPerPage, totalRows]);
 
-  const [asyncValue, setAsyncValue] = useState(
-    async ?
-    visibleRowsPageNumbers.map(pageNumber => ({ page: pageNumber, value: getLoadingPage(pageNumber) })) :
-    undefined
-  );
-  
+  // TODO: maybe make async cache state?
+  const [asyncLoadResult, setAsyncLoadResult] = useState([]);
   const cache = useRef([]);
 
   useEffect(() => {
     if (async) {
-      const visibleValues = visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
-        let cachedPage = getCacheValue(cache, visiblePageNumber);
-        if (cachedPage) {
-          return [...acc, cachedPage];
-        } else {
+      visibleRowsPageNumbers.forEach(visiblePageNumber => {
+        if (!getCacheValue(cache, visiblePageNumber)) {
           loadRowsPage(visiblePageNumber, rowsPerPage).then(loadResult => {
             addToCacheAndClean(cache, cacheSize, visiblePageNumber, loadResult);
-            setAsyncValue(asyncValue => {
-              const visibleValue = asyncValue.map(asyncValueItem => {
-                return asyncValueItem.page === visiblePageNumber ?
-                    { page: visiblePageNumber, value: loadResult } :
-                    asyncValueItem
-              })
-              return visibleValue;
-            });
+            setAsyncLoadResult(loadResult);
           });
-          return [...acc, { page: visiblePageNumber, value: getLoadingPage(visiblePageNumber) }];
         }
       }, []);
-      setAsyncValue(visibleValues);
     }
   }, [
     async,
@@ -105,16 +88,20 @@ const useScroller = ({
     cacheSize
   ]);
 
-  const syncValue = useMemo(() => !async && visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
+  const visibleRowsPages = useMemo(() => visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
     let page = getCacheValue(cache, visiblePageNumber);
     if (!page) {
-      page = { page: visiblePageNumber, value: loadRowsPage(visiblePageNumber, rowsPerPage) };
-      addToCacheAndClean(cache, cacheSize, visiblePageNumber, page.value);
+      let pageValue = async ? getLoadingPage(visiblePageNumber) : loadRowsPage(visiblePageNumber, rowsPerPage);
+      if (async && asyncLoadResult) {
+        pageValue = getLoadingPage(visiblePageNumber);
+      } else {
+        pageValue = loadRowsPage(visiblePageNumber, rowsPerPage);
+        addToCacheAndClean(cache, cacheSize, visiblePageNumber, pageValue);
+      }
+      page = { page: visiblePageNumber, value: pageValue };
     }
     return [...acc, page]
-  }, []), [async, cacheSize, loadRowsPage, rowsPerPage, visibleRowsPageNumbers]);
-
-  const visibleRowsPages = async ? asyncValue : syncValue;
+  }, []), [async, asyncLoadResult, cacheSize, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, getLoadingPage]);
 
   const rowsGaps = useMemo(() => {
     return getGaps({
