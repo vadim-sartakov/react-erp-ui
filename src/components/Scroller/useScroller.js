@@ -22,12 +22,12 @@ const useScroller = ({
   totalColumns,
   rowsPerPage,
   columnsPerPage,
-  rows,
-  columns,
+  rowsSizes,
+  columnsSizes,
   async,
   loadRowsPage,
   loadColumnsPage,
-  cacheSize
+  cacheSize = 3
 }) => {
 
   const [rowsPage, setRowsPage] = useState(0);
@@ -35,14 +35,14 @@ const useScroller = ({
 
   const handleScroll = useCallback(e => {
     const curRowsPage = getPageNumber({
-      sizes: rows,
+      sizes: rowsSizes,
       defaultSize: defaultRowHeight,
       itemsPerPage: rowsPerPage,
       totalCount: totalRows,
       scroll: e.target.scrollTop
     });
     const curColumnsPage = getPageNumber({
-      sizes: columns,
+      sizes: columnsSizes,
       defaultSize: defaultColumnWidth,
       itemsPerPage: columnsPerPage,
       totalCount: totalColumns,
@@ -50,19 +50,23 @@ const useScroller = ({
     });
     if (rowsPage !== curRowsPage) setRowsPage(curRowsPage);
     if (columnsPage !== curColumnsPage) setColumnsPage(curColumnsPage);
-  }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
+  }, [columnsSizes, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, rowsSizes, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
   
   const visibleRowsPageNumbers = useMemo(() => getVisiblePages(rowsPage), [rowsPage]);
-  const getLoadingPage = useCallback(page => {
+  const getLoadingPage = useCallback(() => {
     if (async) {
-      const itemsOnPage = getItemsCountOnPage(page, rowsPerPage, totalRows);
-      return [...new Array(itemsOnPage).keys()].map(() => ({ isLoading: true }));
+      const rowsOnPage = getItemsCountOnPage(rowsPage, rowsPerPage, totalRows);
+      const columnsOnPage = getItemsCountOnPage(columnsPage, columnsPerPage, totalColumns);
+      return [...new Array(rowsOnPage).keys()].map(() => {
+        const columns = [...new Array(columnsOnPage).keys()].map(() => ({ isLoading: true }));
+        return columns;
+      });
     }
-  }, [async, rowsPerPage, totalRows]);
+  }, [async, rowsPage, columnsPage, columnsPerPage, totalColumns, rowsPerPage, totalRows]);
 
   const [asyncValue, setAsyncValue] = useState(
     async ?
-    visibleRowsPageNumbers.map(pageNumber => ({ page: pageNumber, value: getLoadingPage(pageNumber) })) :
+    visibleRowsPageNumbers.map(pageNumber => ({ page: pageNumber, value: getLoadingPage() })) :
     undefined
   );
   
@@ -114,23 +118,23 @@ const useScroller = ({
 
   const rowsGaps = useMemo(() => {
     return getGaps({
-      sizes: rows,
+      sizes: rowsSizes,
       defaultSize: defaultRowHeight,
       itemsPerPage: rowsPerPage,
       totalCount: totalRows,
       page: rowsPage
     })
-  }, [rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
+  }, [rowsSizes, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
 
   const columnsGaps = useMemo(() => {
     return getGaps({
-      sizes: columns,
+      sizes: columnsSizes,
       defaultSize: defaultColumnWidth,
       itemsPerPage: columnsPerPage,
       totalCount: totalColumns,
       page: columnsPage
     })
-  }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns]);
+  }, [columnsSizes, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns]);
 
   const scrollerStyles = {
     height: scrollHeight,
