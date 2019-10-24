@@ -72,6 +72,17 @@ export const getPageNumberWithDefaultSize = ({ defaultSize, itemsPerPage, totalC
   return Math.min(totalPages - 1, page);
 };
 
+export const getPageNumber = ({ sizes, defaultSize, itemsPerPage, totalCount, scroll }) => {
+  let curPage;
+  if (sizes && sizes.length) {
+    const scrollPages = getScrollPages({ meta: sizes, defaultSize, itemsPerPage, totalCount });
+    curPage = getPageNumberFromScrollPages(scrollPages, scroll);
+  } else {
+    curPage = getPageNumberWithDefaultSize({ defaultSize, itemsPerPage, totalCount, scroll });
+  }
+  return curPage;
+};
+
 export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, page }) => {
   const pageSize = defaultSize * itemsPerPage;
   const visiblePages = getVisiblePages(page);
@@ -102,4 +113,15 @@ export const getGapsFromScrollPages = (scrollPages, page) => {
     middle: middleSectionSize,
     end: endSectionSize
   }
+};
+
+export const getGaps = ({ sizes, defaultSize, itemsPerPage, totalCount, page }) => {
+  let gaps;
+  if (sizes && sizes.length) {
+    const scrollPages = getScrollPages({ meta: sizes, totalCount, defaultSize, itemsPerPage });
+    gaps = getGapsFromScrollPages(scrollPages, page);
+  } else {
+    gaps = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount, page });
+  }
+  return gaps;
 };
