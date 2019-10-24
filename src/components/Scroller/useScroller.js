@@ -137,22 +137,26 @@ const useScroller = ({
     width: scrollWidth,
     overflow: 'auto'
   };
+  const coverStyles = {
+    height: rowsGaps.start + rowsGaps.middle + rowsGaps.end,
+    width: columnsGaps.start + columnsGaps.middle + columnsGaps.end,
+    position: 'relative'
+  };
   const pagesStyles = {
-    marginTop: rowsGaps.start,
-    marginBottom: rowsGaps.end,
-    marginLeft: columnsGaps.start,
-    marginRight: columnsGaps.end
+    top: rowsGaps.start,
+    left: columnsGaps.start,
+    position: 'absolute'
   };
 
   const visibleRows = useMemo(() => visibleRowsPages.reduce((acc, page) => [...acc, ...page.value], []), [visibleRowsPages]);
-  const columnsVisiblePages = useMemo(() => getVisiblePages(columnsPage), [columnsPage]);
+  const visibleColumnsPageNumbers = useMemo(() => getVisiblePages(columnsPage), [columnsPage]);
 
   const visibleCells = useMemo(() => visibleRows.map(visibleRow => {
     return loadColumnsPage(visibleRow, columnsPage, columnsPerPage);
   }), [columnsPage, columnsPerPage, loadColumnsPage, visibleRows]);
   
-  const rowsStartIndex = visibleRowsPages[0].page * rowsPerPage;
-  const columnsStartIndex = columnsVisiblePages[0].page * columnsPerPage;
+  const rowsStartIndex = visibleRowsPageNumbers[0] * rowsPerPage;
+  const columnsStartIndex = visibleColumnsPageNumbers[0] * columnsPerPage;
 
   return {
     onScroll: handleScroll,
@@ -160,6 +164,7 @@ const useScroller = ({
     rowsStartIndex,
     columnsStartIndex,
     scrollerStyles,
+    coverStyles,
     pagesStyles
   };
 };

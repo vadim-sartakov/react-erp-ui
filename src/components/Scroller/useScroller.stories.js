@@ -14,7 +14,7 @@ export const generateValues = (rowsCount, columnsCount) => {
   })
 };
 
-const value = generateValues(100, 50);
+const value = generateValues(1000, 50);
 
 export const TestComponent = props => {
   const {
@@ -23,26 +23,29 @@ export const TestComponent = props => {
     rowsStartIndex,
     columnsStartIndex,
     scrollerStyles,
+    coverStyles,
     pagesStyles
   } = useScroller(props);
   return (
     <div className="scroller-container" onScroll={onScroll} style={scrollerStyles}>
-      <div className="pages" style={pagesStyles}>
-        {visibleCells.map((visibleRow, index) => {
-          const rowIndex = rowsStartIndex + index;
-          return (
-            <div className="row" key={rowIndex} style={{ display: 'flex' }}>
-              {visibleRow.map((visibleColumn, index) => {
-                const columnIndex = columnsStartIndex + index;
-                return (
-                  <div className="cell" key={columnIndex}>
-                    {JSON.stringify({ rowIndex, columnIndex, ...visibleColumn })}
-                  </div>
-                )
-              })}
-            </div>
-          )
-        })}
+      <div className="cover" style={coverStyles}>
+        <div className="pages" style={pagesStyles}>
+          {visibleCells.map((visibleRow, index) => {
+            const rowIndex = rowsStartIndex + index;
+            return (
+              <div className="row" key={rowIndex} style={{ display: 'flex' }}>
+                {visibleRow.map((visibleColumn, index) => {
+                  const columnIndex = columnsStartIndex + index;
+                  return (
+                    <div className="cell" key={columnIndex} style={{ width: props.defaultColumnWidth, height: props.defaultRowHeight }}>
+                      {`Value ${rowIndex} - ${columnIndex}`}
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
@@ -55,13 +58,13 @@ storiesOf('Scroller', module)
   .add('default', () => (
     <TestComponent
         scrollHeight={600}
-        scrollWidth={600}
-        defaultRowHeight={50}
-        defaultColumnWidth={100}
-        totalRows={100}
-        totalColumns={10}
-        rowsPerPage={10}
-        columnsPerPage={5}
+        scrollWidth={800}
+        defaultRowHeight={40}
+        defaultColumnWidth={150}
+        totalRows={value.length}
+        totalColumns={value[0].length}
+        rowsPerPage={20}
+        columnsPerPage={10}
         loadRowsPage={loadRowsPage}
         loadColumnsPage={loadColumnsPage} />
   ));
