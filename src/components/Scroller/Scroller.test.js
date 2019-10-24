@@ -12,7 +12,7 @@ const TestComponent = props => {
   )
 };
 
-describe('Scroller', () => {
+describe.skip('Scroller', () => {
 
   describe('sync', () => {
 

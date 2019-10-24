@@ -138,7 +138,7 @@ describe('Scroller utils', () => {
 
   describe('getGapsWithDefaultSize', () => {
     it('start page', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 0 })).toEqual({ start: 0, middle: 20, end: 80 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 0 })).toEqual({ start: 0, middle: 40, end: 60 });
     });
     it('middle page', () => {
       expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 3 })).toEqual({ start: 40, middle: 40, end: 20 });
@@ -162,7 +162,7 @@ describe('Scroller utils', () => {
       { start: 100, end: 150 }
     ];
     it('first page', () => {
-      expect(getGapsFromScrollPages(scrollPages, 0)).toEqual({ start: 0, middle: 20, end: 130 });
+      expect(getGapsFromScrollPages(scrollPages, 0)).toEqual({ start: 0, middle: 60, end: 90 });
     });
     it('middle page', () => {
       expect(getGapsFromScrollPages(scrollPages, 2)).toEqual({ start: 20, middle: 80, end: 50 });

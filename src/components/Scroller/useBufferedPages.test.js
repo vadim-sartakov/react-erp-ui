@@ -21,7 +21,7 @@ const TestComponent = ({
 
 const createValues = count => [...Array(count).keys()];
 
-describe('useBufferedPages', () => {
+describe.skip('useBufferedPages', () => {
 
   describe('sync', () => {
 

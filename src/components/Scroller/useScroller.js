@@ -14,16 +14,19 @@ const addToCacheAndClean = (cache, cacheSize, page, value) => {
 };
 
 const useScroller = ({
-  rows,
-  columns,
-  totalRows,
-  totalColumns,
+  scrollHeight,
+  scrollWidth,
   defaultRowHeight,
   defaultColumnWidth,
+  totalRows,
+  totalColumns,
   rowsPerPage,
   columnsPerPage,
+  rows,
+  columns,
   async,
-  loadPage,
+  loadRowsPage,
+  loadColumnsPage,
   cacheSize
 }) => {
 
@@ -49,7 +52,7 @@ const useScroller = ({
     if (columnsPage !== curColumnsPage) setColumnsPage(curColumnsPage);
   }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
   
-  const visiblePageNumbers = useMemo(() => getVisiblePages(rowsPage), [rowsPage]);
+  const visibleRowsPageNumbers = useMemo(() => getVisiblePages(rowsPage), [rowsPage]);
   const getLoadingPage = useCallback(page => {
     if (async) {
       const itemsOnPage = getItemsCountOnPage(page, rowsPerPage, totalRows);
@@ -59,7 +62,7 @@ const useScroller = ({
 
   const [asyncValue, setAsyncValue] = useState(
     async ?
-    visiblePageNumbers.map(pageNumber => ({ page: pageNumber, value: getLoadingPage(pageNumber) })) :
+    visibleRowsPageNumbers.map(pageNumber => ({ page: pageNumber, value: getLoadingPage(pageNumber) })) :
     undefined
   );
   
@@ -67,12 +70,12 @@ const useScroller = ({
 
   useEffect(() => {
     if (async) {
-      const visibleValues = visiblePageNumbers.reduce((acc, visiblePageNumber) => {
+      const visibleValues = visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
         let cachedPage = getCacheValue(cache, visiblePageNumber);
         if (cachedPage) {
           return [...acc, cachedPage];
         } else {
-          loadPage(visiblePageNumber, rowsPerPage).then(loadResult => {
+          loadRowsPage(visiblePageNumber, rowsPerPage).then(loadResult => {
             addToCacheAndClean(cache, cacheSize, visiblePageNumber, loadResult);
             setAsyncValue(asyncValue => {
               const visibleValue = asyncValue.map(asyncValueItem => {
@@ -90,25 +93,24 @@ const useScroller = ({
     }
   }, [
     async,
-    visiblePageNumbers,
+    visibleRowsPageNumbers,
     rowsPage,
-    loadPage,
+    loadRowsPage,
     getLoadingPage,
     rowsPerPage,
     cacheSize
   ]);
 
-  const syncValue = !async && visiblePageNumbers.reduce((acc, visiblePageNumber) => {
+  const syncValue = useMemo(() => !async && visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
     let page = getCacheValue(cache, visiblePageNumber);
     if (!page) {
-      page = { page: visiblePageNumber, value: loadPage(visiblePageNumber, rowsPerPage) };
+      page = { page: visiblePageNumber, value: loadRowsPage(visiblePageNumber, rowsPerPage) };
       addToCacheAndClean(cache, cacheSize, visiblePageNumber, page.value);
     }
     return [...acc, page]
-  }, []);
+  }, []), [async, cacheSize, loadRowsPage, rowsPerPage, visibleRowsPageNumbers]);
 
   const visibleRowsPages = async ? asyncValue : syncValue;
-  const columnsVisiblePages = useMemo(() => getVisiblePages(columnsPage), [columnsPage]);
 
   const rowsGaps = useMemo(() => {
     return getGaps({
@@ -130,19 +132,35 @@ const useScroller = ({
     })
   }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns]);
 
-  const visibleValuesReducer = (acc, page) => [...acc, ...page.value];
-  const visibleRows = visibleRowsPages.reduce(visibleValuesReducer, []);
+  const scrollerStyles = {
+    height: scrollHeight,
+    width: scrollWidth,
+    overflow: 'auto'
+  };
+  const pagesStyles = {
+    marginTop: rowsGaps.start,
+    marginBottom: rowsGaps.end,
+    marginLeft: columnsGaps.start,
+    marginRight: columnsGaps.end
+  };
+
+  const visibleRows = useMemo(() => visibleRowsPages.reduce((acc, page) => [...acc, ...page.value], []), [visibleRowsPages]);
+  const columnsVisiblePages = useMemo(() => getVisiblePages(columnsPage), [columnsPage]);
+
+  const visibleCells = useMemo(() => visibleRows.map(visibleRow => {
+    return loadColumnsPage(visibleRow, columnsPage, columnsPerPage);
+  }), [columnsPage, columnsPerPage, loadColumnsPage, visibleRows]);
   
   const rowsStartIndex = visibleRowsPages[0].page * rowsPerPage;
   const columnsStartIndex = columnsVisiblePages[0].page * columnsPerPage;
 
   return {
     onScroll: handleScroll,
-    visibleRows,
+    visibleCells,
     rowsStartIndex,
     columnsStartIndex,
-    rowsGaps,
-    columnsGaps
+    scrollerStyles,
+    pagesStyles
   };
 };
 

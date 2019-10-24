@@ -1,4 +1,4 @@
-export const getVisiblePages = page => page === 0 ? [0] : [page - 1, page];
+export const getVisiblePages = page => page === 0 ? [0, 1] : [page - 1, page];
 export const getTotalPages = (totalCount, itemsPerPage) => Math.ceil(totalCount / itemsPerPage);
 
 export const getItemsCountOnPage = (page, itemsPerPage, totalCount) => {
@@ -125,3 +125,5 @@ export const getGaps = ({ sizes, defaultSize, itemsPerPage, totalCount, page }) 
   }
   return gaps;
 };
+
+export const loadPage = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
