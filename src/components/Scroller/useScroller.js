@@ -152,8 +152,8 @@ const useScroller = ({
   const visibleColumnsPageNumbers = useMemo(() => getVisiblePages(columnsPage), [columnsPage]);
 
   const visibleCells = useMemo(() => visibleRows.map(visibleRow => {
-    return loadColumnsPage(visibleRow, columnsPage, columnsPerPage);
-  }), [columnsPage, columnsPerPage, loadColumnsPage, visibleRows]);
+    return visibleColumnsPageNumbers.reduce((acc, pageNumber) => [...acc, ...loadColumnsPage(visibleRow, pageNumber, columnsPerPage)], []);
+  }), [visibleColumnsPageNumbers, columnsPerPage, loadColumnsPage, visibleRows]);
   
   const rowsStartIndex = visibleRowsPageNumbers[0] * rowsPerPage;
   const columnsStartIndex = visibleColumnsPageNumbers[0] * columnsPerPage;

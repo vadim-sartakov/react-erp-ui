@@ -63,7 +63,7 @@ storiesOf('Scroller', module)
         defaultColumnWidth={150}
         totalRows={value.length}
         totalColumns={value[0].length}
-        rowsPerPage={20}
+        rowsPerPage={30}
         columnsPerPage={10}
         loadRowsPage={loadRowsPage}
         loadColumnsPage={loadColumnsPage} />
