@@ -6,13 +6,13 @@ import {
   syncGridWithCustomSizes,
   asyncGridWithDefaultSizes,
   asyncGridWithCustomSizes
-} from './useScroller.stories';
+} from './Scroller.stories';
 import { loadPage } from './utils';
 
 export const loadRowsPageSync = (page, itemsPerPage) => loadPage(gridValue, page, itemsPerPage);
 export const loadRowsPageAsync = async (page, itemsPerPage) => loadPage(gridValue, page, itemsPerPage);
 
-describe('useScroller', () => {
+describe('withScroller', () => {
 
   describe('grid', () => {
 
