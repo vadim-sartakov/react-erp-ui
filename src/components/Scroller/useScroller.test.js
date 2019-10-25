@@ -1,7 +1,7 @@
 import { act } from 'react-dom/test-utils';
 import { shallow, mount } from 'enzyme';
 import {
-  value,
+  gridValue,
   syncGridWithDefaultSizes,
   syncGridWithCustomSizes,
   asyncGridWithDefaultSizes,
@@ -9,8 +9,8 @@ import {
 } from './useScroller.stories';
 import { loadPage } from './utils';
 
-export const loadRowsPageSync = (page, itemsPerPage) => loadPage(value, page, itemsPerPage);
-export const loadRowsPageAsync = async (page, itemsPerPage) => loadPage(value, page, itemsPerPage);
+export const loadRowsPageSync = (page, itemsPerPage) => loadPage(gridValue, page, itemsPerPage);
+export const loadRowsPageAsync = async (page, itemsPerPage) => loadPage(gridValue, page, itemsPerPage);
 
 describe('useScroller', () => {
 

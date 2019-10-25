@@ -6,7 +6,7 @@ import useScroller from './useScroller';
 export const generateMeta = count => {
   return [...new Array(count).keys()];
 };
-export const generateValues = (rowsCount, columnsCount) => {
+export const generateGridValues = (rowsCount, columnsCount) => {
   return generateMeta(rowsCount).map(row => {
     return generateMeta(columnsCount).map(column => {
       return { row, column };
@@ -14,12 +14,13 @@ export const generateValues = (rowsCount, columnsCount) => {
   })
 };
 
-export const value = generateValues(1000, 50);
+const generateCustomMeta = (count, size) => [...new Array(count).keys()].map(() => ({ size }));
 
-const customRows = [...new Array(value.length).keys()].map(() => ({ size: 60 }));
-const customColumns = [...new Array(value[0].length).keys()].map(() => ({ size: 180 }));
+export const gridValue = generateGridValues(1000, 50);
+const gridRows = generateCustomMeta(gridValue.length, 60);
+const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
-export const TestComponent = props => {
+export const GridTestComponent = props => {
   const {
     onScroll,
     visibleCells,
@@ -59,13 +60,13 @@ export const TestComponent = props => {
 
 export const loadRowsPageSync = (page, itemsPerPage) => {
   console.log('Loading sync page %s', page);
-  return loadPage(value, page, itemsPerPage);
+  return loadPage(gridValue, page, itemsPerPage);
 };
 export const loadRowsPageAsync = (page, itemsPerPage) => {
   return new Promise(resolve => {
     setTimeout(() => {
       console.log('Loading async page %s', page);
-      const result = loadPage(value, page, itemsPerPage);
+      const result = loadPage(gridValue, page, itemsPerPage);
       resolve(result);
     }, 1000);
   });
@@ -74,23 +75,23 @@ export const loadRowsPageAsync = (page, itemsPerPage) => {
 export const loadColumnsPage = (row, page, itemsPerPage) => loadPage(row, page, itemsPerPage);
 
 export const syncListWithDefaultRowSizes = props => (
-  <TestComponent
+  <GridTestComponent
       scrollHeight={600}
       defaultRowHeight={40}
-      totalRows={value.length}
+      totalRows={gridValue.length}
       rowsPerPage={30}
       loadRowsPage={loadRowsPageSync}
       {...props} />
 );
 
 export const syncGridWithDefaultSizes = props => (
-  <TestComponent
+  <GridTestComponent
       scrollHeight={600}
       scrollWidth={800}
       defaultRowHeight={40}
       defaultColumnWidth={150}
-      totalRows={value.length}
-      totalColumns={value[0].length}
+      totalRows={gridValue.length}
+      totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
       loadRowsPage={loadRowsPageSync}
@@ -99,15 +100,15 @@ export const syncGridWithDefaultSizes = props => (
 );
 
 export const syncGridWithCustomSizes = props => (
-  <TestComponent
+  <GridTestComponent
       scrollHeight={600}
       scrollWidth={800}
       defaultRowHeight={40}
       defaultColumnWidth={150}
-      rows={customRows}
-      columns={customColumns}
-      totalRows={value.length}
-      totalColumns={value[0].length}
+      rows={gridRows}
+      columns={gridColumns}
+      totalRows={gridValue.length}
+      totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
       loadRowsPage={loadRowsPageSync}
@@ -116,13 +117,13 @@ export const syncGridWithCustomSizes = props => (
 );
 
 export const asyncGridWithDefaultSizes = props => (
-  <TestComponent
+  <GridTestComponent
       scrollHeight={600}
       scrollWidth={800}
       defaultRowHeight={40}
       defaultColumnWidth={150}
-      totalRows={value.length}
-      totalColumns={value[0].length}
+      totalRows={gridValue.length}
+      totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
       loadRowsPage={loadRowsPageAsync}
@@ -132,15 +133,15 @@ export const asyncGridWithDefaultSizes = props => (
 );
 
 export const asyncGridWithCustomSizes = props => (
-  <TestComponent
+  <GridTestComponent
       scrollHeight={600}
       scrollWidth={800}
       defaultRowHeight={40}
       defaultColumnWidth={150}
-      totalRows={value.length}
-      totalColumns={value[0].length}
-      rows={customRows}
-      columns={customColumns}
+      totalRows={gridValue.length}
+      totalColumns={gridValue[0].length}
+      rows={gridRows}
+      columns={gridColumns}
       rowsPerPage={30}
       columnsPerPage={10}
       loadRowsPage={loadRowsPageAsync}
