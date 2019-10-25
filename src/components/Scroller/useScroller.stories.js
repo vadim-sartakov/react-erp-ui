@@ -52,10 +52,14 @@ export const TestComponent = props => {
   )
 };
 
-const loadRowsPageSync = (page, itemsPerPage) => loadPage(value, page, itemsPerPage);
+const loadRowsPageSync = (page, itemsPerPage) => {
+  console.log('Loading sync page %s', page);
+  return loadPage(value, page, itemsPerPage);
+};
 const loadRowsPageAsync = (page, itemsPerPage) => {
   return new Promise(resolve => {
     setTimeout(() => {
+      console.log('Loading async page %s', page);
       const result = loadPage(value, page, itemsPerPage);
       resolve(result);
     }, 1000);

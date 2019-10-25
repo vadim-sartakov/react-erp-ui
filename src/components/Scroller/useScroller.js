@@ -7,9 +7,15 @@ import {
 } from './utils';
 
 const getCacheValue = (cache, page) => cache.find(item => item && item.page === page);
-const addToCacheAndClean = (cache, cacheSize, value) => {
-  const nextCache = [...cache, value];
+const addToCache = (cache, value) => getCacheValue(cache, value.page) ? cache : [...cache, value];
+const cleanCache = (cache, cacheSize) => {
+  const nextCache = [...cache];
   if (nextCache.length > cacheSize) nextCache.shift();
+  return nextCache;
+};
+const addToCacheAndClean = (cache, cacheSize, value) => {
+  let nextCache = addToCache(cache, value);
+  nextCache = cleanCache(nextCache, cacheSize);
   return nextCache;
 };
 
@@ -63,28 +69,23 @@ const useScroller = ({
     }
   }, [async, totalColumns, rowsPerPage, totalRows]);
 
-  const [asyncCache, setAsyncCache] = useState([]);
-  const syncCache = useRef([]);
+  const [lastLoadedPage, setLastLoadedPage] = useState();
+  const cache = useRef([]);
 
   useEffect(() => {
     if (async) {
-
-      visibleRowsPageNumbers.forEach(visiblePageNumber => {
-
-        if (!getCacheValue(asyncCache, visiblePageNumber)) {
-
-          loadRowsPage(visiblePageNumber, rowsPerPage).then(loadResult => {
-            const nextAsyncCache = addToCacheAndClean(asyncCache, cacheSize, { page: visiblePageNumber, value: loadResult });
-            setAsyncCache(nextAsyncCache);
-          });
-
+      visibleRowsPageNumbers.reduce(async (prev, visiblePageNumber) => {
+        await prev;
+        if (!getCacheValue(cache.current, visiblePageNumber)) {
+          const loadResult = await loadRowsPage(visiblePageNumber, rowsPerPage);
+          const nextAsyncCache = addToCache(cache.current, { page: visiblePageNumber, value: loadResult });
+          cache.current = nextAsyncCache;
+          setLastLoadedPage(visiblePageNumber);
         }
-
-      }, []);
+      }, Promise.resolve());
     }
   }, [
     async,
-    asyncCache,
     visibleRowsPageNumbers,
     rowsPage,
     loadRowsPage,
@@ -92,17 +93,18 @@ const useScroller = ({
     rowsPerPage,
     cacheSize
   ]);
-
+  console.log(cache.current);
   const visibleRowsPages = useMemo(() => visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
     let page;
     if (async) {
-      page = getCacheValue(asyncCache, visiblePageNumber) || { page: visiblePageNumber, value: getLoadingPage(visiblePageNumber) };
+      page = (lastLoadedPage !== undefined && getCacheValue(cache.current, visiblePageNumber)) || { page: visiblePageNumber, value: getLoadingPage(visiblePageNumber) };
     } else {
-      page = getCacheValue(asyncCache, visiblePageNumber) || { page: visiblePageNumber, value: loadRowsPage(visiblePageNumber, rowsPerPage) };
-      addToCacheAndClean(syncCache.current, cacheSize, page);
+      page = getCacheValue(cache.current, visiblePageNumber) || { page: visiblePageNumber, value: loadRowsPage(visiblePageNumber, rowsPerPage) };
+      const nextCache = addToCacheAndClean(cache.current, cacheSize, page);
+      cache.current = nextCache;
     };
     return [...acc, page]
-  }, []), [async, asyncCache, cacheSize, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, getLoadingPage]);
+  }, []), [async, lastLoadedPage, cacheSize, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, getLoadingPage]);
 
   const rowsGaps = useMemo(() => {
     return getGaps({
