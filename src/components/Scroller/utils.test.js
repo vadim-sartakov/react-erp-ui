@@ -85,12 +85,24 @@ describe('Scroller utils', () => {
       expect(getPageNumberFromScrollPages(scrollPages, 0)).toBe(0);
     });
 
+    it('should return cur page when scrolled less then half of current', () => {
+      const scrollPages = [
+        { start: 0, end: 20 },
+        { start: 20, end: 40 },
+        { start: 40, end: 60 },
+        { start: 60, end: 80 },
+      ];
+      expect(getPageNumberFromScrollPages(scrollPages, 45)).toBe(2);
+    });
+
     it('should return next page when scrolled half of current', () => {
       const scrollPages = [
         { start: 0, end: 20 },
-        { start: 20, end: 40 }
+        { start: 20, end: 40 },
+        { start: 40, end: 60 },
+        { start: 60, end: 80 },
       ];
-      expect(getPageNumberFromScrollPages(scrollPages, 15)).toBe(1);
+      expect(getPageNumberFromScrollPages(scrollPages, 55)).toBe(3);
     });
 
     it('should return initial page - 0 on negative scroll', () => {

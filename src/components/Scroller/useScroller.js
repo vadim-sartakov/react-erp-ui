@@ -28,8 +28,8 @@ const useScroller = ({
   totalColumns,
   rowsPerPage,
   columnsPerPage,
-  rowsSizes,
-  columnsSizes,
+  rows,
+  columns,
   async,
   loadRowsPage,
   loadColumnsPage,
@@ -41,14 +41,14 @@ const useScroller = ({
 
   const handleScroll = useCallback(e => {
     const curRowsPage = getPageNumber({
-      sizes: rowsSizes,
+      meta: rows,
       defaultSize: defaultRowHeight,
       itemsPerPage: rowsPerPage,
       totalCount: totalRows,
       scroll: e.target.scrollTop
     });
     const curColumnsPage = getPageNumber({
-      sizes: columnsSizes,
+      meta: columns,
       defaultSize: defaultColumnWidth,
       itemsPerPage: columnsPerPage,
       totalCount: totalColumns,
@@ -56,7 +56,7 @@ const useScroller = ({
     });
     if (rowsPage !== curRowsPage) setRowsPage(curRowsPage);
     if (columnsPage !== curColumnsPage) setColumnsPage(curColumnsPage);
-  }, [columnsSizes, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, rowsSizes, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
+  }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
   
   const visibleRowsPageNumbers = useMemo(() => getVisiblePages(rowsPage), [rowsPage]);
   const getLoadingPage = useCallback(rowsPage => {
@@ -93,7 +93,7 @@ const useScroller = ({
     rowsPerPage,
     cacheSize
   ]);
-  console.log(cache.current);
+
   const visibleRowsPages = useMemo(() => visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
     let page;
     if (async) {
@@ -108,23 +108,23 @@ const useScroller = ({
 
   const rowsGaps = useMemo(() => {
     return getGaps({
-      sizes: rowsSizes,
+      meta: rows,
       defaultSize: defaultRowHeight,
       itemsPerPage: rowsPerPage,
       totalCount: totalRows,
       page: rowsPage
     })
-  }, [rowsSizes, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
+  }, [rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
 
   const columnsGaps = useMemo(() => {
     return getGaps({
-      sizes: columnsSizes,
+      meta: columns,
       defaultSize: defaultColumnWidth,
       itemsPerPage: columnsPerPage,
       totalCount: totalColumns,
       page: columnsPage
     })
-  }, [columnsSizes, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns]);
+  }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns]);
 
   const scrollerStyles = {
     height: scrollHeight,

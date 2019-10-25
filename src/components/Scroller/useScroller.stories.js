@@ -37,8 +37,10 @@ export const TestComponent = props => {
                 {visibleRow.map((visibleColumn, visibleColumnIndex) => {
                   const columnIndex = columnsStartIndex + visibleColumnIndex;
                   const cellValue = visibleCells[visibleRowIndex][visibleColumnIndex];
+                  const height = (props.rows && props.rows[rowIndex].size) || props.defaultRowHeight;
+                  const width = (props.columns && props.columns[columnIndex].size) || props.defaultColumnWidth;
                   return (
-                    <div className="cell" key={columnIndex} style={{ width: props.defaultColumnWidth, height: props.defaultRowHeight }}>
+                    <div className="cell" key={columnIndex} style={{ width, height }}>
                       {cellValue.isLoading ? 'Loading...' : `Value ${rowIndex} - ${columnIndex}`}
                     </div>
                   )
@@ -69,7 +71,7 @@ const loadRowsPageAsync = (page, itemsPerPage) => {
 const loadColumnsPage = (row, page, itemsPerPage) => loadPage(row, page, itemsPerPage);
 
 storiesOf('Scroller', module)
-  .add('sync', () => (
+  .add('sync with default sizes', () => (
     <TestComponent
         scrollHeight={600}
         scrollWidth={800}
@@ -82,7 +84,22 @@ storiesOf('Scroller', module)
         loadRowsPage={loadRowsPageSync}
         loadColumnsPage={loadColumnsPage} />
   ))
-  .add('async', () => (
+  .add('sync custom sizes', () => (
+    <TestComponent
+        scrollHeight={600}
+        scrollWidth={800}
+        defaultRowHeight={40}
+        defaultColumnWidth={150}
+        rows={[...new Array(value.length).keys()].map(key => ({ size: 60 }))}
+        columns={[...new Array(value[0].length).keys()].map(key => ({ size: 180 }))}
+        totalRows={value.length}
+        totalColumns={value[0].length}
+        rowsPerPage={30}
+        columnsPerPage={10}
+        loadRowsPage={loadRowsPageSync}
+        loadColumnsPage={loadColumnsPage} />
+  ))
+  .add('async with default sizes', () => (
     <TestComponent
         scrollHeight={600}
         scrollWidth={800}
