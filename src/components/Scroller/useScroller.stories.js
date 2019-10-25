@@ -16,6 +16,9 @@ export const generateValues = (rowsCount, columnsCount) => {
 
 const value = generateValues(1000, 50);
 
+const customRows = [...new Array(value.length).keys()].map(() => ({ size: 60 }));
+const customColumns = [...new Array(value[0].length).keys()].map(() => ({ size: 180 }));
+
 export const TestComponent = props => {
   const {
     onScroll,
@@ -54,11 +57,11 @@ export const TestComponent = props => {
   )
 };
 
-const loadRowsPageSync = (page, itemsPerPage) => {
+export const loadRowsPageSync = (page, itemsPerPage) => {
   console.log('Loading sync page %s', page);
   return loadPage(value, page, itemsPerPage);
 };
-const loadRowsPageAsync = (page, itemsPerPage) => {
+export const loadRowsPageAsync = (page, itemsPerPage) => {
   return new Promise(resolve => {
     setTimeout(() => {
       console.log('Loading async page %s', page);
@@ -68,48 +71,87 @@ const loadRowsPageAsync = (page, itemsPerPage) => {
   });
 };
 
-const loadColumnsPage = (row, page, itemsPerPage) => loadPage(row, page, itemsPerPage);
+export const loadColumnsPage = (row, page, itemsPerPage) => loadPage(row, page, itemsPerPage);
+
+export const syncListWithDefaultRowSizes = props => (
+  <TestComponent
+      scrollHeight={600}
+      defaultRowHeight={40}
+      totalRows={value.length}
+      rowsPerPage={30}
+      loadRowsPage={loadRowsPageSync}
+      {...props} />
+);
+
+export const syncGridWithDefaultSizes = props => (
+  <TestComponent
+      scrollHeight={600}
+      scrollWidth={800}
+      defaultRowHeight={40}
+      defaultColumnWidth={150}
+      totalRows={value.length}
+      totalColumns={value[0].length}
+      rowsPerPage={30}
+      columnsPerPage={10}
+      loadRowsPage={loadRowsPageSync}
+      loadColumnsPage={loadColumnsPage}
+      {...props} />
+);
+
+export const syncGridWithCustomSizes = props => (
+  <TestComponent
+      scrollHeight={600}
+      scrollWidth={800}
+      defaultRowHeight={40}
+      defaultColumnWidth={150}
+      rows={customRows}
+      columns={customColumns}
+      totalRows={value.length}
+      totalColumns={value[0].length}
+      rowsPerPage={30}
+      columnsPerPage={10}
+      loadRowsPage={loadRowsPageSync}
+      loadColumnsPage={loadColumnsPage}
+      {...props} />
+);
+
+export const asyncGridWithDefaultSizes = props => (
+  <TestComponent
+      scrollHeight={600}
+      scrollWidth={800}
+      defaultRowHeight={40}
+      defaultColumnWidth={150}
+      totalRows={value.length}
+      totalColumns={value[0].length}
+      rowsPerPage={30}
+      columnsPerPage={10}
+      loadRowsPage={loadRowsPageAsync}
+      loadColumnsPage={loadColumnsPage}
+      async
+      {...props} />
+);
+
+export const asyncGridWithCustomSizes = props => (
+  <TestComponent
+      scrollHeight={600}
+      scrollWidth={800}
+      defaultRowHeight={40}
+      defaultColumnWidth={150}
+      totalRows={value.length}
+      totalColumns={value[0].length}
+      rows={customRows}
+      columns={customColumns}
+      rowsPerPage={30}
+      columnsPerPage={10}
+      loadRowsPage={loadRowsPageAsync}
+      loadColumnsPage={loadColumnsPage}
+      async
+      {...props} />
+);
 
 storiesOf('Scroller', module)
-  .add('sync with default sizes', () => (
-    <TestComponent
-        scrollHeight={600}
-        scrollWidth={800}
-        defaultRowHeight={40}
-        defaultColumnWidth={150}
-        totalRows={value.length}
-        totalColumns={value[0].length}
-        rowsPerPage={30}
-        columnsPerPage={10}
-        loadRowsPage={loadRowsPageSync}
-        loadColumnsPage={loadColumnsPage} />
-  ))
-  .add('sync custom sizes', () => (
-    <TestComponent
-        scrollHeight={600}
-        scrollWidth={800}
-        defaultRowHeight={40}
-        defaultColumnWidth={150}
-        rows={[...new Array(value.length).keys()].map(key => ({ size: 60 }))}
-        columns={[...new Array(value[0].length).keys()].map(key => ({ size: 180 }))}
-        totalRows={value.length}
-        totalColumns={value[0].length}
-        rowsPerPage={30}
-        columnsPerPage={10}
-        loadRowsPage={loadRowsPageSync}
-        loadColumnsPage={loadColumnsPage} />
-  ))
-  .add('async with default sizes', () => (
-    <TestComponent
-        scrollHeight={600}
-        scrollWidth={800}
-        defaultRowHeight={40}
-        defaultColumnWidth={150}
-        totalRows={value.length}
-        totalColumns={value[0].length}
-        rowsPerPage={30}
-        columnsPerPage={10}
-        loadRowsPage={loadRowsPageAsync}
-        loadColumnsPage={loadColumnsPage}
-        async />
-  ));
+  .add('sync list with default row sizes', syncListWithDefaultRowSizes)
+  .add('sync grid with default sizes', syncGridWithDefaultSizes)
+  .add('sync grid with custom sizes', syncGridWithCustomSizes)
+  .add('async grid with default sizes', asyncGridWithDefaultSizes)
+  .add('async grid with custom sizes', asyncGridWithCustomSizes);
