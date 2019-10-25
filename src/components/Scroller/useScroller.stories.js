@@ -14,7 +14,7 @@ export const generateValues = (rowsCount, columnsCount) => {
   })
 };
 
-const value = generateValues(1000, 50);
+export const value = generateValues(1000, 50);
 
 const customRows = [...new Array(value.length).keys()].map(() => ({ size: 60 }));
 const customColumns = [...new Array(value[0].length).keys()].map(() => ({ size: 180 }));
