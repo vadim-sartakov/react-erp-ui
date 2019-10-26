@@ -34,11 +34,13 @@ const withScroller = mapProps => Component => {
       rows,
       columns,
       async,
+      lazy,
       loadRowsPage,
       loadColumnsPage,
       cacheSize = 3
     } = props;
 
+    const lastRowsPage = useRef(1);
     const [rowsPage, setRowsPage] = useState(0);
     const [columnsPage, setColumnsPage] = useState(0);
 
@@ -57,6 +59,7 @@ const withScroller = mapProps => Component => {
         totalCount: totalColumns,
         scroll: e.target.scrollLeft
       });
+      if (curRowsPage > lastRowsPage.current) lastRowsPage.current = curRowsPage;
       if (rowsPage !== curRowsPage) setRowsPage(curRowsPage);
       if (columnsPage !== curColumnsPage) setColumnsPage(curColumnsPage);
     }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
@@ -71,7 +74,7 @@ const withScroller = mapProps => Component => {
       }
     }, [async, totalColumns, rowsPerPage, totalRows]);
 
-    const [lastLoadedPage, setLastLoadedPage] = useState();
+    const [loadedValue, setLoadedValue] = useState();
     const cache = useRef([]);
 
     useEffect(() => {
@@ -82,7 +85,7 @@ const withScroller = mapProps => Component => {
             const loadResult = await loadRowsPage(visiblePageNumber, rowsPerPage);
             const nextAsyncCache = addToCache(cache.current, { page: visiblePageNumber, value: loadResult });
             cache.current = nextAsyncCache;
-            setLastLoadedPage(visiblePageNumber);
+            setLoadedValue(loadResult);
           }
         }, Promise.resolve());
       }
@@ -99,14 +102,14 @@ const withScroller = mapProps => Component => {
     const visibleRowsPages = useMemo(() => visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
       let page;
       if (async) {
-        page = (lastLoadedPage !== undefined && getCacheValue(cache.current, visiblePageNumber)) || { page: visiblePageNumber, value: getLoadingPage(visiblePageNumber) };
+        page = (loadedValue !== undefined && getCacheValue(cache.current, visiblePageNumber)) || { page: visiblePageNumber, value: getLoadingPage(visiblePageNumber) };
       } else {
         page = getCacheValue(cache.current, visiblePageNumber) || { page: visiblePageNumber, value: loadRowsPage(visiblePageNumber, rowsPerPage) };
         const nextCache = addToCacheAndClean(cache.current, cacheSize, page);
         cache.current = nextCache;
       };
       return [...acc, page]
-    }, []), [async, lastLoadedPage, cacheSize, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, getLoadingPage]);
+    }, []), [async, loadedValue, cacheSize, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, getLoadingPage]);
 
     const rowsGaps = useMemo(() => {
       return getGaps({
@@ -115,8 +118,16 @@ const withScroller = mapProps => Component => {
         itemsPerPage: rowsPerPage,
         totalCount: totalRows,
         page: rowsPage
-      })
+      });
     }, [rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
+
+    const lastRowsPageGaps = lazy && getGaps({
+      meta: rows,
+      defaultSize: defaultRowHeight,
+      itemsPerPage: rowsPerPage,
+      totalCount: totalRows,
+      page: lastRowsPage.current
+    });
 
     const columnsGaps = useMemo(() => {
       return totalColumns && getGaps({
@@ -129,7 +140,7 @@ const withScroller = mapProps => Component => {
     }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns]);
 
     const coverStyles = {
-      height: rowsGaps.start + rowsGaps.middle + rowsGaps.end,
+      height: lazy ? lastRowsPageGaps.start + lastRowsPageGaps.middle : rowsGaps.start + rowsGaps.middle + rowsGaps.end,
       width: columnsGaps && (columnsGaps.start + columnsGaps.middle + columnsGaps.end),
       position: 'relative'
     };

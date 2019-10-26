@@ -99,6 +99,29 @@ export const loadRowsPageAsync = value => (page, itemsPerPage) => {
 
 export const loadColumnsPage = (row, page, itemsPerPage) => loadPage(row, page, itemsPerPage);
 
+export const asyncLazyListWithDefaultSizes = props => (
+  <ListTestComponent
+      defaultRowHeight={40}
+      totalRows={gridValue.length}
+      rowsPerPage={30}
+      loadRowsPage={loadRowsPageAsync(listValue)}
+      async
+      lazy
+      {...props} />
+);
+
+export const asyncLazyListWithCustomSizes = props => (
+  <ListTestComponent
+      defaultRowHeight={40}
+      totalRows={gridValue.length}
+      rows={listRows}
+      rowsPerPage={30}
+      loadRowsPage={loadRowsPageAsync(listValue)}
+      async
+      lazy
+      {...props} />
+);
+
 export const syncListWithDefaultSizes = props => (
   <ListTestComponent
       defaultRowHeight={40}
@@ -198,6 +221,8 @@ export const asyncGridWithCustomSizes = props => (
 );
 
 storiesOf('Scroller', module)
+  .add('async lazy list with default row sizes', asyncLazyListWithDefaultSizes)
+  .add('async lazy list with custom row sizes', asyncLazyListWithCustomSizes)
   .add('sync list with default row sizes', syncListWithDefaultSizes)
   .add('sync list with custom row sizes', syncListWithCustomSizes)
   .add('async list with default sizes', asyncListWithDefaultSizes)
