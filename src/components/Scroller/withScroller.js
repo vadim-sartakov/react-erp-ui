@@ -20,7 +20,7 @@ const addToCacheAndClean = (cache, cacheSize, value) => {
   return nextCache;
 };
 
-const withScroller = Component => {
+const withScroller = mapProps => Component => {
 
   const Scroller = props => {
 
@@ -149,18 +149,24 @@ const withScroller = Component => {
     const rowsStartIndex = visibleRowsPageNumbers[0] * rowsPerPage;
     const columnsStartIndex = visibleColumnsPageNumbers[0] * columnsPerPage;
 
-    const componentProps = {
+    let componentProps = {
       visibleCells,
       rowsStartIndex,
       columnsStartIndex,
       ...props
     };
 
+    if (mapProps) componentProps = mapProps(componentProps);
+
     return (
       <ScrollerContext.Provider value={{
         onScroll: handleScroll,
         coverStyles,
-        pagesStyles
+        pagesStyles,
+        defaultRowHeight,
+        defaultColumnWidth,
+        rows,
+        columns
       }}>
         <Component {...componentProps} />
       </ScrollerContext.Provider>
