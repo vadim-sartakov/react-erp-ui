@@ -66,8 +66,7 @@ const withScroller = Component => {
       if (async) {
         const rowsOnPage = getItemsCountOnPage(rowsPage, rowsPerPage, totalRows);
         return [...new Array(rowsOnPage).keys()].map(() => {
-          const columns = [...new Array(totalColumns).keys()].map(() => ({ isLoading: true }));
-          return columns;
+          return totalColumns ? [...new Array(totalColumns).keys()].map(() => ({ isLoading: true })) : { isLoading: true };
         });
       }
     }, [async, totalColumns, rowsPerPage, totalRows]);
@@ -120,32 +119,32 @@ const withScroller = Component => {
     }, [rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
 
     const columnsGaps = useMemo(() => {
-      return getGaps({
+      return totalColumns && getGaps({
         meta: columns,
         defaultSize: defaultColumnWidth,
         itemsPerPage: columnsPerPage,
         totalCount: totalColumns,
         page: columnsPage
-      })
+      });
     }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns]);
 
     const coverStyles = {
       height: rowsGaps.start + rowsGaps.middle + rowsGaps.end,
-      width: columnsGaps.start + columnsGaps.middle + columnsGaps.end,
+      width: columnsGaps && (columnsGaps.start + columnsGaps.middle + columnsGaps.end),
       position: 'relative'
     };
     const pagesStyles = {
       top: rowsGaps.start,
-      left: columnsGaps.start,
+      left: columnsGaps && columnsGaps.start,
       position: 'absolute'
     };
 
     const visibleRows = useMemo(() => visibleRowsPages.reduce((acc, page) => [...acc, ...page.value], []), [visibleRowsPages]);
     const visibleColumnsPageNumbers = useMemo(() => getVisiblePages(columnsPage), [columnsPage]);
 
-    const visibleCells = useMemo(() => visibleRows.map(visibleRow => {
+    const visibleCells = useMemo(() => loadColumnsPage ? visibleRows.map(visibleRow => {
       return visibleColumnsPageNumbers.reduce((acc, pageNumber) => [...acc, ...loadColumnsPage(visibleRow, pageNumber, columnsPerPage)], []);
-    }), [visibleColumnsPageNumbers, columnsPerPage, loadColumnsPage, visibleRows]);
+    }) : visibleRows, [visibleColumnsPageNumbers, columnsPerPage, loadColumnsPage, visibleRows]);
     
     const rowsStartIndex = visibleRowsPageNumbers[0] * rowsPerPage;
     const columnsStartIndex = visibleColumnsPageNumbers[0] * columnsPerPage;
