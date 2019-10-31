@@ -7,28 +7,27 @@ import { useScroller, ScrollerRow, ScrollerCell, useResize } from '../';
 const SpreadsheetContext = createContext();
 
 export const SpreadsheetRow = ({
-  style = {},
+  style,
   className,
-  rowIndex,
+  index,
+  fixed,
   ...props
 }) => {
   const { classes, rows, defaultRowHeight } = useContext(SpreadsheetContext);
-  const row = rows[rowIndex];
 
-  const nextStyle = { ...style, height: (row && row.size) || defaultRowHeight, whiteSpace: 'nowrap' };
   let nextClassName = classNames(className);
 
-  const fixedRow = row && row.fixed;
-  if (fixedRow) {
+  const nextStyle = { ...style };
+  if (fixed) {
     nextClassName = classNames(nextClassName, classes.fixed);
     nextStyle.position = 'sticky';
   }
 
   const fixedRowOffset = useMemo(() => {
-    return fixedRow && getFixedCellOffset({ meta: rows, defaultSize: defaultRowHeight, index: rowIndex })
-  }, [rows, defaultRowHeight, rowIndex, fixedRow]);
+    return fixed && getFixedCellOffset({ meta: rows, defaultSize: defaultRowHeight, index });
+  }, [rows, defaultRowHeight, index, fixed]);
 
-  if (fixedRow) {
+  if (fixed) {
     nextStyle.zIndex = 3;
     nextStyle.top = fixedRowOffset;
   };
@@ -37,7 +36,7 @@ export const SpreadsheetRow = ({
 };
 
 export const Spreadsheet = ({
-  style = {},
+  style,
   data,
   onDataChange,
   rows,
@@ -45,12 +44,6 @@ export const Spreadsheet = ({
   columns,
   onColumnsChange,
   height,
-  initialScroll,
-  defaultColumnWidth,
-  defaultRowHeight,
-  rowsPerPage,
-  columnsPerPage,
-  classes,
   ...props
 }) => {
   return (
@@ -61,12 +54,7 @@ export const Spreadsheet = ({
           rows,
           onRowsChange,
           columns,
-          onColumnsChange,
-          rowsPerPage,
-          columnsPerPage,
-          defaultColumnWidth,
-          defaultRowHeight,
-          classes
+          onColumnsChange
         }}>
       <div {...props} style={{ ...style, display: 'inline-block', position: 'relative' }} />
     </SpreadsheetContext.Provider>

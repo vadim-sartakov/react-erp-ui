@@ -51,7 +51,7 @@ const addToCacheAndClean = (cache, cacheSize, value) => {
 
 /**
  * @typedef {Object} useScrollerResult
- * @property {Object[][]} visibleCells
+ * @property {Object[][]} visibleRows
  * @property {number} rowsStartIndex
  * @property {number} columnsStartIndex
  * @property {import('./Scroller').ScrollerProps} scrollerProps
@@ -188,10 +188,10 @@ const useScroller = ({
     position: 'absolute'
   };
 
-  const visibleRows = useMemo(() => visibleRowsPages.reduce((acc, page) => [...acc, ...page.value], []), [visibleRowsPages]);
+  let visibleRows = useMemo(() => visibleRowsPages.reduce((acc, page) => [...acc, ...page.value], []), [visibleRowsPages]);
   const visibleColumnsPageNumbers = useMemo(() => getVisiblePages(columnsPage), [columnsPage]);
 
-  const visibleCells = useMemo(() => loadColumnsPage ? visibleRows.map(visibleRow => {
+  visibleRows = useMemo(() => loadColumnsPage ? visibleRows.map(visibleRow => {
     return visibleColumnsPageNumbers.reduce((acc, pageNumber) => [...acc, ...loadColumnsPage(visibleRow, pageNumber, columnsPerPage)], []);
   }) : visibleRows, [visibleColumnsPageNumbers, columnsPerPage, loadColumnsPage, visibleRows]);
   
@@ -209,7 +209,7 @@ const useScroller = ({
   };
 
   return {
-    visibleCells,
+    visibleRows,
     rowsStartIndex,
     columnsStartIndex,
     scrollerProps

@@ -5,15 +5,15 @@ import ScrollContext from './ScrollerContext';
  * @typedef {Object} ScrollerProps
  * @property {number} [width]
  * @property {number} height
- * @property {Object} coverProps
- * @property {Object} pagesProps
+ * @property {import('react').HTMLAttributes} coverProps
+ * @property {import('react').HTMLAttributes} pagesProps
  * @property {number} defaultRowHeight
  * @property {number} defaultColumnWidth
  * @property {number[]} rows
  * @property {number[]} columns
  * @property {function} onScroll
- * @property {Object} coverStyles
- * @property {Object} pagesStyles
+ * @property {import('react').CSSProperties} coverStyles
+ * @property {import('react').CSSProperties} pagesStyles
  * 
  * @param {ScrollerProps} props 
  */

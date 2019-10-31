@@ -28,7 +28,7 @@ const listRows = generateCustomMeta(listValue.length, 80);
 
 export const ListTestComponent = props => {
   const {
-    visibleCells,
+    visibleRows,
     rowsStartIndex,
     scrollerProps
   } = useScroller(props);
@@ -39,7 +39,7 @@ export const ListTestComponent = props => {
         className="scroller-container"
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
-      {visibleCells.map((visibleRow, visibleRowIndex) => {
+      {visibleRows.map((visibleRow, visibleRowIndex) => {
         const rowIndex = rowsStartIndex + visibleRowIndex;
         return (
           <ScrollerRow className="row" key={rowIndex} index={rowIndex}>
@@ -57,7 +57,7 @@ const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
 export const GridTestComponent = props => {
   const {
-    visibleCells,
+    visibleRows,
     rowsStartIndex,
     columnsStartIndex,
     scrollerProps
@@ -70,7 +70,7 @@ export const GridTestComponent = props => {
         className="scroller-container"
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
-      {visibleCells.map((visibleRow, visibleRowIndex) => {
+      {visibleRows.map((visibleRow, visibleRowIndex) => {
         const rowIndex = rowsStartIndex + visibleRowIndex;
         return (
           <ScrollerRow className="row" key={rowIndex} index={rowIndex} style={{ display: 'flex' }}>

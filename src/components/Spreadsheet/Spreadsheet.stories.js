@@ -41,98 +41,106 @@ for (let i = 20; i < 50; i++) {
  */
 const SpreadsheetComponent = props => {
   const {
+    groupRows,
+    groupColumns,
+    columnNumbersRow,
+    rowNumbersColumn,
+    fixedValue,
     value,
     rows,
     columns,
-    ...spreadsheetProps
+    spreadsheetProps
   } = useSpreadsheet(props);
 
   const {
-    visibleCells,
+    visibleRows,
     rowsStartIndex,
     columnsStartIndex,
     scrollerProps
   } = useScroller({
     ...props,
-    value
+    value,
+    // TODO: extract 'size' property value from rows and columns
+    rows,
+    columns
   });
 
+  const renderColumnNumber = index => {
+    return (
+      <SpreadsheetCell key={index} columns={1} fixed className={classes.columnNumberCell}>
+        {index + 1}
+        <SpreadsheetColumnResizer index={index} className={classes.columnResizer} />
+      </SpreadsheetCell>
+    )
+  };
+
+  const renderRowNumber = index => {
+    return (
+      <SpreadsheetCell column={rowNumbersColumn} fixed className={classes.rowNumberCell}>
+        {index + 1}
+        <SpreadsheetRowResizer index={index} className={classes.rowResizer} />
+      </SpreadsheetCell>
+    );
+  };
+  const renderCellValue = ({ cellValue, row, index, fixed }) => {
+    return (
+      <SpreadsheetCell
+          index={index}
+          className={classNames(classes.cell)}
+          fixed={fixed}
+          style={{ paddingLeft: row.level && index === 0 ? row.level * 15 : undefined }}>
+        {cellValue.value}
+      </SpreadsheetCell>
+    );
+  };
+
   return (
-    <Spreadsheet
-        {...spreadsheetProps}
-        className={classes.root}
-        classes={{
-          fixed: classes.fixed,
-          lastFixedRowCell: classes.lastFixedRowCell,
-          lastFixedColumnCell: classes.lastFixedColumnCell
-        }}>
-      
-      <Scroller height={600} {...scrollerProps}>
-        {visibleCells.map((visibleRow, visibleRowIndex) => {
-          const rowIndex = rowsStartIndex + visibleRowIndex;
+    <Scroller {...scrollerProps} height={600}>
+      <Spreadsheet
+          {...spreadsheetProps}
+          className={classes.spreadsheet}
+          classes={{
+            fixed: classes.fixed,
+            lastFixedRowCell: classes.lastFixedRowCell,
+            lastFixedColumnCell: classes.lastFixedColumnCell
+          }}>
+
+        {/* Column numbers row */}
+        <SpreadsheetRow row={columnNumbersRow} fixed>
+          {/* Row numbers intersection */}
+          <SpreadsheetCell column={rowNumbersColumn} fixed />
+          {[...Array(props.totalColumns).keys()].map(columnIndex => {
+            return renderColumnNumber(columnIndex);
+          })}
+        </SpreadsheetRow>
+
+        {/* Fixed rows */}
+        {fixedValue.map((fixedRow, fixedRowIndex) => {
           return (
-            <SpreadsheetRow key={rowIndex} index={rowIndex}>
-              {visibleRow.map((visibleColumn, visibleColumnIndex) => {
-                const columnIndex = columnsStartIndex + visibleColumnIndex;
-                return (
-                  <SpreadsheetCell index={columnIndex} className={classNames(classes.cell)}>
-                    <SpreadsheetColumnResizer index={columnIndex + 1} className={classes.columnResizer} />
-                  </SpreadsheetCell>
-                );
+            <SpreadsheetRow key={fixedRowIndex} index={fixedRowIndex}>
+              {renderRowNumber(fixedRowIndex)}
+              {fixedRow.map((fixedColumn, fixedColumnIndex) => {
+                return renderCellValue({ cellValue: fixedColumn, index: fixedColumnIndex, fixed: true });
               })}
             </SpreadsheetRow>
           )
         })}
-      </Scroller>
 
-      <SpreadsheetRow index={0}>
-        <SpreadsheetCell index={0}>
-          <SpreadsheetCellValue rowIndex={0} className={classNames(classes.cellValue, classes.columnNumberCell)} />
-        </SpreadsheetCell>
-        {columns.slice(1, columns.length).map((column, columnIndex) => {
+        {/* Value rows */}
+        {visibleRows.map((visibleRow, visibleRowIndex) => {
+          const rowIndex = rowsStartIndex + visibleRowIndex;
           return (
-            <SpreadsheetTableCell
-                key={columnIndex}
-                columnIndex={columnIndex + 1}
-                rowIndex={0}>
-              <SpreadsheetCellValue rowIndex={0} className={classNames(classes.cellValue, classes.columnNumberCell)}>
-                {columnIndex + 1}
-                <SpreadsheetColumnResizer index={columnIndex + 1} className={classes.columnResizer} />
-              </SpreadsheetCellValue>
-            </SpreadsheetTableCell>
+            <SpreadsheetRow key={rowIndex} index={rowIndex}>
+              {renderRowNumber(rowIndex)}
+              {visibleRow.map((visibleColumn, visibleColumnIndex) => {
+                const columnIndex = columnsStartIndex + visibleColumnIndex;
+                return renderCellValue({ cellValue: visibleColumn, index: columnIndex });
+              })}
+            </SpreadsheetRow>
           )
         })}
-      </SpreadsheetRow>
-
-      <div>
-        <SpreadsheetScrollableRows>
-          {({ index: rowIndex, value: rowValue }) => {
-            const row = rows[rowIndex + 1];
-            const level = row && row.level;
-            return (
-              <SpreadsheetTableRow key={rowIndex} rowIndex={rowIndex + 1}>
-                <SpreadsheetTableCell rowIndex={rowIndex + 1} columnIndex={0}>
-                  <SpreadsheetCellValue rowIndex={rowIndex + 1} className={classNames(classes.cellValue, classes.rowNumberCell)}>
-                    {rowIndex + 1}
-                    <SpreadsheetRowResizer index={rowIndex + 1} className={classes.rowResizer} />
-                  </SpreadsheetCellValue>
-                </SpreadsheetTableCell>
-                {columns.slice(1, columns.length).map((column, columnIndex) => {
-                  const cellValue = rowValue[columnIndex];
-                  return (
-                    <SpreadsheetTableCell key={columnIndex + 1} rowIndex={rowIndex + 1} columnIndex={columnIndex + 1}>
-                      <SpreadsheetCellValue rowIndex={rowIndex + 1} className={classes.cellValue} style={{ paddingLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
-                        {cellValue.value}
-                      </SpreadsheetCellValue>
-                    </SpreadsheetTableCell>
-                  )
-                })}
-              </SpreadsheetTableRow>
-            )
-          }}
-        </SpreadsheetScrollableRows>
-      </div>
-    </Spreadsheet>
+      </Spreadsheet>
+    </Scroller>
   );
 };
 
