@@ -2,22 +2,11 @@ import React, { useRef, useState, useEffect, createContext, useContext, useCallb
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { getFixedCellOffset } from './utils';
-import { Scroller, useResize } from '../';
-
-export const useSpreadsheet = ({
-  initialScroll = { top: 0, left: 0 }
-}) => {
-  const [scroll, setScroll] = useState(initialScroll);
-  return {
-    scroll,
-    onScroll: setScroll
-  };
-};
+import { useScroller, ScrollerRow, ScrollerCell, useResize } from '../';
 
 const SpreadsheetContext = createContext();
-const ScrollContext = createContext();
 
-export const SpreadsheetTableRow = ({
+export const SpreadsheetRow = ({
   style = {},
   className,
   rowIndex,
@@ -45,47 +34,6 @@ export const SpreadsheetTableRow = ({
   };
 
   return <div {...props} className={nextClassName} style={nextStyle} />
-};
-
-export const SpreadsheetScroller = ({
-  height,
-  scroll,
-  onScroll,
-  style = {},
-  initialScroll,
-  ...props
-}) => {
-  const scrollerRef = useRef();
-  useEffect(() => {
-    if (initialScroll) {
-      scrollerRef.current.scrollTop = initialScroll.top;
-      scrollerRef.current.scrollLeft = initialScroll.left;
-    }
-  }, [initialScroll]);
-  return (
-    <ScrollContext.Provider value={scroll}>
-      <div
-          ref={scrollerRef}
-          {...props}
-          style={{
-            ...style,
-            overflow: 'auto',
-            height,
-            // This is important for Chrome
-            overflowAnchor: 'none'
-          }}
-          onScroll={e => onScroll({ top: e.target.scrollTop, left: e.target.scrollLeft })} />
-    </ScrollContext.Provider>
-  )
-};
-
-SpreadsheetScroller.propTypes = {
-  initialScroll: PropTypes.shape({
-    top: PropTypes.number.isRequired,
-    left: PropTypes.number.isRequired
-  }),
-  onScroll: PropTypes.func,
-  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
 };
 
 export const Spreadsheet = ({

@@ -3,6 +3,13 @@ import ScrollerContext from './ScrollerContext';
 
 export const ScrollerRowContext = createContext();
 
+/**
+ * @typedef {Object} ScrollerRowProps
+ * @property {string | *} Component - React Component
+ * @property {number} index - Row index
+ * 
+ * @param {ScrollerRowProps} props
+ */
 const ScrollerRow = ({
   style,
   index,

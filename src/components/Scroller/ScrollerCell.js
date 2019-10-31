@@ -2,6 +2,13 @@ import React, { useContext } from 'react';
 import { ScrollerRowContext } from './ScrollerRow';
 import ScrollerContext from './ScrollerContext';
 
+/**
+ * @typedef {Object} ScrollerCellProps
+ * @property {string | *} Component - React Component
+ * @property {number} index - Column index
+ * 
+ * @param {ScrollerCellProps} props
+ */
 const ScrollerCell = ({
   style,
   index: columnIndex,

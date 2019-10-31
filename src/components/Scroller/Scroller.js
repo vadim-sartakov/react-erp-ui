@@ -1,7 +1,23 @@
 import React from 'react';
 import ScrollContext from './ScrollerContext';
 
-const ScrollContainer = ({
+/**
+ * @typedef {Object} ScrollerProps
+ * @property {number} [width]
+ * @property {number} height
+ * @property {Object} coverProps
+ * @property {Object} pagesProps
+ * @property {number} defaultRowHeight
+ * @property {number} defaultColumnWidth
+ * @property {number[]} rows
+ * @property {number[]} columns
+ * @property {function} onScroll
+ * @property {Object} coverStyles
+ * @property {Object} pagesStyles
+ * 
+ * @param {ScrollerProps} props 
+ */
+const Scroller = ({
   width,
   height,
   children,
@@ -35,4 +51,4 @@ const ScrollContainer = ({
   );
 };
 
-export default ScrollContainer;
+export default Scroller;

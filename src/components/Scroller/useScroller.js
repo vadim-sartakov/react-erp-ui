@@ -37,15 +37,15 @@ const addToCacheAndClean = (cache, cacheSize, value) => {
  * @property {number} defaultRowHeight
  * @property {number} defaultColumnWidth
  * @property {number} totalRows
- * @property {number} totalColumns
+ * @property {number} [totalColumns]
  * @property {number} rowsPerPage
  * @property {number} columnsPerPage
- * @property {number[]} rows
- * @property {number[]} columns
- * @property {boolean} async
- * @property {boolean} lazy - When set to true whe height of scroller will expand on demand
+ * @property {number[]} [rows]
+ * @property {number[]} [columns]
+ * @property {boolean} [async]
+ * @property {boolean} [lazy] - When set to true whe height of scroller will expand on demand
  * @property {loadRowsPage} loadRowsPage
- * @property {loadColumnsPage} loadColumnsPage
+ * @property {loadColumnsPage} [loadColumnsPage]
  * @property {number} [cacheSize=3]
  */
 
@@ -54,7 +54,7 @@ const addToCacheAndClean = (cache, cacheSize, value) => {
  * @property {Object[][]} visibleCells
  * @property {number} rowsStartIndex
  * @property {number} columnsStartIndex
- * @property {Object} scrollerProps
+ * @property {import('./Scroller').ScrollerProps} scrollerProps
  */
 
 /**
