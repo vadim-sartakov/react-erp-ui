@@ -1,4 +1,4 @@
-export { default as withScroller } from './withScroller';
-export { default as ScrollContainer } from './ScrollContainer';
+export { default as useScroller } from './useScroller';
+export { default as Scroller } from './Scroller';
 export { default as ScrollerRow } from './ScrollerRow';
 export { default as ScrollerCell } from './ScrollerCell';

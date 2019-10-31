@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
-import { withScroller, ScrollContainer, ScrollerRow, ScrollerCell } from './';
+import { useScroller, Scroller, ScrollerRow, ScrollerCell } from './';
 
 export const generateMeta = count => {
   return [...new Array(count).keys()];
@@ -26,12 +26,15 @@ const generateCustomMeta = (count, size) => [...new Array(count).keys()].map(() 
 export const listValue = generateListValues(1000);
 const listRows = generateCustomMeta(listValue.length, 80);
 
-export const ListTestComponent = withScroller()(({
-  visibleCells,
-  rowsStartIndex
-}) => {
+export const ListTestComponent = props => {
+  const {
+    visibleCells,
+    rowsStartIndex,
+    scrollerProps
+  } = useScroller(props);
   return (
-    <ScrollContainer
+    <Scroller
+        {...scrollerProps}
         height={600}
         className="scroller-container"
         coverProps={{ className: 'cover' }}
@@ -44,21 +47,24 @@ export const ListTestComponent = withScroller()(({
           </ScrollerRow>
         );
       })}
-    </ScrollContainer>
+    </Scroller>
   )
-});
+};
 
 export const gridValue = generateGridValues(1000, 50);
 const gridRows = generateCustomMeta(gridValue.length, 60);
 const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
-export const GridTestComponent = withScroller()(({
-  visibleCells,
-  rowsStartIndex,
-  columnsStartIndex
-}) => {
+export const GridTestComponent = props => {
+  const {
+    visibleCells,
+    rowsStartIndex,
+    columnsStartIndex,
+    scrollerProps
+  } = useScroller(props);
   return (
-    <ScrollContainer
+    <Scroller
+        {...scrollerProps}
         width={800}
         height={600}
         className="scroller-container"
@@ -79,9 +85,9 @@ export const GridTestComponent = withScroller()(({
           </ScrollerRow>
         )
       })}
-    </ScrollContainer>
+    </Scroller>
   )
-});
+};
 
 export const loadRowsPageSync = value => (page, itemsPerPage) => {
   console.log('Loading sync page %s', page);
