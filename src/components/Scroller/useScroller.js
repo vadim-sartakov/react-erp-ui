@@ -19,6 +19,49 @@ const addToCacheAndClean = (cache, cacheSize, value) => {
   return nextCache;
 };
 
+/**
+ * @callback loadRowsPage
+ * @param {number} page
+ * @param {number} itemsPerPage
+ */
+
+/**
+ * @callback loadColumnsPage
+ * @param {Object} visibleRow
+ * @param {number} page
+ * @param {number} itemsPerPage
+ */
+
+/**
+ * @typedef {Object} useScrollerProps
+ * @property {number} defaultRowHeight
+ * @property {number} defaultColumnWidth
+ * @property {number} totalRows
+ * @property {number} totalColumns
+ * @property {number} rowsPerPage
+ * @property {number} columnsPerPage
+ * @property {number[]} rows
+ * @property {number[]} columns
+ * @property {boolean} async
+ * @property {boolean} lazy - When set to true whe height of scroller will expand on demand
+ * @property {loadRowsPage} loadRowsPage
+ * @property {loadColumnsPage} loadColumnsPage
+ * @property {number} [cacheSize=3]
+ */
+
+/**
+ * @typedef {Object} useScrollerResult
+ * @property {Object[][]} visibleCells
+ * @property {number} rowsStartIndex
+ * @property {number} columnsStartIndex
+ * @property {Object} scrollerProps
+ */
+
+/**
+ * 
+ * @param {useScrollerProps} props
+ * @return {useScrollerResult} 
+ */
 const useScroller = ({
   defaultRowHeight,
   defaultColumnWidth,
