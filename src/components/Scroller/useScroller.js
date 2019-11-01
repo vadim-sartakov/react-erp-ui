@@ -112,15 +112,6 @@ const useScroller = ({
   const rowsStartIndex = visibleRowsPageNumbers[0] * rowsPerPage;
   const columnsStartIndex = visibleColumnsPageNumbers[0] * columnsPerPage; 
 
-  const getLoadingPage = useCallback(rowsPage => {
-    if (async) {
-      const rowsOnPage = getItemsCountOnPage(rowsPage, rowsPerPage, totalRows);
-      return [...new Array(rowsOnPage).keys()].map(() => {
-        return totalColumns ? [...new Array(totalColumns).keys()].map(() => ({ isLoading: true })) : { isLoading: true };
-      });
-    }
-  }, [async, totalColumns, rowsPerPage, totalRows]);
-
   const [loadedValue, setLoadedValue] = useState();
   const buffer = useRef([]);
 
@@ -141,7 +132,6 @@ const useScroller = ({
     visibleRowsPageNumbers,
     rowsPage,
     loadRowsPage,
-    getLoadingPage,
     rowsPerPage,
     bufferSize
   ]);
@@ -149,6 +139,13 @@ const useScroller = ({
   const visibleRowsPages = useMemo(() => visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
     let page;
     if (async) {
+      // TODO: Refactor this. Include laoding buffer in state, remove loadedValue
+      const getLoadingPage = rowsPage => {
+        const rowsOnPage = getItemsCountOnPage(rowsPage, rowsPerPage, totalRows);
+        return [...new Array(rowsOnPage).keys()].map(() => {
+          return totalColumns ? [...new Array(totalColumns).keys()].map(() => ({ isLoading: true })) : { isLoading: true };
+        });
+      }
       page = (loadedValue !== undefined && getBufferValue(buffer.current, visiblePageNumber)) || { page: visiblePageNumber, value: getLoadingPage(visiblePageNumber) };
     } else {
       page = getBufferValue(buffer.current, visiblePageNumber) || { page: visiblePageNumber, value: loadRowsPage(visiblePageNumber, rowsPerPage) };
@@ -156,7 +153,7 @@ const useScroller = ({
       buffer.current = nextBuffer;
     };
     return [...acc, page]
-  }, []), [async, loadedValue, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, getLoadingPage]);
+  }, []), [async, loadedValue, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, totalColumns, totalRows]);
 
   const visibleValues = useMemo(() => {
     let scrolledFixedRows; 
