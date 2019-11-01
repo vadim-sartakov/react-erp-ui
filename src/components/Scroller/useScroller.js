@@ -202,7 +202,7 @@ const useScroller = ({
     itemsPerPage: rowsPerPage,
     totalCount: totalRows,
     page: lastRowsPage.current,
-    fixed: rowsStartIndex > fixRows ? fixRows : 0
+    fixed: fixRows
   });
 
   const columnsGaps = useMemo(() => {
