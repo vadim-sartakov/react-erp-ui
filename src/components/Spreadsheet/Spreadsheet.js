@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect, createContext, useContext, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { getFixedCellOffset } from './utils';
 import { useScroller, ScrollerRow, ScrollerCell, useResize } from '../';
 
 const SpreadsheetContext = createContext();
@@ -24,8 +23,8 @@ export const SpreadsheetRow = ({
   }
 
   const fixedRowOffset = useMemo(() => {
-    return fixed && getFixedCellOffset({ meta: rows, defaultSize: defaultRowHeight, index });
-  }, [rows, defaultRowHeight, index, fixed]);
+    return;
+  }, []);
 
   if (fixed) {
     nextStyle.zIndex = 3;
@@ -133,8 +132,8 @@ export const SpreadsheetTableCell = ({
   }
 
   const fixedColumnOffset = useMemo(() => {
-    return fixedColumn && getFixedCellOffset({ meta: columns, defaultSize: defaultColumnWidth, index: columnIndex })
-  }, [columns, defaultColumnWidth, columnIndex, fixedColumn]);
+    return;
+  }, []);
 
   if (fixedColumn) {
     nextStyle.zIndex = 2;

@@ -133,4 +133,26 @@ export const getGaps = ({ meta, defaultSize, itemsPerPage, totalCount, page, fix
   return gaps;
 };
 
+/**
+ * @typedef getFixedOffsetsOptions
+ * @property {Object} meta
+ * @property {number} defaultSize
+ * @property {number} fixed - Fixed items count
+ */
+
+ /**
+ * @param {getFixedOffsetsOptions} options
+ */
+export const getFixedOffsets = ({ meta, defaultSize, fixed }) => {
+  const resultOffset = [...new Array(fixed).keys()].reduce((acc, curKey, index) => {
+    const curOffset = index === 0 ? 0 : [...new Array(index).keys()].reduce((acc, key, index) => {
+      const curMeta = meta && meta[index];
+      const offset = curMeta ? (curMeta.size || defaultSize) : defaultSize;
+      return acc + offset;
+    }, 0);
+    return [...acc, curOffset];
+  }, []);
+  return resultOffset;
+};
+
 export const loadPage = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);

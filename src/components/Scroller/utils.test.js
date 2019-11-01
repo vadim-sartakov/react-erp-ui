@@ -4,7 +4,8 @@ import {
   getPageNumberFromScrollPages,
   getPageNumberWithDefaultSize,
   getGapsWithDefaultSize,
-  getGapsFromScrollPages
+  getGapsFromScrollPages,
+  getFixedOffsets
 } from './utils';
 
 describe('Scroller utils', () => {
@@ -187,6 +188,32 @@ describe('Scroller utils', () => {
     });
     it('last page with fixed', () => {
       expect(getGapsFromScrollPages({ scrollPages, page: 3, fixed: 2 })).toEqual({ fixed: 60, start: 60, middle: 90, end: 0 });
+    });
+  });
+
+  describe('getFixedOffsets', () => {
+    it('should return offsets without meta', () => {
+      expect(getFixedOffsets({ defaultSize: 20, fixed: 3 })).toEqual([0, 20, 40]);
+    });
+
+    it('should return offsets with default sizes', () => {
+      const meta = [
+        undefined,
+        undefined,
+        { size: 10 },
+        { size: 20 }
+      ];
+      expect(getFixedOffsets({ meta, defaultSize: 20, fixed: 3 })).toEqual([0, 20, 40]);
+    });
+
+    it('should return offsets with custom sizes', () => {
+      const meta = [
+        { size: 20 },
+        { size: 30 },
+        { size: 10 },
+        { size: 20 }
+      ];
+      expect(getFixedOffsets({ meta, defaultSize: 20, fixed: 3 })).toEqual([0, 20, 50]);
     });
   });
 
