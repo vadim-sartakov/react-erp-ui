@@ -28,7 +28,7 @@ const listRows = generateCustomMeta(listValue.length, 80);
 
 export const ListTestComponent = props => {
   const {
-    visibleRows,
+    visibleValues,
     rowsStartIndex,
     scrollerProps
   } = useScroller(props);
@@ -39,7 +39,7 @@ export const ListTestComponent = props => {
         className="scroller-container"
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
-      {visibleRows.map((visibleRow, visibleRowIndex) => {
+      {visibleValues.map((visibleRow, visibleRowIndex) => {
         const rowIndex = rowsStartIndex + visibleRowIndex;
         return (
           <ScrollerRow className="row" key={rowIndex} index={rowIndex}>
@@ -55,9 +55,12 @@ export const gridValue = generateGridValues(1000, 50);
 const gridRows = generateCustomMeta(gridValue.length, 60);
 const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
+/**
+ * @param {import('./useScroller').useScrollerProps} props 
+ */
 export const GridTestComponent = props => {
   const {
-    visibleRows,
+    visibleValues,
     rowsStartIndex,
     columnsStartIndex,
     scrollerProps
@@ -70,7 +73,7 @@ export const GridTestComponent = props => {
         className="scroller-container"
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
-      {visibleRows.map((visibleRow, visibleRowIndex) => {
+      {visibleValues.map((visibleRow, visibleRowIndex) => {
         const rowIndex = rowsStartIndex + visibleRowIndex;
         return (
           <ScrollerRow className="row" key={rowIndex} index={rowIndex} style={{ display: 'flex' }}>
@@ -78,7 +81,7 @@ export const GridTestComponent = props => {
               const columnIndex = columnsStartIndex + visibleColumnIndex;
               return (
                 <ScrollerCell className="cell" key={columnIndex} index={columnIndex}>
-                  {visibleColumn.isLoading ? 'Loading...' : `Value ${rowIndex} - ${columnIndex}`}
+                  {visibleColumn.isLoading ? 'Loading...' : `Value ${visibleColumn.row} - ${visibleColumn.column}`}
                 </ScrollerCell>
               )
             })}
@@ -196,6 +199,21 @@ export const syncGridWithCustomSizes = props => (
       {...props} />
 );
 
+export const syncGridWithDefaultSizesAndFixedRowsColumns = props => (
+  <GridTestComponent
+      defaultRowHeight={40}
+      defaultColumnWidth={150}
+      totalRows={gridValue.length}
+      totalColumns={gridValue[0].length}
+      rowsPerPage={30}
+      columnsPerPage={10}
+      loadRowsPage={loadRowsPageSync(gridValue)}
+      loadColumnsPage={loadColumnsPage}
+      fixRows={2}
+      fixColumns={2}
+      {...props} />
+);
+
 export const asyncGridWithDefaultSizes = props => (
   <GridTestComponent
       defaultRowHeight={40}
@@ -235,5 +253,6 @@ storiesOf('Scroller', module)
   .add('async list with custom sizes', asyncListWithCustomSizes)
   .add('sync grid with default sizes', syncGridWithDefaultSizes)
   .add('sync grid with custom sizes', syncGridWithCustomSizes)
+  .add('sync grid with default sizes and fixed rows columns', syncGridWithDefaultSizesAndFixedRowsColumns)
   .add('async grid with default sizes', asyncGridWithDefaultSizes)
   .add('async grid with custom sizes', asyncGridWithCustomSizes);

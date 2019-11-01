@@ -151,7 +151,7 @@ export const SpreadsheetTableCell = ({
   );
 };
 
-export const SpreadsheetScrollableRows = ({ children }) => {
+/*export const SpreadsheetScrollableRows = ({ children }) => {
   const { rowsPerPage, data, rows, defaultRowHeight } = useContext(SpreadsheetContext);
   const scroll = useContext(ScrollContext);
 
@@ -190,7 +190,7 @@ export const SpreadsheetScrollableRows = ({ children }) => {
       }}
     </Scroller>
   )
-};
+};*/
 
 export const SpreadsheetCellValue = ({ mode, style, rowIndex, ...props }) => {
   const { rows, defaultRowHeight } = useContext(SpreadsheetContext);

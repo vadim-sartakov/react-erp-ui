@@ -53,7 +53,7 @@ const SpreadsheetComponent = props => {
   } = useSpreadsheet(props);
 
   const {
-    visibleRows,
+    visibleValues,
     rowsStartIndex,
     columnsStartIndex,
     scrollerProps
@@ -127,7 +127,7 @@ const SpreadsheetComponent = props => {
         })}
 
         {/* Value rows */}
-        {visibleRows.map((visibleRow, visibleRowIndex) => {
+        {visibleValues.map((visibleRow, visibleRowIndex) => {
           const rowIndex = rowsStartIndex + visibleRowIndex;
           return (
             <SpreadsheetRow key={rowIndex} index={rowIndex}>

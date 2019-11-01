@@ -6,18 +6,18 @@ import {
   getGaps
 } from './utils';
 
-const getCacheValue = (cache, page) => cache.find(item => item && item.page === page);
-const addToCache = (cache, value) => getCacheValue(cache, value.page) ? cache : [...cache, value];
-const cleanCache = (cache, cacheSize) => {
-  const nextCache = [...cache];
-  if (nextCache.length > cacheSize) nextCache.shift();
-  return nextCache;
+const getBufferValue = (buffer, page) => buffer.find(item => item && item.page === page);
+const addToBuffer = (buffer, value) => getBufferValue(buffer, value.page) ? buffer : [...buffer, value];
+/*const cleanBuffer = (buffer, bufferSize) => {
+  const nextBuffer = [...buffer];
+  if (nextBuffer.length > bufferSize) nextBuffer.shift();
+  return nextBuffer;
 };
-const addToCacheAndClean = (cache, cacheSize, value) => {
-  let nextCache = addToCache(cache, value);
-  nextCache = cleanCache(nextCache, cacheSize);
-  return nextCache;
-};
+const addToBufferAndClean = (buffer, bufferSize, value) => {
+  let nextBuffer = addToBuffer(buffer, value);
+  nextBuffer = cleanBuffer(nextBuffer, bufferSize);
+  return nextBuffer;
+};*/
 
 /**
  * @callback loadRowsPage
@@ -46,12 +46,14 @@ const addToCacheAndClean = (cache, cacheSize, value) => {
  * @property {boolean} [lazy] - When set to true whe height of scroller will expand on demand
  * @property {loadRowsPage} loadRowsPage
  * @property {loadColumnsPage} [loadColumnsPage]
- * @property {number} [cacheSize=3]
+ * @property {number} [fixRows=0]
+ * @property {number} [fixColumns=0]
+ * @property {number} [bufferSize=3]
  */
 
 /**
  * @typedef {Object} useScrollerResult
- * @property {Object[][]} visibleRows
+ * @property {Object[][]} visibleValues
  * @property {number} rowsStartIndex
  * @property {number} columnsStartIndex
  * @property {import('./Scroller').ScrollerProps} scrollerProps
@@ -75,7 +77,9 @@ const useScroller = ({
   lazy,
   loadRowsPage,
   loadColumnsPage,
-  cacheSize = 3
+  fixRows = 0,
+  fixColumns = 0,
+  bufferSize = 3
 }) => {
 
   const lastRowsPage = useRef(1);
@@ -103,6 +107,11 @@ const useScroller = ({
   }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
   
   const visibleRowsPageNumbers = useMemo(() => getVisiblePages(rowsPage), [rowsPage]);
+  const visibleColumnsPageNumbers = useMemo(() => getVisiblePages(columnsPage), [columnsPage]);
+
+  const rowsStartIndex = visibleRowsPageNumbers[0] * rowsPerPage;
+  const columnsStartIndex = visibleColumnsPageNumbers[0] * columnsPerPage; 
+
   const getLoadingPage = useCallback(rowsPage => {
     if (async) {
       const rowsOnPage = getItemsCountOnPage(rowsPage, rowsPerPage, totalRows);
@@ -113,16 +122,16 @@ const useScroller = ({
   }, [async, totalColumns, rowsPerPage, totalRows]);
 
   const [loadedValue, setLoadedValue] = useState();
-  const cache = useRef([]);
+  const buffer = useRef([]);
 
   useEffect(() => {
     if (async) {
       visibleRowsPageNumbers.reduce(async (prev, visiblePageNumber) => {
         await prev;
-        if (!getCacheValue(cache.current, visiblePageNumber)) {
+        if (!getBufferValue(buffer.current, visiblePageNumber)) {
           const loadResult = await loadRowsPage(visiblePageNumber, rowsPerPage);
-          const nextAsyncCache = addToCache(cache.current, { page: visiblePageNumber, value: loadResult });
-          cache.current = nextAsyncCache;
+          const nextAsyncBuffer = addToBuffer(buffer.current, { page: visiblePageNumber, value: loadResult });
+          buffer.current = nextAsyncBuffer;
           setLoadedValue(loadResult);
         }
       }, Promise.resolve());
@@ -134,20 +143,47 @@ const useScroller = ({
     loadRowsPage,
     getLoadingPage,
     rowsPerPage,
-    cacheSize
+    bufferSize
   ]);
 
   const visibleRowsPages = useMemo(() => visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
     let page;
     if (async) {
-      page = (loadedValue !== undefined && getCacheValue(cache.current, visiblePageNumber)) || { page: visiblePageNumber, value: getLoadingPage(visiblePageNumber) };
+      page = (loadedValue !== undefined && getBufferValue(buffer.current, visiblePageNumber)) || { page: visiblePageNumber, value: getLoadingPage(visiblePageNumber) };
     } else {
-      page = getCacheValue(cache.current, visiblePageNumber) || { page: visiblePageNumber, value: loadRowsPage(visiblePageNumber, rowsPerPage) };
-      const nextCache = addToCacheAndClean(cache.current, cacheSize, page);
-      cache.current = nextCache;
+      page = getBufferValue(buffer.current, visiblePageNumber) || { page: visiblePageNumber, value: loadRowsPage(visiblePageNumber, rowsPerPage) };
+      const nextBuffer = addToBuffer(buffer.current, page);
+      buffer.current = nextBuffer;
     };
     return [...acc, page]
-  }, []), [async, loadedValue, cacheSize, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, getLoadingPage]);
+  }, []), [async, loadedValue, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, getLoadingPage]);
+
+  const visibleValues = useMemo(() => {
+    let scrolledFixedRows; 
+    if (!fixRows || rowsStartIndex <= fixRows) {
+      scrolledFixedRows = [];
+    } else {
+      const fixedPages = [];
+      // Fetching required amount of pages
+      let curPage = 0;
+      let bufferValue;
+      while((bufferValue = getBufferValue(buffer.current, curPage)) &&
+          fixedPages.reduce((acc, page) => acc + (page.value ? page.value.length : 0), 0) < fixRows) {
+        fixedPages.push(bufferValue);
+        curPage++;
+      }
+      scrolledFixedRows = fixedPages.reduce((acc, page) => [...acc, ...page.value], []).slice(0, fixRows);
+    }
+
+    let visibleValues = visibleRowsPages.reduce((acc, page) => [...acc, ...page.value], scrolledFixedRows);
+    if (loadColumnsPage) {
+      visibleValues = visibleValues.map(visibleRow => {
+        const scrolledFixedColumns = columnsStartIndex > fixColumns ? visibleRow.slice(0, fixColumns) : [];
+        return visibleColumnsPageNumbers.reduce((acc, pageNumber) => [...acc, ...loadColumnsPage(visibleRow, pageNumber, columnsPerPage)], scrolledFixedColumns);
+      });
+    }
+    return visibleValues;
+  }, [visibleColumnsPageNumbers, loadColumnsPage, columnsPerPage, visibleRowsPages, fixRows, rowsStartIndex, fixColumns, columnsStartIndex]);
 
   const rowsGaps = useMemo(() => {
     return getGaps({
@@ -155,16 +191,18 @@ const useScroller = ({
       defaultSize: defaultRowHeight,
       itemsPerPage: rowsPerPage,
       totalCount: totalRows,
-      page: rowsPage
+      page: rowsPage,
+      fixed: fixRows
     });
-  }, [rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
+  }, [rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows, fixRows]);
 
   const lastRowsPageGaps = lazy && getGaps({
     meta: rows,
     defaultSize: defaultRowHeight,
     itemsPerPage: rowsPerPage,
     totalCount: totalRows,
-    page: lastRowsPage.current
+    page: lastRowsPage.current,
+    fixed: rowsStartIndex > fixRows ? fixRows : 0
   });
 
   const columnsGaps = useMemo(() => {
@@ -173,9 +211,10 @@ const useScroller = ({
       defaultSize: defaultColumnWidth,
       itemsPerPage: columnsPerPage,
       totalCount: totalColumns,
-      page: columnsPage
+      page: columnsPage,
+      fixed: fixColumns
     });
-  }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns]);
+  }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, fixColumns]);
 
   const coverStyles = {
     height: lazy ? lastRowsPageGaps.start + lastRowsPageGaps.middle : rowsGaps.start + rowsGaps.middle + rowsGaps.end,
@@ -183,21 +222,11 @@ const useScroller = ({
     position: 'relative'
   };
   const pagesStyles = {
-    top: rowsGaps.start,
-    left: columnsGaps && columnsGaps.start,
+    top: rowsGaps.start - (rowsStartIndex > fixRows ? rowsGaps.fixed : 0),
+    left: columnsGaps && (columnsGaps.start - (columnsStartIndex > fixColumns ? columnsGaps.fixed : 0)),
     position: 'absolute'
   };
-
-  let visibleRows = useMemo(() => visibleRowsPages.reduce((acc, page) => [...acc, ...page.value], []), [visibleRowsPages]);
-  const visibleColumnsPageNumbers = useMemo(() => getVisiblePages(columnsPage), [columnsPage]);
-
-  visibleRows = useMemo(() => loadColumnsPage ? visibleRows.map(visibleRow => {
-    return visibleColumnsPageNumbers.reduce((acc, pageNumber) => [...acc, ...loadColumnsPage(visibleRow, pageNumber, columnsPerPage)], []);
-  }) : visibleRows, [visibleColumnsPageNumbers, columnsPerPage, loadColumnsPage, visibleRows]);
   
-  const rowsStartIndex = visibleRowsPageNumbers[0] * rowsPerPage;
-  const columnsStartIndex = visibleColumnsPageNumbers[0] * columnsPerPage;
-
   const scrollerProps = {
     onScroll: handleScroll,
     coverStyles,
@@ -209,7 +238,7 @@ const useScroller = ({
   };
 
   return {
-    visibleRows,
+    visibleValues,
     rowsStartIndex,
     columnsStartIndex,
     scrollerProps
