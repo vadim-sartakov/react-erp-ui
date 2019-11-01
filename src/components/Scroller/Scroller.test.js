@@ -82,7 +82,7 @@ describe('Scroller', () => {
         checkDefaultSizesMiddlePage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Value 30 - 10");
         expect(wrapper.find('div.cell').last().text()).toBe("Value 89 - 29");
-        expect(loadRowsPage).toHaveBeenCalledTimes(3);
+        expect(loadRowsPage).toHaveBeenCalledTimes(4);
       });
 
       it('should load last rows and columns pages with default sizes', () => {
@@ -111,7 +111,7 @@ describe('Scroller', () => {
         checkCustomSizesMiddlePage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Value 30 - 10");
         expect(wrapper.find('div.cell').last().text()).toBe("Value 89 - 29");
-        expect(loadRowsPage).toHaveBeenCalledTimes(3);
+        expect(loadRowsPage).toHaveBeenCalledTimes(4);
       });
 
       it('should load last rows and columns pages with custom sizes', () => {
@@ -135,7 +135,6 @@ describe('Scroller', () => {
         checkDefaultSizesFirstPage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Loading...");
         expect(wrapper.find('div.cell').last().text()).toBe("Loading...");
-        expect(loadRowsPage).toHaveBeenCalledTimes(0);
 
         loadRowsPage = jest.fn(loadRowsPageAsync(gridValue));
         await act(async () => { wrapper = mount(asyncGridWithDefaultSizes({ loadRowsPage })) });
@@ -154,7 +153,6 @@ describe('Scroller', () => {
         checkDefaultSizesMiddlePage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Loading...");
         expect(wrapper.find('div.cell').last().text()).toBe("Loading...");
-        expect(loadRowsPage).toHaveBeenCalledTimes(0);
 
         loadRowsPage = jest.fn(loadRowsPageAsync(gridValue));
         await act(async () => { wrapper = mount(asyncGridWithDefaultSizes({ loadRowsPage })) });
@@ -175,7 +173,6 @@ describe('Scroller', () => {
         checkDefaultSizesLastPage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Loading...");
         expect(wrapper.find('div.cell').last().text()).toBe("Loading...");
-        expect(loadRowsPage).toHaveBeenCalledTimes(0);
 
         loadRowsPage = jest.fn(loadRowsPageAsync(gridValue));
         await act(async () => { wrapper = mount(asyncGridWithDefaultSizes({ loadRowsPage })) });
@@ -195,7 +192,6 @@ describe('Scroller', () => {
         checkCustomSizesFirstPage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Loading...");
         expect(wrapper.find('div.cell').last().text()).toBe("Loading...");
-        expect(loadRowsPage).toHaveBeenCalledTimes(0);
 
         loadRowsPage = jest.fn(loadRowsPageAsync(gridValue));
         await act(async () => { wrapper = mount(asyncGridWithCustomSizes({ loadRowsPage })) });
@@ -214,7 +210,6 @@ describe('Scroller', () => {
         checkCustomSizesMiddlePage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Loading...");
         expect(wrapper.find('div.cell').last().text()).toBe("Loading...");
-        expect(loadRowsPage).toHaveBeenCalledTimes(0);
 
         loadRowsPage = jest.fn(loadRowsPageAsync(gridValue));
         await act(async () => { wrapper = mount(asyncGridWithCustomSizes({ loadRowsPage })) });
@@ -235,7 +230,6 @@ describe('Scroller', () => {
         checkCustomSizesLastPage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Loading...");
         expect(wrapper.find('div.cell').last().text()).toBe("Loading...");
-        expect(loadRowsPage).toHaveBeenCalledTimes(0);
 
         loadRowsPage = jest.fn(loadRowsPageAsync(gridValue));
         await act(async () => { wrapper = mount(asyncGridWithCustomSizes({ loadRowsPage })) });
