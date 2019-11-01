@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   getVisiblePages,
   getItemsCountOnPage,
@@ -6,19 +6,6 @@ import {
   getGaps,
   getFixedOffsets
 } from './utils';
-
-const getBufferValue = (buffer, page) => buffer.find(item => item && item.page === page);
-const addToBuffer = (buffer, value) => getBufferValue(buffer, value.page) ? buffer : [...buffer, value];
-/*const cleanBuffer = (buffer, bufferSize) => {
-  const nextBuffer = [...buffer];
-  if (nextBuffer.length > bufferSize) nextBuffer.shift();
-  return nextBuffer;
-};
-const addToBufferAndClean = (buffer, bufferSize, value) => {
-  let nextBuffer = addToBuffer(buffer, value);
-  nextBuffer = cleanBuffer(nextBuffer, bufferSize);
-  return nextBuffer;
-};*/
 
 /**
  * @callback loadRowsPage
@@ -85,7 +72,7 @@ const useScroller = ({
   bufferSize = 3
 }) => {
 
-  const lastRowsPage = useRef(1);
+  const [lastRowsPage, setLastRowsPage] = useState(1);
   const [rowsPage, setRowsPage] = useState(0);
   const [columnsPage, setColumnsPage] = useState(0);
 
@@ -104,10 +91,21 @@ const useScroller = ({
       totalCount: totalColumns,
       scroll: e.target.scrollLeft
     });
-    if (curRowsPage > lastRowsPage.current) lastRowsPage.current = curRowsPage;
+    setLastRowsPage(lastRowsPage => curRowsPage > lastRowsPage ? curRowsPage : lastRowsPage);
     if (rowsPage !== curRowsPage) setRowsPage(curRowsPage);
     if (columnsPage !== curColumnsPage) setColumnsPage(curColumnsPage);
-  }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows]);
+  }, [
+    columns,
+    columnsPage,
+    columnsPerPage,
+    defaultColumnWidth,
+    totalColumns,
+    rows,
+    rowsPage,
+    rowsPerPage,
+    defaultRowHeight,
+    totalRows
+  ]);
   
   const visibleRowsPageNumbers = useMemo(() => getVisiblePages(rowsPage), [rowsPage]);
   const visibleColumnsPageNumbers = useMemo(() => getVisiblePages(columnsPage), [columnsPage]);
@@ -115,20 +113,27 @@ const useScroller = ({
   const rowsStartIndex = visibleRowsPageNumbers[0] * rowsPerPage;
   const columnsStartIndex = visibleColumnsPageNumbers[0] * columnsPerPage; 
 
-  const [loadedValue, setLoadedValue] = useState();
-  const buffer = useRef([]);
+  const [buffer, setBuffer] = useState([]);
 
   useEffect(() => {
     if (async) {
-      visibleRowsPageNumbers.reduce(async (prev, visiblePageNumber) => {
-        await prev;
-        if (!getBufferValue(buffer.current, visiblePageNumber)) {
-          const loadResult = await loadRowsPage(visiblePageNumber, rowsPerPage);
-          const nextAsyncBuffer = addToBuffer(buffer.current, { page: visiblePageNumber, value: loadResult });
-          buffer.current = nextAsyncBuffer;
-          setLoadedValue(loadResult);
+      const loadPages = async () => {
+        for (let i = 0; i < visibleRowsPageNumbers.length; i++) {
+          const visiblePageNumber = visibleRowsPageNumbers[i];
+          setBuffer(buffer => {
+            if (buffer[visiblePageNumber]) return buffer;
+            loadRowsPage(visiblePageNumber, rowsPerPage).then(loadResult => {
+              setBuffer(buffer => {
+                const nextBuffer = [...buffer];
+                nextBuffer[visiblePageNumber] = loadResult;
+                return nextBuffer;
+              });
+            });
+            return buffer;
+          });
         }
-      }, Promise.resolve());
+      }
+      loadPages();
     }
   }, [
     async,
@@ -142,21 +147,18 @@ const useScroller = ({
   const visibleRowsPages = useMemo(() => visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
     let page;
     if (async) {
-      // TODO: Refactor this. Include laoding buffer in state, remove loadedValue
-      const getLoadingPage = rowsPage => {
-        const rowsOnPage = getItemsCountOnPage(rowsPage, rowsPerPage, totalRows);
+      const getLoadingPage = () => {
+        const rowsOnPage = getItemsCountOnPage(visiblePageNumber, rowsPerPage, totalRows);
         return [...new Array(rowsOnPage).keys()].map(() => {
           return totalColumns ? [...new Array(totalColumns).keys()].map(() => ({ isLoading: true })) : { isLoading: true };
         });
       }
-      page = (loadedValue !== undefined && getBufferValue(buffer.current, visiblePageNumber)) || { page: visiblePageNumber, value: getLoadingPage(visiblePageNumber) };
+      page = buffer[visiblePageNumber] || getLoadingPage();
     } else {
-      page = getBufferValue(buffer.current, visiblePageNumber) || { page: visiblePageNumber, value: loadRowsPage(visiblePageNumber, rowsPerPage) };
-      const nextBuffer = addToBuffer(buffer.current, page);
-      buffer.current = nextBuffer;
+      page = loadRowsPage(visiblePageNumber, rowsPerPage);
     };
     return [...acc, page]
-  }, []), [async, loadedValue, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, totalColumns, totalRows]);
+  }, []), [async, buffer, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, totalColumns, totalRows]);
 
   const visibleValues = useMemo(() => {
     let scrolledFixedRows; 
@@ -167,15 +169,15 @@ const useScroller = ({
       // Fetching required amount of pages
       let curPage = 0;
       let bufferValue;
-      while((bufferValue = getBufferValue(buffer.current, curPage)) &&
-          fixedPages.reduce((acc, page) => acc + (page.value ? page.value.length : 0), 0) < fixRows) {
+      while((bufferValue = async ? buffer[curPage] : loadRowsPage(curPage, rowsPerPage)) &&
+          fixedPages.reduce((acc, page) => acc + page.length, 0) < fixRows) {
         fixedPages.push(bufferValue);
         curPage++;
       }
-      scrolledFixedRows = fixedPages.reduce((acc, page) => [...acc, ...page.value], []).slice(0, fixRows);
+      scrolledFixedRows = fixedPages.reduce((acc, page) => [...acc, ...page], []).slice(0, fixRows);
     }
 
-    let visibleValues = visibleRowsPages.reduce((acc, page) => [...acc, ...page.value], scrolledFixedRows);
+    let visibleValues = visibleRowsPages.reduce((acc, page) => [...acc, ...page], scrolledFixedRows);
     if (loadColumnsPage) {
       visibleValues = visibleValues.map(visibleRow => {
         const scrolledFixedColumns = columnsStartIndex > fixColumns ? visibleRow.slice(0, fixColumns) : [];
@@ -183,7 +185,20 @@ const useScroller = ({
       });
     }
     return visibleValues;
-  }, [visibleColumnsPageNumbers, loadColumnsPage, columnsPerPage, visibleRowsPages, fixRows, rowsStartIndex, fixColumns, columnsStartIndex]);
+  }, [
+    async,
+    buffer,
+    loadRowsPage,
+    rowsPerPage,
+    visibleColumnsPageNumbers,
+    loadColumnsPage,
+    columnsPerPage,
+    visibleRowsPages,
+    fixRows,
+    rowsStartIndex,
+    fixColumns,
+    columnsStartIndex
+  ]);
 
   const rowsGaps = useMemo(() => {
     return getGaps({
@@ -196,14 +211,14 @@ const useScroller = ({
     });
   }, [rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows, fixRows]);
 
-  const lastRowsPageGaps = lazy && getGaps({
+  const lastRowsPageGaps = useMemo(() => lazy && getGaps({
     meta: rows,
     defaultSize: defaultRowHeight,
     itemsPerPage: rowsPerPage,
     totalCount: totalRows,
-    page: lastRowsPage.current,
+    page: lastRowsPage,
     fixed: fixRows
-  });
+  }), [lazy, rows, lastRowsPage, rowsPerPage, defaultRowHeight, totalRows, fixRows]);
 
   const columnsGaps = useMemo(() => {
     return totalColumns && getGaps({
