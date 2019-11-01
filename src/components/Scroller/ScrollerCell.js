@@ -12,13 +12,21 @@ import ScrollerContext from './ScrollerContext';
 const ScrollerCell = ({
   style,
   index: columnIndex,
+  relativeIndex,
   Component = 'div',
   ...props
 }) => {
-  const { columns, defaultColumnWidth } = useContext(ScrollerContext);
+  const { columns, defaultColumnWidth, columnsOffsets } = useContext(ScrollerContext);
   const { height } = useContext(ScrollerRowContext);
   const width = (columns && columns[columnIndex].size) || defaultColumnWidth;
-  return <Component {...props} style={{ ...style, height, width }} />;
+  const nextStyle = { ...style, height, width };
+  const offset = columnsOffsets[relativeIndex];
+  if (offset !== undefined) {
+    nextStyle.position = 'sticky';
+    nextStyle.left = offset;
+    nextStyle.zIndex = 1;
+  }
+  return <Component {...props} style={nextStyle} />;
 };
 
 export default ScrollerCell;

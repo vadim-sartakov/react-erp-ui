@@ -11,6 +11,9 @@ import ScrollContext from './ScrollerContext';
  * @property {number} defaultColumnWidth
  * @property {number[]} rows
  * @property {number[]} columns
+ * @property {number[]} rowsOffsets
+ * @property {number[]} columnsOffsets
+ * @property {number[]} columns
  * @property {function} onScroll
  * @property {import('react').CSSProperties} coverStyles
  * @property {import('react').CSSProperties} pagesStyles
@@ -28,6 +31,8 @@ const Scroller = ({
   defaultColumnWidth,
   rows,
   columns,
+  rowsOffsets,
+  columnsOffsets,
   onScroll,
   coverStyles,
   pagesStyles,
@@ -38,7 +43,9 @@ const Scroller = ({
       defaultRowHeight,
       defaultColumnWidth,
       rows,
-      columns
+      columns,
+      rowsOffsets,
+      columnsOffsets
     }}>
       <div onScroll={onScroll} {...props} style={{ width, height, overflow: 'auto', ...style }}>
         <div {...coverProps} style={{ ...(coverProps && coverProps.styles), ...coverStyles }}>

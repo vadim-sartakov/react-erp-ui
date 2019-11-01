@@ -114,7 +114,7 @@ describe('Scroller', () => {
         expect(loadRowsPage).toHaveBeenCalledTimes(3);
       });
 
-      it('should load last rows and columns pages with cusrom sizes', () => {
+      it('should load last rows and columns pages with custom sizes', () => {
         const loadRowsPage = jest.fn(loadRowsPageSync(gridValue));
         const wrapper = mount(syncGridWithCustomSizes({ loadRowsPage }));
         wrapper.find('div.scroller-container').simulate('scroll', { target: { scrollTop: 59000, scrollLeft: 8000 } })

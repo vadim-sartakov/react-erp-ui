@@ -3,7 +3,8 @@ import {
   getVisiblePages,
   getItemsCountOnPage,
   getPageNumber,
-  getGaps
+  getGaps,
+  getFixedOffsets
 } from './utils';
 
 const getBufferValue = (buffer, page) => buffer.find(item => item && item.page === page);
@@ -56,6 +57,8 @@ const addToBufferAndClean = (buffer, bufferSize, value) => {
  * @property {Object[][]} visibleValues
  * @property {number} rowsStartIndex
  * @property {number} columnsStartIndex
+ * @property {number[]} rowsOffsets
+ * @property {number[]} columnsOffsets
  * @property {import('./Scroller').ScrollerProps} scrollerProps
  */
 
@@ -223,6 +226,9 @@ const useScroller = ({
     left: columnsGaps && (columnsGaps.start - (columnsStartIndex > fixColumns ? columnsGaps.fixed : 0)),
     position: 'absolute'
   };
+
+  const rowsOffsets = useMemo(() => fixRows ? getFixedOffsets({ meta: rows, defaultSize: defaultRowHeight, fixed: fixRows }) : [], [fixRows, defaultRowHeight, rows]);
+  const columnsOffsets = useMemo(() => fixColumns ? getFixedOffsets({ meta: columns, defaultSize: defaultColumnWidth, fixed: fixColumns }) : [], [fixColumns, defaultColumnWidth, columns]);
   
   const scrollerProps = {
     onScroll: handleScroll,
@@ -231,7 +237,9 @@ const useScroller = ({
     defaultRowHeight,
     defaultColumnWidth,
     rows,
-    columns
+    columns,
+    rowsOffsets,
+    columnsOffsets
   };
 
   return {
