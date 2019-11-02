@@ -144,23 +144,7 @@ const useScroller = ({
     bufferSize
   ]);
 
-  const visibleRowsPages = useMemo(() => visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
-    let page;
-    if (async) {
-      const getLoadingPage = () => {
-        const rowsOnPage = getItemsCountOnPage(visiblePageNumber, rowsPerPage, totalRows);
-        return [...new Array(rowsOnPage).keys()].map(() => {
-          return totalColumns ? [...new Array(totalColumns).keys()].map(() => ({ isLoading: true })) : { isLoading: true };
-        });
-      }
-      page = buffer[visiblePageNumber] || getLoadingPage();
-    } else {
-      page = loadRowsPage(visiblePageNumber, rowsPerPage);
-    };
-    return [...acc, page]
-  }, []), [async, buffer, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, totalColumns, totalRows]);
-
-  const visibleValues = useMemo(() => {
+  const scrolledFixedRows = useMemo(() => {
     let scrolledFixedRows; 
     if (!fixRows || rowsStartIndex <= fixRows) {
       scrolledFixedRows = [];
@@ -179,7 +163,26 @@ const useScroller = ({
           .slice(0, fixRows)
           .map((value, index) => ({ index, value }));
     }
+    return scrolledFixedRows;
+  }, [async, buffer, fixRows, loadRowsPage, rowsPerPage, rowsStartIndex]);
 
+  const visibleRowsPages = useMemo(() => visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
+    let page;
+    if (async) {
+      const getLoadingPage = () => {
+        const rowsOnPage = getItemsCountOnPage(visiblePageNumber, rowsPerPage, totalRows);
+        return [...new Array(rowsOnPage).keys()].map(() => {
+          return totalColumns ? [...new Array(totalColumns).keys()].map(() => ({ isLoading: true })) : { isLoading: true };
+        });
+      }
+      page = buffer[visiblePageNumber] || getLoadingPage();
+    } else {
+      page = loadRowsPage(visiblePageNumber, rowsPerPage);
+    };
+    return [...acc, page]
+  }, []), [async, buffer, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, totalColumns, totalRows]);
+
+  const visibleValues = useMemo(() => {
     let visibleValues = visibleRowsPages
         .reduce((acc, page) => [...acc, ...page], [])
         .map((value, index) => ({ index: rowsStartIndex + index, value }));
@@ -197,15 +200,11 @@ const useScroller = ({
     }
     return visibleValues;
   }, [
-    async,
-    buffer,
-    loadRowsPage,
-    rowsPerPage,
+    scrolledFixedRows,
     visibleColumnsPageNumbers,
     loadColumnsPage,
     columnsPerPage,
     visibleRowsPages,
-    fixRows,
     rowsStartIndex,
     fixColumns,
     columnsStartIndex
