@@ -17,7 +17,7 @@ const ScrollerCell = ({
 }) => {
   const { columns, defaultColumnWidth, columnsOffsets } = useContext(ScrollerContext);
   const { height } = useContext(ScrollerRowContext);
-  const width = (columns && columns[columnIndex].size) || defaultColumnWidth;
+  const width = (columns && columns[columnIndex] && columns[columnIndex].size) || defaultColumnWidth;
   const nextStyle = { ...style, height, width };
   const offset = columnsOffsets[columnIndex];
   if (offset !== undefined) {

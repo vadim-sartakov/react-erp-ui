@@ -17,7 +17,7 @@ const ScrollerRow = ({
   ...props
 }) => {
   const { rows, defaultRowHeight, rowsOffsets } = useContext(ScrollerContext);
-  const height = (rows && rows[index].size) || defaultRowHeight;
+  const height = (rows && rows[index] && rows[index].size) || defaultRowHeight;
   const nextStyle = { ...style, height };
   const offset = rowsOffsets[index];
   if (offset !== undefined) {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import {
   useSpreadsheet,
@@ -8,7 +8,7 @@ import {
   SpreadsheetColumnResizer,
   SpreadsheetRowResizer
 } from './';
-import { useScroller, Scroller } from '../Scroller';
+import { useScroller, Scroller, loadPage } from '../Scroller';
 import classes from './Spreadsheet-stories.module.sass';
 
 const generateColumns = count => {
@@ -22,16 +22,16 @@ const generateValues = (columns, count) => {
   });
 };
 
-const columns = generateColumns(15);
+const columns = generateColumns(50);
 const value = generateValues(columns, 1000);
 
 const rows = [];
-for (let i = 5; i < 100; i++) {
+/*for (let i = 5; i < 100; i++) {
   rows[i] = { level: 1 };
 }
 for (let i = 20; i < 50; i++) {
   rows[i] = { level: 2 };
-}
+}*/
 
 //const initialScroll = { top: 5000, left: 0 };
 
@@ -39,31 +39,42 @@ for (let i = 20; i < 50; i++) {
  * @param {import('../Scroller/useScroller').useScrollerProps | import('./useSpreadsheet').useSpreadsheetProps} props 
  */
 const SpreadsheetComponent = props => {
+
   const {
     // Prepended with special ones
     value,
     rows,
-    columns,
-    spreadsheetProps
+    columns
   } = useSpreadsheet(props);
+
+  const loadRowsPage = (page, itemsPerPage) => loadPage(value, page, itemsPerPage);
+  const loadColumnsPage = (row, page, itemsPerPage) => loadPage(row, page, itemsPerPage);
+
+  const totalRows = value.length;
+  const totalColumns = value[0].length
 
   const {
     visibleValues,
     scrollerProps
   } = useScroller({
     ...props,
-    value,
+    loadRowsPage,
+    loadColumnsPage,
     // TODO: extract 'size' property value from rows and columns
     rows,
-    columns
+    columns,
+    totalRows,
+    totalColumns,
+    //fixRows: 1,
+    //fixColumns: 1
   });
 
-  const renderIntersectionColumn = visibleColumn => <SpreadsheetCell index={visibleColumn.index} className={classes.columnNumberCell} />;
+  const renderIntersectionColumn = visibleColumn => <SpreadsheetCell key={visibleColumn.index} index={visibleColumn.index} className={classes.columnNumberCell} />;
 
   const renderColumnNumber = visibleColumn => {
     return (
-      <SpreadsheetCell index={visibleColumn.index} className={classes.columnNumberCell}>
-        {visibleColumn.index + 1}
+      <SpreadsheetCell key={visibleColumn.index} index={visibleColumn.index} className={classes.columnNumberCell}>
+        {visibleColumn.index}
         <SpreadsheetColumnResizer index={visibleColumn.index} className={classes.columnResizer} />
       </SpreadsheetCell>
     )
@@ -71,8 +82,8 @@ const SpreadsheetComponent = props => {
 
   const renderRowNumber = (visibleRow, visibleColumn) => {
     return (
-      <SpreadsheetCell index={visibleColumn.index} className={classes.columnNumberCell}>
-        {visibleRow.index + 1}
+      <SpreadsheetCell key={visibleColumn.index} index={visibleColumn.index} className={classes.rowNumberCell}>
+        {visibleRow.index}
         <SpreadsheetRowResizer index={visibleRow.index} className={classes.rowResizer} />
       </SpreadsheetCell>
     )
@@ -80,29 +91,32 @@ const SpreadsheetComponent = props => {
 
   const renderCellValue = (visibleRow, visibleColumn) => {
     return (
-      <SpreadsheetCell index={visibleColumn.index} className={classes.columnNumberCell}>
-        {`Value ${visibleColumn.value.row} - ${visibleColumn.value.column}`}
+      <SpreadsheetCell key={visibleColumn.index} index={visibleColumn.index} className={classes.cell}>
+        {visibleColumn.value && visibleColumn.value.value}
       </SpreadsheetCell>
     )
   };
 
   return (
     <Scroller {...scrollerProps} height={600} width={800}>
-      <Spreadsheet {...spreadsheetProps} className={classes.spreadsheet}>
+      <Spreadsheet rows={rows} columns={columns} onColumnsChange className={classes.spreadsheet}>
         {visibleValues.map(visibleRow => {
           const row = rows[visibleRow.index];
           let columnsElements;
-          switch(row.type) {
+          const rowType = (row && row.type) || 'VALUES';
+          switch(rowType) {
             case 'COLUMN_NUMBERS':
               columnsElements = visibleRow.value.map(visibleColumn => {
                 const column = columns[visibleColumn.index];
                 let columnElement;
-                switch(column.type) {
+                const columnsType = (column && column.type) || 'VALUES';
+                switch(columnsType) {
                   case 'ROW_NUMBERS':
                     columnElement = renderIntersectionColumn(visibleColumn);
                     break;
                   default:
                     columnElement = renderColumnNumber(visibleColumn);
+                    break;
                 }
                 return columnElement;
               });
@@ -111,12 +125,14 @@ const SpreadsheetComponent = props => {
               columnsElements = visibleRow.value.map(visibleColumn => {
                 const column = columns[visibleColumn.index];
                 let element;
-                switch(column.type) {
+                const columnsType = (column && column.type) || 'VALUES';
+                switch(columnsType) {
                   case 'ROW_NUMBER':
                     element = renderRowNumber(visibleRow, visibleColumn);
                     break;
                   default:
                     element = renderCellValue(visibleRow, visibleColumn);
+                    break;
                 }
                 return element;
               });
@@ -125,7 +141,7 @@ const SpreadsheetComponent = props => {
           }
 
           return (
-            <SpreadsheetRow index={visibleRow.index}>
+            <SpreadsheetRow key={visibleRow.index} index={visibleRow.index} className={classes.row}>
               {columnsElements}
             </SpreadsheetRow>
           );   
@@ -135,17 +151,20 @@ const SpreadsheetComponent = props => {
   );
 };
 
-export const defaultComponent = () => (
+export const defaultComponent = props => (
   <SpreadsheetComponent
       value={value}
       rows={rows}
       columns={columns}
-      columnNumbersRowHeight={40}
-      rowNumberColumnWidth={50}
+      columnNumbersRowHeight={20}
+      rowNumberColumnWidth={40}
       defaultRowHeight={25}
       defaultColumnWidth={120}
       rowsPerPage={60}
-      columnsPerPage={10} />
+      columnsPerPage={15}
+      totalColumns={columns.length}
+      totalRows={value.length}
+      {...props} />
 );
 
 storiesOf('Spreadsheet', module)

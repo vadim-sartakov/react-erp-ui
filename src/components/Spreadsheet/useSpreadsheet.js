@@ -32,17 +32,18 @@ import { useMemo } from 'react';
  * @param {useSpreadsheetProps} props 
  */
 const useSpreadsheet = ({
+  totalColumns,
   value,
   rows,
   columns,
   columnNumbersRowHeight,
   rowNumberColumnWidth
 }) => {
-  const nextRows = useMemo(() => [{ size: columnNumbersRowHeight }, ...rows], [rows, columnNumbersRowHeight]);
-  const nextColumns = useMemo(() => [{ size: rowNumberColumnWidth }, ...columns], [columns, rowNumberColumnWidth]);
-  const nextValue = useMemo(() => [[], ...value].map(rowValue => {
-    return [undefined, ...rowValue];
-  }), [value]);
+  const nextRows = useMemo(() => [{ size: columnNumbersRowHeight, type: 'COLUMN_NUMBERS' }, ...rows], [rows, columnNumbersRowHeight]);
+  const nextColumns = useMemo(() => [{ size: rowNumberColumnWidth, type: 'ROW_NUMBER' }, ...columns], [columns, rowNumberColumnWidth]);
+  const nextValue = useMemo(() => [new Array(totalColumns).fill(null), ...value].map(rowValue => {
+    return [null, ...rowValue];
+  }), [value, totalColumns]);
   return {
     rows: nextRows,
     columns: nextColumns,
