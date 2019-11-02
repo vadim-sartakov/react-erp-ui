@@ -40,8 +40,14 @@ import {
  */
 
 /**
+ * @typedef {Object} VisibleValue
+ * @property {number} index
+ * @property {*} value
+ */
+
+/**
  * @typedef {Object} useScrollerResult
- * @property {Object[][]} visibleValues
+ * @property {VisibleValue[]} visibleValues
  * @property {number} rowsStartIndex
  * @property {number} columnsStartIndex
  * @property {number[]} rowsOffsets

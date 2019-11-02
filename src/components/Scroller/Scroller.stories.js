@@ -29,7 +29,6 @@ const listRows = generateCustomMeta(listValue.length, 80);
 export const ListTestComponent = props => {
   const {
     visibleValues,
-    rowsStartIndex,
     scrollerProps
   } = useScroller(props);
   return (
@@ -40,10 +39,9 @@ export const ListTestComponent = props => {
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
       {visibleValues.map((visibleRow, visibleRowIndex) => {
-        const rowIndex = rowsStartIndex + visibleRowIndex;
         return (
-          <ScrollerRow className="row" key={rowIndex} index={rowIndex}>
-            {visibleRow.value.isLoading ? 'Loading...' : `Value ${rowIndex}`}
+          <ScrollerRow className="row" key={visibleRow.index} index={visibleRow.index}>
+            {visibleRow.value.isLoading ? 'Loading...' : `Value ${visibleRow.index}`}
           </ScrollerRow>
         );
       })}
