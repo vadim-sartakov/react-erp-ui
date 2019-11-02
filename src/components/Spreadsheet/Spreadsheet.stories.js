@@ -1,5 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
 import { storiesOf } from '@storybook/react';
 import {
   useSpreadsheet,
@@ -141,6 +140,8 @@ export const defaultComponent = () => (
       value={value}
       rows={rows}
       columns={columns}
+      columnNumbersRowHeight={40}
+      rowNumberColumnWidth={50}
       defaultRowHeight={25}
       defaultColumnWidth={120}
       rowsPerPage={60}

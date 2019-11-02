@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 /**
  * @typedef {Object} Meta
  * @property {number} [size] 
@@ -19,10 +21,10 @@
 /**
  * @typedef {Object} useSpreadsheetProps
  * @property {CellValue[][]} value
- * @property {number} fixRows 
- * @property {number} fixColumns
  * @property {Meta[]} rows
  * @property {Meta[]} columns
+ * @property {number} columnNumbersRowHeight
+ * @property {number} rowNumberColumnWidth
  */
 
 /**
@@ -33,11 +35,18 @@ const useSpreadsheet = ({
   value,
   rows,
   columns,
-  fixRows,
-  fixColumns
+  columnNumbersRowHeight,
+  rowNumberColumnWidth
 }) => {
+  const nextRows = useMemo(() => [{ size: columnNumbersRowHeight }, ...rows], [rows, columnNumbersRowHeight]);
+  const nextColumns = useMemo(() => [{ size: rowNumberColumnWidth }, ...columns], [columns, rowNumberColumnWidth]);
+  const nextValue = useMemo(() => [[], ...value].map(rowValue => {
+    return [undefined, ...rowValue];
+  }), [value]);
   return {
-
+    rows: nextRows,
+    columns: nextColumns,
+    value: nextValue
   };
 };
 
