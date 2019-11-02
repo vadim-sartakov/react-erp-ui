@@ -12,7 +12,6 @@ import ScrollerContext from './ScrollerContext';
 const ScrollerCell = ({
   style,
   index: columnIndex,
-  relativeIndex,
   Component = 'div',
   ...props
 }) => {
@@ -20,7 +19,7 @@ const ScrollerCell = ({
   const { height } = useContext(ScrollerRowContext);
   const width = (columns && columns[columnIndex].size) || defaultColumnWidth;
   const nextStyle = { ...style, height, width };
-  const offset = columnsOffsets[relativeIndex];
+  const offset = columnsOffsets[columnIndex];
   if (offset !== undefined) {
     nextStyle.position = 'sticky';
     nextStyle.left = offset;

@@ -43,7 +43,7 @@ export const ListTestComponent = props => {
         const rowIndex = rowsStartIndex + visibleRowIndex;
         return (
           <ScrollerRow className="row" key={rowIndex} index={rowIndex}>
-            {visibleRow.isLoading ? 'Loading...' : `Value ${rowIndex}`}
+            {visibleRow.value.isLoading ? 'Loading...' : `Value ${rowIndex}`}
           </ScrollerRow>
         );
       })}
@@ -61,8 +61,6 @@ const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 export const GridTestComponent = props => {
   const {
     visibleValues,
-    rowsStartIndex,
-    columnsStartIndex,
     scrollerProps
   } = useScroller(props);
   return (
@@ -73,21 +71,17 @@ export const GridTestComponent = props => {
         className="scroller-container"
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
-      {/* rendering fixed */}
       {visibleValues.map((visibleRow, visibleRowIndex) => {
-        const rowIndex = rowsStartIndex + visibleRowIndex;
         return (
-          <ScrollerRow className="row" key={rowIndex} index={rowIndex} relativeIndex={visibleRowIndex} style={{ display: 'flex' }}>
-            {visibleRow.map((visibleColumn, visibleColumnIndex) => {
-              const columnIndex = columnsStartIndex + visibleColumnIndex;
+          <ScrollerRow className="row" key={visibleRow.index} index={visibleRow.index} style={{ display: 'flex' }}>
+            {visibleRow.value.map((visibleColumn, visibleColumnIndex) => {
               return (
                 <ScrollerCell
                     className="cell"
-                    key={columnIndex}
-                    index={columnIndex}
-                    relativeIndex={visibleColumnIndex}
+                    key={visibleColumn.index}
+                    index={visibleColumn.index}
                     style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
-                  {visibleColumn.isLoading ? 'Loading...' : `Value ${visibleColumn.row} - ${visibleColumn.column}`}
+                  {visibleColumn.value.isLoading ? 'Loading...' : `Value ${visibleColumn.value.row} - ${visibleColumn.value.column}`}
                 </ScrollerCell>
               )
             })}

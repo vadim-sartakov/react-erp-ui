@@ -174,14 +174,25 @@ const useScroller = ({
         fixedPages.push(bufferValue);
         curPage++;
       }
-      scrolledFixedRows = fixedPages.reduce((acc, page) => [...acc, ...page], []).slice(0, fixRows);
+      scrolledFixedRows = fixedPages
+          .reduce((acc, page) => [...acc, ...page], [])
+          .slice(0, fixRows)
+          .map((value, index) => ({ index, value }));
     }
 
-    let visibleValues = visibleRowsPages.reduce((acc, page) => [...acc, ...page], scrolledFixedRows);
+    let visibleValues = visibleRowsPages
+        .reduce((acc, page) => [...acc, ...page], [])
+        .map((value, index) => ({ index: rowsStartIndex + index, value }));
+    visibleValues = [...scrolledFixedRows, ...visibleValues];
+
     if (loadColumnsPage) {
       visibleValues = visibleValues.map(visibleRow => {
-        const scrolledFixedColumns = columnsStartIndex > fixColumns ? visibleRow.slice(0, fixColumns) : [];
-        return visibleColumnsPageNumbers.reduce((acc, pageNumber) => [...acc, ...loadColumnsPage(visibleRow, pageNumber, columnsPerPage)], scrolledFixedColumns);
+        const scrolledFixedColumns = columnsStartIndex > fixColumns ? visibleRow.value.slice(0, fixColumns).map((value, index) => ({ index, value })) : [];
+        let visibleColumns = visibleColumnsPageNumbers
+            .reduce((acc, pageNumber) => [...acc, ...loadColumnsPage(visibleRow.value, pageNumber, columnsPerPage)], [])
+            .map((value, index) => ({ index: columnsStartIndex + index, value }));
+        visibleColumns = [...scrolledFixedColumns, ...visibleColumns];
+        return { ...visibleRow, value: visibleColumns };
       });
     }
     return visibleValues;

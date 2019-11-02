@@ -13,14 +13,13 @@ export const ScrollerRowContext = createContext();
 const ScrollerRow = ({
   style,
   index,
-  relativeIndex,
   Component = 'div',
   ...props
 }) => {
   const { rows, defaultRowHeight, rowsOffsets } = useContext(ScrollerContext);
   const height = (rows && rows[index].size) || defaultRowHeight;
   const nextStyle = { ...style, height };
-  const offset = rowsOffsets[relativeIndex];
+  const offset = rowsOffsets[index];
   if (offset !== undefined) {
     nextStyle.position = 'sticky';
     nextStyle.top = offset;
