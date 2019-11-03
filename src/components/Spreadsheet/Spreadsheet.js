@@ -6,25 +6,23 @@ const SpreadsheetContext = createContext();
 
 export const Spreadsheet = ({
   style,
-  value,
-  onValueChange,
   rows,
   onRowsChange,
   columns,
   onColumnsChange,
   defaultColumnWidth,
+  defaultRowHeight,
   ...props
 }) => {
   return (
     <SpreadsheetContext.Provider
         value={{
-          value,
-          onValueChange,
           rows,
           onRowsChange,
           columns,
           onColumnsChange,
-          defaultColumnWidth
+          defaultColumnWidth,
+          defaultRowHeight
         }}>
       <div {...props} style={{ ...style, display: 'inline-block', position: 'relative' }} />
     </SpreadsheetContext.Provider>
