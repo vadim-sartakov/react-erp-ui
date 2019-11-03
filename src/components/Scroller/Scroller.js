@@ -15,6 +15,8 @@ import ScrollContext from './ScrollerContext';
  * @property {number[]} columnsOffsets
  * @property {number[]} columns
  * @property {function} onScroll
+ * @property {number[]} rowsOffsets
+ * @property {number[]} columnsOffsets
  * @property {import('react').CSSProperties} coverStyles
  * @property {import('react').CSSProperties} pagesStyles
  * 

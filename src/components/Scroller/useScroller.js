@@ -4,7 +4,8 @@ import {
   getItemsCountOnPage,
   getPageNumber,
   getGaps,
-  getFixedOffsets
+  getFixedOffsets,
+  getItemsSize
 } from './utils';
 
 /**
@@ -50,8 +51,6 @@ import {
  * @property {VisibleValue[]} visibleValues
  * @property {number} rowsStartIndex
  * @property {number} columnsStartIndex
- * @property {number[]} rowsOffsets
- * @property {number[]} columnsOffsets
  * @property {import('./Scroller').ScrollerProps} scrollerProps
  */
 
@@ -247,14 +246,17 @@ const useScroller = ({
     });
   }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, fixColumns]);
 
+  const fixedRowsSize = useMemo(() => getItemsSize({ meta: rows, count: fixRows, defaultSize: defaultRowHeight }), [rows, fixRows, defaultRowHeight]);
+  const fixedColumnsSize = useMemo(() => getItemsSize({ meta: columns, count: fixColumns, defaultSize: defaultColumnWidth }), [columns, fixColumns, defaultColumnWidth]);
+
   const coverStyles = {
     height: lazy ? lastRowsPageGaps.start + lastRowsPageGaps.middle : rowsGaps.start + rowsGaps.middle + rowsGaps.end,
     width: columnsGaps && (columnsGaps.start + columnsGaps.middle + columnsGaps.end),
     position: 'relative'
   };
   const pagesStyles = {
-    top: rowsGaps.start - (rowsStartIndex > fixRows ? rowsGaps.fixed : 0),
-    left: columnsGaps && (columnsGaps.start - (columnsStartIndex > fixColumns ? columnsGaps.fixed : 0)),
+    top: rowsGaps.start - (rowsStartIndex > fixRows ? fixedRowsSize : 0),
+    left: columnsGaps && (columnsGaps.start - (columnsStartIndex > fixColumns ? fixedColumnsSize : 0)),
     position: 'absolute'
   };
 

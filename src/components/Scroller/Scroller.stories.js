@@ -21,7 +21,7 @@ export const generateGridValues = (rowsCount, columnsCount) => {
   });
 };
 
-const generateCustomMeta = (count, size) => [...new Array(count).keys()].map(() => ({ size }));
+export const generateCustomMeta = (count, size) => [...new Array(count).keys()].map(() => ({ size }));
 
 export const listValue = generateListValues(1000);
 const listRows = generateCustomMeta(listValue.length, 80);
@@ -212,6 +212,23 @@ export const syncGridWithDefaultSizesAndFixedRowsColumns = props => (
       {...props} />
 );
 
+export const syncGridWithCustomSizesAndFixedRowsColumns = props => (
+  <GridTestComponent
+      defaultRowHeight={40}
+      defaultColumnWidth={150}
+      rows={gridRows}
+      columns={gridColumns}
+      totalRows={gridValue.length}
+      totalColumns={gridValue[0].length}
+      rowsPerPage={30}
+      columnsPerPage={10}
+      loadRowsPage={loadRowsPageSync(gridValue)}
+      loadColumnsPage={loadColumnsPage}
+      fixRows={2}
+      fixColumns={2}
+      {...props} />
+);
+
 export const asyncGridWithDefaultSizes = props => (
   <GridTestComponent
       defaultRowHeight={40}
@@ -252,5 +269,6 @@ storiesOf('Scroller', module)
   .add('sync grid with default sizes', syncGridWithDefaultSizes)
   .add('sync grid with custom sizes', syncGridWithCustomSizes)
   .add('sync grid with default sizes and fixed rows columns', syncGridWithDefaultSizesAndFixedRowsColumns)
+  .add('sync grid with custom sizes and fixed rows columns', syncGridWithCustomSizesAndFixedRowsColumns)
   .add('async grid with default sizes', asyncGridWithDefaultSizes)
   .add('async grid with custom sizes', asyncGridWithCustomSizes);

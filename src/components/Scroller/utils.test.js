@@ -151,22 +151,19 @@ describe('Scroller utils', () => {
 
   describe('getGapsWithDefaultSize', () => {
     it('start page', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 0 })).toEqual({ fixed: 0, start: 0, middle: 40, end: 60 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 0 })).toEqual({ start: 0, middle: 40, end: 60 });
     });
     it('middle page', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 3 })).toEqual({ fixed: 0, start: 40, middle: 40, end: 20 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 3 })).toEqual({ start: 40, middle: 40, end: 20 });
     });
     it('last page', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 4 })).toEqual({ fixed: 0, start: 60, middle: 40, end: 0 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 4 })).toEqual({ start: 60, middle: 40, end: 0 });
     });
     it('middle page with 10 items per page', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 35, page: 2 })).toEqual({ fixed: 0, start: 200, middle: 400, end: 100 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 35, page: 2 })).toEqual({ start: 200, middle: 400, end: 100 });
     });
     it('last page with half content', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 25, page: 2 })).toEqual({ fixed: 0, start: 200, middle: 300, end: 0 });
-    });
-    it('last page with fixed', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 25, page: 2, fixed: 2 })).toEqual({ fixed: 40, start: 200, middle: 300, end: 0 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 10, totalCount: 25, page: 2 })).toEqual({ start: 200, middle: 300, end: 0 });
     });
   });
 
@@ -178,16 +175,13 @@ describe('Scroller utils', () => {
       { start: 100, end: 150 }
     ];
     it('first page', () => {
-      expect(getGapsFromScrollPages({ scrollPages, page: 0 })).toEqual({ fixed: 0, start: 0, middle: 60, end: 90 });
+      expect(getGapsFromScrollPages({ scrollPages, page: 0 })).toEqual({ start: 0, middle: 60, end: 90 });
     });
     it('middle page', () => {
-      expect(getGapsFromScrollPages({ scrollPages, page: 2 })).toEqual({ fixed: 0, start: 20, middle: 80, end: 50 });
+      expect(getGapsFromScrollPages({ scrollPages, page: 2 })).toEqual({ start: 20, middle: 80, end: 50 });
     });
     it('last page', () => {
-      expect(getGapsFromScrollPages({ scrollPages, page: 3 })).toEqual({ fixed: 0, start: 60, middle: 90, end: 0 });
-    });
-    it('last page with fixed', () => {
-      expect(getGapsFromScrollPages({ scrollPages, page: 3, fixed: 2 })).toEqual({ fixed: 60, start: 60, middle: 90, end: 0 });
+      expect(getGapsFromScrollPages({ scrollPages, page: 3 })).toEqual({ start: 60, middle: 90, end: 0 });
     });
   });
 

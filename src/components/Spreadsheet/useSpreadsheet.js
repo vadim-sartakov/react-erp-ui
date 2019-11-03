@@ -34,8 +34,8 @@ import { useMemo } from 'react';
 const useSpreadsheet = ({
   totalColumns,
   value,
-  rows,
-  columns,
+  rows = [],
+  columns = [],
   columnNumbersRowHeight,
   rowNumberColumnWidth
 }) => {

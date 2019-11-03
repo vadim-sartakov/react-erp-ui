@@ -9,23 +9,13 @@ import {
   SpreadsheetRowResizer
 } from './';
 import { useScroller, Scroller, loadPage } from '../Scroller';
+import { generateCustomMeta, generateGridValues } from '../Scroller/Scroller.stories';
 import classes from './Spreadsheet-stories.module.sass';
 
-const generateColumns = count => {
-  return [...new Array(count).keys()].map(item => ({ width: 200 }));
-};
+export const value = generateGridValues(1000, 50);
+const rows = generateCustomMeta(value.length, 60);
+const columns = generateCustomMeta(value[0].length, 180);
 
-const generateValues = (columns, count) => {
-  return [...new Array(count).keys()].map((rowItem, rowIndex) => {
-    const rowColumns = columns.map((column, columnIndex) => ({ value: `Value ${rowIndex} - ${columnIndex}` }));
-    return rowColumns;
-  });
-};
-
-const columns = generateColumns(50);
-const value = generateValues(columns, 1000);
-
-const rows = [];
 /*for (let i = 5; i < 100; i++) {
   rows[i] = { level: 1 };
 }
@@ -41,7 +31,6 @@ for (let i = 20; i < 50; i++) {
 const SpreadsheetComponent = props => {
 
   const {
-    // Prepended with special ones
     value,
     rows,
     columns
@@ -65,8 +54,8 @@ const SpreadsheetComponent = props => {
     columns,
     totalRows,
     totalColumns,
-    //fixRows: 1,
-    //fixColumns: 1
+    fixRows: 1,
+    fixColumns: 1
   });
 
   const renderIntersectionColumn = visibleColumn => <SpreadsheetCell key={visibleColumn.index} index={visibleColumn.index} className={classes.columnNumberCell} />;
@@ -92,7 +81,7 @@ const SpreadsheetComponent = props => {
   const renderCellValue = (visibleRow, visibleColumn) => {
     return (
       <SpreadsheetCell key={visibleColumn.index} index={visibleColumn.index} className={classes.cell}>
-        {visibleColumn.value && visibleColumn.value.value}
+        {`Value ${visibleColumn.value.row} - ${visibleColumn.value.column}`}
       </SpreadsheetCell>
     )
   };
@@ -154,8 +143,6 @@ const SpreadsheetComponent = props => {
 export const defaultComponent = props => (
   <SpreadsheetComponent
       value={value}
-      rows={rows}
-      columns={columns}
       columnNumbersRowHeight={20}
       rowNumberColumnWidth={40}
       defaultRowHeight={25}
