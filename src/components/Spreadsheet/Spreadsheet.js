@@ -12,6 +12,7 @@ export const Spreadsheet = ({
   onRowsChange,
   columns,
   onColumnsChange,
+  defaultColumnWidth,
   ...props
 }) => {
   return (
@@ -22,7 +23,8 @@ export const Spreadsheet = ({
           rows,
           onRowsChange,
           columns,
-          onColumnsChange
+          onColumnsChange,
+          defaultColumnWidth
         }}>
       <div {...props} style={{ ...style, display: 'inline-block', position: 'relative' }} />
     </SpreadsheetContext.Provider>
@@ -49,7 +51,9 @@ export const SpreadsheetColumnResizer = ({ index, ...props }) => {
   const sizes = { width: (column && column.size) || defaultColumnWidth, height: 0 };
   const handleSizesChange = useCallback(({ width }) => {
     onColumnsChange(columns => {
-      return columns.map((column, curIndex) => curIndex === index ? { ...column, size: width } : column);
+      const nextColumns = [...(columns || [])];
+      nextColumns[index] = { ...nextColumns[index], size: width };
+      return nextColumns;
     });
   }, [index, onColumnsChange]);
   const onStartResize = useResize({ sizes, onSizesChange: handleSizesChange });
@@ -62,7 +66,9 @@ export const SpreadsheetRowResizer = ({ index, ...props }) => {
   const sizes = { height: (row && row.size) || defaultRowHeight, width: 0 };
   const handleSizesChange = useCallback(({ height }) => {
     onRowsChange(rows => {
-      return rows.map((row, curIndex) => curIndex === index ? { ...row, size: height } : row);
+      const nextRows = [...(rows || [])];
+      nextRows[index] = { ...nextRows[index], size: height };
+      return nextRows;
     });
   }, [index, onRowsChange]);
   const onStartResize = useResize({ sizes, onSizesChange: handleSizesChange });

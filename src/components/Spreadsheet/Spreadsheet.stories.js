@@ -33,8 +33,11 @@ const SpreadsheetComponent = props => {
   const {
     value,
     rows,
-    columns
+    columns: nextColumns
   } = useSpreadsheet(props);
+
+  // Put this inside spreadsheet hook
+  const [columns, setColumnsState] = useState(nextColumns);
 
   const loadRowsPage = (page, itemsPerPage) => loadPage(value, page, itemsPerPage);
   const loadColumnsPage = (row, page, itemsPerPage) => loadPage(row, page, itemsPerPage);
@@ -88,7 +91,7 @@ const SpreadsheetComponent = props => {
 
   return (
     <Scroller {...scrollerProps} height={600} width={800}>
-      <Spreadsheet rows={rows} columns={columns} onColumnsChange className={classes.spreadsheet}>
+      <Spreadsheet {...props} rows={rows} columns={columns} onColumnsChange={setColumnsState} className={classes.spreadsheet}>
         {visibleValues.map(visibleRow => {
           const row = rows[visibleRow.index];
           let columnsElements;
