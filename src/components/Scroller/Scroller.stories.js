@@ -41,7 +41,7 @@ export const ListTestComponent = props => {
       {visibleValues.map((visibleRow, visibleRowIndex) => {
         return (
           <ScrollerRow className="row" key={visibleRow.index} index={visibleRow.index}>
-            {visibleRow.value.isLoading ? 'Loading...' : `Value ${visibleRow.index}`}
+            {visibleRow.isLoading ? 'Loading...' : `Value ${visibleRow.index}`}
           </ScrollerRow>
         );
       })}
@@ -72,14 +72,14 @@ export const GridTestComponent = props => {
       {visibleValues.map((visibleRow, visibleRowIndex) => {
         return (
           <ScrollerRow className="row" key={visibleRow.index} index={visibleRow.index} style={{ display: 'flex' }}>
-            {visibleRow.value.map((visibleColumn, visibleColumnIndex) => {
+            {visibleRow.map((visibleColumn, visibleColumnIndex) => {
               return (
                 <ScrollerCell
                     className="cell"
                     key={visibleColumn.index}
                     index={visibleColumn.index}
                     style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
-                  {visibleColumn.value.isLoading ? 'Loading...' : `Value ${visibleColumn.value.row} - ${visibleColumn.value.column}`}
+                  {visibleColumn.isLoading ? 'Loading...' : `Value ${visibleColumn.row} - ${visibleColumn.column}`}
                 </ScrollerCell>
               )
             })}

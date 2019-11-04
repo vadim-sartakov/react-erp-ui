@@ -163,10 +163,7 @@ const useScroller = ({
         fixedPages.push(bufferValue);
         curPage++;
       }
-      scrolledFixedRows = fixedPages
-          .reduce((acc, page) => [...acc, ...page], [])
-          .slice(0, fixRows)
-          .map((value, index) => ({ index, value }));
+      scrolledFixedRows = fixedPages.reduce((acc, page) => [...acc, ...page], []).slice(0, fixRows);
     }
     return scrolledFixedRows;
   }, [async, buffer, fixRows, loadRowsPage, rowsPerPage, rowsStartIndex]);
@@ -184,23 +181,26 @@ const useScroller = ({
     } else {
       page = loadRowsPage(visiblePageNumber, rowsPerPage);
     };
-    return [...acc, page]
+    const result = [...acc];
+    result[visiblePageNumber * rowsPerPage] = page;
+    return result;
   }, []), [async, buffer, loadRowsPage, rowsPerPage, visibleRowsPageNumbers, totalColumns, totalRows]);
 
   const visibleValues = useMemo(() => {
-    let visibleValues = visibleRowsPages
-        .reduce((acc, page) => [...acc, ...page], [])
-        .map((value, index) => ({ index: rowsStartIndex + index, value }));
+    let visibleValues = visibleRowsPages.reduce((acc, page) => page ? [...acc, ...page] : [...acc, page], []);
     visibleValues = [...scrolledFixedRows, ...visibleValues];
 
-    if (loadColumnsPage) {
+    if (totalColumns) {
       visibleValues = visibleValues.map(visibleRow => {
-        const scrolledFixedColumns = columnsStartIndex > fixColumns ? visibleRow.value.slice(0, fixColumns).map((value, index) => ({ index, value })) : [];
-        let visibleColumns = visibleColumnsPageNumbers
-            .reduce((acc, pageNumber) => [...acc, ...loadColumnsPage(visibleRow.value, pageNumber, columnsPerPage)], [])
-            .map((value, index) => ({ index: columnsStartIndex + index, value }));
+        const scrolledFixedColumns = visibleRow && columnsStartIndex > fixColumns ? visibleRow.slice(0, fixColumns) : [];
+        let visibleColumns = visibleRow ? visibleColumnsPageNumbers.reduce((acc, visiblePageNumber) => {
+          const page = loadColumnsPage(visibleRow, visiblePageNumber, columnsPerPage);
+          const result = [...acc];
+          result[visiblePageNumber * columnsPerPage] = page;
+          return result;
+        }, []).reduce((acc, page) => page ? [...acc, ...page] : [...acc, page], []) : [];
         visibleColumns = [...scrolledFixedColumns, ...visibleColumns];
-        return { ...visibleRow, value: visibleColumns };
+        return visibleColumns;
       });
     }
     return visibleValues;
@@ -210,8 +210,8 @@ const useScroller = ({
     loadColumnsPage,
     columnsPerPage,
     visibleRowsPages,
-    rowsStartIndex,
     fixColumns,
+    totalColumns,
     columnsStartIndex
   ]);
 
