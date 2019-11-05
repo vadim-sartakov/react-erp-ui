@@ -28,6 +28,7 @@ const listRows = generateCustomMeta(listValue.length, 80);
 
 export const ListTestComponent = props => {
   const {
+    visibleRows,
     visibleValues,
     scrollerProps
   } = useScroller(props);
@@ -38,10 +39,11 @@ export const ListTestComponent = props => {
         className="scroller-container"
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
-      {visibleValues.map((visibleRow, visibleRowIndex) => {
+      {visibleRows.map(visibleRow => {
+        const visibleValue = visibleValues[visibleRow];
         return (
-          <ScrollerRow className="row" key={visibleRow.index} index={visibleRow.index}>
-            {visibleRow.isLoading ? 'Loading...' : `Value ${visibleRow.index}`}
+          <ScrollerRow className="row" key={visibleRow} index={visibleRow}>
+            {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row}`}
           </ScrollerRow>
         );
       })}
@@ -58,6 +60,8 @@ const gridColumns = generateCustomMeta(gridValue[0].length, 180);
  */
 export const GridTestComponent = props => {
   const {
+    visibleRows,
+    visibleColumns,
     visibleValues,
     scrollerProps
   } = useScroller(props);
@@ -69,17 +73,20 @@ export const GridTestComponent = props => {
         className="scroller-container"
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
-      {visibleValues.map((visibleRow, visibleRowIndex) => {
+      {visibleRows.map(visibleRow => {
+        //console.log(visibleRows);
+        //console.log(visibleValues);
         return (
-          <ScrollerRow className="row" key={visibleRow.index} index={visibleRow.index} style={{ display: 'flex' }}>
-            {visibleRow.map((visibleColumn, visibleColumnIndex) => {
+          <ScrollerRow className="row" key={visibleRow} index={visibleRow} style={{ display: 'flex' }}>
+            {visibleColumns.map(visibleColumn => {
+              const visibleValue = visibleValues[visibleRow][visibleColumn];
               return (
                 <ScrollerCell
                     className="cell"
-                    key={visibleColumn.index}
-                    index={visibleColumn.index}
+                    key={visibleColumn}
+                    index={visibleColumn}
                     style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
-                  {visibleColumn.isLoading ? 'Loading...' : `Value ${visibleColumn.row} - ${visibleColumn.column}`}
+                  {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row} - ${visibleValue.column}`}
                 </ScrollerCell>
               )
             })}
