@@ -74,8 +74,6 @@ export const GridTestComponent = props => {
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
       {visibleRows.map(visibleRow => {
-        //console.log(visibleRows);
-        //console.log(visibleValues);
         return (
           <ScrollerRow className="row" key={visibleRow} index={visibleRow} style={{ display: 'flex' }}>
             {visibleColumns.map(visibleColumn => {

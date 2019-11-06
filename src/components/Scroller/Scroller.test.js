@@ -2,6 +2,7 @@ import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
 import {
   gridValue,
+  listValue,
   syncListWithDefaultSizes,
   asyncLazyListWithDefaultSizes,
   syncGridWithDefaultSizes,
@@ -20,7 +21,7 @@ describe('Scroller', () => {
   describe('list', () => {
 
     it('should load first rows pages with default sizes', () => {
-      const loadRowsPage = jest.fn(loadRowsPageSync(gridValue));
+      const loadRowsPage = jest.fn(loadRowsPageSync(listValue));
       const wrapper = mount(syncListWithDefaultSizes({ loadRowsPage }));
       expect(wrapper.find('div.row').length).toBe(60);
       expect(wrapper.find('div.cover').prop('style').height).toBe(40000);
@@ -30,7 +31,7 @@ describe('Scroller', () => {
     });
 
     it('should load first rows pages without full height when list is lazy', async () => {
-      const loadRowsPage = jest.fn(loadRowsPageAsync(gridValue));
+      const loadRowsPage = jest.fn(loadRowsPageAsync(listValue));
       let wrapper;
       await act(async () => { wrapper = mount(asyncLazyListWithDefaultSizes({ loadRowsPage })) });
       expect(wrapper.find('div.row').length).toBe(60);
