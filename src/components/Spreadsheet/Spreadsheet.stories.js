@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { storiesOf } from '@storybook/react';
 import {
   useSpreadsheet,
@@ -36,13 +37,13 @@ for (let i = 20; i < 50; i++) {
 const SpreadsheetComponent = props => {
 
   const {
-    rows,
-    columns,
     spreadsheetProps,
     scrollerInputProps
   } = useSpreadsheet(props);
 
   const {
+    rows,
+    columns,
     visibleRows,
     visibleColumns,
     visibleValues,
@@ -56,7 +57,13 @@ const SpreadsheetComponent = props => {
 
   const renderColumnNumber = ({ column, columnIndex }) => {
     return (
-      <SpreadsheetCell key={columnIndex} column={column} className={classes.columnNumberCell}>
+      <SpreadsheetCell
+          key={columnIndex}
+          column={column}
+          className={classNames(
+            classes.columnNumberCell,
+            { [classes.lastFixedColumn]: columnIndex === props.fixColumns }
+          )}>
         {columnIndex}
         <SpreadsheetColumnResizer index={columnIndex} column={column} className={classes.columnResizer} />
       </SpreadsheetCell>
@@ -65,16 +72,32 @@ const SpreadsheetComponent = props => {
 
   const renderRowNumber = ({ row, column, rowIndex, columnIndex }) => {
     return (
-      <SpreadsheetCell key={columnIndex} column={column} className={classes.rowNumberCell}>
+      <SpreadsheetCell
+          key={columnIndex}
+          column={column}
+          className={classNames(
+            classes.rowNumberCell,
+            { [classes.lastFixedRow]: rowIndex === props.fixRows }
+          )}>
         {rowIndex}
         <SpreadsheetRowResizer index={rowIndex} row={row} className={classes.rowResizer} />
       </SpreadsheetCell>
     )
   };
 
-  const renderCellValue = ({ columnIndex, column, value }) => {
+  const renderCellValue = ({ row, rowIndex, columnIndex, column, value }) => {
     return (
-      <SpreadsheetCell key={columnIndex} column={column} className={classes.cell}>
+      <SpreadsheetCell
+          key={columnIndex}
+          column={column}
+          className={classNames(
+            classes.cell,
+            {
+              [classes.fixed]: row.offset !== undefined || column.offset !== undefined,
+              [classes.lastFixedRow]: rowIndex === props.fixRows,
+              [classes.lastFixedColumn]: columnIndex === props.fixColumns
+            }
+          )}>
         {value ? `Value ${value.row} - ${value.column}` : ''}
       </SpreadsheetCell>
     )
@@ -84,15 +107,15 @@ const SpreadsheetComponent = props => {
     <Scroller {...scrollerProps} height={props.height} width={props.width}>
       <Spreadsheet {...spreadsheetProps} className={classes.spreadsheet}>
         {visibleRows.map(rowIndex => {
-          const row = rows[rowIndex];
+          const row = rows[rowIndex] || {};
           let columnsElements;
-          const rowType = (row && row.type) || 'VALUES';
+          const rowType = row.type || 'VALUES';
           switch(rowType) {
             case 'COLUMN_NUMBERS':
               columnsElements = visibleColumns.map(columnIndex => {
-                const column = columns[columnIndex];
+                const column = columns[columnIndex] || {};
                 let columnElement;
-                const columnsType = (column && column.type) || 'VALUES';
+                const columnsType = column.type || 'VALUES';
                 switch(columnsType) {
                   case 'ROW_NUMBERS':
                     columnElement = renderIntersectionColumn({ column, columnIndex });
@@ -106,17 +129,17 @@ const SpreadsheetComponent = props => {
               break;
             case 'VALUES':
               columnsElements = visibleColumns.map(columnIndex => {
-                const column = columns[columnIndex];
+                const column = columns[columnIndex] || {};
                 const rowValue = visibleValues[rowIndex - 1];
                 const value = rowValue && rowValue[columnIndex - 1];
                 let element;
-                const columnsType = (column && column.type) || 'VALUES';
+                const columnsType = column.type || 'VALUES';
                 switch(columnsType) {
                   case 'ROW_NUMBER':
                     element = renderRowNumber({ row, column, rowIndex, columnIndex });
                     break;
                   default:
-                    element = renderCellValue({ columnIndex, column, value });
+                    element = renderCellValue({ row, rowIndex, columnIndex, column, value });
                     break;
                 }
                 return element;
@@ -150,6 +173,8 @@ export const defaultComponent = props => (
       loadRowsPage={loadRowsPageSync(value)}
       width={800}
       height={600}
+      fixRows={2}
+      fixColumns={2}
       {...props} />
 );
 

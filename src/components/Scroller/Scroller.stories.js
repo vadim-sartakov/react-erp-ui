@@ -28,6 +28,7 @@ const listRows = generateCustomMeta(listValue.length, 80);
 
 export const ListTestComponent = props => {
   const {
+    rows,
     visibleRows,
     visibleValues,
     scrollerProps
@@ -40,7 +41,7 @@ export const ListTestComponent = props => {
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
       {visibleRows.map(visibleRow => {
-        const row = props.rows && props.rows[visibleRow];
+        const row = rows && rows[visibleRow];
         const visibleValue = visibleValues[visibleRow];
         return (
           <ScrollerRow className="row" key={visibleRow} row={row} index={visibleRow}>
@@ -61,8 +62,8 @@ const gridColumns = generateCustomMeta(gridValue[0].length, 180);
  */
 export const GridTestComponent = props => {
   const {
-    rowsOffsets,
-    columnsOffsets,
+    rows,
+    columns,
     visibleRows,
     visibleColumns,
     visibleValues,
@@ -77,20 +78,17 @@ export const GridTestComponent = props => {
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
       {visibleRows.map(visibleRow => {
-        const row = props.rows && props.rows[visibleRow];
-        const offset = rowsOffsets[visibleRow];
+        const row = rows && rows[visibleRow];
         return (
-          <ScrollerRow className="row" key={visibleRow} row={row} offset={offset} style={{ display: 'flex' }}>
+          <ScrollerRow className="row" key={visibleRow} row={row} style={{ display: 'flex' }}>
             {visibleColumns.map(visibleColumn => {
-              const column = props.columns && props.columns[visibleColumn];
-              const offset = columnsOffsets[visibleColumn]
+              const column = columns && columns[visibleColumn];
               const visibleValue = visibleValues[visibleRow][visibleColumn];
               return (
                 <ScrollerCell
                     className="cell"
                     key={visibleColumn}
                     column={column}
-                    offset={offset}
                     style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
                   {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row} - ${visibleValue.column}`}
                 </ScrollerCell>

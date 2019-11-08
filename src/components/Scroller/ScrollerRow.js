@@ -12,13 +12,13 @@ export const ScrollerRowContext = createContext();
  */
 const ScrollerRow = React.memo(({
   style,
-  row,
-  offset,
+  row = {},
   Component = 'div',
   ...props
 }) => {
   const { defaultRowHeight } = useContext(ScrollerContext);
-  const height = (row && row.size) || defaultRowHeight;
+  const { size, offset } = row;
+  const height = size || defaultRowHeight;
   const nextStyle = { ...style, height };
   if (offset !== undefined) {
     nextStyle.position = 'sticky';

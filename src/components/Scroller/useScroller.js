@@ -280,6 +280,18 @@ const useScroller = ({
   const rowsOffsets = useMemo(() => fixRows ? getFixedOffsets({ meta: rows, defaultSize: defaultRowHeight, fixed: fixRows }) : [], [fixRows, defaultRowHeight, rows]);
   const columnsOffsets = useMemo(() => fixColumns ? getFixedOffsets({ meta: columns, defaultSize: defaultColumnWidth, fixed: fixColumns }) : [], [fixColumns, defaultColumnWidth, columns]);
   
+  const nextRows = useMemo(() => {
+    const rowsMeta = rows || [];
+    const nextRows = [...new Array(Math.max(rowsMeta.length, rowsOffsets.length)).keys()];
+    return nextRows.map((key, index) => ({ ...rowsMeta[index], offset: rowsOffsets[index]} ));
+  }, [rows, rowsOffsets]);
+
+  const nextColumns = useMemo(() => {
+    const columnsMeta = columns || [];
+    const nextColumns = [...new Array(Math.max(columnsMeta.length, columnsOffsets.length)).keys()];
+    return nextColumns.map((key, index) => ({ ...columnsMeta[index], offset: columnsOffsets[index]} ));
+  }, [columns, columnsOffsets]);
+
   const scrollerProps = {
     onScroll: handleScroll,
     coverStyles,
@@ -289,6 +301,8 @@ const useScroller = ({
   };
 
   return {
+    rows: nextRows,
+    columns: nextColumns,
     visibleRows,
     visibleColumns,
     visibleValues,

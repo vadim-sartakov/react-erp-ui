@@ -69,8 +69,6 @@ const useSpreadsheet = ({
   const spreadsheetProps = {
     defaultColumnWidth,
     defaultRowHeight,
-    rows,
-    columns,
     onColumnsChange: handleColumnsChange,
     onRowsChange: handleRowsChange
   };
@@ -84,8 +82,6 @@ const useSpreadsheet = ({
     fixColumns: fixColumns + 1
   };
   return {
-    rows,
-    columns,
     spreadsheetProps,
     scrollerInputProps
   };
