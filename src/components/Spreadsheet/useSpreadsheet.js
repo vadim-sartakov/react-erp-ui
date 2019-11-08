@@ -50,27 +50,15 @@ const useSpreadsheet = ({
   const rows = [{ size: columnNumbersRowHeight, type: 'COLUMN_NUMBERS' }, ...(rowsProps || rowsState)];
   const onRowsChange = onRowsChangeProp || setRowsState;
 
-  const handleRowsChange = rowsSetter => {
-    const nextRows = [...rowsSetter(rows)];
-    nextRows.shift();
-    onRowsChange(nextRows);
-  };
-
   const [columnsState, setColumnsState] = useState([]);
   const columns = [{ size: rowNumberColumnWidth, type: 'ROW_NUMBER' }, ...(columnsProp || columnsState)];
   const onColumnsChange = onColumnsChangeProp || setColumnsState;
 
-  const handleColumnsChange = columnsSetter => {
-    const nextColumns = [...columnsSetter(columns)];
-    nextColumns.shift();
-    onColumnsChange(nextColumns);
-  };
-
   const spreadsheetProps = {
     defaultColumnWidth,
     defaultRowHeight,
-    onColumnsChange: handleColumnsChange,
-    onRowsChange: handleRowsChange
+    onColumnsChange: onColumnsChange,
+    onRowsChange: onRowsChange
   };
 
   const scrollerInputProps = {

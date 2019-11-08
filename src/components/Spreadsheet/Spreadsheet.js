@@ -46,7 +46,7 @@ export const SpreadsheetColumnResizer = ({ index, column, ...props }) => {
   const handleSizesChange = useCallback(({ width }) => {
     onColumnsChange(columns => {
       const nextColumns = [...(columns || [])];
-      nextColumns[index] = { ...nextColumns[index], size: width };
+      nextColumns[index - 1] = { ...nextColumns[index - 1], size: width };
       return nextColumns;
     });
   }, [index, onColumnsChange]);
@@ -60,7 +60,7 @@ export const SpreadsheetRowResizer = ({ index, row, ...props }) => {
   const handleSizesChange = useCallback(({ height }) => {
     onRowsChange(rows => {
       const nextRows = [...(rows || [])];
-      nextRows[index] = { ...nextRows[index], size: height };
+      nextRows[index - 1] = { ...nextRows[index - 1], size: height };
       return nextRows;
     });
   }, [index, onRowsChange]);

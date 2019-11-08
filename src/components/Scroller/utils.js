@@ -86,7 +86,7 @@ export const getPageNumber = ({ meta, defaultSize, itemsPerPage, totalCount, scr
   return curPage;
 };
 
-export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, page, fixed = 0 }) => {
+export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, page }) => {
   const pageSize = defaultSize * itemsPerPage;
   const visiblePages = getVisiblePages(page);
   const startSectionSize = visiblePages[0] * pageSize;
@@ -106,7 +106,7 @@ export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, 
 
 const gapsReducer = (acc, scrollPage) => acc + (scrollPage.end - scrollPage.start);
 
-export const getGapsFromScrollPages = ({ scrollPages, page, fixed = 0 }) => {
+export const getGapsFromScrollPages = ({ scrollPages, page }) => {
   const visiblePages = getVisiblePages(page);
   const startSectionSize = scrollPages.slice(0, visiblePages[0]).reduce(gapsReducer, 0);
   const middleSectionSize = scrollPages.slice(visiblePages[0], ((visiblePages[1] || 0) + 1)).reduce(gapsReducer, 0);
@@ -118,13 +118,13 @@ export const getGapsFromScrollPages = ({ scrollPages, page, fixed = 0 }) => {
   }
 };
 
-export const getGaps = ({ meta, defaultSize, itemsPerPage, totalCount, page, fixed }) => {
+export const getGaps = ({ meta, defaultSize, itemsPerPage, totalCount, page }) => {
   let gaps;
   if (meta && meta.length) {
     const scrollPages = getScrollPages({ meta, totalCount, defaultSize, itemsPerPage });
-    gaps = getGapsFromScrollPages({ scrollPages, page, fixed });
+    gaps = getGapsFromScrollPages({ scrollPages, page });
   } else {
-    gaps = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount, page, fixed });
+    gaps = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount, page });
   }
   return gaps;
 };
