@@ -71,7 +71,6 @@ const useScroller = ({
   async,
   lazy,
   loadRowsPage,
-  loadColumnsPage,
   fixRows = 0,
   fixColumns = 0,
   bufferSize = 3

@@ -13,16 +13,13 @@ import { generateCustomMeta, generateGridValues } from '../Scroller/Scroller.sto
 import classes from './Spreadsheet-stories.module.sass';
 
 export const value = generateGridValues(1000, 50);
-const rows = generateCustomMeta(value.length, 60);
+//const rows = generateCustomMeta(value.length, 60);
 const columns = generateCustomMeta(value[0].length, 180);
 
 export const loadRowsPageSync = value => (page, itemsPerPage) => {
   console.log('Loading sync page %s', page);
   return loadPage(value, page, itemsPerPage);
 };
-
-// TODO: Move this inside scroller
-const loadColumnsPage = (row, page, itemsPerPage) => loadPage(row, page, itemsPerPage);
 
 /*for (let i = 5; i < 100; i++) {
   rows[i] = { level: 1 };
@@ -151,7 +148,6 @@ export const defaultComponent = props => (
       totalColumns={columns.length}
       totalRows={value.length}
       loadRowsPage={loadRowsPageSync(value)}
-      loadColumnsPage={loadColumnsPage}
       width={800}
       height={600}
       {...props} />

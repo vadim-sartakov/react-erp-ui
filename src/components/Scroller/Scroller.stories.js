@@ -109,8 +109,6 @@ export const loadRowsPageAsync = value => (page, itemsPerPage) => {
   });
 };
 
-export const loadColumnsPage = (row, page, itemsPerPage) => loadPage(row, page, itemsPerPage);
-
 export const asyncLazyListWithDefaultSizes = props => (
   <ListTestComponent
       defaultRowHeight={40}
@@ -183,7 +181,6 @@ export const syncGridWithDefaultSizes = props => (
       rowsPerPage={30}
       columnsPerPage={10}
       loadRowsPage={loadRowsPageSync(gridValue)}
-      loadColumnsPage={loadColumnsPage}
       {...props} />
 );
 
@@ -198,7 +195,6 @@ export const syncGridWithCustomSizes = props => (
       rowsPerPage={30}
       columnsPerPage={10}
       loadRowsPage={loadRowsPageSync(gridValue)}
-      loadColumnsPage={loadColumnsPage}
       {...props} />
 );
 
@@ -211,7 +207,6 @@ export const syncGridWithDefaultSizesAndFixedRowsColumns = props => (
       rowsPerPage={30}
       columnsPerPage={10}
       loadRowsPage={loadRowsPageSync(gridValue)}
-      loadColumnsPage={loadColumnsPage}
       fixRows={2}
       fixColumns={2}
       {...props} />
@@ -228,7 +223,6 @@ export const syncGridWithCustomSizesAndFixedRowsColumns = props => (
       rowsPerPage={30}
       columnsPerPage={10}
       loadRowsPage={loadRowsPageSync(gridValue)}
-      loadColumnsPage={loadColumnsPage}
       fixRows={2}
       fixColumns={2}
       {...props} />
@@ -243,7 +237,6 @@ export const asyncGridWithDefaultSizes = props => (
       rowsPerPage={30}
       columnsPerPage={10}
       loadRowsPage={loadRowsPageAsync(gridValue)}
-      loadColumnsPage={loadColumnsPage}
       async
       {...props} />
 );
@@ -259,7 +252,6 @@ export const asyncGridWithCustomSizes = props => (
       rowsPerPage={30}
       columnsPerPage={10}
       loadRowsPage={loadRowsPageAsync(gridValue)}
-      loadColumnsPage={loadColumnsPage}
       async
       {...props} />
 );
