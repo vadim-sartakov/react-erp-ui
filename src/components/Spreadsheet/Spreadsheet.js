@@ -30,22 +30,19 @@ export const Spreadsheet = ({
 };
 
 export const SpreadsheetRow = ({
-  index,
   ...props
 }) => {
-  return <ScrollerRow index={index} {...props} />
+  return <ScrollerRow {...props} />
 };
 
 export const SpreadsheetCell = ({
-  index,
   ...props
 }) => {
-  return <ScrollerCell index={index} {...props} />;
+  return <ScrollerCell {...props} />;
 };
 
-export const SpreadsheetColumnResizer = ({ index, ...props }) => {
-  const { columns, onColumnsChange, defaultColumnWidth } = useContext(SpreadsheetContext);
-  const column = columns[index];
+export const SpreadsheetColumnResizer = ({ index, column, ...props }) => {
+  const { onColumnsChange, defaultColumnWidth } = useContext(SpreadsheetContext);
   const sizes = { width: (column && column.size) || defaultColumnWidth, height: 0 };
   const handleSizesChange = useCallback(({ width }) => {
     onColumnsChange(columns => {
@@ -58,9 +55,8 @@ export const SpreadsheetColumnResizer = ({ index, ...props }) => {
   return <div {...props} onMouseDown={onStartResize} />;
 };
 
-export const SpreadsheetRowResizer = ({ index, ...props }) => {
-  const { rows, onRowsChange, defaultRowHeight } = useContext(SpreadsheetContext);
-  const row = rows[index];
+export const SpreadsheetRowResizer = ({ index, row, ...props }) => {
+  const { onRowsChange, defaultRowHeight } = useContext(SpreadsheetContext);
   const sizes = { height: (row && row.size) || defaultRowHeight, width: 0 };
   const handleSizesChange = useCallback(({ height }) => {
     onRowsChange(rows => {

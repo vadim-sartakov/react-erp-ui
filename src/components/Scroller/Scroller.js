@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import ScrollContext from './ScrollerContext';
 
 /**
@@ -40,15 +40,12 @@ const Scroller = ({
   pagesStyles,
   ...props
 }) => {
+  const contextValue = useMemo(() => ({
+    defaultRowHeight,
+    defaultColumnWidth
+  }), [defaultRowHeight, defaultColumnWidth]);
   return (
-    <ScrollContext.Provider value={{
-      defaultRowHeight,
-      defaultColumnWidth,
-      rows,
-      columns,
-      rowsOffsets,
-      columnsOffsets
-    }}>
+    <ScrollContext.Provider value={contextValue}>
       <div onScroll={onScroll} {...props} style={{ width, height, overflow: 'auto', ...style }}>
         <div {...coverProps} style={{ ...(coverProps && coverProps.styles), ...coverStyles }}>
           <div {...pagesProps} style={{ ...(pagesProps && pagesProps.pages), ...pagesStyles }}>

@@ -10,26 +10,26 @@ export const ScrollerRowContext = createContext();
  * 
  * @param {ScrollerRowProps} props
  */
-const ScrollerRow = ({
+const ScrollerRow = React.memo(({
   style,
-  index,
+  row,
+  offset,
   Component = 'div',
   ...props
 }) => {
-  const { rows, defaultRowHeight, rowsOffsets } = useContext(ScrollerContext);
-  const height = (rows && rows[index] && rows[index].size) || defaultRowHeight;
+  const { defaultRowHeight } = useContext(ScrollerContext);
+  const height = (row && row.size) || defaultRowHeight;
   const nextStyle = { ...style, height };
-  const offset = rowsOffsets[index];
   if (offset !== undefined) {
     nextStyle.position = 'sticky';
     nextStyle.top = offset;
     nextStyle.zIndex = 2;
   }
   return (
-    <ScrollerRowContext.Provider value={{ index, height }}>
+    <ScrollerRowContext.Provider value={height}>
       <Component {...props} style={nextStyle} />
     </ScrollerRowContext.Provider>
   )
-};
+});
 
 export default ScrollerRow;

@@ -52,29 +52,29 @@ const SpreadsheetComponent = props => {
     ...scrollerInputProps
   });
 
-  const renderIntersectionColumn = visibleColumn => <SpreadsheetCell key={visibleColumn} index={visibleColumn} className={classes.columnNumberCell} />;
+  const renderIntersectionColumn = ({ column, columnIndex }) => <SpreadsheetCell key={columnIndex} column={column} className={classes.columnNumberCell} />;
 
-  const renderColumnNumber = visibleColumn => {
+  const renderColumnNumber = ({ column, columnIndex }) => {
     return (
-      <SpreadsheetCell key={visibleColumn} index={visibleColumn} className={classes.columnNumberCell}>
-        {visibleColumn}
-        <SpreadsheetColumnResizer index={visibleColumn} className={classes.columnResizer} />
+      <SpreadsheetCell key={columnIndex} column={column} className={classes.columnNumberCell}>
+        {columnIndex}
+        <SpreadsheetColumnResizer index={columnIndex} column={column} className={classes.columnResizer} />
       </SpreadsheetCell>
     )
   };
 
-  const renderRowNumber = (visibleRow, visibleColumn) => {
+  const renderRowNumber = ({ row, column, rowIndex, columnIndex }) => {
     return (
-      <SpreadsheetCell key={visibleColumn} index={visibleColumn} className={classes.rowNumberCell}>
-        {visibleRow}
-        <SpreadsheetRowResizer index={visibleRow} className={classes.rowResizer} />
+      <SpreadsheetCell key={columnIndex} column={column} className={classes.rowNumberCell}>
+        {rowIndex}
+        <SpreadsheetRowResizer index={rowIndex} row={row} className={classes.rowResizer} />
       </SpreadsheetCell>
     )
   };
 
-  const renderCellValue = (row, column, value) => {
+  const renderCellValue = ({ columnIndex, column, value }) => {
     return (
-      <SpreadsheetCell key={column} index={column} className={classes.cell}>
+      <SpreadsheetCell key={columnIndex} column={column} className={classes.cell}>
         {value ? `Value ${value.row} - ${value.column}` : ''}
       </SpreadsheetCell>
     )
@@ -83,40 +83,40 @@ const SpreadsheetComponent = props => {
   return (
     <Scroller {...scrollerProps} height={props.height} width={props.width}>
       <Spreadsheet {...spreadsheetProps} className={classes.spreadsheet}>
-        {visibleRows.map(visibleRow => {
-          const row = rows[visibleRow];
+        {visibleRows.map(rowIndex => {
+          const row = rows[rowIndex];
           let columnsElements;
           const rowType = (row && row.type) || 'VALUES';
           switch(rowType) {
             case 'COLUMN_NUMBERS':
-              columnsElements = visibleColumns.map(visibleColumn => {
-                const column = columns[visibleColumn];
+              columnsElements = visibleColumns.map(columnIndex => {
+                const column = columns[columnIndex];
                 let columnElement;
                 const columnsType = (column && column.type) || 'VALUES';
                 switch(columnsType) {
                   case 'ROW_NUMBERS':
-                    columnElement = renderIntersectionColumn(visibleColumn);
+                    columnElement = renderIntersectionColumn({ column, columnIndex });
                     break;
                   default:
-                    columnElement = renderColumnNumber(visibleColumn);
+                    columnElement = renderColumnNumber({ column, columnIndex });
                     break;
                 }
                 return columnElement;
               });
               break;
             case 'VALUES':
-              columnsElements = visibleColumns.map(visibleColumn => {
-                const column = columns[visibleColumn];
-                const rowValue = visibleValues[visibleRow - 1];
-                const value = rowValue && rowValue[visibleColumn - 1];
+              columnsElements = visibleColumns.map(columnIndex => {
+                const column = columns[columnIndex];
+                const rowValue = visibleValues[rowIndex - 1];
+                const value = rowValue && rowValue[columnIndex - 1];
                 let element;
                 const columnsType = (column && column.type) || 'VALUES';
                 switch(columnsType) {
                   case 'ROW_NUMBER':
-                    element = renderRowNumber(visibleRow, visibleColumn);
+                    element = renderRowNumber({ row, column, rowIndex, columnIndex });
                     break;
                   default:
-                    element = renderCellValue(visibleRow, visibleColumn, value);
+                    element = renderCellValue({ columnIndex, column, value });
                     break;
                 }
                 return element;
@@ -126,7 +126,7 @@ const SpreadsheetComponent = props => {
           }
 
           return (
-            <SpreadsheetRow key={visibleRow} index={visibleRow} className={classes.row}>
+            <SpreadsheetRow key={rowIndex} row={row} className={classes.row}>
               {columnsElements}
             </SpreadsheetRow>
           );   

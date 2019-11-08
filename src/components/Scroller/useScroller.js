@@ -34,7 +34,6 @@ import {
  * @property {boolean} [async]
  * @property {boolean} [lazy] - When set to true whe height of scroller will expand on demand
  * @property {loadRowsPage} loadRowsPage
- * @property {loadColumnsPage} [loadColumnsPage]
  * @property {number} [fixRows=0]
  * @property {number} [fixColumns=0]
  * @property {number} [bufferSize=3]
@@ -286,11 +285,7 @@ const useScroller = ({
     coverStyles,
     pagesStyles,
     defaultRowHeight,
-    defaultColumnWidth,
-    rows,
-    columns,
-    rowsOffsets,
-    columnsOffsets
+    defaultColumnWidth
   };
 
   return {
@@ -299,6 +294,8 @@ const useScroller = ({
     visibleValues,
     rowsStartIndex,
     columnsStartIndex,
+    rowsOffsets,
+    columnsOffsets,
     scrollerProps
   };
 

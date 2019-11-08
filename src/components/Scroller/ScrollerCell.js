@@ -9,23 +9,24 @@ import ScrollerContext from './ScrollerContext';
  * 
  * @param {ScrollerCellProps} props
  */
-const ScrollerCell = ({
+const ScrollerCell = React.memo(({
   style,
-  index: columnIndex,
+  row,
+  column,
+  offset,
   Component = 'div',
   ...props
 }) => {
-  const { columns, defaultColumnWidth, columnsOffsets } = useContext(ScrollerContext);
-  const { height } = useContext(ScrollerRowContext);
-  const width = (columns && columns[columnIndex] && columns[columnIndex].size) || defaultColumnWidth;
+  const { defaultColumnWidth } = useContext(ScrollerContext);
+  const height = useContext(ScrollerRowContext);
+  const width = (column && column.size) || defaultColumnWidth;
   const nextStyle = { ...style, height, width };
-  const offset = columnsOffsets[columnIndex];
   if (offset !== undefined) {
     nextStyle.position = 'sticky';
     nextStyle.left = offset;
     nextStyle.zIndex = 1;
   }
   return <Component {...props} style={nextStyle} />;
-};
+});
 
 export default ScrollerCell;
