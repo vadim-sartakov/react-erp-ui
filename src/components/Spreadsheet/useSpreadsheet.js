@@ -32,66 +32,60 @@ import { useState, useMemo } from 'react';
  * @param {useSpreadsheetProps} props 
  */
 const useSpreadsheet = ({
-  rows = [],
-  columns: columnsProp = [],
+  rows: rowsProps,
+  onRowsChange: onRowsChangeProp,
+  columns: columnsProp,
   onColumnsChange: onColumnsChangeProp,
   columnNumbersRowHeight,
   rowNumberColumnWidth,
   totalRows,
   totalColumns,
-  loadRowsPage,
   defaultColumnWidth,
   defaultRowHeight,
-  async,
   fixRows = 0,
   fixColumns = 0
 }) => {
 
-  const [columnsState, setColumnsState] = useState(columnsProp);
-  const columns = columnsProp || columnsState;
-  const onColumnsChange = onColumnsChangeProp || setColumnsState;
+  const [rowsState, setRowsState] = useState([]);
+  const rows = [{ size: columnNumbersRowHeight, type: 'COLUMN_NUMBERS' }, ...(rowsProps || rowsState)];
+  const onRowsChange = onRowsChangeProp || setRowsState;
 
-  const handleColumnsChange = columns => {
-    // Removing prepended values
-    const nextColumns = columns.filter(column => !column.type);
-    onColumnsChange(nextColumns);
+  const handleRowsChange = rowsSetter => {
+    const nextRows = [...rowsSetter(rows)];
+    nextRows.shift();
+    onRowsChange(nextRows);
   };
 
-  const nextRows = useMemo(() => [{ size: columnNumbersRowHeight, type: 'COLUMN_NUMBERS' }, ...rows], [rows, columnNumbersRowHeight]);
-  const nextColumns = useMemo(() => [{ size: rowNumberColumnWidth, type: 'ROW_NUMBER' }, ...columns], [columns, rowNumberColumnWidth]);
+  const [columnsState, setColumnsState] = useState([]);
+  const columns = [{ size: rowNumberColumnWidth, type: 'ROW_NUMBER' }, ...(columnsProp || columnsState)];
+  const onColumnsChange = onColumnsChangeProp || setColumnsState;
 
-  /*const nextLoadRowsPage = (page, itemsPerPage) => {
-    const prependSpecialValues = value => {
-      return [new Array(totalColumns).fill(null), ...value].map(rowValue => {
-        return [null, ...rowValue];
-      })
-    };
-    if (async) {
-      return loadRowsPage(page, itemsPerPage).then(value => prependSpecialValues(value));
-    } else {
-      const value = loadRowsPage(page, itemsPerPage);
-      return prependSpecialValues(value);
-    }
-  };*/
+  const handleColumnsChange = columnsSetter => {
+    const nextColumns = [...columnsSetter(columns)];
+    nextColumns.shift();
+    onColumnsChange(nextColumns);
+  };
 
   const spreadsheetProps = {
     defaultColumnWidth,
     defaultRowHeight,
-    rows: nextRows,
-    columns: nextColumns,
-    onColumnsChange: handleColumnsChange
+    rows,
+    columns,
+    onColumnsChange: handleColumnsChange,
+    onRowsChange: handleRowsChange
   };
 
   const scrollerInputProps = {
-    rows: nextRows,
-    columns : nextColumns,
+    rows,
+    columns,
     totalRows: totalRows + 1,
     totalColumns: totalColumns + 1,
     fixRows: fixRows + 1,
-    fixColumns: fixColumns + 1/*,
-    loadRowsPage: nextLoadRowsPage*/
+    fixColumns: fixColumns + 1
   };
   return {
+    rows,
+    columns,
     spreadsheetProps,
     scrollerInputProps
   };

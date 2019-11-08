@@ -39,11 +39,15 @@ for (let i = 20; i < 50; i++) {
 const SpreadsheetComponent = props => {
 
   const {
+    rows,
+    columns,
     spreadsheetProps,
     scrollerInputProps
   } = useSpreadsheet(props);
 
   const {
+    visibleRows,
+    visibleColumns,
     visibleValues,
     scrollerProps
   } = useScroller({
@@ -51,30 +55,30 @@ const SpreadsheetComponent = props => {
     ...scrollerInputProps
   });
 
-  const renderIntersectionColumn = visibleColumn => <SpreadsheetCell key={visibleColumn.index} index={visibleColumn.index} className={classes.columnNumberCell} />;
+  const renderIntersectionColumn = visibleColumn => <SpreadsheetCell key={visibleColumn} index={visibleColumn} className={classes.columnNumberCell} />;
 
   const renderColumnNumber = visibleColumn => {
     return (
-      <SpreadsheetCell key={visibleColumn.index} index={visibleColumn.index} className={classes.columnNumberCell}>
-        {visibleColumn.index}
-        <SpreadsheetColumnResizer index={visibleColumn.index} className={classes.columnResizer} />
+      <SpreadsheetCell key={visibleColumn} index={visibleColumn} className={classes.columnNumberCell}>
+        {visibleColumn}
+        <SpreadsheetColumnResizer index={visibleColumn} className={classes.columnResizer} />
       </SpreadsheetCell>
     )
   };
 
   const renderRowNumber = (visibleRow, visibleColumn) => {
     return (
-      <SpreadsheetCell key={visibleColumn.index} index={visibleColumn.index} className={classes.rowNumberCell}>
-        {visibleRow.index}
-        <SpreadsheetRowResizer index={visibleRow.index} className={classes.rowResizer} />
+      <SpreadsheetCell key={visibleColumn} index={visibleColumn} className={classes.rowNumberCell}>
+        {visibleRow}
+        <SpreadsheetRowResizer index={visibleRow} className={classes.rowResizer} />
       </SpreadsheetCell>
     )
   };
 
-  const renderCellValue = (visibleRow, visibleColumn) => {
+  const renderCellValue = (row, column, value) => {
     return (
-      <SpreadsheetCell key={visibleColumn.index} index={visibleColumn.index} className={classes.cell}>
-        {`Value ${visibleColumn.value.row} - ${visibleColumn.value.column}`}
+      <SpreadsheetCell key={column} index={column} className={classes.cell}>
+        {value ? `Value ${value.row} - ${value.column}` : ''}
       </SpreadsheetCell>
     )
   };
@@ -82,14 +86,14 @@ const SpreadsheetComponent = props => {
   return (
     <Scroller {...scrollerProps} height={props.height} width={props.width}>
       <Spreadsheet {...spreadsheetProps} className={classes.spreadsheet}>
-        {visibleValues.map(visibleRow => {
-          const row = rows[visibleRow.index];
+        {visibleRows.map(visibleRow => {
+          const row = rows[visibleRow];
           let columnsElements;
           const rowType = (row && row.type) || 'VALUES';
           switch(rowType) {
             case 'COLUMN_NUMBERS':
-              columnsElements = visibleRow.value.map(visibleColumn => {
-                const column = columns[visibleColumn.index];
+              columnsElements = visibleColumns.map(visibleColumn => {
+                const column = columns[visibleColumn];
                 let columnElement;
                 const columnsType = (column && column.type) || 'VALUES';
                 switch(columnsType) {
@@ -104,8 +108,10 @@ const SpreadsheetComponent = props => {
               });
               break;
             case 'VALUES':
-              columnsElements = visibleRow.value.map(visibleColumn => {
-                const column = columns[visibleColumn.index];
+              columnsElements = visibleColumns.map(visibleColumn => {
+                const column = columns[visibleColumn];
+                const rowValue = visibleValues[visibleRow - 1];
+                const value = rowValue && rowValue[visibleColumn - 1];
                 let element;
                 const columnsType = (column && column.type) || 'VALUES';
                 switch(columnsType) {
@@ -113,7 +119,7 @@ const SpreadsheetComponent = props => {
                     element = renderRowNumber(visibleRow, visibleColumn);
                     break;
                   default:
-                    element = renderCellValue(visibleRow, visibleColumn);
+                    element = renderCellValue(visibleRow, visibleColumn, value);
                     break;
                 }
                 return element;
@@ -123,7 +129,7 @@ const SpreadsheetComponent = props => {
           }
 
           return (
-            <SpreadsheetRow key={visibleRow.index} index={visibleRow.index} className={classes.row}>
+            <SpreadsheetRow key={visibleRow} index={visibleRow} className={classes.row}>
               {columnsElements}
             </SpreadsheetRow>
           );   
