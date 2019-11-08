@@ -1,19 +1,24 @@
-.root
+.spreadsheet
   color: #212529
   border-spacing: 0
   font-size: 14px
 
-.cellValue
+.row
+  display: flex
+
+.cell
   position: relative
   padding: 4px 6px
   border-bottom: solid 1px #dee2e6
   border-right: 1px solid #dee2e6
 
 .rowColumnNumberCell
+  composes: cell
   border-color: #c3c3c3
   background-color: #f1f1f1
 
 .columnNumberCell
+  composes: cell
   composes: rowColumnNumberCell
   text-align: center
 

@@ -1,130 +1,161 @@
-import React, { useState } from 'react';
-import classNames from 'classnames';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import {
   useSpreadsheet,
-  SpreadsheetScroller,
   Spreadsheet,
-  SpreadsheetTableCell,
-  SpreadsheetScrollableRows,
-  SpreadsheetCellValue,
+  SpreadsheetRow,
+  SpreadsheetCell,
   SpreadsheetColumnResizer,
   SpreadsheetRowResizer
 } from './';
+import { useScroller, Scroller, loadPage } from '../Scroller';
+import { generateCustomMeta, generateGridValues } from '../Scroller/Scroller.stories';
 import classes from './Spreadsheet-stories.module.sass';
 
-const generateColumns = count => {
-  return [...new Array(count).keys()].map(item => ({ title: `Column ${item}`, width: 200 }));
+export const value = generateGridValues(1000, 50);
+const rows = generateCustomMeta(value.length, 60);
+const columns = generateCustomMeta(value[0].length, 180);
+
+export const loadRowsPageSync = value => (page, itemsPerPage) => {
+  console.log('Loading sync page %s', page);
+  return loadPage(value, page, itemsPerPage);
 };
 
-const generateValues = (columns, count) => {
-  return [...new Array(count).keys()].map((rowItem, rowIndex) => {
-    const rowColumns = columns.map((column, columnIndex) => ({ value: `Value ${rowIndex} - ${columnIndex}` }));
-    return rowColumns;
-  });
-};
+// TODO: Move this inside scroller
+const loadColumnsPage = (row, page, itemsPerPage) => loadPage(row, page, itemsPerPage);
 
-const initialColumns = generateColumns(15);
-const data = generateValues(initialColumns, 1000);
-
-const initialRows = [];
-for (let i = 5; i < 100; i++) {
-  initialRows[i] = { level: 1 };
+/*for (let i = 5; i < 100; i++) {
+  rows[i] = { level: 1 };
 }
-initialRows[0] = { fixed: true };
-initialRows[1] = { fixed: true };
-
 for (let i = 20; i < 50; i++) {
-  initialRows[i] = { level: 2 };
-}
-
-initialColumns[0] = { fixed: true };
-initialColumns[1] = { fixed: true };
+  rows[i] = { level: 2 };
+}*/
 
 //const initialScroll = { top: 5000, left: 0 };
 
-const SpreadsheetComponent = () => {
-  const [columns, setColumns] = useState([{ size: 50, fixed: true, special: true }, ...initialColumns]);
-  const [rows, setRows] = useState([{ size: 25, fixed: true, special: true }, ...initialRows]);
+/**
+ * @param {import('../Scroller/useScroller').useScrollerProps | import('./useSpreadsheet').useSpreadsheetProps} props 
+ */
+const SpreadsheetComponent = props => {
 
   const {
-    scroll,
-    onScroll
-  } = useSpreadsheet({ });
-  
-  return (
-    <SpreadsheetScroller height={650} scroll={scroll} onScroll={onScroll}>
-      <Spreadsheet
-          columns={columns}
-          onColumnsChange={setColumns}
-          rows={rows}
-          onRowsChange={setRows}
-          data={data}
-          className={classes.root}
-          defaultColumnWidth={120}
-          defaultRowHeight={25}
-          rowsPerPage={60}
-          classes={{
-            fixed: classes.fixed,
-            lastFixedRowCell: classes.lastFixedRowCell,
-            lastFixedColumnCell: classes.lastFixedColumnCell
-          }}>
-        <thead>
-          <tr>
-            <SpreadsheetTableCell header columnIndex={0} rowIndex={0}>
-              <SpreadsheetCellValue rowIndex={0} className={classNames(classes.cellValue, classes.columnNumberCell)} />
-            </SpreadsheetTableCell>
-            {columns.slice(1, columns.length).map((column, columnIndex) => {
-              return (
-                <SpreadsheetTableCell
-                    key={columnIndex}
-                    header
-                    columnIndex={columnIndex + 1}
-                    rowIndex={0}>
-                  <SpreadsheetCellValue rowIndex={0} className={classNames(classes.cellValue, classes.columnNumberCell)}>
-                    {columnIndex + 1}
-                    <SpreadsheetColumnResizer index={columnIndex + 1} className={classes.columnResizer} />
-                  </SpreadsheetCellValue>
-                </SpreadsheetTableCell>
-              )
-            })}
-          </tr>
-        </thead>
+    rows,
+    columns,
+    spreadsheetProps,
+    scrollerInputProps
+  } = useSpreadsheet(props);
 
-        <tbody>
-          <SpreadsheetScrollableRows>
-            {({ index: rowIndex, value: rowValue }) => {
-              const row = rows[rowIndex + 1];
-              const level = row && row.level;
-              return (
-                <tr key={rowIndex}>
-                  <SpreadsheetTableCell rowIndex={rowIndex + 1} columnIndex={0}>
-                    <SpreadsheetCellValue rowIndex={rowIndex + 1} className={classNames(classes.cellValue, classes.rowNumberCell)}>
-                      {rowIndex + 1}
-                      <SpreadsheetRowResizer index={rowIndex + 1} className={classes.rowResizer} />
-                    </SpreadsheetCellValue>
-                  </SpreadsheetTableCell>
-                  {columns.slice(1, columns.length).map((column, columnIndex) => {
-                    const cellValue = rowValue[columnIndex];
-                    return (
-                      <SpreadsheetTableCell key={columnIndex + 1} rowIndex={rowIndex + 1} columnIndex={columnIndex + 1}>
-                        <SpreadsheetCellValue className={classes.cellValue} rowIndex={rowIndex + 1} style={{ paddingLeft: level && columnIndex === 0 ? level * 15 : undefined }}>
-                          {cellValue.value}
-                        </SpreadsheetCellValue>
-                      </SpreadsheetTableCell>
-                    )
-                  })}
-                </tr>
-              )
-            }}
-          </SpreadsheetScrollableRows>
-        </tbody>
+  const {
+    visibleRows,
+    visibleColumns,
+    visibleValues,
+    scrollerProps
+  } = useScroller({
+    ...props,
+    ...scrollerInputProps
+  });
+
+  const renderIntersectionColumn = visibleColumn => <SpreadsheetCell key={visibleColumn} index={visibleColumn} className={classes.columnNumberCell} />;
+
+  const renderColumnNumber = visibleColumn => {
+    return (
+      <SpreadsheetCell key={visibleColumn} index={visibleColumn} className={classes.columnNumberCell}>
+        {visibleColumn}
+        <SpreadsheetColumnResizer index={visibleColumn} className={classes.columnResizer} />
+      </SpreadsheetCell>
+    )
+  };
+
+  const renderRowNumber = (visibleRow, visibleColumn) => {
+    return (
+      <SpreadsheetCell key={visibleColumn} index={visibleColumn} className={classes.rowNumberCell}>
+        {visibleRow}
+        <SpreadsheetRowResizer index={visibleRow} className={classes.rowResizer} />
+      </SpreadsheetCell>
+    )
+  };
+
+  const renderCellValue = (row, column, value) => {
+    return (
+      <SpreadsheetCell key={column} index={column} className={classes.cell}>
+        {value ? `Value ${value.row} - ${value.column}` : ''}
+      </SpreadsheetCell>
+    )
+  };
+
+  return (
+    <Scroller {...scrollerProps} height={props.height} width={props.width}>
+      <Spreadsheet {...spreadsheetProps} className={classes.spreadsheet}>
+        {visibleRows.map(visibleRow => {
+          const row = rows[visibleRow];
+          let columnsElements;
+          const rowType = (row && row.type) || 'VALUES';
+          switch(rowType) {
+            case 'COLUMN_NUMBERS':
+              columnsElements = visibleColumns.map(visibleColumn => {
+                const column = columns[visibleColumn];
+                let columnElement;
+                const columnsType = (column && column.type) || 'VALUES';
+                switch(columnsType) {
+                  case 'ROW_NUMBERS':
+                    columnElement = renderIntersectionColumn(visibleColumn);
+                    break;
+                  default:
+                    columnElement = renderColumnNumber(visibleColumn);
+                    break;
+                }
+                return columnElement;
+              });
+              break;
+            case 'VALUES':
+              columnsElements = visibleColumns.map(visibleColumn => {
+                const column = columns[visibleColumn];
+                const rowValue = visibleValues[visibleRow - 1];
+                const value = rowValue && rowValue[visibleColumn - 1];
+                let element;
+                const columnsType = (column && column.type) || 'VALUES';
+                switch(columnsType) {
+                  case 'ROW_NUMBER':
+                    element = renderRowNumber(visibleRow, visibleColumn);
+                    break;
+                  default:
+                    element = renderCellValue(visibleRow, visibleColumn, value);
+                    break;
+                }
+                return element;
+              });
+              break;
+            default:
+          }
+
+          return (
+            <SpreadsheetRow key={visibleRow} index={visibleRow} className={classes.row}>
+              {columnsElements}
+            </SpreadsheetRow>
+          );   
+        })}
       </Spreadsheet>
-    </SpreadsheetScroller>
+    </Scroller>
   );
 };
 
-export const defaultComponent = () => <SpreadsheetComponent />;
+export const defaultComponent = props => (
+  <SpreadsheetComponent
+      value={value}
+      columnNumbersRowHeight={20}
+      rowNumberColumnWidth={40}
+      defaultRowHeight={25}
+      defaultColumnWidth={120}
+      rowsPerPage={60}
+      columnsPerPage={15}
+      totalColumns={columns.length}
+      totalRows={value.length}
+      loadRowsPage={loadRowsPageSync(value)}
+      loadColumnsPage={loadColumnsPage}
+      width={800}
+      height={600}
+      {...props} />
+);
 
 storiesOf('Spreadsheet', module)
   .add('default', defaultComponent);

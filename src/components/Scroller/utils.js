@@ -1,4 +1,4 @@
-export const getVisiblePages = page => page === 0 ? [0] : [page - 1, page];
+export const getVisiblePages = page => page === 0 ? [0, 1] : [page - 1, page];
 export const getTotalPages = (totalCount, itemsPerPage) => Math.ceil(totalCount / itemsPerPage);
 
 export const getItemsCountOnPage = (page, itemsPerPage, totalCount) => {
@@ -51,17 +51,20 @@ export const getPageNumberFromScrollPages = (scrollPages, scroll = 0) => {
   if (scroll > scrollPages[lastPageIndex].end) return lastPageIndex;
 
   const currentPage = scrollPages.reduce((acc, page, index) => {
-    if (acc !== -1) return acc;
-
-    const isInRange = scroll >= page.start && scroll < page.end;
-    if (!isInRange) return acc;
-
+    if (acc.pageIndex !== -1) return acc;
+    
     const pageSize = page.end - page.start;
     const pageHalf = pageSize / 2;
+    const curScroll = acc.curScroll + pageSize;
 
-    return scroll > pageHalf ? index + 1 : index;
-  }, -1);
-  return currentPage;
+    const isInRange = scroll >= page.start && scroll < page.end;
+    if (!isInRange) return { ...acc, curScroll };
+
+    const pageIndex = scroll > (page.start + pageHalf) ? index + 1 : index;
+
+    return { curScroll, pageIndex };
+  }, { curScroll: 0, pageIndex: -1 });
+  return currentPage.pageIndex;
 };
 
 export const getPageNumberWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, scroll }) => {
@@ -72,7 +75,18 @@ export const getPageNumberWithDefaultSize = ({ defaultSize, itemsPerPage, totalC
   return Math.min(totalPages - 1, page);
 };
 
-export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, page }) => {
+export const getPageNumber = ({ meta, defaultSize, itemsPerPage, totalCount, scroll }) => {
+  let curPage;
+  if (meta && meta.length) {
+    const scrollPages = getScrollPages({ meta, defaultSize, itemsPerPage, totalCount });
+    curPage = getPageNumberFromScrollPages(scrollPages, scroll);
+  } else {
+    curPage = getPageNumberWithDefaultSize({ defaultSize, itemsPerPage, totalCount, scroll });
+  }
+  return curPage;
+};
+
+export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, page, fixed = 0 }) => {
   const pageSize = defaultSize * itemsPerPage;
   const visiblePages = getVisiblePages(page);
   const startSectionSize = visiblePages[0] * pageSize;
@@ -92,7 +106,7 @@ export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, 
 
 const gapsReducer = (acc, scrollPage) => acc + (scrollPage.end - scrollPage.start);
 
-export const getGapsFromScrollPages = (scrollPages, page) => {
+export const getGapsFromScrollPages = ({ scrollPages, page, fixed = 0 }) => {
   const visiblePages = getVisiblePages(page);
   const startSectionSize = scrollPages.slice(0, visiblePages[0]).reduce(gapsReducer, 0);
   const middleSectionSize = scrollPages.slice(visiblePages[0], ((visiblePages[1] || 0) + 1)).reduce(gapsReducer, 0);
@@ -103,3 +117,47 @@ export const getGapsFromScrollPages = (scrollPages, page) => {
     end: endSectionSize
   }
 };
+
+export const getGaps = ({ meta, defaultSize, itemsPerPage, totalCount, page, fixed }) => {
+  let gaps;
+  if (meta && meta.length) {
+    const scrollPages = getScrollPages({ meta, totalCount, defaultSize, itemsPerPage });
+    gaps = getGapsFromScrollPages({ scrollPages, page, fixed });
+  } else {
+    gaps = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount, page, fixed });
+  }
+  return gaps;
+};
+
+/**
+ * @typedef getFixedOffsetsOptions
+ * @property {Object} meta
+ * @property {number} defaultSize
+ * @property {number} fixed - Fixed items count
+ */
+
+ /**
+ * @param {getFixedOffsetsOptions} options
+ */
+export const getFixedOffsets = ({ meta, defaultSize, fixed }) => {
+  const resultOffset = [...new Array(fixed).keys()].reduce((acc, curKey, index) => {
+    const curOffset = index === 0 ? 0 : [...new Array(index).keys()].reduce((acc, key, index) => {
+      const curMeta = meta && meta[index];
+      const offset = curMeta ? (curMeta.size || defaultSize) : defaultSize;
+      return acc + offset;
+    }, 0);
+    return [...acc, curOffset];
+  }, []);
+  return resultOffset;
+};
+
+export const getItemsSize = ({ meta, count, defaultSize }) => {
+  if (!count) return 0;
+  return meta ? [...new Array(count).keys()].reduce((acc, key, index) => {
+    const curMeta = meta[index];
+    const curSize = (curMeta && curMeta.size) || defaultSize;
+    return acc + curSize;
+  }, 0) : count * defaultSize;
+};
+
+export const loadPage = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);

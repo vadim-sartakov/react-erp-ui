@@ -4,7 +4,8 @@ import {
   getPageNumberFromScrollPages,
   getPageNumberWithDefaultSize,
   getGapsWithDefaultSize,
-  getGapsFromScrollPages
+  getGapsFromScrollPages,
+  getFixedOffsets
 } from './utils';
 
 describe('Scroller utils', () => {
@@ -85,12 +86,24 @@ describe('Scroller utils', () => {
       expect(getPageNumberFromScrollPages(scrollPages, 0)).toBe(0);
     });
 
+    it('should return cur page when scrolled less then half of current', () => {
+      const scrollPages = [
+        { start: 0, end: 20 },
+        { start: 20, end: 40 },
+        { start: 40, end: 60 },
+        { start: 60, end: 80 },
+      ];
+      expect(getPageNumberFromScrollPages(scrollPages, 45)).toBe(2);
+    });
+
     it('should return next page when scrolled half of current', () => {
       const scrollPages = [
         { start: 0, end: 20 },
-        { start: 20, end: 40 }
+        { start: 20, end: 40 },
+        { start: 40, end: 60 },
+        { start: 60, end: 80 },
       ];
-      expect(getPageNumberFromScrollPages(scrollPages, 15)).toBe(1);
+      expect(getPageNumberFromScrollPages(scrollPages, 55)).toBe(3);
     });
 
     it('should return initial page - 0 on negative scroll', () => {
@@ -138,7 +151,7 @@ describe('Scroller utils', () => {
 
   describe('getGapsWithDefaultSize', () => {
     it('start page', () => {
-      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 0 })).toEqual({ start: 0, middle: 20, end: 80 });
+      expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 0 })).toEqual({ start: 0, middle: 40, end: 60 });
     });
     it('middle page', () => {
       expect(getGapsWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, totalCount: 5, page: 3 })).toEqual({ start: 40, middle: 40, end: 20 });
@@ -162,13 +175,39 @@ describe('Scroller utils', () => {
       { start: 100, end: 150 }
     ];
     it('first page', () => {
-      expect(getGapsFromScrollPages(scrollPages, 0)).toEqual({ start: 0, middle: 20, end: 130 });
+      expect(getGapsFromScrollPages({ scrollPages, page: 0 })).toEqual({ start: 0, middle: 60, end: 90 });
     });
     it('middle page', () => {
-      expect(getGapsFromScrollPages(scrollPages, 2)).toEqual({ start: 20, middle: 80, end: 50 });
+      expect(getGapsFromScrollPages({ scrollPages, page: 2 })).toEqual({ start: 20, middle: 80, end: 50 });
     });
     it('last page', () => {
-      expect(getGapsFromScrollPages(scrollPages, 3)).toEqual({ start: 60, middle: 90, end: 0 });
+      expect(getGapsFromScrollPages({ scrollPages, page: 3 })).toEqual({ start: 60, middle: 90, end: 0 });
+    });
+  });
+
+  describe('getFixedOffsets', () => {
+    it('should return offsets without meta', () => {
+      expect(getFixedOffsets({ defaultSize: 20, fixed: 3 })).toEqual([0, 20, 40]);
+    });
+
+    it('should return offsets with default sizes', () => {
+      const meta = [
+        undefined,
+        undefined,
+        { size: 10 },
+        { size: 20 }
+      ];
+      expect(getFixedOffsets({ meta, defaultSize: 20, fixed: 3 })).toEqual([0, 20, 40]);
+    });
+
+    it('should return offsets with custom sizes', () => {
+      const meta = [
+        { size: 20 },
+        { size: 30 },
+        { size: 10 },
+        { size: 20 }
+      ];
+      expect(getFixedOffsets({ meta, defaultSize: 20, fixed: 3 })).toEqual([0, 20, 50]);
     });
   });
 
