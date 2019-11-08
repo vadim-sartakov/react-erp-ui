@@ -4,6 +4,7 @@ export const getTotalPages = (totalCount, itemsPerPage) => Math.ceil(totalCount 
 export const getItemsCountOnPage = (page, itemsPerPage, totalCount) => {
   if (page === undefined) return 0;
   const totalPages = getTotalPages(totalCount, itemsPerPage);
+  if (page >= totalPages) return 0;
   return page < totalPages - 1 ? itemsPerPage : totalCount - (page * itemsPerPage);
 };
 

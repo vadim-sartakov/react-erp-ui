@@ -10,12 +10,10 @@ import {
   SpreadsheetRowResizer
 } from './';
 import { useScroller, Scroller, loadPage } from '../Scroller';
-import { generateCustomMeta, generateGridValues } from '../Scroller/Scroller.stories';
+import { generateGridValues } from '../Scroller/Scroller.stories';
 import classes from './Spreadsheet-stories.module.sass';
 
 export const value = generateGridValues(1000, 50);
-//const rows = generateCustomMeta(value.length, 60);
-const columns = generateCustomMeta(value[0].length, 180);
 
 export const loadRowsPageSync = value => (page, itemsPerPage) => {
   console.log('Loading sync page %s', page);
@@ -167,8 +165,8 @@ export const defaultComponent = props => (
       defaultColumnWidth={120}
       rowsPerPage={60}
       columnsPerPage={15}
-      totalColumns={columns.length}
-      totalRows={value.length}
+      totalColumns={50}
+      totalRows={1000}
       loadRowsPage={loadRowsPageSync(value)}
       width={800}
       height={600}

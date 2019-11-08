@@ -190,8 +190,9 @@ const useScroller = ({
       // Fetching required amount of pages
       let curPage = 0;
       let bufferValue;
-      while((bufferValue = async ? buffer[curPage] : loadRowsPage(curPage, rowsPerPage)) &&
-          fixedPages.reduce((acc, page) => acc + page.length, 0) < fixRows) {
+      while(1) {
+        bufferValue = async ? buffer[curPage] : loadRowsPage(curPage, rowsPerPage);
+        if (!bufferValue || !bufferValue.length || fixedPages.reduce((acc, page) => acc + page.length, 0) >= fixRows) break;
         fixedPages.push(bufferValue);
         curPage++;
       }
