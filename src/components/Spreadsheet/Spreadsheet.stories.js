@@ -161,7 +161,6 @@ const SpreadsheetComponent = props => {
 
 export const defaultComponent = props => (
   <SpreadsheetComponent
-      value={value}
       columnNumbersRowHeight={20}
       rowNumberColumnWidth={40}
       defaultRowHeight={25}

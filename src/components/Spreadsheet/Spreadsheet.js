@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { createContext, useContext, useCallback, useMemo } from 'react';
 import { ScrollerRow, ScrollerCell } from '../Scroller'
 import { useResize } from '../useResize';
 
@@ -14,16 +14,15 @@ export const Spreadsheet = ({
   defaultRowHeight,
   ...props
 }) => {
+  const contextValue = useMemo(() => ({
+    onRowsChange,
+    onColumnsChange,
+    defaultColumnWidth,
+    defaultRowHeight
+  }), [onRowsChange, onColumnsChange, defaultColumnWidth, defaultRowHeight]);
   return (
     <SpreadsheetContext.Provider
-        value={{
-          rows,
-          onRowsChange,
-          columns,
-          onColumnsChange,
-          defaultColumnWidth,
-          defaultRowHeight
-        }}>
+        value={contextValue}>
       <div {...props} style={{ ...style, display: 'inline-block', position: 'relative' }} />
     </SpreadsheetContext.Provider>
   )
