@@ -35,9 +35,23 @@ export const SpreadsheetRow = ({
 };
 
 export const SpreadsheetCell = ({
+  column,
+  row,
+  rows,
+  columns,
+  rowSpan,
+  colSpan,
   ...props
 }) => {
-  return <ScrollerCell {...props} />;
+  let mergeCell, nextColumn;
+  if (rowSpan || colSpan) {
+
+  }
+  return (
+    <>
+      <ScrollerCell column={column} {...props} />
+    </>
+  );
 };
 
 export const SpreadsheetColumnResizer = ({ index, column, ...props }) => {

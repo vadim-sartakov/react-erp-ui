@@ -47,7 +47,8 @@ const renderBody = ({
               element = renderRowNumber({ row, column, rowIndex, columnIndex });
               break;
             default:
-              element = renderCellValue({ row, rowIndex, columnIndex, column, value });
+              const { rowSpan, colSpan } = value || {};
+              element = renderCellValue({ row, rowIndex, columnIndex, column, value, rowSpan, colSpan });
               break;
           }
           return element;

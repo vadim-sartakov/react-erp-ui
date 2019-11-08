@@ -83,7 +83,7 @@ const SpreadsheetComponent = props => {
     )
   };
 
-  const renderCellValue = ({ row, rowIndex, columnIndex, column, value }) => {
+  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, ...props }) => {
     return (
       <SpreadsheetCell
           key={columnIndex}
@@ -95,7 +95,8 @@ const SpreadsheetComponent = props => {
               [classes.lastFixedRow]: rowIndex === props.fixRows,
               [classes.lastFixedColumn]: columnIndex === props.fixColumns
             }
-          )}>
+          )}
+          {...props}>
         {value ? `Value ${value.row} - ${value.column}` : ''}
       </SpreadsheetCell>
     )
