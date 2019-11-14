@@ -34,12 +34,39 @@ export const SpreadsheetRow = ({
   return <ScrollerRow {...props} />
 };
 
-const getMergedSize = ({ spanCount, meta, startIndex, defaultSize }) => {
-  return spanCount && [...new Array(spanCount).keys()].reduce((acc, key, index) => {
+const getMergedSize = ({ count, meta = [], startIndex, defaultSize }) => {
+  return count && [...new Array(count).keys()].reduce((acc, key, index) => {
     const mergedMeta = meta[startIndex + index];
     const size = (mergedMeta && mergedMeta.size) || defaultSize;
     return acc + size;
   }, 0);
+};
+
+export const SpreadsheetMergedCell = ({
+  absolute,
+  defaultRowHeight,
+  defaultColumnWidth,
+  rowIndex,
+  columnIndex,
+  column,
+  rows,
+  columns,
+  value,
+  children,
+  ...props
+}) => {
+  // TODO: calculate top and left positions
+  let top = 0, left = 0;
+  if (absolute) {
+    top = rowIndex > 0 ? getMergedSize({ count: rowIndex - 1, meta: rows, startIndex: 0, defaultSize: defaultRowHeight }) : 0;
+    left = columnIndex > 0 ? getMergedSize({ count: columnIndex - 1, meta: columns, startIndex: 0, defaultSize: defaultColumnWidth }) : 0;
+  };
+  const style = { position: 'absolute', top, left, zIndex: 1 };
+  const width = getMergedSize({ count: value.colSpan, meta: columns, startIndex: columnIndex, defaultSize: defaultColumnWidth });
+  const height = getMergedSize({ count: value.rowSpan, meta: rows, startIndex: rowIndex, defaultSize: defaultRowHeight });
+  if (width) style.width = width;
+  if (height) style.height = height;
+  return <ScrollerCell column={column} {...props} style={style}>{children}</ScrollerCell>;
 };
 
 export const SpreadsheetCell = ({
@@ -48,28 +75,29 @@ export const SpreadsheetCell = ({
   rowIndex,
   columnIndex,
   column,
-  row,
   rows,
-  columns = [],
+  columns,
   value,
   children,
   ...props
 }) => {
-  let mergeCell;
-  if (value && (value.rowSpan || value.colSpan)) {
-    const style = { position: 'absolute', top: 0, left: 0, zIndex: 1 };
-    const width = getMergedSize({ spanCount: value.colSpan, meta: columns, startIndex: columnIndex, defaultSize: defaultColumnWidth });
-    const height = getMergedSize({ spanCount: value.rowSpan, meta: rows, startIndex: rowIndex, defaultSize: defaultRowHeight });
-    if (width) style.width = width;
-    if (height) style.height = height;
-    mergeCell = <ScrollerCell column={column} {...props} style={style}>{children}</ScrollerCell>;
-  } else {
-    mergeCell = null;
-  }
   return (
     <ScrollerCell column={column} {...props}>
       {children}
-      {mergeCell}
+      {value && (value.rowSpan || value.colSpan) && (
+        <SpreadsheetMergedCell
+            defaultRowHeight={defaultRowHeight}
+            defaultColumnWidth={defaultColumnWidth}
+            rowIndex={rowIndex}
+            columnIndex={columnIndex}
+            column={column}
+            rows={rows}
+            columns={columns}
+            value={value}
+            {...props}>
+          {children}
+        </SpreadsheetMergedCell>
+      )}
     </ScrollerCell>
   );
 };
