@@ -14,6 +14,7 @@ import { generateGridValues } from '../Scroller/Scroller.stories';
 import classes from './Spreadsheet-stories.module.sass';
 
 export const value = generateGridValues(1000, 50);
+value[50][5] = { ...value[50][5], colSpan: 3, rowSpan: 3 };
 
 export const loadRowsPageSync = value => (page, itemsPerPage) => {
   console.log('Loading sync page %s', page);
@@ -83,20 +84,26 @@ const SpreadsheetComponent = props => {
     )
   };
 
-  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, ...props }) => {
+  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, columns, rows }) => {
     return (
       <SpreadsheetCell
           key={columnIndex}
+          defaultRowHeight={props.defaultRowHeight}
+          defaultColumnWidth={props.defaultColumnWidth}
+          row={row}
+          columnIndex={columnIndex}
+          rowIndex={rowIndex}
           column={column}
+          columns={columns}
+          rows={rows}
+          value={value}
           className={classNames(
             classes.cell,
             {
-              [classes.fixed]: row.offset !== undefined || column.offset !== undefined,
               [classes.lastFixedRow]: rowIndex === props.fixRows,
               [classes.lastFixedColumn]: columnIndex === props.fixColumns
             }
-          )}
-          {...props}>
+          )}>
         {value ? `Value ${value.row} - ${value.column}` : ''}
       </SpreadsheetCell>
     )

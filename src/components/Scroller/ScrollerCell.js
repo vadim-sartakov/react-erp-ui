@@ -19,12 +19,13 @@ const ScrollerCell = React.memo(({
   const height = useContext(ScrollerRowContext);
   const { size, offset } = column;
   const width = size || defaultColumnWidth;
-  const nextStyle = { ...style, height, width };
+  let nextStyle = { height, width };
   if (offset !== undefined) {
     nextStyle.position = 'sticky';
     nextStyle.left = offset;
-    nextStyle.zIndex = 1;
+    nextStyle.zIndex = 2;
   }
+  nextStyle = { ...nextStyle, ...style }
   return <Component {...props} style={nextStyle} />;
 });
 

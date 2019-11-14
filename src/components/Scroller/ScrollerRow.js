@@ -23,7 +23,7 @@ const ScrollerRow = React.memo(({
   if (offset !== undefined) {
     nextStyle.position = 'sticky';
     nextStyle.top = offset;
-    nextStyle.zIndex = 2;
+    nextStyle.zIndex = 3;
   }
   return (
     <ScrollerRowContext.Provider value={height}>

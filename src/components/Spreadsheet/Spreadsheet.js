@@ -34,23 +34,43 @@ export const SpreadsheetRow = ({
   return <ScrollerRow {...props} />
 };
 
+const getMergedSize = ({ spanCount, meta, startIndex, defaultSize }) => {
+  return spanCount && [...new Array(spanCount).keys()].reduce((acc, key, index) => {
+    const mergedMeta = meta[startIndex + index];
+    const size = (mergedMeta && mergedMeta.size) || defaultSize;
+    return acc + size;
+  }, 0);
+};
+
 export const SpreadsheetCell = ({
+  defaultRowHeight,
+  defaultColumnWidth,
+  rowIndex,
+  columnIndex,
   column,
   row,
   rows,
-  columns,
-  rowSpan,
-  colSpan,
+  columns = [],
+  value,
+  children,
   ...props
 }) => {
-  let mergeCell, nextColumn;
-  if (rowSpan || colSpan) {
-
+  let mergeCell;
+  if (value && (value.rowSpan || value.colSpan)) {
+    const style = { position: 'absolute', top: 0, left: 0, zIndex: 1 };
+    const width = getMergedSize({ spanCount: value.colSpan, meta: columns, startIndex: columnIndex, defaultSize: defaultColumnWidth });
+    const height = getMergedSize({ spanCount: value.rowSpan, meta: rows, startIndex: rowIndex, defaultSize: defaultRowHeight });
+    if (width) style.width = width;
+    if (height) style.height = height;
+    mergeCell = <ScrollerCell column={column} {...props} style={style}>{children}</ScrollerCell>;
+  } else {
+    mergeCell = null;
   }
   return (
-    <>
-      <ScrollerCell column={column} {...props} />
-    </>
+    <ScrollerCell column={column} {...props}>
+      {children}
+      {mergeCell}
+    </ScrollerCell>
   );
 };
 
