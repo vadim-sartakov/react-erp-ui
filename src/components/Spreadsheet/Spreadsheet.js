@@ -48,14 +48,12 @@ export const SpreadsheetMergedCell = ({
   defaultColumnWidth,
   rowIndex,
   columnIndex,
-  column,
   rows,
   columns,
   value,
   children,
   ...props
 }) => {
-  // TODO: calculate top and left positions
   let top = 0, left = 0;
   if (absolute) {
     top = rowIndex > 0 ? getMergedSize({ count: rowIndex - 1, meta: rows, startIndex: 0, defaultSize: defaultRowHeight }) : 0;
@@ -66,7 +64,7 @@ export const SpreadsheetMergedCell = ({
   const height = getMergedSize({ count: value.rowSpan, meta: rows, startIndex: rowIndex, defaultSize: defaultRowHeight });
   if (width) style.width = width;
   if (height) style.height = height;
-  return <ScrollerCell column={column} {...props} style={style}>{children}</ScrollerCell>;
+  return <ScrollerCell {...props} style={style}>{children}</ScrollerCell>;
 };
 
 export const SpreadsheetCell = ({
@@ -75,6 +73,7 @@ export const SpreadsheetCell = ({
   rowIndex,
   columnIndex,
   column,
+  row,
   rows,
   columns,
   value,
