@@ -73,12 +73,14 @@ export const SpreadsheetMergedCell = ({
   const fixedColumn = columnIndex <= fixColumns;
   const fixed = fixedRow || fixedColumn;
 
-  let top = 0, left = 0;
+  let top, left;
   if (fixed) {
     top = rowIndex > 0 ? getMergedSize({ count: rowIndex, meta: rows, startIndex: 0, defaultSize: defaultRowHeight }) : 0;
     left = columnIndex > 0 ? getMergedSize({ count: columnIndex, meta: columns, startIndex: 0, defaultSize: defaultColumnWidth }) : 0;
   };
-  const elementStyle = fixed ? { position: 'sticky', top, left, pointerEvents: 'auto' } : { position: 'absolute', top: 0, left: 0, zIndex: 1 };
+  const elementStyle = fixed ?
+      { position: 'sticky', top: fixedRow && top, left: fixedColumn && left, pointerEvents: 'auto' } :
+      { position: 'absolute', top: 0, left: 0, zIndex: 1 };
 
   const width = getMergedSize({
     // Preventing from merging more than fixed range
