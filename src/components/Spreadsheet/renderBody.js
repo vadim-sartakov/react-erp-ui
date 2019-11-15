@@ -42,7 +42,29 @@ const renderBody = ({
               element = renderRowNumber({ row, column, rowIndex, columnIndex });
               break;
             default:
-              element = renderCellValue({ row, rowIndex, column, columnIndex, value, columns, rows });
+              // TODO: Wrong. Got to run one reversed loop over all preceding rows and columns
+              const columnMerged = visibleColumns.slice(0, columnIndex).reverse().some(columnSpanIndex => {
+                const rowValue = visibleValues[rowIndex - 1];
+                const columnValue = rowValue && rowValue[columnSpanIndex - 1];
+                if (columnValue && columnValue.colSpan) {
+                  const range = columnIndex - (columnSpanIndex - 1);
+                  return range <= columnValue.colSpan;
+                } else {
+                  return false;
+                }
+              });
+
+              const rowMerged = visibleRows.slice(0, rowIndex).reverse().some(rowSpanIndex => {
+                const rowValue = visibleValues[rowSpanIndex - 1];
+                const columnValue = rowValue && rowValue[columnIndex - 1];
+                if (columnValue && columnValue.rowSpan) {
+                  const range = rowIndex - (rowSpanIndex - 1);
+                  return range <= columnValue.rowSpan;
+                } else {
+                  return false;
+                }
+              });
+              element = !columnMerged && !rowMerged && renderCellValue({ row, rowIndex, column, columnIndex, value, columns, rows });
               break;
           }
           return element;
