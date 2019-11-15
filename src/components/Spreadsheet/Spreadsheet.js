@@ -47,43 +47,6 @@ const getMergedSize = ({ count, meta = [], startIndex, defaultSize }) => {
   }, 0);
 };
 
-export const SpreadsheetMergedCell = ({
-  fixRows,
-  fixColumns,
-  defaultRowHeight,
-  defaultColumnWidth,
-  rowIndex,
-  columnIndex,
-  rows,
-  columns,
-  value,
-  children,
-  ...props
-}) => {
-
-  const fixedRow = rowIndex <= fixRows;
-  const fixedColumn = columnIndex <= fixColumns;
-
-  const elementStyle = { position: 'absolute', top: 0, left: 0 };
-
-  const width = getMergedSize({
-    // Preventing from merging more than fixed range
-    count: fixedColumn ? fixColumns - (columnIndex - 1) : value.colSpan,
-    meta: columns,
-    startIndex: columnIndex,
-    defaultSize: defaultColumnWidth
-  });
-  const height = getMergedSize({
-    count: fixedRow ? fixRows - (rowIndex - 1) : value.rowSpan,
-    meta: rows,
-    startIndex: rowIndex,
-    defaultSize: defaultRowHeight
-  });
-  if (width) elementStyle.width = width;
-  if (height) elementStyle.height = height;
-  return <div {...props} style={elementStyle}>{children}</div>;
-};
-
 export const SpreadsheetCell = ({
   defaultRowHeight,
   defaultColumnWidth,
@@ -94,43 +57,28 @@ export const SpreadsheetCell = ({
   rows,
   columns,
   value,
-  children,
   ...props
 }) => {
   const { fixRows, fixColumns } = useContext(SpreadsheetContext);
 
-  let rootStyle = {};
-  if (value && (value.rowSpan || value.colSpan)) {
-    const fixedRow = rowIndex <= fixRows;
-    const fixedColumn = columnIndex <= fixColumns;
-    if (fixedRow && fixedColumn) rootStyle.zIndex = 7;
-    else if (fixedRow) rootStyle.zIndex = 5;
-    else if (fixedColumn) rootStyle.zIndex = 3;
-    else rootStyle.zIndex = 1;
-  }
+  const fixedRow = rowIndex <= fixRows;
+  const fixedColumn = columnIndex <= fixColumns;
 
-  const mergeCell = value && (value.rowSpan || value.colSpan);
+  const width = value && value.colSpan && getMergedSize({
+    // Preventing from merging more than fixed range
+    count: fixedColumn ? fixColumns - (columnIndex - 1) : value.colSpan,
+    meta: columns,
+    startIndex: columnIndex,
+    defaultSize: defaultColumnWidth
+  });
+  const height = value && value.rowSpan && getMergedSize({
+    count: fixedRow ? fixRows - (rowIndex - 1) : value.rowSpan,
+    meta: rows,
+    startIndex: rowIndex,
+    defaultSize: defaultRowHeight
+  });
 
-  return (
-    <ScrollerCell row={row} column={column} {...props} style={rootStyle}>
-      {!mergeCell && children}
-      {mergeCell && (
-        <SpreadsheetMergedCell
-            fixRows={fixRows}
-            fixColumns={fixColumns}
-            defaultRowHeight={defaultRowHeight}
-            defaultColumnWidth={defaultColumnWidth}
-            rowIndex={rowIndex}
-            columnIndex={columnIndex}
-            rows={rows}
-            columns={columns}
-            value={value}
-            {...props}>
-          {children}
-        </SpreadsheetMergedCell>
-      )}
-    </ScrollerCell>
-  );
+  return <ScrollerCell row={row} column={column} {...props} style={{ width, height }} />;
 };
 
 export const SpreadsheetColumnResizer = ({ index, column, ...props }) => {
