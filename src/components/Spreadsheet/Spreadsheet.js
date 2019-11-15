@@ -78,7 +78,11 @@ export const SpreadsheetCell = ({
     defaultSize: defaultRowHeight
   });
 
-  return <ScrollerCell row={row} column={column} {...props} style={{ width, height }} />;
+  const nextStyle = { width, height };
+  if (value && value.colSpan) nextStyle.gridColumn = `span ${value.colSpan}`;
+  if (value && value.rowSpan) nextStyle.gridRow = `span ${value.rowSpan}`;
+
+  return <ScrollerCell row={row} column={column} {...props} style={nextStyle} />;
 };
 
 export const SpreadsheetColumnResizer = ({ index, column, ...props }) => {
