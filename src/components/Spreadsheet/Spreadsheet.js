@@ -72,7 +72,9 @@ export const SpreadsheetMergedCell = ({
     setRootRefState(rootRef);
   }, [rootRef]);
 
-  const fixed = rowIndex <= fixRows || columnIndex <= fixColumns;
+  const fixedRow = rowIndex <= fixRows;
+  const fixedColumn = columnIndex <= fixColumns;
+  const fixed = fixedRow || fixedColumn;
 
   let top = 0, left = 0;
   if (fixed) {
@@ -83,13 +85,13 @@ export const SpreadsheetMergedCell = ({
 
   const width = getMergedSize({
     // Preventing from merging more than fixed range
-    count: fixed ? fixColumns : value.colSpan,
+    count: fixedColumn ? fixColumns - (columnIndex - 1) : value.colSpan,
     meta: columns,
     startIndex: columnIndex,
     defaultSize: defaultColumnWidth
   });
   const height = getMergedSize({
-    count: fixed ? fixRows : value.rowSpan,
+    count: fixedRow ? fixRows - (rowIndex - 1) : value.rowSpan,
     meta: rows,
     startIndex: rowIndex,
     defaultSize: defaultRowHeight
