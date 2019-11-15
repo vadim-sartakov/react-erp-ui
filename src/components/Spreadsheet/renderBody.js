@@ -1,6 +1,3 @@
-import React from 'react';
-import { SpreadsheetRow } from './Spreadsheet';
-
 const renderBody = ({
   rows,
   columns,
@@ -10,11 +7,9 @@ const renderBody = ({
   renderIntersectionColumn,
   renderColumnNumber,
   renderRowNumber,
-  renderCellValue,
-  RowComponent = SpreadsheetRow,
-  rowProps
+  renderCellValue
 }) => {
-  return visibleRows.map(rowIndex => {
+  return visibleRows.reduce((acc, rowIndex) => {
     const row = rows[rowIndex] || {};
     let columnsElements;
     const rowType = row.type || 'VALUES';
@@ -26,10 +21,10 @@ const renderBody = ({
           const columnsType = column.type || 'VALUES';
           switch(columnsType) {
             case 'ROW_NUMBER':
-              columnElement = renderIntersectionColumn({ column, columnIndex });
+              columnElement = renderIntersectionColumn({ row, column, columnIndex });
               break;
             default:
-              columnElement = renderColumnNumber({ column, columnIndex });
+              columnElement = renderColumnNumber({ row, column, columnIndex });
               break;
           }
           return columnElement;
@@ -56,12 +51,8 @@ const renderBody = ({
       default:
     }
 
-    return (
-      <RowComponent {...rowProps} key={rowIndex} row={row}>
-        {columnsElements}
-      </RowComponent>
-    );   
-  })
+    return [acc, ...columnsElements];   
+  }, [])
 };
 
 export default renderBody;

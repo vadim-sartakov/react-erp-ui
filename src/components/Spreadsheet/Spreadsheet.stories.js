@@ -45,22 +45,24 @@ const SpreadsheetComponent = props => {
 
   const {
     scrollerProps,
+    gridStyles,
     ...renderOptions
   } = useScroller({
     ...props,
     ...scrollerInputProps
   });
 
-  const renderIntersectionColumn = ({ column, columnIndex }) => {
+  const renderIntersectionColumn = ({ row, column, columnIndex }) => {
     return (
-      <SpreadsheetCell key={columnIndex} column={column} className={classes.columnNumberCell} />
+      <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
     );
   };
 
-  const renderColumnNumber = ({ column, columnIndex }) => {
+  const renderColumnNumber = ({ row, column, columnIndex }) => {
     return (
       <SpreadsheetCell
           key={columnIndex}
+          row={row}
           column={column}
           className={classNames(
             classes.columnNumberCell,
@@ -76,13 +78,14 @@ const SpreadsheetComponent = props => {
     return (
       <SpreadsheetCell
           key={columnIndex}
+          row={row}
           column={column}
           className={classNames(
             classes.rowNumberCell,
             { [classes.lastFixedRow]: rowIndex === props.fixRows }
           )}>
         {rowIndex}
-        <SpreadsheetRowResizer index={rowIndex} row={row} className={classes.rowResizer} />
+        <SpreadsheetRowResizer index={rowIndex} className={classes.rowResizer} />
       </SpreadsheetCell>
     )
   };
@@ -118,6 +121,7 @@ const SpreadsheetComponent = props => {
           fixRows={props.fixRows}
           fixColumns={props.fixColumns}
           className={classes.spreadsheet}
+          style={gridStyles}
           {...spreadsheetProps}>
         {renderBody({
           ...renderOptions,

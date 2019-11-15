@@ -67,6 +67,7 @@ export const GridTestComponent = props => {
     visibleRows,
     visibleColumns,
     visibleValues,
+    gridStyles,
     scrollerProps
   } = useScroller(props);
   return (
@@ -77,24 +78,26 @@ export const GridTestComponent = props => {
         className="scroller-container"
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
-      {visibleRows.reduce((acc, visibleRow) => {
-        const row = rows && rows[visibleRow];
-        const columnsElements = visibleColumns.map(visibleColumn => {
-          const column = columns && columns[visibleColumn];
-          const visibleValue = visibleValues[visibleRow][visibleColumn];
-          return (
-            <ScrollerCell
-                className="cell"
-                key={visibleColumn}
-                row={row}
-                column={column}
-                style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
-              {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row} - ${visibleValue.column}`}
-            </ScrollerCell>
-          )
-        });
-        return [acc, ...columnsElements];
-      }, [])}
+      <div style={gridStyles}>
+        {visibleRows.reduce((acc, visibleRow) => {
+          const row = rows && rows[visibleRow];
+          const columnsElements = visibleColumns.map(visibleColumn => {
+            const column = columns && columns[visibleColumn];
+            const visibleValue = visibleValues[visibleRow][visibleColumn];
+            return (
+              <ScrollerCell
+                  className="cell"
+                  key={visibleColumn}
+                  row={row}
+                  column={column}
+                  style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
+                {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row} - ${visibleValue.column}`}
+              </ScrollerCell>
+            )
+          });
+          return [acc, ...columnsElements];
+        }, [])}
+      </div>
     </Scroller>
   )
 };

@@ -5,7 +5,6 @@ import { useResize } from '../useResize';
 const SpreadsheetContext = createContext();
 
 export const Spreadsheet = ({
-  style,
   rows,
   onRowsChange,
   columns,
@@ -27,7 +26,7 @@ export const Spreadsheet = ({
   return (
     <SpreadsheetContext.Provider
         value={contextValue}>
-      <div {...props} style={{ ...style, display: 'inline-grid', position: 'relative' }} />
+      <div {...props} />
     </SpreadsheetContext.Provider>
   )
 };
@@ -113,7 +112,7 @@ export const SpreadsheetCell = ({
   const mergeCell = value && (value.rowSpan || value.colSpan);
 
   return (
-    <ScrollerCell column={column} {...props} style={rootStyle}>
+    <ScrollerCell row={row} column={column} {...props} style={rootStyle}>
       {!mergeCell && children}
       {mergeCell && (
         <SpreadsheetMergedCell
