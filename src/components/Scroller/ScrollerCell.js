@@ -9,7 +9,7 @@ import ScrollerContext from './ScrollerContext';
  * @param {ScrollerCellProps} props
  */
 const ScrollerCell = React.memo(({
-  style,
+  style = {},
   row = {},
   column = {},
   Component = 'div',

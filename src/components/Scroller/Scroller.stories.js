@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
-import { useScroller, Scroller, ScrollerRow, ScrollerCell } from './';
+import { useScroller, Scroller, ScrollerCell } from './';
 
 export const generateMeta = count => {
   return [...new Array(count).keys()];
@@ -44,9 +44,9 @@ export const ListTestComponent = props => {
         const row = rows && rows[visibleRow];
         const visibleValue = visibleValues[visibleRow];
         return (
-          <ScrollerRow className="row" key={visibleRow} row={row} index={visibleRow}>
+          <ScrollerCell className="row" key={visibleRow} row={row} index={visibleRow}>
             {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row}`}
-          </ScrollerRow>
+          </ScrollerCell>
         );
       })}
     </Scroller>

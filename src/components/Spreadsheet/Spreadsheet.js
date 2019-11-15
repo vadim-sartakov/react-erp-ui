@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useCallback, useMemo } from 'react';
-import { ScrollerRow, ScrollerCell } from '../Scroller'
+import { ScrollerCell } from '../Scroller'
 import { useResize } from '../useResize';
 
 const SpreadsheetContext = createContext();
@@ -29,14 +29,6 @@ export const Spreadsheet = ({
       <div {...props} />
     </SpreadsheetContext.Provider>
   )
-};
-
-export const SpreadsheetRow = ({
-  style,
-  ...props
-}) => {
-  const nextStyle = { ...style };
-  return <ScrollerRow {...props} style={nextStyle} />
 };
 
 const getMergedSize = ({ count, meta = [], startIndex, defaultSize }) => {
