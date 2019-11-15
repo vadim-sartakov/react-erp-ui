@@ -14,7 +14,9 @@ import { generateGridValues } from '../Scroller/Scroller.stories';
 import classes from './Spreadsheet-stories.module.sass';
 
 export const value = generateGridValues(1000, 50);
+value[0][0] = { ...value[0][0], colSpan: 6, rowSpan: 3 };
 value[0][4] = { ...value[0][4], colSpan: 6, rowSpan: 3 };
+value[5][0] = { ...value[5][0], colSpan: 6, rowSpan: 3 };
 value[50][5] = { ...value[50][5], colSpan: 4, rowSpan: 3 };
 
 export const loadRowsPageSync = value => (page, itemsPerPage) => {

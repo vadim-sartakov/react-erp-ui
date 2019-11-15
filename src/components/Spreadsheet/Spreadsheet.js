@@ -1,7 +1,5 @@
-import React, { useState, useEffect, createContext, useContext, useCallback, useMemo, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import React, { createContext, useContext, useCallback, useMemo } from 'react';
 import { ScrollerRow, ScrollerCell } from '../Scroller'
-import ScrollerContext from '../Scroller/ScrollerContext';
 import { useResize } from '../useResize';
 
 const SpreadsheetContext = createContext();
@@ -18,20 +16,18 @@ export const Spreadsheet = ({
   fixColumns,
   ...props
 }) => {
-  const rootRef = useRef();
   const contextValue = useMemo(() => ({
     onRowsChange,
     onColumnsChange,
     defaultColumnWidth,
     defaultRowHeight,
     fixRows,
-    fixColumns,
-    rootRef
+    fixColumns
   }), [onRowsChange, onColumnsChange, defaultColumnWidth, defaultRowHeight, fixRows, fixColumns]);
   return (
     <SpreadsheetContext.Provider
         value={contextValue}>
-      <div {...props} ref={rootRef} style={{ ...style, display: 'inline-block', position: 'relative' }} />
+      <div {...props} style={{ ...style, display: 'inline-block', position: 'relative' }} />
     </SpreadsheetContext.Provider>
   )
 };
@@ -51,6 +47,8 @@ const getMergedSize = ({ count, meta = [], startIndex, defaultSize }) => {
 };
 
 export const SpreadsheetMergedCell = ({
+  fixRows,
+  fixColumns,
   defaultRowHeight,
   defaultColumnWidth,
   rowIndex,
@@ -61,26 +59,11 @@ export const SpreadsheetMergedCell = ({
   children,
   ...props
 }) => {
-  const { fixRows, fixColumns, rootRef } = useContext(SpreadsheetContext);
-  const [, setRootRefState] = useState();
-
-  // On initial render ref is undefined, so triggering rerender
-  useEffect(function forcdeRerender () {
-    setRootRefState(rootRef);
-  }, [rootRef]);
 
   const fixedRow = rowIndex <= fixRows;
   const fixedColumn = columnIndex <= fixColumns;
-  const fixed = fixedRow || fixedColumn;
 
-  let top, left;
-  if (fixed) {
-    top = rowIndex > 0 ? getMergedSize({ count: rowIndex, meta: rows, startIndex: 0, defaultSize: defaultRowHeight }) : 0;
-    left = columnIndex > 0 ? getMergedSize({ count: columnIndex, meta: columns, startIndex: 0, defaultSize: defaultColumnWidth }) : 0;
-  };
-  const elementStyle = fixed ?
-      { position: 'sticky', top: fixedRow && top, left: fixedColumn && left, pointerEvents: 'auto' } :
-      { position: 'absolute', top: 0, left: 0, zIndex: 1 };
+  const elementStyle = { position: 'absolute', top: 0, left: 0, zIndex: 'auto' };
 
   const width = getMergedSize({
     // Preventing from merging more than fixed range
@@ -97,12 +80,7 @@ export const SpreadsheetMergedCell = ({
   });
   if (width) elementStyle.width = width;
   if (height) elementStyle.height = height;
-  const element = <ScrollerCell {...props} style={elementStyle}>{children}</ScrollerCell>;
-  return fixed ? (rootRef.current && createPortal((
-    <div style={{ position: 'absolute', zIndex: 4, top, left, width: '100%', height: '100%', pointerEvents: 'none' }}>
-      {element}
-    </div>
-  ), rootRef.current)) || null : element;
+  return <ScrollerCell {...props} style={elementStyle}>{children}</ScrollerCell>;;
 };
 
 export const SpreadsheetCell = ({
@@ -118,11 +96,25 @@ export const SpreadsheetCell = ({
   children,
   ...props
 }) => {
+  const { fixRows, fixColumns } = useContext(SpreadsheetContext);
+
+  let rootStyle = {};
+  if (value && (value.rowSpan || value.colSpan)) {
+    const fixedRow = rowIndex <= fixRows;
+    const fixedColumn = columnIndex <= fixColumns;
+    if (fixedRow && fixedColumn) rootStyle.zIndex = 7;
+    else if (fixedRow) rootStyle.zIndex = 5;
+    else if (fixedColumn) rootStyle.zIndex = 3;
+    else rootStyle.zIndex = 1;
+  }
+
   return (
-    <ScrollerCell column={column} {...props}>
+    <ScrollerCell column={column} {...props} style={rootStyle}>
       {children}
       {value && (value.rowSpan || value.colSpan) && (
         <SpreadsheetMergedCell
+            fixRows={fixRows}
+            fixColumns={fixColumns}
             defaultRowHeight={defaultRowHeight}
             defaultColumnWidth={defaultColumnWidth}
             rowIndex={rowIndex}

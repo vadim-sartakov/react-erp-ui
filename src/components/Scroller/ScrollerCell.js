@@ -16,14 +16,22 @@ const ScrollerCell = React.memo(({
   ...props
 }) => {
   const { defaultColumnWidth } = useContext(ScrollerContext);
-  const height = useContext(ScrollerRowContext);
-  const { size, offset } = column;
+  const { height, offset: rowOffset } = useContext(ScrollerRowContext);
+  const { size, offset: columnOffset } = column;
   const width = size || defaultColumnWidth;
-  let nextStyle = { height, width };
-  if (offset !== undefined) {
+  let nextStyle = { height, width, display: 'table-cell' };
+  if (columnOffset !== undefined) {
     nextStyle.position = 'sticky';
-    nextStyle.left = offset;
+    nextStyle.left = columnOffset;
     nextStyle.zIndex = 2;
+  }
+  if (rowOffset !== undefined) {
+    nextStyle.position = 'sticky';
+    nextStyle.top = rowOffset;
+    nextStyle.zIndex = 4;
+  }
+  if (columnOffset !== undefined && rowOffset !== undefined) {
+    nextStyle.zIndex = 6;
   }
   nextStyle = { ...nextStyle, ...style }
   return <Component {...props} style={nextStyle} />;
