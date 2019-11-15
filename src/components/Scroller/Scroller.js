@@ -42,8 +42,9 @@ const Scroller = ({
 }) => {
   const contextValue = useMemo(() => ({
     defaultRowHeight,
-    defaultColumnWidth
-  }), [defaultRowHeight, defaultColumnWidth]);
+    defaultColumnWidth,
+    pagesStyles
+  }), [defaultRowHeight, defaultColumnWidth, pagesStyles]);
   return (
     <ScrollContext.Provider value={contextValue}>
       <div onScroll={onScroll} {...props} style={{ width, height, overflow: 'auto', ...style }}>

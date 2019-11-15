@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
-import { useScroller, Scroller, ScrollerRow, ScrollerCell } from './';
+import { useScroller, Scroller, ScrollerCell } from './';
 
 export const generateMeta = count => {
   return [...new Array(count).keys()];
@@ -44,9 +44,9 @@ export const ListTestComponent = props => {
         const row = rows && rows[visibleRow];
         const visibleValue = visibleValues[visibleRow];
         return (
-          <ScrollerRow className="row" key={visibleRow} row={row} index={visibleRow}>
+          <ScrollerCell className="row" key={visibleRow} row={row} index={visibleRow}>
             {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row}`}
-          </ScrollerRow>
+          </ScrollerCell>
         );
       })}
     </Scroller>
@@ -67,6 +67,7 @@ export const GridTestComponent = props => {
     visibleRows,
     visibleColumns,
     visibleValues,
+    gridStyles,
     scrollerProps
   } = useScroller(props);
   return (
@@ -77,26 +78,26 @@ export const GridTestComponent = props => {
         className="scroller-container"
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
-      {visibleRows.map(visibleRow => {
-        const row = rows && rows[visibleRow];
-        return (
-          <ScrollerRow className="row" key={visibleRow} row={row} style={{ display: 'flex' }}>
-            {visibleColumns.map(visibleColumn => {
-              const column = columns && columns[visibleColumn];
-              const visibleValue = visibleValues[visibleRow][visibleColumn];
-              return (
-                <ScrollerCell
-                    className="cell"
-                    key={visibleColumn}
-                    column={column}
-                    style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
-                  {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row} - ${visibleValue.column}`}
-                </ScrollerCell>
-              )
-            })}
-          </ScrollerRow>
-        )
-      })}
+      <div style={gridStyles}>
+        {visibleRows.reduce((acc, visibleRow) => {
+          const row = rows && rows[visibleRow];
+          const columnsElements = visibleColumns.map(visibleColumn => {
+            const column = columns && columns[visibleColumn];
+            const visibleValue = visibleValues[visibleRow][visibleColumn];
+            return (
+              <ScrollerCell
+                  className="cell"
+                  key={visibleColumn}
+                  row={row}
+                  column={column}
+                  style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
+                {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row} - ${visibleValue.column}`}
+              </ScrollerCell>
+            )
+          });
+          return [acc, ...columnsElements];
+        }, [])}
+      </div>
     </Scroller>
   )
 };

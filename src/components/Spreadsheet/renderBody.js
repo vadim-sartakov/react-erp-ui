@@ -1,6 +1,3 @@
-import React from 'react';
-import { SpreadsheetRow } from './Spreadsheet';
-
 const renderBody = ({
   rows,
   columns,
@@ -10,11 +7,10 @@ const renderBody = ({
   renderIntersectionColumn,
   renderColumnNumber,
   renderRowNumber,
-  renderCellValue,
-  RowComponent = SpreadsheetRow,
-  rowProps
+  renderCellValue
 }) => {
-  return visibleRows.map(rowIndex => {
+  const mergedCells = [];
+  return visibleRows.reduce((acc, rowIndex) => {
     const row = rows[rowIndex] || {};
     let columnsElements;
     const rowType = row.type || 'VALUES';
@@ -26,10 +22,10 @@ const renderBody = ({
           const columnsType = column.type || 'VALUES';
           switch(columnsType) {
             case 'ROW_NUMBER':
-              columnElement = renderIntersectionColumn({ column, columnIndex });
+              columnElement = renderIntersectionColumn({ row, column, columnIndex });
               break;
             default:
-              columnElement = renderColumnNumber({ column, columnIndex });
+              columnElement = renderColumnNumber({ row, column, columnIndex });
               break;
           }
           return columnElement;
@@ -40,6 +36,18 @@ const renderBody = ({
           const column = columns[columnIndex] || {};
           const rowValue = visibleValues[rowIndex - 1];
           const value = rowValue && rowValue[columnIndex - 1];
+
+          if (value && (value.rowSpan || value.colSpan)) {
+            for (let i = 0; i < value.rowSpan ; i++) {
+              for (let j = 0; j < value.colSpan ; j++) {
+                const resultRowIndex = rowIndex + i;
+                const resultColumnIndex = columnIndex + j;
+                (i > 0 || j > 0) && mergedCells.push([resultRowIndex, resultColumnIndex]);
+              }
+            }
+          };
+
+          
           let element;
           const columnsType = column.type || 'VALUES';
           switch(columnsType) {
@@ -47,7 +55,8 @@ const renderBody = ({
               element = renderRowNumber({ row, column, rowIndex, columnIndex });
               break;
             default:
-              element = renderCellValue({ row, rowIndex, columnIndex, column, value });
+              const cellIsMerged = mergedCells.some(([row, column]) => row === rowIndex && column === columnIndex);
+              element = !cellIsMerged && renderCellValue({ row, rowIndex, column, columnIndex, value, columns, rows });
               break;
           }
           return element;
@@ -56,12 +65,8 @@ const renderBody = ({
       default:
     }
 
-    return (
-      <RowComponent {...rowProps} key={rowIndex} row={row}>
-        {columnsElements}
-      </RowComponent>
-    );   
-  })
+    return [acc, ...columnsElements];   
+  }, [])
 };
 
 export default renderBody;

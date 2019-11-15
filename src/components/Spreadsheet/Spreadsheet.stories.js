@@ -14,6 +14,11 @@ import { generateGridValues } from '../Scroller/Scroller.stories';
 import classes from './Spreadsheet-stories.module.sass';
 
 export const value = generateGridValues(1000, 50);
+// FIxed cells
+value[0][0] = { ...value[0][0], colSpan: 2, rowSpan: 2 };
+value[0][4] = { ...value[0][4], colSpan: 6, rowSpan: 2 };
+value[5][0] = { ...value[5][0], colSpan: 2, rowSpan: 6 };
+value[50][5] = { ...value[50][5], colSpan: 4, rowSpan: 3 };
 
 export const loadRowsPageSync = value => (page, itemsPerPage) => {
   console.log('Loading sync page %s', page);
@@ -41,22 +46,24 @@ const SpreadsheetComponent = props => {
 
   const {
     scrollerProps,
+    gridStyles,
     ...renderOptions
   } = useScroller({
     ...props,
     ...scrollerInputProps
   });
 
-  const renderIntersectionColumn = ({ column, columnIndex }) => {
+  const renderIntersectionColumn = ({ row, column, columnIndex }) => {
     return (
-      <SpreadsheetCell key={columnIndex} column={column} className={classes.columnNumberCell} />
+      <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
     );
   };
 
-  const renderColumnNumber = ({ column, columnIndex }) => {
+  const renderColumnNumber = ({ row, column, columnIndex }) => {
     return (
       <SpreadsheetCell
           key={columnIndex}
+          row={row}
           column={column}
           className={classNames(
             classes.columnNumberCell,
@@ -72,6 +79,7 @@ const SpreadsheetComponent = props => {
     return (
       <SpreadsheetCell
           key={columnIndex}
+          row={row}
           column={column}
           className={classNames(
             classes.rowNumberCell,
@@ -83,15 +91,22 @@ const SpreadsheetComponent = props => {
     )
   };
 
-  const renderCellValue = ({ row, rowIndex, columnIndex, column, value }) => {
+  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, columns, rows }) => {
     return (
       <SpreadsheetCell
           key={columnIndex}
+          defaultRowHeight={props.defaultRowHeight}
+          defaultColumnWidth={props.defaultColumnWidth}
+          row={row}
+          columnIndex={columnIndex}
+          rowIndex={rowIndex}
           column={column}
+          columns={columns}
+          rows={rows}
+          value={value}
           className={classNames(
             classes.cell,
             {
-              [classes.fixed]: row.offset !== undefined || column.offset !== undefined,
               [classes.lastFixedRow]: rowIndex === props.fixRows,
               [classes.lastFixedColumn]: columnIndex === props.fixColumns
             }
@@ -103,10 +118,14 @@ const SpreadsheetComponent = props => {
 
   return (
     <Scroller {...scrollerProps} height={props.height} width={props.width}>
-      <Spreadsheet {...spreadsheetProps} className={classes.spreadsheet}>
+      <Spreadsheet
+          fixRows={props.fixRows}
+          fixColumns={props.fixColumns}
+          className={classes.spreadsheet}
+          style={gridStyles}
+          {...spreadsheetProps}>
         {renderBody({
           ...renderOptions,
-          rowProps: { className: classes.row },
           renderIntersectionColumn,
           renderColumnNumber,
           renderRowNumber,
