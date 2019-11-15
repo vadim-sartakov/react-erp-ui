@@ -62,9 +62,6 @@ export const SpreadsheetMergedCell = ({
   ...props
 }) => {
   const { fixRows, fixColumns, rootRef } = useContext(SpreadsheetContext);
-  // For adjsuting merged cell position wher scrolling.
-  // Didn't find better way to position merged cells over the fixed ranges.
-  const { pagesStyles } = useContext(ScrollerContext);
   const [, setRootRefState] = useState();
 
   // On initial render ref is undefined, so triggering rerender
@@ -81,7 +78,7 @@ export const SpreadsheetMergedCell = ({
     top = rowIndex > 0 ? getMergedSize({ count: rowIndex, meta: rows, startIndex: 0, defaultSize: defaultRowHeight }) : 0;
     left = columnIndex > 0 ? getMergedSize({ count: columnIndex, meta: columns, startIndex: 0, defaultSize: defaultColumnWidth }) : 0;
   };
-  const elementStyle = fixed ? { position: 'fixed', top: 'auto', left: 'auto' } : { position: 'absolute', top: 0, left: 0, zIndex: 1 };
+  const elementStyle = fixed ? { position: 'sticky', top, left, pointerEvents: 'auto' } : { position: 'absolute', top: 0, left: 0, zIndex: 1 };
 
   const width = getMergedSize({
     // Preventing from merging more than fixed range
@@ -100,7 +97,7 @@ export const SpreadsheetMergedCell = ({
   if (height) elementStyle.height = height;
   const element = <ScrollerCell {...props} style={elementStyle}>{children}</ScrollerCell>;
   return fixed ? (rootRef.current && createPortal((
-    <div style={{ position: 'absolute', zIndex: 4, top: top - pagesStyles.top, left: left - pagesStyles.left }}>
+    <div style={{ position: 'absolute', zIndex: 4, top, left, width: '100%', height: '100%', pointerEvents: 'none' }}>
       {element}
     </div>
   ), rootRef.current)) || null : element;
