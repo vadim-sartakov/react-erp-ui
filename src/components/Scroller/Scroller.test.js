@@ -23,7 +23,6 @@ describe('Scroller', () => {
     it('should load first rows pages with default sizes', () => {
       const loadRowsPage = jest.fn(loadRowsPageSync(listValue));
       const wrapper = mount(syncListWithDefaultSizes({ loadRowsPage }));
-      expect(wrapper.find('div.row').length).toBe(60);
       expect(wrapper.find('div.cover').prop('style').height).toBe(40000);
       expect(wrapper.find('div.pages').prop('style').top).toBe(0);
       expect(wrapper.find('div.row').first().text()).toBe("Value 0");
@@ -34,7 +33,6 @@ describe('Scroller', () => {
       const loadRowsPage = jest.fn(loadRowsPageAsync(listValue));
       let wrapper;
       await act(async () => { wrapper = mount(asyncLazyListWithDefaultSizes({ loadRowsPage })) });
-      expect(wrapper.find('div.row').length).toBe(60);
       expect(wrapper.find('div.cover').prop('style').height).toBe(2400);
       expect(wrapper.find('div.pages').prop('style').top).toBe(0);
       expect(wrapper.find('div.row').first().text()).toBe("Value 0");
@@ -42,11 +40,9 @@ describe('Scroller', () => {
     });
 
   });
-
   describe('grid', () => {
 
     const checkDefaultSizesFirstPage = (wrapper) => {
-      expect(wrapper.find('div.row').length).toBe(60);
       expect(wrapper.find('div.cover').prop('style').height).toBe(40000);
       expect(wrapper.find('div.cover').prop('style').width).toBe(7500);
       expect(wrapper.find('div.pages').prop('style').top).toBe(0);
@@ -54,7 +50,6 @@ describe('Scroller', () => {
     };
 
     const checkDefaultSizesMiddlePage = (wrapper) => {
-      expect(wrapper.find('div.row').length).toBe(60);
       expect(wrapper.find('div.cover').prop('style').height).toBe(40000);
       expect(wrapper.find('div.cover').prop('style').width).toBe(7500);
       expect(wrapper.find('div.pages').prop('style').top).toBe(1200);
@@ -62,7 +57,6 @@ describe('Scroller', () => {
     };
 
     const checkDefaultSizesLastPage = (wrapper) => {
-      expect(wrapper.find('div.row').length).toBe(40);
       expect(wrapper.find('div.cover').prop('style').height).toBe(40000);
       expect(wrapper.find('div.cover').prop('style').width).toBe(7500);
       expect(wrapper.find('div.pages').prop('style').top).toBe(38400);
@@ -70,7 +64,6 @@ describe('Scroller', () => {
     };
 
     const checkCustomSizesFirstPage = (wrapper) => {
-      expect(wrapper.find('div.row').length).toBe(60);
       expect(wrapper.find('div.cover').prop('style').height).toBe(60000);
       expect(wrapper.find('div.cover').prop('style').width).toBe(9000);
       expect(wrapper.find('div.pages').prop('style').top).toBe(0);
@@ -78,7 +71,6 @@ describe('Scroller', () => {
     };
 
     const checkCustomSizesMiddlePage = (wrapper) => {
-      expect(wrapper.find('div.row').length).toBe(60);
       expect(wrapper.find('div.cover').prop('style').height).toBe(60000);
       expect(wrapper.find('div.cover').prop('style').width).toBe(9000);
       expect(wrapper.find('div.pages').prop('style').top).toBe(1800);
@@ -86,7 +78,6 @@ describe('Scroller', () => {
     };
 
     const checkCustomSizesLastPage = (wrapper) => {
-      expect(wrapper.find('div.row').length).toBe(40);
       expect(wrapper.find('div.cover').prop('style').height).toBe(60000);
       expect(wrapper.find('div.cover').prop('style').width).toBe(9000);
       expect(wrapper.find('div.pages').prop('style').top).toBe(57600);
@@ -287,7 +278,6 @@ describe('Scroller', () => {
         const loadRowsPage = jest.fn(loadRowsPageSync(gridValue));
         const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns({ loadRowsPage }));
         wrapper.find('div.scroller-container').simulate('scroll', { target: { scrollTop: 1800, scrollLeft: 2250 } })
-        expect(wrapper.find('div.row').length).toBe(62);
         expect(wrapper.find('div.cover').prop('style').height).toBe(40000);
         expect(wrapper.find('div.cover').prop('style').width).toBe(7500);
         expect(wrapper.find('div.pages').prop('style').top).toBe(1120);
