@@ -267,16 +267,16 @@ const useScroller = ({
   const fixedRowsSize = useMemo(() => getItemsSize({ meta: rows, count: fixRows, defaultSize: defaultRowHeight }), [rows, fixRows, defaultRowHeight]);
   const fixedColumnsSize = useMemo(() => getItemsSize({ meta: columns, count: fixColumns, defaultSize: defaultColumnWidth }), [columns, fixColumns, defaultColumnWidth]);
 
-  const coverStyles = {
+  const coverStyles = useMemo(() => ({
     height: lazy ? lastRowsPageGaps.start + lastRowsPageGaps.middle : rowsGaps.start + rowsGaps.middle + rowsGaps.end,
     width: columnsGaps && (columnsGaps.start + columnsGaps.middle + columnsGaps.end),
     position: 'relative'
-  };
-  const pagesStyles = {
+  }), [lazy, rowsGaps, columnsGaps, lastRowsPageGaps]);
+  const pagesStyles = useMemo(() => ({
     top: rowsGaps.start - (rowsStartIndex > fixRows ? fixedRowsSize : 0),
     left: columnsGaps && (columnsGaps.start - (columnsStartIndex > fixColumns ? fixedColumnsSize : 0)),
     position: 'absolute'
-  };
+  }), [rowsGaps, columnsGaps, columnsStartIndex, fixColumns, fixRows, fixedColumnsSize, fixedRowsSize, rowsStartIndex]);
 
   const rowsOffsets = useMemo(() => fixRows ? getFixedOffsets({ meta: rows, defaultSize: defaultRowHeight, fixed: fixRows }) : [], [fixRows, defaultRowHeight, rows]);
   const columnsOffsets = useMemo(() => fixColumns ? getFixedOffsets({ meta: columns, defaultSize: defaultColumnWidth, fixed: fixColumns }) : [], [fixColumns, defaultColumnWidth, columns]);

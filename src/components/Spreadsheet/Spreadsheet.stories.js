@@ -7,7 +7,6 @@ import {
   SpreadsheetCell,
   SpreadsheetColumnResizer,
   SpreadsheetRowResizer,
-  SpreadsheetMergedCell,
   renderBody
 } from './';
 import { useScroller, Scroller, loadPage } from '../Scroller';
@@ -15,8 +14,8 @@ import { generateGridValues } from '../Scroller/Scroller.stories';
 import classes from './Spreadsheet-stories.module.sass';
 
 export const value = generateGridValues(1000, 50);
-value[0][0] = { ...value[0][0], colSpan: 2, rowSpan: 2 };
-value[50][5] = { ...value[50][5], colSpan: 3, rowSpan: 3 };
+value[0][1] = { ...value[0][1], colSpan: 6, rowSpan: 3 };
+value[50][5] = { ...value[50][5], colSpan: 4, rowSpan: 3 };
 
 export const loadRowsPageSync = value => (page, itemsPerPage) => {
   console.log('Loading sync page %s', page);
@@ -31,46 +30,6 @@ for (let i = 20; i < 50; i++) {
 }*/
 
 //const initialScroll = { top: 5000, left: 0 };
-
-const renderFixedMergedCells = ({
-  rows,
-  columns,
-  visibleRows,
-  visibleColumns,
-  visibleValues,
-  fixRows,
-  fixColumns,
-  defaultRowHeight,
-  defaultColumnWidth,
-  renderCellValue
-}) => {
-  const mergedCells = visibleRows.slice(0, fixRows).reduce((acc, rowIndex) => {
-    return visibleColumns.slice(0, fixColumns).reduce((acc, columnIndex) => {
-      const rowValue = visibleValues[rowIndex - 1];
-      const value = rowValue && rowValue[columnIndex - 1];
-      if (value && (value.colSpan || value.rowSpan)) {
-        const element = (
-          <SpreadsheetMergedCell
-              key={`${rowIndex}-${columnIndex}`}
-              defaultRowHeight={defaultRowHeight}
-              defaultColumnWidth={defaultColumnWidth}
-              rowIndex={rowIndex}
-              columnIndex={columnIndex}
-              rows={rows}
-              columns={columns}
-              value={value}>
-            {renderCellValue({ rowIndex, columnIndex, value, columns, rows })}
-          </SpreadsheetMergedCell>
-        );
-        return [...acc, element];
-      } else {
-        return acc;
-      }
-    }, acc);
-  }, []);
-  console.log(mergedCells);
-  return mergedCells;
-};
 
 /**
  * @param {import('../Scroller/useScroller').useScrollerProps | import('./useSpreadsheet').useSpreadsheetProps} props 
@@ -153,18 +112,17 @@ const SpreadsheetComponent = props => {
 
   return (
     <Scroller {...scrollerProps} height={props.height} width={props.width}>
-      <Spreadsheet {...spreadsheetProps} className={classes.spreadsheet}>
+      <Spreadsheet
+          fixRows={props.fixRows}
+          fixColumns={props.fixColumns}
+          className={classes.spreadsheet}
+          {...spreadsheetProps}>
         {renderBody({
           ...renderOptions,
           rowProps: { className: classes.row },
           renderIntersectionColumn,
           renderColumnNumber,
           renderRowNumber,
-          renderCellValue
-        })}
-        {renderFixedMergedCells({
-          ...props,
-          ...renderOptions,
           renderCellValue
         })}
       </Spreadsheet>
