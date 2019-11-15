@@ -19,7 +19,7 @@ const ScrollerRow = React.memo(({
   const { defaultRowHeight } = useContext(ScrollerContext);
   const { size, offset } = row;
   const height = size || defaultRowHeight;
-  const nextStyle = { ...style, height, display: 'table-row' };
+  const nextStyle = { ...style, height };
   return (
     <ScrollerRowContext.Provider value={{ height, offset }}>
       <Component {...props} style={nextStyle} />

@@ -19,7 +19,7 @@ const ScrollerCell = React.memo(({
   const { height, offset: rowOffset } = useContext(ScrollerRowContext);
   const { size, offset: columnOffset } = column;
   const width = size || defaultColumnWidth;
-  let nextStyle = { height, width, display: 'table-cell' };
+  let nextStyle = { height, width };
   if (columnOffset !== undefined) {
     nextStyle.position = 'sticky';
     nextStyle.left = columnOffset;

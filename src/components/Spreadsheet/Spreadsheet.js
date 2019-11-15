@@ -33,9 +33,11 @@ export const Spreadsheet = ({
 };
 
 export const SpreadsheetRow = ({
+  style,
   ...props
 }) => {
-  return <ScrollerRow {...props} />
+  const nextStyle = { ...style, display: 'table-row' };
+  return <ScrollerRow {...props} style={nextStyle} />
 };
 
 const getMergedSize = ({ count, meta = [], startIndex, defaultSize }) => {
@@ -63,7 +65,7 @@ export const SpreadsheetMergedCell = ({
   const fixedRow = rowIndex <= fixRows;
   const fixedColumn = columnIndex <= fixColumns;
 
-  const elementStyle = { position: 'absolute', top: 0, left: 0, zIndex: 'auto' };
+  const elementStyle = { position: 'absolute', top: 0, left: 0 };
 
   const width = getMergedSize({
     // Preventing from merging more than fixed range
@@ -80,7 +82,7 @@ export const SpreadsheetMergedCell = ({
   });
   if (width) elementStyle.width = width;
   if (height) elementStyle.height = height;
-  return <ScrollerCell {...props} style={elementStyle}>{children}</ScrollerCell>;;
+  return <div {...props} style={elementStyle}>{children}</div>;
 };
 
 export const SpreadsheetCell = ({
@@ -98,7 +100,7 @@ export const SpreadsheetCell = ({
 }) => {
   const { fixRows, fixColumns } = useContext(SpreadsheetContext);
 
-  let rootStyle = {};
+  let rootStyle = { display: 'table-cell' };
   if (value && (value.rowSpan || value.colSpan)) {
     const fixedRow = rowIndex <= fixRows;
     const fixedColumn = columnIndex <= fixColumns;
@@ -108,10 +110,12 @@ export const SpreadsheetCell = ({
     else rootStyle.zIndex = 1;
   }
 
+  const mergeCell = value && (value.rowSpan || value.colSpan);
+
   return (
     <ScrollerCell column={column} {...props} style={rootStyle}>
-      {children}
-      {value && (value.rowSpan || value.colSpan) && (
+      {!mergeCell && children}
+      {mergeCell && (
         <SpreadsheetMergedCell
             fixRows={fixRows}
             fixColumns={fixColumns}
@@ -119,7 +123,6 @@ export const SpreadsheetCell = ({
             defaultColumnWidth={defaultColumnWidth}
             rowIndex={rowIndex}
             columnIndex={columnIndex}
-            column={column}
             rows={rows}
             columns={columns}
             value={value}
