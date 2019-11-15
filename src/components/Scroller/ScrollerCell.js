@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { ScrollerRowContext } from './ScrollerRow';
 import ScrollerContext from './ScrollerContext';
 
 /**
@@ -11,14 +10,16 @@ import ScrollerContext from './ScrollerContext';
  */
 const ScrollerCell = React.memo(({
   style,
+  row = {},
   column = {},
   Component = 'div',
   ...props
 }) => {
-  const { defaultColumnWidth } = useContext(ScrollerContext);
-  const { height, offset: rowOffset } = useContext(ScrollerRowContext);
-  const { size, offset: columnOffset } = column;
-  const width = size || defaultColumnWidth;
+  const { defaultColumnWidth, defaultRowHeight } = useContext(ScrollerContext);
+  const { size: rowSize, offset: rowOffset } = row;
+  const { size: columnSize, offset: columnOffset } = column;
+  const width = columnSize || defaultColumnWidth;
+  const height = rowSize || defaultRowHeight;
   let nextStyle = { height, width };
   if (columnOffset !== undefined) {
     nextStyle.position = 'sticky';

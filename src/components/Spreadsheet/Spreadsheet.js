@@ -27,7 +27,7 @@ export const Spreadsheet = ({
   return (
     <SpreadsheetContext.Provider
         value={contextValue}>
-      <div {...props} style={{ ...style, display: 'inline-block', position: 'relative' }} />
+      <div {...props} style={{ ...style, display: 'inline-grid', position: 'relative' }} />
     </SpreadsheetContext.Provider>
   )
 };
@@ -36,7 +36,7 @@ export const SpreadsheetRow = ({
   style,
   ...props
 }) => {
-  const nextStyle = { ...style, display: 'table-row' };
+  const nextStyle = { ...style };
   return <ScrollerRow {...props} style={nextStyle} />
 };
 
@@ -100,7 +100,7 @@ export const SpreadsheetCell = ({
 }) => {
   const { fixRows, fixColumns } = useContext(SpreadsheetContext);
 
-  let rootStyle = { display: 'table-cell' };
+  let rootStyle = {};
   if (value && (value.rowSpan || value.colSpan)) {
     const fixedRow = rowIndex <= fixRows;
     const fixedColumn = columnIndex <= fixColumns;

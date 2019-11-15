@@ -77,26 +77,24 @@ export const GridTestComponent = props => {
         className="scroller-container"
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
-      {visibleRows.map(visibleRow => {
+      {visibleRows.reduce((acc, visibleRow) => {
         const row = rows && rows[visibleRow];
-        return (
-          <ScrollerRow className="row" key={visibleRow} row={row} style={{ display: 'flex' }}>
-            {visibleColumns.map(visibleColumn => {
-              const column = columns && columns[visibleColumn];
-              const visibleValue = visibleValues[visibleRow][visibleColumn];
-              return (
-                <ScrollerCell
-                    className="cell"
-                    key={visibleColumn}
-                    column={column}
-                    style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
-                  {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row} - ${visibleValue.column}`}
-                </ScrollerCell>
-              )
-            })}
-          </ScrollerRow>
-        )
-      })}
+        const columnsElements = visibleColumns.map(visibleColumn => {
+          const column = columns && columns[visibleColumn];
+          const visibleValue = visibleValues[visibleRow][visibleColumn];
+          return (
+            <ScrollerCell
+                className="cell"
+                key={visibleColumn}
+                row={row}
+                column={column}
+                style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
+              {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row} - ${visibleValue.column}`}
+            </ScrollerCell>
+          )
+        });
+        return [acc, ...columnsElements];
+      }, [])}
     </Scroller>
   )
 };
