@@ -20,7 +20,7 @@ value[0][4] = { ...value[0][4], colSpan: 6, rowSpan: 2 };
 value[5][0] = { ...value[5][0], colSpan: 2, rowSpan: 6 };
 value[50][5] = { ...value[50][5], colSpan: 4, rowSpan: 3 };
 
-export const loadRowsPageSync = value => (page, itemsPerPage) => {
+export const loadPageSync = value => (page, itemsPerPage) => {
   console.log('Loading sync page %s', page);
   return loadPage(value, page, itemsPerPage);
 };
@@ -35,7 +35,7 @@ for (let i = 20; i < 50; i++) {
 //const initialScroll = { top: 5000, left: 0 };
 
 /**
- * @param {import('../Scroller/useScroller').useScrollerProps | import('./useSpreadsheet').useSpreadsheetProps} props 
+ * @param {import('../Scroller/useScroller').useScrollerOptions | import('./useSpreadsheet').useSpreadsheetProps} props 
  */
 const SpreadsheetComponent = props => {
 
@@ -146,7 +146,7 @@ export const defaultComponent = props => (
       columnsPerPage={15}
       totalColumns={50}
       totalRows={1000}
-      loadRowsPage={loadRowsPageSync(value)}
+      loadPage={loadPageSync(value)}
       width={800}
       height={600}
       fixRows={2}

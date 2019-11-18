@@ -2,6 +2,11 @@ import React, { useMemo } from 'react';
 import ScrollContext from './ScrollerContext';
 
 /**
+ * @typedef {Object} Meta
+ * @property {number} size
+ */
+
+/**
  * @typedef {Object} ScrollerProps
  * @property {number} [width]
  * @property {number} height
@@ -13,7 +18,6 @@ import ScrollContext from './ScrollerContext';
  * @property {number[]} columns
  * @property {number[]} rowsOffsets
  * @property {number[]} columnsOffsets
- * @property {number[]} columns
  * @property {function} onScroll
  * @property {number[]} rowsOffsets
  * @property {number[]} columnsOffsets

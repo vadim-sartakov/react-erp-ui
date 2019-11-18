@@ -9,45 +9,37 @@ import {
 } from './utils';
 
 /**
- * @callback loadRowsPage
+ * @callback loadPage
  * @param {number} page
  * @param {number} itemsPerPage
  */
 
 /**
- * @callback loadColumnsPage
- * @param {Object} visibleRow
- * @param {number} page
- * @param {number} itemsPerPage
- */
-
-/**
- * @typedef {Object} useScrollerProps
+ * @typedef {Object} useScrollerOptions
  * @property {number} defaultRowHeight
  * @property {number} defaultColumnWidth
  * @property {number} totalRows
  * @property {number} [totalColumns]
  * @property {number} rowsPerPage
  * @property {number} columnsPerPage
- * @property {number[]} [rows]
- * @property {number[]} [columns]
+ * @property {import('./Scroller').Meta[]} [rows]
+ * @property {import('./Scroller').Meta[]} [columns]
  * @property {boolean} [async]
  * @property {boolean} [lazy] - When set to true whe height of scroller will expand on demand
- * @property {loadRowsPage} loadRowsPage
+ * @property {loadPage} loadPage
  * @property {number} [fixRows=0]
  * @property {number} [fixColumns=0]
- * @property {number} [bufferSize=3]
  */
 
 /**
- * @typedef {Object} VisibleValue
- * @property {number} index
- * @property {*} value
+ * @typedef {Object} ResultMeta
+ * @property {number} size
+ * @property {number} offset - Offset for sticky positioning
  */
 
 /**
  * @typedef {Object} useScrollerResult
- * @property {VisibleValue[]} visibleValues
+ * @property {Object[][]} loadedValues - Values loaded asynchronously. Applicable only for 'async' mode
  * @property {number} rowsStartIndex
  * @property {number} columnsStartIndex
  * @property {import('./Scroller').ScrollerProps} scrollerProps
@@ -55,7 +47,7 @@ import {
 
 /**
  * 
- * @param {useScrollerProps} props
+ * @param {useScrollerOptions} props
  * @return {useScrollerResult} 
  */
 const useScroller = ({
@@ -69,10 +61,9 @@ const useScroller = ({
   columns,
   async,
   lazy,
-  loadRowsPage,
+  loadPage,
   fixRows = 0,
-  fixColumns = 0,
-  bufferSize = 3
+  fixColumns = 0
 }) => {
 
   const [lastRowsPage, setLastRowsPage] = useState(1);
@@ -159,7 +150,7 @@ const useScroller = ({
           const visiblePageNumber = visibleRowsPageNumbers[i];
           setBuffer(buffer => {
             if (buffer[visiblePageNumber]) return buffer;
-            loadRowsPage(visiblePageNumber, rowsPerPage).then(loadResult => {
+            loadPage(visiblePageNumber, rowsPerPage).then(loadResult => {
               setBuffer(buffer => {
                 const nextBuffer = [...buffer];
                 nextBuffer[visiblePageNumber] = loadResult;
@@ -176,9 +167,8 @@ const useScroller = ({
     async,
     visibleRowsPageNumbers,
     rowsPage,
-    loadRowsPage,
-    rowsPerPage,
-    bufferSize
+    loadPage,
+    rowsPerPage
   ]);
 
   const scrolledFixedRows = useMemo(() => {
@@ -191,7 +181,7 @@ const useScroller = ({
       let curPage = 0;
       let bufferValue;
       while(1) {
-        bufferValue = async ? buffer[curPage] : loadRowsPage(curPage, rowsPerPage);
+        bufferValue = async ? buffer[curPage] : loadPage(curPage, rowsPerPage);
         if (!bufferValue || !bufferValue.length || fixedPages.reduce((acc, page) => acc + page.length, 0) >= fixRows) break;
         fixedPages.push(bufferValue);
         curPage++;
@@ -199,8 +189,9 @@ const useScroller = ({
       scrolledFixedRows = fixedPages.reduce((acc, page) => [...acc, ...page], []).slice(0, fixRows);
     }
     return scrolledFixedRows;
-  }, [async, buffer, fixRows, loadRowsPage, rowsPerPage, rowsStartIndex]);
+  }, [async, buffer, fixRows, loadPage, rowsPerPage, rowsStartIndex]);
 
+  // TODO: get rid of this
   const visibleValues = useMemo(() => {
     const visibleRowsPages = visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
       let page;
@@ -213,7 +204,7 @@ const useScroller = ({
         }
         page = buffer[visiblePageNumber] || getLoadingPage();
       } else {
-        page = loadRowsPage(visiblePageNumber, rowsPerPage);
+        page = loadPage(visiblePageNumber, rowsPerPage);
       };
       const result = [...acc];
       const nextIndex = visiblePageNumber * rowsPerPage - scrolledFixedRows.length;
@@ -225,7 +216,7 @@ const useScroller = ({
   }, [
     async,
     buffer,
-    loadRowsPage,
+    loadPage,
     rowsPerPage,
     visibleRowsPageNumbers,
     totalColumns,
@@ -317,8 +308,6 @@ const useScroller = ({
     visibleValues,
     rowsStartIndex,
     columnsStartIndex,
-    rowsOffsets,
-    columnsOffsets,
     gridStyles,
     scrollerProps
   };

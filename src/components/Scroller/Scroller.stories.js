@@ -58,7 +58,7 @@ const gridRows = generateCustomMeta(gridValue.length, 60);
 const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
 /**
- * @param {import('./useScroller').useScrollerProps} props 
+ * @param {import('./useScroller').useScrollerOptions} props 
  */
 export const GridTestComponent = props => {
   const {
@@ -102,11 +102,11 @@ export const GridTestComponent = props => {
   )
 };
 
-export const loadRowsPageSync = value => (page, itemsPerPage) => {
+export const loadPageSync = value => (page, itemsPerPage) => {
   console.log('Loading sync page %s', page);
   return loadPage(value, page, itemsPerPage);
 };
-export const loadRowsPageAsync = value => (page, itemsPerPage) => {
+export const loadPageAsync = value => (page, itemsPerPage) => {
   return new Promise(resolve => {
     setTimeout(() => {
       console.log('Loading async page %s', page);
@@ -121,7 +121,7 @@ export const asyncLazyListWithDefaultSizes = props => (
       defaultRowHeight={40}
       totalRows={gridValue.length}
       rowsPerPage={30}
-      loadRowsPage={loadRowsPageAsync(listValue)}
+      loadPage={loadPageAsync(listValue)}
       async
       lazy
       {...props} />
@@ -133,7 +133,7 @@ export const asyncLazyListWithCustomSizes = props => (
       totalRows={gridValue.length}
       rows={listRows}
       rowsPerPage={30}
-      loadRowsPage={loadRowsPageAsync(listValue)}
+      loadPage={loadPageAsync(listValue)}
       async
       lazy
       {...props} />
@@ -144,7 +144,7 @@ export const syncListWithDefaultSizes = props => (
       defaultRowHeight={40}
       totalRows={gridValue.length}
       rowsPerPage={30}
-      loadRowsPage={loadRowsPageSync(listValue)}
+      loadPage={loadPageSync(listValue)}
       {...props} />
 );
 
@@ -154,7 +154,7 @@ export const syncListWithCustomSizes = props => (
       totalRows={gridValue.length}
       rows={listRows}
       rowsPerPage={30}
-      loadRowsPage={loadRowsPageSync(listValue)}
+      loadPage={loadPageSync(listValue)}
       {...props} />
 );
 
@@ -163,7 +163,7 @@ export const asyncListWithDefaultSizes = props => (
       defaultRowHeight={40}
       totalRows={gridValue.length}
       rowsPerPage={30}
-      loadRowsPage={loadRowsPageAsync(listValue)}
+      loadPage={loadPageAsync(listValue)}
       async
       {...props} />
 );
@@ -174,7 +174,7 @@ export const asyncListWithCustomSizes = props => (
       totalRows={gridValue.length}
       rows={listRows}
       rowsPerPage={30}
-      loadRowsPage={loadRowsPageAsync(listValue)}
+      loadPage={loadPageAsync(listValue)}
       async
       {...props} />
 );
@@ -187,7 +187,7 @@ export const syncGridWithDefaultSizes = props => (
       totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
-      loadRowsPage={loadRowsPageSync(gridValue)}
+      loadPage={loadPageSync(gridValue)}
       {...props} />
 );
 
@@ -201,7 +201,7 @@ export const syncGridWithCustomSizes = props => (
       totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
-      loadRowsPage={loadRowsPageSync(gridValue)}
+      loadPage={loadPageSync(gridValue)}
       {...props} />
 );
 
@@ -213,7 +213,7 @@ export const syncGridWithDefaultSizesAndFixedRowsColumns = props => (
       totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
-      loadRowsPage={loadRowsPageSync(gridValue)}
+      loadPage={loadPageSync(gridValue)}
       fixRows={2}
       fixColumns={2}
       {...props} />
@@ -229,7 +229,7 @@ export const syncGridWithCustomSizesAndFixedRowsColumns = props => (
       totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
-      loadRowsPage={loadRowsPageSync(gridValue)}
+      loadPage={loadPageSync(gridValue)}
       fixRows={2}
       fixColumns={2}
       {...props} />
@@ -243,7 +243,7 @@ export const asyncGridWithDefaultSizes = props => (
       totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
-      loadRowsPage={loadRowsPageAsync(gridValue)}
+      loadPage={loadPageAsync(gridValue)}
       async
       {...props} />
 );
@@ -258,7 +258,7 @@ export const asyncGridWithCustomSizes = props => (
       columns={gridColumns}
       rowsPerPage={30}
       columnsPerPage={10}
-      loadRowsPage={loadRowsPageAsync(gridValue)}
+      loadPage={loadPageAsync(gridValue)}
       async
       {...props} />
 );
