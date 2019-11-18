@@ -22,8 +22,8 @@ import {
  * @property {number} [totalColumns]
  * @property {number} rowsPerPage
  * @property {number} columnsPerPage
- * @property {import('./Scroller').Meta[]} [rows]
- * @property {import('./Scroller').Meta[]} [columns]
+ * @property {import('./ScrollerContainer').Meta[]} [rows]
+ * @property {import('./ScrollerContainer').Meta[]} [columns]
  * @property {boolean} [async]
  * @property {boolean} [lazy] - When set to true whe height of scroller will expand on demand
  * @property {loadPage} loadPage
@@ -42,7 +42,7 @@ import {
  * @property {Object[][]} loadedValues - Values loaded asynchronously. Applicable only for 'async' mode
  * @property {number} rowsStartIndex
  * @property {number} columnsStartIndex
- * @property {import('./Scroller').ScrollerProps} scrollerProps
+ * @property {import('./ScrollerContainer').ScrollerContainerProps} scrollerContainerProps
  */
 
 /**
@@ -292,7 +292,7 @@ const useScroller = ({
     return nextColumns.map((key, index) => ({ ...columnsMeta[index], offset: columnsOffsets[index]} ));
   }, [columns, columnsOffsets]);
 
-  const scrollerProps = {
+  const scrollerContainerProps = {
     onScroll: handleScroll,
     coverStyles,
     pagesStyles,
@@ -309,7 +309,7 @@ const useScroller = ({
     rowsStartIndex,
     columnsStartIndex,
     gridStyles,
-    scrollerProps
+    scrollerContainerProps
   };
 
 };

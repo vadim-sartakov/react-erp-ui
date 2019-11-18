@@ -9,7 +9,9 @@ import {
   SpreadsheetRowResizer,
   renderBody
 } from './';
-import { useScroller, Scroller, loadPage } from '../Scroller';
+import useScroller from '../Scroller/useScroller';
+import ScrollerContainer from '../Scroller/ScrollerContainer';
+import { loadPage } from '../Scroller/utils';
 import { generateGridValues } from '../Scroller/Scroller.stories';
 import classes from './Spreadsheet-stories.module.sass';
 
@@ -45,7 +47,7 @@ const SpreadsheetComponent = props => {
   } = useSpreadsheet(props);
 
   const {
-    scrollerProps,
+    scrollerContainerProps,
     gridStyles,
     ...renderOptions
   } = useScroller({
@@ -117,7 +119,7 @@ const SpreadsheetComponent = props => {
   };
 
   return (
-    <Scroller {...scrollerProps} height={props.height} width={props.width}>
+    <ScrollerContainer {...scrollerContainerProps} height={props.height} width={props.width}>
       <Spreadsheet
           fixRows={props.fixRows}
           fixColumns={props.fixColumns}
@@ -132,7 +134,7 @@ const SpreadsheetComponent = props => {
           renderCellValue
         })}
       </Spreadsheet>
-    </Scroller>
+    </ScrollerContainer>
   );
 };
 

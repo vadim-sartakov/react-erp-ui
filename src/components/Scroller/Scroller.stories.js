@@ -1,7 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
-import { useScroller, Scroller, ScrollerCell } from './';
+import useScroller from './useScroller';
+import ScrollerContainer from './ScrollerContainer';
+import ScrollerCell from './ScrollerCell';
 
 export const generateMeta = count => {
   return [...new Array(count).keys()];
@@ -31,11 +33,11 @@ export const ListTestComponent = props => {
     rows,
     visibleRows,
     visibleValues,
-    scrollerProps
+    scrollerContainerProps
   } = useScroller(props);
   return (
-    <Scroller
-        {...scrollerProps}
+    <ScrollerContainer
+        {...scrollerContainerProps}
         height={600}
         className="scroller-container"
         coverProps={{ className: 'cover' }}
@@ -49,7 +51,7 @@ export const ListTestComponent = props => {
           </ScrollerCell>
         );
       })}
-    </Scroller>
+    </ScrollerContainer>
   )
 };
 
@@ -68,11 +70,11 @@ export const GridTestComponent = props => {
     visibleColumns,
     visibleValues,
     gridStyles,
-    scrollerProps
+    scrollerContainerProps
   } = useScroller(props);
   return (
-    <Scroller
-        {...scrollerProps}
+    <ScrollerContainer
+        {...scrollerContainerProps}
         width={800}
         height={600}
         className="scroller-container"
@@ -98,7 +100,7 @@ export const GridTestComponent = props => {
           return [acc, ...columnsElements];
         }, [])}
       </div>
-    </Scroller>
+    </ScrollerContainer>
   )
 };
 

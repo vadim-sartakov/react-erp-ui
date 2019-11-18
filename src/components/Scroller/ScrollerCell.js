@@ -3,8 +3,9 @@ import ScrollerContext from './ScrollerContext';
 
 /**
  * @typedef {Object} ScrollerCellProps
- * @property {string | *} Component - React Component
- * @property {number} index - Column index
+ * @property {*} [Component] - React Component
+ * @property {import('./useScroller').useScrollerOptions} row
+ * @property {import('./useScroller').useScrollerOptions} column
  * 
  * @param {ScrollerCellProps} props
  */
