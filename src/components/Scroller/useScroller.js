@@ -15,6 +15,20 @@ import {
  */
 
 /**
+ * @typedef {Object} ResultMeta
+ * @property {number} size
+ * @property {number} offset - Offset for sticky positioning
+ */
+
+ /**
+  * Render Cell callback. Could be memorized to prevent unnecessary calculations.
+  * @callback renderCell
+  * @param {ResultMeta} row
+  * @param {ResultMEta} column
+  * @param {*} value
+  */
+
+/**
  * @typedef {Object} useScrollerOptions
  * @property {number} defaultRowHeight
  * @property {number} defaultColumnWidth
@@ -27,14 +41,9 @@ import {
  * @property {boolean} [async]
  * @property {boolean} [lazy] - When set to true whe height of scroller will expand on demand
  * @property {loadPage} loadPage
+ * @property {renderCell} renderCell
  * @property {number} [fixRows=0]
  * @property {number} [fixColumns=0]
- */
-
-/**
- * @typedef {Object} ResultMeta
- * @property {number} size
- * @property {number} offset - Offset for sticky positioning
  */
 
 /**
@@ -62,6 +71,7 @@ const useScroller = ({
   async,
   lazy,
   loadPage,
+  renderCell,
   fixRows = 0,
   fixColumns = 0
 }) => {
@@ -191,7 +201,6 @@ const useScroller = ({
     return scrolledFixedRows;
   }, [async, buffer, fixRows, loadPage, rowsPerPage, rowsStartIndex]);
 
-  // TODO: get rid of this
   const visibleValues = useMemo(() => {
     const visibleRowsPages = visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
       let page;
@@ -292,6 +301,16 @@ const useScroller = ({
     return nextColumns.map((key, index) => ({ ...columnsMeta[index], offset: columnsOffsets[index]} ));
   }, [columns, columnsOffsets]);
 
+  const elements = useMemo(() => renderCell && visibleRows.reduce((acc, visibleRow) => {
+    const row = nextRows && nextRows[visibleRow];
+    const columnsElements = visibleColumns.map(visibleColumn => {
+      const column = nextColumns && nextColumns[visibleColumn];
+      const value = visibleValues[visibleRow][visibleColumn];
+      return renderCell({ row, column, value });
+    });
+    return [acc, ...columnsElements];
+  }, []), [nextRows, nextColumns, renderCell, visibleRows, visibleColumns, visibleValues]);
+
   const scrollerContainerProps = {
     onScroll: handleScroll,
     coverStyles,
@@ -309,6 +328,7 @@ const useScroller = ({
     rowsStartIndex,
     columnsStartIndex,
     gridStyles,
+    elements,
     scrollerContainerProps
   };
 
