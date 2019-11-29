@@ -20,7 +20,7 @@ describe('Scroller', () => {
   describe('list', () => {
 
     it('should load first rows pages with default sizes', () => {
-      const wrapper = mount(syncListWithDefaultSizes({ loadPage }));
+      const wrapper = mount(syncListWithDefaultSizes());
       expect(wrapper.find('div.cover').prop('style').height).toBe(40000);
       expect(wrapper.find('div.pages').prop('style').top).toBe(0);
       expect(wrapper.find('div.row').first().text()).toBe("Value 0");
@@ -100,7 +100,7 @@ describe('Scroller', () => {
       });
 
       it('should load last rows and columns pages with default sizes', () => {
-        const wrapper = mount(syncGridWithDefaultSizes({ loadPage }));
+        const wrapper = mount(syncGridWithDefaultSizes());
         wrapper.find('div.scroller-container').simulate('scroll', { target: { scrollTop: 40000, scrollLeft: 7500 } })
         checkDefaultSizesLastPage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Value 960 - 30");
@@ -253,14 +253,14 @@ describe('Scroller', () => {
     describe('fixed rows, columns', () => {
 
       it('should load first rows and columns pages with default sizes', () => {
-        const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns({ loadPage }));
+        const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns());
         checkDefaultSizesFirstPage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Value 0 - 0");
         expect(wrapper.find('div.cell').last().text()).toBe("Value 59 - 19");
       });
 
       it('should load middle rows and columns pages with default sizes', () => {
-        const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns({ loadPage }));
+        const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns());
         wrapper.find('div.scroller-container').simulate('scroll', { target: { scrollTop: 1800, scrollLeft: 2250 } })
         expect(wrapper.find('div.cover').prop('style').height).toBe(40000);
         expect(wrapper.find('div.cover').prop('style').width).toBe(7500);

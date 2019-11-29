@@ -9,6 +9,7 @@ import {
 } from './utils';
 
 /**
+ * Async callback for loading page
  * @callback loadPage
  * @param {number} page
  * @param {number} itemsPerPage
@@ -24,7 +25,7 @@ import {
   * Render Cell callback. Could be memorized to prevent unnecessary calculations.
   * @callback renderCell
   * @param {ResultMeta} row
-  * @param {ResultMEta} column
+  * @param {ResultMeta} column
   * @param {*} value
   */
 
@@ -39,10 +40,9 @@ import {
  * @property {import('./ScrollerContainer').Meta[]} [rows]
  * @property {import('./ScrollerContainer').Meta[]} [columns]
  * @property {Object[][]} [value] - Sync value
- * @property {boolean} [async]
  * @property {boolean} [lazy] - When set to true whe height of scroller will expand on demand
- * @property {loadPage} loadPage
- * @property {renderCell} renderCell
+ * @property {loadPage} loadPage - Load async page callback
+ * @property {renderCell} renderCell - Render scroller cell callback. Should be memorized.
  * @property {number} [fixRows=0]
  * @property {number} [fixColumns=0]
  */
@@ -70,7 +70,6 @@ const useScroller = ({
   rows,
   columns,
   value,
-  async,
   lazy,
   loadPage,
   renderCell,
@@ -156,7 +155,7 @@ const useScroller = ({
   const [buffer, setBuffer] = useState([]);
 
   useEffect(() => {
-    if (async) {
+    if (loadPage) {
       const loadPages = async () => {
         for (let i = 0; i < visibleRowsPageNumbers.length; i++) {
           const visiblePageNumber = visibleRowsPageNumbers[i];
@@ -176,12 +175,12 @@ const useScroller = ({
       }
       loadPages();
     }
-  }, [async, visibleRowsPageNumbers, rowsPage, loadPage, rowsPerPage]);
+  }, [visibleRowsPageNumbers, rowsPage, loadPage, rowsPerPage]);
 
-  const loadedValues = useMemo(() => async && buffer.reduce((acc, page, index) => {
+  const loadedValues = useMemo(() => loadPage && buffer.reduce((acc, page, index) => {
     const curPage = page || [...new Array(getItemsCountOnPage(index, rowsPerPage, totalRows)).fill()];
     return [...acc, ...curPage];
-  }, []), [async, buffer, rowsPerPage, totalRows]);
+  }, []), [loadPage, buffer, rowsPerPage, totalRows]);
 
   const rowsGaps = useMemo(() => {
     return getGaps({
@@ -258,15 +257,15 @@ const useScroller = ({
         const column = nextColumns && nextColumns[visibleColumn];
         const valueArray = loadedValues || value;
         const curValue = valueArray[visibleRow] && valueArray[visibleRow][visibleColumn];
-        return renderCell({ row, column, value: curValue });
+        return renderCell({ rowIndex: visibleRow, columnIndex: visibleColumn, row, column, value: curValue });
       });
-      return [acc, ...columnsElements];
+      return [...acc, ...columnsElements];
     } else {
       const valueArray = loadedValues || value;
       const curValue = valueArray[visibleRow];
-      return renderCell({ row, value: curValue });
+      const rowElement = renderCell({ rowIndex: visibleRow, row, value: curValue });
+      return [...acc, rowElement];
     }
-    
   }, []), [nextRows, nextColumns, renderCell, visibleRows, visibleColumns, loadedValues, value]);
 
   const scrollerContainerProps = {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
 import useScroller from './useScroller';
@@ -29,12 +29,15 @@ export const listValue = generateListValues(1000);
 const listRows = generateCustomMeta(listValue.length, 80);
 
 export const ListTestComponent = props => {
+  const renderCell = useCallback(({ rowIndex, row, value }) => (
+    <ScrollerCell className="row" key={rowIndex} row={row} index={rowIndex}>
+      {value ? `Value ${value.row}` : 'Loading...'}
+    </ScrollerCell>
+  ), []);
   const {
-    rows,
-    visibleRows,
-    loadedValues,
-    scrollerContainerProps
-  } = useScroller(props);
+    scrollerContainerProps,
+    elements
+  } = useScroller({ ...props, renderCell });
   return (
     <ScrollerContainer
         {...scrollerContainerProps}
@@ -42,15 +45,7 @@ export const ListTestComponent = props => {
         className="scroller-container"
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
-      {visibleRows.map(visibleRow => {
-        const row = rows && rows[visibleRow];
-        const visibleValue = (loadedValues || props.value)[visibleRow];
-        return (
-          <ScrollerCell className="row" key={visibleRow} row={row} index={visibleRow}>
-            {visibleValue ? `Value ${visibleValue.row}` : 'Loading...'}
-          </ScrollerCell>
-        );
-      })}
+      {elements}
     </ScrollerContainer>
   )
 };
@@ -63,15 +58,21 @@ const gridColumns = generateCustomMeta(gridValue[0].length, 180);
  * @param {import('./useScroller').useScrollerOptions} props 
  */
 export const GridTestComponent = props => {
+  const renderCell = useCallback(({ rowIndex, columnIndex, row, column, value }) => (
+    <ScrollerCell
+        className="cell"
+        key={`${rowIndex}_${columnIndex}`}
+        row={row}
+        column={column}
+        style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
+      {value ? `Value ${value.row} - ${value.column}` : 'Loading...'}
+    </ScrollerCell>
+  ), []);
   const {
-    rows,
-    columns,
-    visibleRows,
-    visibleColumns,
-    loadedValues,
     gridStyles,
-    scrollerContainerProps
-  } = useScroller(props);
+    scrollerContainerProps,
+    elements
+  } = useScroller({ ...props, renderCell });
   return (
     <ScrollerContainer
         {...scrollerContainerProps}
@@ -81,25 +82,7 @@ export const GridTestComponent = props => {
         coverProps={{ className: 'cover' }}
         pagesProps={{ className: 'pages' }}>
       <div style={gridStyles}>
-        {visibleRows.reduce((acc, visibleRow) => {
-          const row = rows && rows[visibleRow];
-          const columnsElements = visibleColumns.map(visibleColumn => {
-            const column = columns && columns[visibleColumn];
-            const value = loadedValues || props.value;
-            const visibleValue = value[visibleRow] && value[visibleRow][visibleColumn];
-            return (
-              <ScrollerCell
-                  className="cell"
-                  key={visibleColumn}
-                  row={row}
-                  column={column}
-                  style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
-                {visibleValue ? `Value ${visibleValue.row} - ${visibleValue.column}` : 'Loading...'}
-              </ScrollerCell>
-            )
-          });
-          return [acc, ...columnsElements];
-        }, [])}
+        {elements}
       </div>
     </ScrollerContainer>
   )
@@ -121,7 +104,6 @@ export const asyncLazyListWithDefaultSizes = props => (
       totalRows={gridValue.length}
       rowsPerPage={30}
       loadPage={loadPageAsync(listValue)}
-      async
       lazy
       {...props} />
 );
@@ -133,7 +115,6 @@ export const asyncLazyListWithCustomSizes = props => (
       rows={listRows}
       rowsPerPage={30}
       loadPage={loadPageAsync(listValue)}
-      async
       lazy
       {...props} />
 );
@@ -163,7 +144,6 @@ export const asyncListWithDefaultSizes = props => (
       totalRows={gridValue.length}
       rowsPerPage={30}
       loadPage={loadPageAsync(listValue)}
-      async
       {...props} />
 );
 
@@ -174,7 +154,6 @@ export const asyncListWithCustomSizes = props => (
       rows={listRows}
       rowsPerPage={30}
       loadPage={loadPageAsync(listValue)}
-      async
       {...props} />
 );
 
@@ -243,7 +222,6 @@ export const asyncGridWithDefaultSizes = props => (
       rowsPerPage={30}
       columnsPerPage={10}
       loadPage={loadPageAsync(gridValue)}
-      async
       {...props} />
 );
 
@@ -258,7 +236,6 @@ export const asyncGridWithCustomSizes = props => (
       rowsPerPage={30}
       columnsPerPage={10}
       loadPage={loadPageAsync(gridValue)}
-      async
       {...props} />
 );
 
