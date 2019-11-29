@@ -19,17 +19,25 @@ import { useState } from 'react';
  */
 
 /**
- * @typedef {Object} useSpreadsheetProps
- * @property {CellValue[][]} value
+ * @typedef {Object} useSpreadsheetOptions
+ * @property {number} defaultRowHeight
+ * @property {number} defaultColumnWidth
+ * @property {number} totalRows
+ * @property {number} totalColumns
+ * @property {number} rowsPerPage
+ * @property {number} columnsPerPage
  * @property {Meta[]} rows
  * @property {Meta[]} columns
+ * @property {number} [fixRows=0]
+ * @property {number} [fixColumns=0]
+ * @property {CellValue[][]} value
  * @property {number} columnNumbersRowHeight
  * @property {number} rowNumberColumnWidth
  */
 
 /**
  * 
- * @param {useSpreadsheetProps} props 
+ * @param {useSpreadsheetOptions} props 
  */
 const useSpreadsheet = ({
   rows: rowsProps,
@@ -45,23 +53,22 @@ const useSpreadsheet = ({
   fixRows = 0,
   fixColumns = 0
 }) => {
-
   const [rowsState, setRowsState] = useState([]);
   const rows = [{ size: columnNumbersRowHeight, type: 'COLUMN_NUMBERS' }, ...(rowsProps || rowsState)];
   const onRowsChange = onRowsChangeProp || setRowsState;
 
   const [columnsState, setColumnsState] = useState([]);
-  const columns = [{ size: rowNumberColumnWidth, type: 'ROW_NUMBER' }, ...(columnsProp || columnsState)];
+  const columns = [{ size: rowNumberColumnWidth, type: 'ROW_NUMBERS' }, ...(columnsProp || columnsState)];
   const onColumnsChange = onColumnsChangeProp || setColumnsState;
 
-  const spreadsheetProps = {
+  const spreadsheetContainerProps = {
     defaultColumnWidth,
     defaultRowHeight,
-    onColumnsChange: onColumnsChange,
-    onRowsChange: onRowsChange
+    onColumnsChange,
+    onRowsChange
   };
 
-  const scrollerInputProps = {
+  const scrollerOptions = {
     rows,
     columns,
     totalRows: totalRows + 1,
@@ -70,8 +77,8 @@ const useSpreadsheet = ({
     fixColumns: fixColumns + 1
   };
   return {
-    spreadsheetProps,
-    scrollerInputProps
+    spreadsheetContainerProps,
+    scrollerOptions
   };
 };
 

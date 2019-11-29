@@ -1,3 +1,5 @@
 export { default as useSpreadsheet } from './useSpreadsheet';
-export * from './Spreadsheet';
-export { default as renderBody } from './renderBody';
+export { default as SpreadsheetResizer } from './SpreadsheetResizer';
+export { default as SpreadsheetCell } from './SpreadsheetCell';
+export { default as SpreadsheetContaner } from './SpreadsheetContainer';
+export { default } from './Spreadsheet';

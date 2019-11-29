@@ -1,17 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { storiesOf } from '@storybook/react';
-import {
-  useSpreadsheet,
-  Spreadsheet,
-  SpreadsheetCell,
-  SpreadsheetColumnResizer,
-  SpreadsheetRowResizer,
-  renderBody
-} from './';
-import useScroller from '../Scroller/useScroller';
-import ScrollerContainer from '../Scroller/ScrollerContainer';
-import { loadPage } from '../Scroller/utils';
+import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell } from './';
 import { generateGridValues } from '../Scroller/Scroller.stories';
 import classes from './Spreadsheet-stories.module.sass';
 
@@ -21,11 +11,6 @@ value[0][0] = { ...value[0][0], colSpan: 2, rowSpan: 2 };
 value[0][4] = { ...value[0][4], colSpan: 6, rowSpan: 2 };
 value[5][0] = { ...value[5][0], colSpan: 2, rowSpan: 6 };
 value[50][5] = { ...value[50][5], colSpan: 4, rowSpan: 3 };
-
-export const loadPageSync = value => (page, itemsPerPage) => {
-  console.log('Loading sync page %s', page);
-  return loadPage(value, page, itemsPerPage);
-};
 
 /*for (let i = 5; i < 100; i++) {
   rows[i] = { level: 1 };
@@ -37,105 +22,71 @@ for (let i = 20; i < 50; i++) {
 //const initialScroll = { top: 5000, left: 0 };
 
 /**
- * @param {import('../Scroller/useScroller').useScrollerOptions | import('./useSpreadsheet').useSpreadsheetProps} props 
+ * @param {import('../Scroller/useScroller').useScrollerOptions | import('./useSpreadsheet').useSpreadsheetOptions} props 
  */
 const SpreadsheetComponent = props => {
 
-  const {
-    spreadsheetProps,
-    scrollerInputProps
-  } = useSpreadsheet(props);
+  const renderIntersectionColumn = ({ row, column, columnIndex }) => (
+    <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
+  );
 
-  const {
-    scrollerContainerProps,
-    gridStyles,
-    ...renderOptions
-  } = useScroller({
-    ...props,
-    ...scrollerInputProps
-  });
+  const renderColumnNumber = ({ row, column, columnIndex }) => (
+    <SpreadsheetCell
+        key={columnIndex}
+        row={row}
+        column={column}
+        className={classNames(
+          classes.columnNumberCell,
+          { [classes.lastFixedColumn]: columnIndex === props.fixColumns }
+        )}>
+      {columnIndex}
+      <SpreadsheetResizer mode="column" index={columnIndex} column={column} className={classes.columnResizer} />
+    </SpreadsheetCell>
+  );
 
-  const renderIntersectionColumn = ({ row, column, columnIndex }) => {
-    return (
-      <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
-    );
-  };
+  const renderRowNumber = ({ row, column, rowIndex, columnIndex }) => (
+    <SpreadsheetCell
+        key={columnIndex}
+        row={row}
+        column={column}
+        className={classNames(
+          classes.rowNumberCell,
+          { [classes.lastFixedRow]: rowIndex === props.fixRows }
+        )}>
+      {rowIndex}
+      <SpreadsheetResizer mode="row" index={rowIndex} row={row} className={classes.rowResizer} />
+    </SpreadsheetCell>
+  );
 
-  const renderColumnNumber = ({ row, column, columnIndex }) => {
-    return (
-      <SpreadsheetCell
-          key={columnIndex}
-          row={row}
-          column={column}
-          className={classNames(
-            classes.columnNumberCell,
-            { [classes.lastFixedColumn]: columnIndex === props.fixColumns }
-          )}>
-        {columnIndex}
-        <SpreadsheetColumnResizer index={columnIndex} column={column} className={classes.columnResizer} />
-      </SpreadsheetCell>
-    )
-  };
-
-  const renderRowNumber = ({ row, column, rowIndex, columnIndex }) => {
-    return (
-      <SpreadsheetCell
-          key={columnIndex}
-          row={row}
-          column={column}
-          className={classNames(
-            classes.rowNumberCell,
-            { [classes.lastFixedRow]: rowIndex === props.fixRows }
-          )}>
-        {rowIndex}
-        <SpreadsheetRowResizer index={rowIndex} row={row} className={classes.rowResizer} />
-      </SpreadsheetCell>
-    )
-  };
-
-  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, columns, rows }) => {
-    return (
-      <SpreadsheetCell
-          key={columnIndex}
-          defaultRowHeight={props.defaultRowHeight}
-          defaultColumnWidth={props.defaultColumnWidth}
-          row={row}
-          columnIndex={columnIndex}
-          rowIndex={rowIndex}
-          column={column}
-          columns={columns}
-          rows={rows}
-          value={value}
-          className={classNames(
-            classes.cell,
-            {
-              [classes.lastFixedRow]: rowIndex === props.fixRows,
-              [classes.lastFixedColumn]: columnIndex === props.fixColumns
-            }
-          )}>
-        {value ? `Value ${value.row} - ${value.column}` : ''}
-      </SpreadsheetCell>
-    )
-  };
+  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, columns, rows }) => (
+    <SpreadsheetCell
+        key={`${rowIndex}_${columnIndex}`}
+        row={row}
+        columnIndex={columnIndex}
+        rowIndex={rowIndex}
+        column={column}
+        columns={columns}
+        rows={rows}
+        value={value}
+        className={classNames(
+          classes.cell,
+          {
+            [classes.lastFixedRow]: rowIndex === props.fixRows,
+            [classes.lastFixedColumn]: columnIndex === props.fixColumns
+          }
+        )}>
+      {value ? `Value ${value.row} - ${value.column}` : ''}
+    </SpreadsheetCell>
+  );
 
   return (
-    <ScrollerContainer {...scrollerContainerProps} height={props.height} width={props.width}>
-      <Spreadsheet
-          fixRows={props.fixRows}
-          fixColumns={props.fixColumns}
-          className={classes.spreadsheet}
-          style={gridStyles}
-          {...spreadsheetProps}>
-        {renderBody({
-          ...renderOptions,
-          value: props.value,
-          renderIntersectionColumn,
-          renderColumnNumber,
-          renderRowNumber,
-          renderCellValue
-        })}
-      </Spreadsheet>
-    </ScrollerContainer>
+    <Spreadsheet
+        {...props}
+        className={classes.spreadsheet}
+        renderIntersectionColumn={renderIntersectionColumn}
+        renderColumnNumber={renderColumnNumber}
+        renderRowNumber={renderRowNumber}
+        renderCellValue={renderCellValue} />
   );
 };
 
