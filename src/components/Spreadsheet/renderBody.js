@@ -3,7 +3,7 @@ const renderBody = ({
   columns,
   visibleRows,
   visibleColumns,
-  visibleValues,
+  value: syncValue,
   renderIntersectionColumn,
   renderColumnNumber,
   renderRowNumber,
@@ -34,7 +34,7 @@ const renderBody = ({
       case 'VALUES':
         columnsElements = visibleColumns.map(columnIndex => {
           const column = columns[columnIndex] || {};
-          const rowValue = visibleValues[rowIndex - 1];
+          const rowValue = syncValue[rowIndex - 1];
           const value = rowValue && rowValue[columnIndex - 1];
 
           if (value && (value.rowSpan || value.colSpan)) {

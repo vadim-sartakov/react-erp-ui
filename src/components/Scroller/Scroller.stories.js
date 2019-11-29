@@ -32,7 +32,7 @@ export const ListTestComponent = props => {
   const {
     rows,
     visibleRows,
-    visibleValues,
+    loadedValues,
     scrollerContainerProps
   } = useScroller(props);
   return (
@@ -44,10 +44,10 @@ export const ListTestComponent = props => {
         pagesProps={{ className: 'pages' }}>
       {visibleRows.map(visibleRow => {
         const row = rows && rows[visibleRow];
-        const visibleValue = visibleValues[visibleRow];
+        const visibleValue = (loadedValues || props.value)[visibleRow];
         return (
           <ScrollerCell className="row" key={visibleRow} row={row} index={visibleRow}>
-            {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row}`}
+            {visibleValue ? `Value ${visibleValue.row}` : 'Loading...'}
           </ScrollerCell>
         );
       })}
@@ -68,7 +68,7 @@ export const GridTestComponent = props => {
     columns,
     visibleRows,
     visibleColumns,
-    visibleValues,
+    loadedValues,
     gridStyles,
     scrollerContainerProps
   } = useScroller(props);
@@ -85,7 +85,8 @@ export const GridTestComponent = props => {
           const row = rows && rows[visibleRow];
           const columnsElements = visibleColumns.map(visibleColumn => {
             const column = columns && columns[visibleColumn];
-            const visibleValue = visibleValues[visibleRow][visibleColumn];
+            const value = loadedValues || props.value;
+            const visibleValue = value[visibleRow] && value[visibleRow][visibleColumn];
             return (
               <ScrollerCell
                   className="cell"
@@ -93,7 +94,7 @@ export const GridTestComponent = props => {
                   row={row}
                   column={column}
                   style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
-                {visibleValue.isLoading ? 'Loading...' : `Value ${visibleValue.row} - ${visibleValue.column}`}
+                {visibleValue ? `Value ${visibleValue.row} - ${visibleValue.column}` : 'Loading...'}
               </ScrollerCell>
             )
           });
@@ -104,10 +105,6 @@ export const GridTestComponent = props => {
   )
 };
 
-export const loadPageSync = value => (page, itemsPerPage) => {
-  console.log('Loading sync page %s', page);
-  return loadPage(value, page, itemsPerPage);
-};
 export const loadPageAsync = value => (page, itemsPerPage) => {
   return new Promise(resolve => {
     setTimeout(() => {
@@ -146,7 +143,7 @@ export const syncListWithDefaultSizes = props => (
       defaultRowHeight={40}
       totalRows={gridValue.length}
       rowsPerPage={30}
-      loadPage={loadPageSync(listValue)}
+      value={listValue}
       {...props} />
 );
 
@@ -156,7 +153,7 @@ export const syncListWithCustomSizes = props => (
       totalRows={gridValue.length}
       rows={listRows}
       rowsPerPage={30}
-      loadPage={loadPageSync(listValue)}
+      value={listValue}
       {...props} />
 );
 
@@ -189,7 +186,7 @@ export const syncGridWithDefaultSizes = props => (
       totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
-      loadPage={loadPageSync(gridValue)}
+      value={gridValue}
       {...props} />
 );
 
@@ -203,7 +200,7 @@ export const syncGridWithCustomSizes = props => (
       totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
-      loadPage={loadPageSync(gridValue)}
+      value={gridValue}
       {...props} />
 );
 
@@ -215,7 +212,7 @@ export const syncGridWithDefaultSizesAndFixedRowsColumns = props => (
       totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
-      loadPage={loadPageSync(gridValue)}
+      value={gridValue}
       fixRows={2}
       fixColumns={2}
       {...props} />
@@ -231,7 +228,7 @@ export const syncGridWithCustomSizesAndFixedRowsColumns = props => (
       totalColumns={gridValue[0].length}
       rowsPerPage={30}
       columnsPerPage={10}
-      loadPage={loadPageSync(gridValue)}
+      value={gridValue}
       fixRows={2}
       fixColumns={2}
       {...props} />

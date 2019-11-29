@@ -38,6 +38,7 @@ import {
  * @property {number} columnsPerPage
  * @property {import('./ScrollerContainer').Meta[]} [rows]
  * @property {import('./ScrollerContainer').Meta[]} [columns]
+ * @property {Object[][]} [value] - Sync value
  * @property {boolean} [async]
  * @property {boolean} [lazy] - When set to true whe height of scroller will expand on demand
  * @property {loadPage} loadPage
@@ -68,6 +69,7 @@ const useScroller = ({
   columnsPerPage,
   rows,
   columns,
+  value,
   async,
   lazy,
   loadPage,
@@ -160,78 +162,26 @@ const useScroller = ({
           const visiblePageNumber = visibleRowsPageNumbers[i];
           setBuffer(buffer => {
             if (buffer[visiblePageNumber]) return buffer;
-            loadPage(visiblePageNumber, rowsPerPage).then(loadResult => {
+            const onLoad = loadResult => {
               setBuffer(buffer => {
                 const nextBuffer = [...buffer];
                 nextBuffer[visiblePageNumber] = loadResult;
                 return nextBuffer;
               });
-            });
+            };
+            loadPage(visiblePageNumber, rowsPerPage).then(onLoad);
             return buffer;
           });
         }
       }
       loadPages();
     }
-  }, [
-    async,
-    visibleRowsPageNumbers,
-    rowsPage,
-    loadPage,
-    rowsPerPage
-  ]);
+  }, [async, visibleRowsPageNumbers, rowsPage, loadPage, rowsPerPage]);
 
-  const scrolledFixedRows = useMemo(() => {
-    let scrolledFixedRows; 
-    if (!fixRows || rowsStartIndex <= fixRows) {
-      scrolledFixedRows = [];
-    } else {
-      const fixedPages = [];
-      // Fetching required amount of pages
-      let curPage = 0;
-      let bufferValue;
-      while(1) {
-        bufferValue = async ? buffer[curPage] : loadPage(curPage, rowsPerPage);
-        if (!bufferValue || !bufferValue.length || fixedPages.reduce((acc, page) => acc + page.length, 0) >= fixRows) break;
-        fixedPages.push(bufferValue);
-        curPage++;
-      }
-      scrolledFixedRows = fixedPages.reduce((acc, page) => [...acc, ...page], []).slice(0, fixRows);
-    }
-    return scrolledFixedRows;
-  }, [async, buffer, fixRows, loadPage, rowsPerPage, rowsStartIndex]);
-
-  const visibleValues = useMemo(() => {
-    const visibleRowsPages = visibleRowsPageNumbers.reduce((acc, visiblePageNumber) => {
-      let page;
-      if (async) {
-        const getLoadingPage = () => {
-          const rowsOnPage = getItemsCountOnPage(visiblePageNumber, rowsPerPage, totalRows);
-          return [...new Array(rowsOnPage).keys()].map(() => {
-            return totalColumns ? [...new Array(totalColumns).keys()].map(() => ({ isLoading: true })) : { isLoading: true };
-          });
-        }
-        page = buffer[visiblePageNumber] || getLoadingPage();
-      } else {
-        page = loadPage(visiblePageNumber, rowsPerPage);
-      };
-      const result = [...acc];
-      const nextIndex = visiblePageNumber * rowsPerPage - scrolledFixedRows.length;
-      result[nextIndex] = undefined;
-      result.splice(nextIndex, 0, ...page);
-      return result;
-    }, []);
-    return [...scrolledFixedRows, ...visibleRowsPages];
-  }, [
-    async,
-    buffer,
-    loadPage,
-    rowsPerPage,
-    visibleRowsPageNumbers,
-    totalColumns,
-    totalRows,
-    scrolledFixedRows
-  ]);
+  const loadedValues = useMemo(() => async && buffer.reduce((acc, page, index) => {
+    const curPage = page || [...new Array(getItemsCountOnPage(index, rowsPerPage, totalRows)).fill()];
+    return [...acc, ...curPage];
+  }, []), [async, buffer, rowsPerPage, totalRows]);
 
   const rowsGaps = useMemo(() => {
     return getGaps({
@@ -303,13 +253,21 @@ const useScroller = ({
 
   const elements = useMemo(() => renderCell && visibleRows.reduce((acc, visibleRow) => {
     const row = nextRows && nextRows[visibleRow];
-    const columnsElements = visibleColumns.map(visibleColumn => {
-      const column = nextColumns && nextColumns[visibleColumn];
-      const value = visibleValues[visibleRow][visibleColumn];
-      return renderCell({ row, column, value });
-    });
-    return [acc, ...columnsElements];
-  }, []), [nextRows, nextColumns, renderCell, visibleRows, visibleColumns, visibleValues]);
+    if (visibleColumns) {
+      const columnsElements = visibleColumns.map(visibleColumn => {
+        const column = nextColumns && nextColumns[visibleColumn];
+        const valueArray = loadedValues || value;
+        const curValue = valueArray[visibleRow] && valueArray[visibleRow][visibleColumn];
+        return renderCell({ row, column, value: curValue });
+      });
+      return [acc, ...columnsElements];
+    } else {
+      const valueArray = loadedValues || value;
+      const curValue = valueArray[visibleRow];
+      return renderCell({ row, value: curValue });
+    }
+    
+  }, []), [nextRows, nextColumns, renderCell, visibleRows, visibleColumns, loadedValues, value]);
 
   const scrollerContainerProps = {
     onScroll: handleScroll,
@@ -324,7 +282,7 @@ const useScroller = ({
     columns: nextColumns,
     visibleRows,
     visibleColumns,
-    visibleValues,
+    loadedValues,
     rowsStartIndex,
     columnsStartIndex,
     gridStyles,

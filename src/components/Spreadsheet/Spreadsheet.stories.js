@@ -128,6 +128,7 @@ const SpreadsheetComponent = props => {
           {...spreadsheetProps}>
         {renderBody({
           ...renderOptions,
+          value: props.value,
           renderIntersectionColumn,
           renderColumnNumber,
           renderRowNumber,
@@ -148,7 +149,7 @@ export const defaultComponent = props => (
       columnsPerPage={15}
       totalColumns={50}
       totalRows={1000}
-      loadPage={loadPageSync(value)}
+      value={value}
       width={800}
       height={600}
       fixRows={2}

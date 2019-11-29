@@ -13,7 +13,6 @@ import {
 } from './Scroller.stories';
 import { loadPage } from './utils';
 
-export const loadPageSync = value => (page, itemsPerPage) => loadPage(value, page, itemsPerPage);
 export const loadPageAsync = value => async (page, itemsPerPage) => loadPage(value, page, itemsPerPage);
 
 describe('Scroller', () => {
@@ -21,7 +20,6 @@ describe('Scroller', () => {
   describe('list', () => {
 
     it('should load first rows pages with default sizes', () => {
-      const loadPage = jest.fn(loadPageSync(listValue));
       const wrapper = mount(syncListWithDefaultSizes({ loadPage }));
       expect(wrapper.find('div.cover').prop('style').height).toBe(40000);
       expect(wrapper.find('div.pages').prop('style').top).toBe(0);
@@ -87,61 +85,49 @@ describe('Scroller', () => {
     describe('sync', () => {
 
       it('should load first rows and columns pages with default sizes', () => {
-        const loadPage = jest.fn(loadPageSync(gridValue));
-        const wrapper = mount(syncGridWithDefaultSizes({ loadPage }));
+        const wrapper = mount(syncGridWithDefaultSizes());
         checkDefaultSizesFirstPage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Value 0 - 0");
         expect(wrapper.find('div.cell').last().text()).toBe("Value 59 - 19");
-        expect(loadPage).toHaveBeenCalledTimes(2);
       });
 
       it('should load middle rows and columns pages with default sizes', () => {
-        const loadPage = jest.fn(loadPageSync(gridValue));
-        const wrapper = mount(syncGridWithDefaultSizes({ loadPage }));
+        const wrapper = mount(syncGridWithDefaultSizes());
         wrapper.find('div.scroller-container').simulate('scroll', { target: { scrollTop: 1800, scrollLeft: 2250 } })
         checkDefaultSizesMiddlePage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Value 30 - 10");
         expect(wrapper.find('div.cell').last().text()).toBe("Value 89 - 29");
-        expect(loadPage).toHaveBeenCalledTimes(4);
       });
 
       it('should load last rows and columns pages with default sizes', () => {
-        const loadPage = jest.fn(loadPageSync(gridValue));
         const wrapper = mount(syncGridWithDefaultSizes({ loadPage }));
         wrapper.find('div.scroller-container').simulate('scroll', { target: { scrollTop: 40000, scrollLeft: 7500 } })
         checkDefaultSizesLastPage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Value 960 - 30");
         expect(wrapper.find('div.cell').last().text()).toBe("Value 999 - 49");
-        expect(loadPage).toHaveBeenCalledTimes(4);
       });
 
       it('should load first rows and columns pages with custom sizes', () => {
-        const loadPage = jest.fn(loadPageSync(gridValue));
-        const wrapper = mount(syncGridWithCustomSizes({ loadPage }));
+        const wrapper = mount(syncGridWithCustomSizes());
         checkCustomSizesFirstPage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Value 0 - 0");
         expect(wrapper.find('div.cell').last().text()).toBe("Value 59 - 19");
-        expect(loadPage).toHaveBeenCalledTimes(2);
       });
 
       it('should load middle rows and columns pages with custom sizes', () => {
-        const loadPage = jest.fn(loadPageSync(gridValue));
-        const wrapper = mount(syncGridWithCustomSizes({ loadPage }));
+        const wrapper = mount(syncGridWithCustomSizes());
         wrapper.find('div.scroller-container').simulate('scroll', { target: { scrollTop: 3600, scrollLeft: 3600 } })
         checkCustomSizesMiddlePage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Value 30 - 10");
         expect(wrapper.find('div.cell').last().text()).toBe("Value 89 - 29");
-        expect(loadPage).toHaveBeenCalledTimes(4);
       });
 
       it('should load last rows and columns pages with custom sizes', () => {
-        const loadPage = jest.fn(loadPageSync(gridValue));
-        const wrapper = mount(syncGridWithCustomSizes({ loadPage }));
+        const wrapper = mount(syncGridWithCustomSizes());
         wrapper.find('div.scroller-container').simulate('scroll', { target: { scrollTop: 59000, scrollLeft: 8000 } })
         checkCustomSizesLastPage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Value 960 - 30");
         expect(wrapper.find('div.cell').last().text()).toBe("Value 999 - 49");
-        expect(loadPage).toHaveBeenCalledTimes(4);
       });
 
     });
@@ -267,7 +253,6 @@ describe('Scroller', () => {
     describe('fixed rows, columns', () => {
 
       it('should load first rows and columns pages with default sizes', () => {
-        const loadPage = jest.fn(loadPageSync(gridValue));
         const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns({ loadPage }));
         checkDefaultSizesFirstPage(wrapper);
         expect(wrapper.find('div.cell').first().text()).toBe("Value 0 - 0");
@@ -275,7 +260,6 @@ describe('Scroller', () => {
       });
 
       it('should load middle rows and columns pages with default sizes', () => {
-        const loadPage = jest.fn(loadPageSync(gridValue));
         const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns({ loadPage }));
         wrapper.find('div.scroller-container').simulate('scroll', { target: { scrollTop: 1800, scrollLeft: 2250 } })
         expect(wrapper.find('div.cover').prop('style').height).toBe(40000);
