@@ -46,7 +46,6 @@ const renderBody = ({
               }
             }
           };
-
           
           let element;
           const columnsType = column.type || 'VALUES';

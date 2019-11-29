@@ -1,10 +1,23 @@
 import React from 'react';
+import useScroller from './useScroller';
+import ScrollerContainer from './ScrollerContainer';
 
-const Scroller = ({
-  ...props
-}) => {
+/**
+ * 
+ * @param {import('./useScroller').useScrollerOptions | import('./ScrollerContainer').ScrollerContainerProps} props
+ */
+const Scroller = props => {
+  const {
+    gridStyles,
+    scrollerContainerProps,
+    elements
+  } = useScroller(props);
   return (
-    <div />
+    <ScrollerContainer {...props} {...scrollerContainerProps}>
+      <div style={gridStyles}>
+        {elements}
+      </div>
+    </ScrollerContainer>
   )
 };
 

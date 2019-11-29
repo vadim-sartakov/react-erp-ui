@@ -1,9 +1,8 @@
 import React, { useCallback } from 'react';
 import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
-import useScroller from './useScroller';
-import ScrollerContainer from './ScrollerContainer';
 import ScrollerCell from './ScrollerCell';
+import Scroller from './Scroller';
 
 export const generateMeta = count => {
   return [...new Array(count).keys()];
@@ -34,19 +33,14 @@ export const ListTestComponent = props => {
       {value ? `Value ${value.row}` : 'Loading...'}
     </ScrollerCell>
   ), []);
-  const {
-    scrollerContainerProps,
-    elements
-  } = useScroller({ ...props, renderCell });
   return (
-    <ScrollerContainer
-        {...scrollerContainerProps}
-        height={600}
+    <Scroller
         className="scroller-container"
         coverProps={{ className: 'cover' }}
-        pagesProps={{ className: 'pages' }}>
-      {elements}
-    </ScrollerContainer>
+        pagesProps={{ className: 'pages' }}
+        renderCell={renderCell}
+        height={600}
+        {...props} />
   )
 };
 
@@ -68,23 +62,15 @@ export const GridTestComponent = props => {
       {value ? `Value ${value.row} - ${value.column}` : 'Loading...'}
     </ScrollerCell>
   ), []);
-  const {
-    gridStyles,
-    scrollerContainerProps,
-    elements
-  } = useScroller({ ...props, renderCell });
   return (
-    <ScrollerContainer
-        {...scrollerContainerProps}
+    <Scroller
+        renderCell={renderCell}
         width={800}
         height={600}
         className="scroller-container"
         coverProps={{ className: 'cover' }}
-        pagesProps={{ className: 'pages' }}>
-      <div style={gridStyles}>
-        {elements}
-      </div>
-    </ScrollerContainer>
+        pagesProps={{ className: 'pages' }}
+        {...props} />
   )
 };
 
