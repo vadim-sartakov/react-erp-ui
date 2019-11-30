@@ -1,6 +1,34 @@
+/** @module */
+import './types';
+
+/**
+ * @typedef ScrollPage
+ * @property {number} start
+ * @property {number} end
+ */
+
+ /**
+  * @function
+  * @param {number} page
+  * @returns {number[]}
+  */
 export const getVisiblePages = page => page === 0 ? [0, 1] : [page - 1, page];
+
+/**
+ * @function
+ * @param {number} totalCount 
+ * @param {number} itemsPerPage
+ * @returns {number}
+ */
 export const getTotalPages = (totalCount, itemsPerPage) => Math.ceil(totalCount / itemsPerPage);
 
+/**
+ * @function
+ * @param {number} page 
+ * @param {number} itemsPerPage 
+ * @param {number} totalCount
+ * @returns {number}
+ */
 export const getItemsCountOnPage = (page, itemsPerPage, totalCount) => {
   if (page === undefined) return 0;
   const totalPages = getTotalPages(totalCount, itemsPerPage);
@@ -9,11 +37,14 @@ export const getItemsCountOnPage = (page, itemsPerPage, totalCount) => {
 };
 
 /**
- * Creates scroll page object structure
+ * Creates scroll page object structure.
  * It helps to find current page depending on scroll position
- * @param {*} meta 
- * @param {*} defaultSize 
- * @param {*} itemsPerPage 
+ * @function
+ * @param {Object} options
+ * @param {Meta[]} options.meta [Meta]{@link module:components/Scroller~Meta}
+ * @param {number} options.defaultSize 
+ * @param {number} options.itemsPerPage 
+ * @returns {ScrollPage[]} [ScrollPage]{@link module:components/Scroller/utils~ScrollPage}
  */
 export const getScrollPages = ({ meta, totalCount, defaultSize, itemsPerPage }) => {
   const values = [...new Array(totalCount).keys()];
@@ -45,6 +76,12 @@ export const getScrollPages = ({ meta, totalCount, defaultSize, itemsPerPage }) 
   return result.pages;
 };
 
+/**
+ * @function
+ * @param {ScrollPage[]} scrollPages [ScrollPage]{@link module:components/Scroller/utils~ScrollPage}
+ * @param {number} [scroll=0]
+ * @returns {number}
+ */
 export const getPageNumberFromScrollPages = (scrollPages, scroll = 0) => {
   if (scroll < 0) return 0;
 
@@ -68,6 +105,15 @@ export const getPageNumberFromScrollPages = (scrollPages, scroll = 0) => {
   return currentPage.pageIndex;
 };
 
+/**
+ * @function
+ * @param {Object} options
+ * @param {number} options.defaultSize
+ * @param {number} options.itemsPerPage
+ * @param {number} options.totalCount
+ * @param {number} options.scroll
+ * @returns {number} 
+ */
 export const getPageNumberWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, scroll }) => {
   if (scroll < 0) return 0;
   const totalPages = getTotalPages(totalCount, itemsPerPage);
@@ -76,6 +122,17 @@ export const getPageNumberWithDefaultSize = ({ defaultSize, itemsPerPage, totalC
   return Math.min(totalPages - 1, page);
 };
 
+/**
+ * Generic page number calculation function which decides how page number
+ * will be calculated depending on whether meta option is specified or not
+ * @function
+ * @param {Object} options
+ * @param {Meta[]} options.meta [Meta]{@link module:components/Scroller~Meta}
+ * @param {number} options.defaultSize
+ * @param {number} options.itemsPerPage
+ * @param {number} options.totalCount
+ * @param {number} options.scroll
+ */
 export const getPageNumber = ({ meta, defaultSize, itemsPerPage, totalCount, scroll }) => {
   let curPage;
   if (meta && meta.length) {
@@ -87,6 +144,22 @@ export const getPageNumber = ({ meta, defaultSize, itemsPerPage, totalCount, scr
   return curPage;
 };
 
+/**
+ * @typedef {Object} Gaps
+ * @property {number} start 
+ * @property {number} middle 
+ * @property {number} end 
+ */
+
+/**
+ * @function
+ * @param {Object} options
+ * @param {number} options.defaultSize
+ * @param {number} options.itemsPerPage
+ * @param {number} options.totalCount
+ * @param {number} options.page
+ * @returns {Gaps} [Gaps]{@link module:components/Scroller/utils~Gaps}
+ */
 export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, page }) => {
   const pageSize = defaultSize * itemsPerPage;
   const visiblePages = getVisiblePages(page);
@@ -107,6 +180,13 @@ export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, 
 
 const gapsReducer = (acc, scrollPage) => acc + (scrollPage.end - scrollPage.start);
 
+/**
+ * @function
+ * @param {Object} options
+ * @param {ScrollPage[]} options.scrollPages [ScrollPage]{@link module:components/Scroller/utils~ScrollPage}
+ * @param {number} options.page
+ * @returns {Gaps} [Gaps]{@link module:components/Scroller/utils~Gaps}
+ */
 export const getGapsFromScrollPages = ({ scrollPages, page }) => {
   const visiblePages = getVisiblePages(page);
   const startSectionSize = scrollPages.slice(0, visiblePages[0]).reduce(gapsReducer, 0);
@@ -119,6 +199,17 @@ export const getGapsFromScrollPages = ({ scrollPages, page }) => {
   }
 };
 
+/**
+ * Generic function which calculates gaps depending on whether meta is specified or not.
+ * @function
+ * @param {Object} options
+ * @param {Meta[]} options.meta [Meta]{@link module:components/Scroller~Meta}
+ * @param {number} options.defaultSize
+ * @param {number} options.itemsPerPage
+ * @param {number} options.totalCount
+ * @param {number} options.page
+ * @returns {Gaps} [Gaps]{@link module:components/Scroller/utils~Gaps}
+ */
 export const getGaps = ({ meta, defaultSize, itemsPerPage, totalCount, page }) => {
   let gaps;
   if (meta && meta.length) {
@@ -130,16 +221,14 @@ export const getGaps = ({ meta, defaultSize, itemsPerPage, totalCount, page }) =
   return gaps;
 };
 
-/**
- * @typedef getFixedOffsetsOptions
- * @property {Object} meta
- * @property {number} defaultSize
- * @property {number} fixed - Fixed items count
- */
-
  /**
- * @param {getFixedOffsetsOptions} options
- */
+  * @function
+  * @param {Object} options
+  * @param {Meta[]} options.meta [Meta]{@link module:components/Scroller~Meta}
+  * @param {number} options.defaultSize
+  * @param {number} options.fixed - Number of fixed items
+  * @returns {number[]}
+  */
 export const getFixedOffsets = ({ meta, defaultSize, fixed }) => {
   const resultOffset = [...new Array(fixed).keys()].reduce((acc, curKey, index) => {
     const curOffset = index === 0 ? 0 : [...new Array(index).keys()].reduce((acc, key, index) => {
@@ -152,6 +241,13 @@ export const getFixedOffsets = ({ meta, defaultSize, fixed }) => {
   return resultOffset;
 };
 
+/**
+ * @function
+ * @param {Object} options
+ * @param {Meta[]} options.meta [Meta]{@link module:components/Scroller~Meta}
+ * @param {number} options.defaultSize
+ * @returns {number}
+ */
 export const getItemsSize = ({ meta, count, defaultSize }) => {
   if (!count) return 0;
   return meta ? [...new Array(count).keys()].reduce((acc, key, index) => {
@@ -161,4 +257,12 @@ export const getItemsSize = ({ meta, count, defaultSize }) => {
   }, 0) : count * defaultSize;
 };
 
+/**
+ * Gets items from the source values
+ * @function
+ * @param {Object[]} value 
+ * @param {number} page 
+ * @param {number} itemsPerPage
+ * @returns {Object[]}
+ */
 export const loadPage = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);

@@ -8,58 +8,6 @@ import {
   getItemsSize
 } from './utils';
 
-/**
- * Async callback for loading page
- * @callback loadPage
- * @param {number} page
- * @param {number} itemsPerPage
- */
-
-/**
- * @typedef {Object} ResultMeta
- * @property {number} size
- * @property {number} offset - Offset for sticky positioning
- */
-
- /**
-  * Render Cell callback. Could be memorized to prevent unnecessary calculations.
-  * @callback renderCell
-  * @param {ResultMeta} row
-  * @param {ResultMeta} column
-  * @param {*} value
-  */
-
-/**
- * @typedef {Object} useScrollerOptions
- * @property {number} defaultRowHeight
- * @property {number} defaultColumnWidth
- * @property {number} totalRows
- * @property {number} [totalColumns]
- * @property {number} rowsPerPage
- * @property {number} columnsPerPage
- * @property {import('./ScrollerContainer').Meta[]} [rows]
- * @property {import('./ScrollerContainer').Meta[]} [columns]
- * @property {Object[][]} [value] - Sync value
- * @property {boolean} [lazy] - When set to true whe height of scroller will expand on demand
- * @property {loadPage} loadPage - Load async page callback
- * @property {renderCell} renderCell - Render scroller cell callback. Should be memorized.
- * @property {number} [fixRows=0]
- * @property {number} [fixColumns=0]
- */
-
-/**
- * @typedef {Object} useScrollerResult
- * @property {Object[][]} loadedValues - Values loaded asynchronously. Applicable only for 'async' mode
- * @property {number} rowsStartIndex
- * @property {number} columnsStartIndex
- * @property {import('./ScrollerContainer').ScrollerContainerProps} scrollerContainerProps
- */
-
-/**
- * 
- * @param {useScrollerOptions} props
- * @return {useScrollerResult} 
- */
 const useScroller = ({
   defaultRowHeight,
   defaultColumnWidth,

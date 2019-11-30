@@ -1,13 +1,10 @@
 import React from 'react';
 import useScroller from './useScroller';
 import ScrollerContainer from './ScrollerContainer';
+import './types';
 
 /**
- * @typedef {import('./useScroller').useScrollerOptions | import('./ScrollerContainer').ScrollerContainerProps} ScrollerProps
- */
-
-/**
- * 
+ * @ignore
  * @param {ScrollerProps} props
  */
 const Scroller = props => {
