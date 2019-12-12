@@ -4,8 +4,10 @@ import ScrollerContainer from './ScrollerContainer';
 import './types';
 
 /**
- * @ignore
- * @param {ScrollerProps} props
+ * Data scrolling and buffering component, helps to deal with large data sets rendering, displaying only visible part of data.
+ * @function
+ * @memberof module:components/Scroller
+ * @param {ScrollerProps} props [ScrollerProps]{@link module:components/Scroller~ScrollerProps}
  */
 const Scroller = props => {
   const {

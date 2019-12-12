@@ -9,7 +9,7 @@
  */
 
 /**
-  * Render Cell callback. Could be memorized to prevent unnecessary calculations.
+  * Render Cell callback. Should be memorized to prevent unnecessary calculations.
   * @callback renderCell
   * @param {Meta} row
   * @param {Meta} column
@@ -72,4 +72,6 @@
 
 /**
  * @typedef {useScrollerOptions | ScrollerContainerProps} ScrollerProps
+ * @see [useScrollerOptions]{@link module:components/Scroller~useScrollerOptions}
+ * @see [ScrollerContainerProps]{@link module:components/Scroller~ScrollerContainerProps}
  */

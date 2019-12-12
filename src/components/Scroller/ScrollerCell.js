@@ -3,6 +3,11 @@ import ScrollerContext from './ScrollerContext';
 import './useScroller';
 import './types';
 
+/**
+ * @function
+ * @memberof module:components/Scroller
+ * @param {ScrollerCellProps} props [ScrollerCellProps]{@link module:components/Scroller~ScrollerCellProps}
+ */
 const ScrollerCell = React.memo(({
   style = {},
   row = {},

@@ -1,4 +1,32 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Scroller/useScroller.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Scroller/useScroller.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   getVisiblePages,
   getItemsCountOnPage,
@@ -99,7 +127,7 @@ const useScroller = ({
     totalCount: totalRows
   }), [rowsStartIndex, fixRows, visibleRowsPageNumbers, rowsPerPage, totalRows, getVisibleIndexes]);
 
-  const visibleColumns = useMemo(() => totalColumns && getVisibleIndexes({
+  const visibleColumns = useMemo(() => totalColumns &amp;&amp; getVisibleIndexes({
     startIndex: columnsStartIndex,
     fix: fixColumns,
     visiblePageNumbers: visibleColumnsPageNumbers,
@@ -112,7 +140,7 @@ const useScroller = ({
   useEffect(() => {
     if (loadPage) {
       const loadPages = async () => {
-        for (let i = 0; i < visibleRowsPageNumbers.length; i++) {
+        for (let i = 0; i &lt; visibleRowsPageNumbers.length; i++) {
           const visiblePageNumber = visibleRowsPageNumbers[i];
           setBuffer(buffer => {
             if (buffer[visiblePageNumber]) return buffer;
@@ -132,7 +160,7 @@ const useScroller = ({
     }
   }, [visibleRowsPageNumbers, rowsPage, loadPage, rowsPerPage]);
 
-  const loadedValues = useMemo(() => loadPage && buffer.reduce((acc, page, index) => {
+  const loadedValues = useMemo(() => loadPage &amp;&amp; buffer.reduce((acc, page, index) => {
     const curPage = page || [...new Array(getItemsCountOnPage(index, rowsPerPage, totalRows)).fill()];
     return [...acc, ...curPage];
   }, []), [loadPage, buffer, rowsPerPage, totalRows]);
@@ -148,7 +176,7 @@ const useScroller = ({
     });
   }, [rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows, fixRows]);
 
-  const lastRowsPageGaps = useMemo(() => lazy && getGaps({
+  const lastRowsPageGaps = useMemo(() => lazy &amp;&amp; getGaps({
     meta: rows,
     defaultSize: defaultRowHeight,
     itemsPerPage: rowsPerPage,
@@ -158,7 +186,7 @@ const useScroller = ({
   }), [lazy, rows, lastRowsPage, rowsPerPage, defaultRowHeight, totalRows, fixRows]);
 
   const columnsGaps = useMemo(() => {
-    return totalColumns && getGaps({
+    return totalColumns &amp;&amp; getGaps({
       meta: columns,
       defaultSize: defaultColumnWidth,
       itemsPerPage: columnsPerPage,
@@ -173,19 +201,19 @@ const useScroller = ({
 
   const coverStyles = useMemo(() => ({
     height: lazy ? lastRowsPageGaps.start + lastRowsPageGaps.middle : rowsGaps.start + rowsGaps.middle + rowsGaps.end,
-    width: columnsGaps && (columnsGaps.start + columnsGaps.middle + columnsGaps.end),
+    width: columnsGaps &amp;&amp; (columnsGaps.start + columnsGaps.middle + columnsGaps.end),
     position: 'relative'
   }), [lazy, rowsGaps, columnsGaps, lastRowsPageGaps]);
   const pagesStyles = useMemo(() => {
     const pagesStyles = {
       top: rowsGaps.start - (rowsStartIndex > fixRows ? fixedRowsSize : 0),
-      left: columnsGaps && (columnsGaps.start - (columnsStartIndex > fixColumns ? fixedColumnsSize : 0)),
+      left: columnsGaps &amp;&amp; (columnsGaps.start - (columnsStartIndex > fixColumns ? fixedColumnsSize : 0)),
       position: 'absolute'
     };
     return pagesStyles;
   }, [rowsGaps, columnsGaps, columnsStartIndex, fixColumns, fixRows, fixedColumnsSize, fixedRowsSize, rowsStartIndex]);
 
-  const gridStyles = useMemo(() => totalColumns && {
+  const gridStyles = useMemo(() => totalColumns &amp;&amp; {
     display: 'inline-grid',
     gridTemplateColumns: `repeat(${visibleColumns.length}, auto)`
   }, [totalColumns, visibleColumns]);
@@ -205,13 +233,13 @@ const useScroller = ({
     return nextColumns.map((key, index) => ({ ...columnsMeta[index], offset: columnsOffsets[index]} ));
   }, [columns, columnsOffsets]);
 
-  const elements = useMemo(() => renderCell && visibleRows.reduce((acc, visibleRow) => {
-    const row = nextRows && nextRows[visibleRow];
+  const elements = useMemo(() => renderCell &amp;&amp; visibleRows.reduce((acc, visibleRow) => {
+    const row = nextRows &amp;&amp; nextRows[visibleRow];
     if (visibleColumns) {
       const columnsElements = visibleColumns.map(visibleColumn => {
-        const column = nextColumns && nextColumns[visibleColumn];
+        const column = nextColumns &amp;&amp; nextColumns[visibleColumn];
         const valueArray = loadedValues || value;
-        const curValue = valueArray[visibleRow] && valueArray[visibleRow][visibleColumn];
+        const curValue = valueArray[visibleRow] &amp;&amp; valueArray[visibleRow][visibleColumn];
         return renderCell({ rowIndex: visibleRow, columnIndex: visibleColumn, row, column, value: curValue });
       });
       return [...acc, ...columnsElements];
@@ -246,4 +274,26 @@ const useScroller = ({
 
 };
 
-export default useScroller;
+export default useScroller;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_Scroller.html">components/Scroller</a></li><li><a href="module-components_Scroller_utils.html">components/Scroller/utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#useResize">useResize</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Dec 12 2019 10:21:29 GMT+0500 (GMT+05:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

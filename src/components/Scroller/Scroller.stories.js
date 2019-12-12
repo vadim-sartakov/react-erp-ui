@@ -3,6 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
 import ScrollerCell from './ScrollerCell';
 import Scroller from './Scroller';
+import './types';
 
 export const generateMeta = count => {
   return [...new Array(count).keys()];
@@ -27,6 +28,10 @@ export const generateCustomMeta = (count, size) => [...new Array(count).keys()].
 export const listValue = generateListValues(1000);
 const listRows = generateCustomMeta(listValue.length, 80);
 
+/**
+ * @function
+ * @param {ScrollerProps} props 
+ */
 export const ListTestComponent = props => {
   const renderCell = useCallback(({ rowIndex, row, value }) => (
     <ScrollerCell className="row" key={rowIndex} row={row} index={rowIndex}>
@@ -49,7 +54,8 @@ const gridRows = generateCustomMeta(gridValue.length, 60);
 const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
 /**
- * @param {import('./useScroller').useScrollerOptions} props 
+ * @function
+ * @param {ScrollerProps} props 
  */
 export const GridTestComponent = props => {
   const renderCell = useCallback(({ rowIndex, columnIndex, row, column, value }) => (

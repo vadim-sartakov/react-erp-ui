@@ -1,6 +1,12 @@
 import React, { useMemo } from 'react';
 import ScrollContext from './ScrollerContext';
+import './types';
 
+/**
+ * @function
+ * @memberof module:components/Scroller
+ * @param {ScrollerContainerProps} props [ScrollerContainerProps]{@link module:components/Scroller~ScrollerContainerProps}
+ */
 const ScrollerContainer = ({
   width,
   height,
