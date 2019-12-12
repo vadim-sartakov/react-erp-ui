@@ -2,10 +2,6 @@ import React, { useContext } from 'react';
 import ScrollerContext from './ScrollerContext';
 import './useScroller';
 
-/**
- * @param {import('./').Scroller.ScrollerCellProps} props
- * @returns {import('react').ReactNode}
- */
 const ScrollerCell = React.memo(({
   style = {},
   row = {},

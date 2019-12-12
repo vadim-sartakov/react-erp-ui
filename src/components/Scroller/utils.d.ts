@@ -1,4 +1,2 @@
-declare namespace Scroller.utils {
-  function getVisiblePages(page: number): number[];
-  function getTotalPages(totalCount: number, itemsPerPage: number): number;
-}
+declare function getVisiblePages(page: number): number[];
+declare function getTotalPages(totalCount: number, itemsPerPage: number): number;

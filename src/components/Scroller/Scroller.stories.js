@@ -28,7 +28,7 @@ export const listValue = generateListValues(1000);
 const listRows = generateCustomMeta(listValue.length, 80);
 
 /**
- * @param {import('./').Scroller.ScrollerProps} props 
+ * @param {import('./Scroller')} props 
  */
 export const ListTestComponent = props => {
   const renderCell = useCallback(({ rowIndex, row, value }) => (
@@ -52,7 +52,7 @@ const gridRows = generateCustomMeta(gridValue.length, 60);
 const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
 /**
- * @param {import('./').Scroller.ScrollerProps} props 
+ * @param {import('./Scroller')} props 
  */
 export const GridTestComponent = props => {
   const renderCell = useCallback(({ rowIndex, columnIndex, row, column, value }) => (

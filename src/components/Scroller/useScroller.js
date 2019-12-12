@@ -8,10 +8,6 @@ import {
   getItemsSize
 } from './utils';
 
-/**
- * @param {import('./').Scroller.useScrollerProps} props
- * @returns {import('./').Scroller.useScrollerResult}
- */
 const useScroller = ({
   defaultRowHeight,
   defaultColumnWidth,
