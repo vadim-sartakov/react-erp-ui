@@ -1,5 +1,8 @@
 import { ReactElement, HTMLAttributes, CSSProperties, ReactNode } from "react";
 
+/**
+ * Scroller Component
+ */
 export declare namespace Scroller {
 
   export interface Meta {
@@ -60,11 +63,11 @@ export declare namespace Scroller {
 
   export interface ScrollerProps extends useScrollerProps, ScrollerContainerProps {}
 
-  /**
-   * Data scrolling and buffering component, helps to deal with large data sets rendering, displaying only visible part of data.
-   */
-  export type Scroller = (props: ScrollerProps) => ReactNode
-
 }
+
+/**
+ * Data scrolling and buffering component, helps to deal with large data sets rendering, displaying only visible part of data.
+ */
+declare function Scroller(props: Scroller.ScrollerProps): ReactNode
 
 export default Scroller;

@@ -1,25 +1,10 @@
-/** @module */
-import './types';
-
 /**
  * @typedef ScrollPage
  * @property {number} start
  * @property {number} end
  */
 
- /**
-  * @function
-  * @param {number} page
-  * @returns {number[]}
-  */
 export const getVisiblePages = page => page === 0 ? [0, 1] : [page - 1, page];
-
-/**
- * @function
- * @param {number} totalCount 
- * @param {number} itemsPerPage
- * @returns {number}
- */
 export const getTotalPages = (totalCount, itemsPerPage) => Math.ceil(totalCount / itemsPerPage);
 
 /**
