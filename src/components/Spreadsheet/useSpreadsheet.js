@@ -1,42 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import './types';
 
 /**
- * @typedef {Object} Meta
- * @property {number} [size] 
- * @property {boolean} [hidden] 
- * @property {number} [boolean] 
- */
-
-/**
- * @callback formatCallback
- * @param {*} value
- * @return {*}
- * 
- * @typedef {Object} CellValue
- * @property {*} value
- * @property {formatCallback} [format]
- * @property {string} [formula]
- */
-
-/**
- * @typedef {Object} useSpreadsheetOptions
- * @property {number} defaultRowHeight
- * @property {number} defaultColumnWidth
- * @property {number} totalRows
- * @property {number} totalColumns
- * @property {number} rowsPerPage
- * @property {number} columnsPerPage
- * @property {Meta[]} rows
- * @property {Meta[]} columns
- * @property {number} [fixRows=0]
- * @property {number} [fixColumns=0]
- * @property {CellValue[][]} value
- * @property {number} columnNumbersRowHeight
- * @property {number} rowNumberColumnWidth
- */
-
-/**
- * 
+ * @function
  * @param {useSpreadsheetOptions} props 
  */
 const useSpreadsheet = ({
@@ -54,11 +20,11 @@ const useSpreadsheet = ({
   fixColumns = 0
 }) => {
   const [rowsState, setRowsState] = useState([]);
-  const rows = [{ size: columnNumbersRowHeight, type: 'COLUMN_NUMBERS' }, ...(rowsProps || rowsState)];
+  const rows = useMemo(() => [{ size: columnNumbersRowHeight, type: 'COLUMN_NUMBERS' }, ...(rowsProps || rowsState)], [columnNumbersRowHeight, rowsProps, rowsState]);
   const onRowsChange = onRowsChangeProp || setRowsState;
 
   const [columnsState, setColumnsState] = useState([]);
-  const columns = [{ size: rowNumberColumnWidth, type: 'ROW_NUMBERS' }, ...(columnsProp || columnsState)];
+  const columns = useMemo(() => [{ size: rowNumberColumnWidth, type: 'ROW_NUMBERS' }, ...(columnsProp || columnsState)], [rowNumberColumnWidth, columnsProp, columnsState]);
   const onColumnsChange = onColumnsChangeProp || setColumnsState;
 
   const spreadsheetContainerProps = {
