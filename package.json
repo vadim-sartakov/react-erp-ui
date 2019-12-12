@@ -18,7 +18,7 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public -o docs/storybook",
-    "build-docs": "jsdoc -r src -d docs/docs -c jsdoc.json README.md"
+    "build-docs": "typedoc --includeDeclarations --excludeExternals --ignoreCompilerErrors --out docs/docs --mode file --readme README.md src/"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -47,7 +47,8 @@
     "enzyme-to-json": "^3.4.0",
     "jsdoc": "^3.6.3",
     "node-sass": "^4.12.0",
-    "react-scripts": "^3.2.0"
+    "react-scripts": "^3.2.0",
+    "typedoc": "^0.15.4"
   },
   "jest": {
     "snapshotSerializers": [

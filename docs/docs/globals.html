@@ -61,70 +61,24 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<a href="#react-erp-ui" id="react-erp-ui" style="color: inherit; text-decoration: none;">
-					<h1>React ERP UI</h1>
-				</a>
-				<p>UI library for building ERP applications.</p>
-				<a href="#scroller" id="scroller" style="color: inherit; text-decoration: none;">
-					<h2>Scroller</h2>
-				</a>
-				<p>Data scrolling and buffering component, helps to deal with large data sets rendering, displaying only visible part of data. Similar to <a href="https://github.com/bvaughn/react-virtualized">react-virtualized</a> or <a href="https://github.com/bvaughn/react-window">react-window</a> but with a bit different API. It combines List and Grid components, meanwile providing such features as:</p>
-				<ul>
-					<li>Async load</li>
-					<li>Load on demand (when scroller threshold is reached)</li>
-					<li>Fixed cells</li>
-				</ul>
-				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
-					<h3>Example</h3>
-				</a>
-				<pre><code class="language-javascript"><span class="hljs-keyword">const</span> loadPage = <span class="hljs-keyword">async</span> (page, itemsPerPage) =&gt; {
-  <span class="hljs-keyword">return</span> fetch(<span class="hljs-string">`/endpoint?page=<span class="hljs-subst">${page}</span>&amp;size=<span class="hljs-subst">${itemsPerPage}</span>`</span>);
-};
-
-<span class="hljs-keyword">const</span> renderCell = <span class="hljs-function">(<span class="hljs-params">{ rowIndex, row, value }</span>) =&gt;</span> {
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ScrollerCell</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{rowIndex}</span> <span class="hljs-attr">row</span>=<span class="hljs-string">{row}</span> <span class="hljs-attr">index</span>=<span class="hljs-string">{rowIndex}</span>&gt;</span>
-      {value}
-    <span class="hljs-tag">&lt;/<span class="hljs-name">ScrollerCell</span>&gt;</span></span>
-  )
-};
-
-<span class="hljs-keyword">const</span> ListComponent = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Scroller</span>
-        <span class="hljs-attr">defaultRowHeight</span>=<span class="hljs-string">{40}</span>
-        <span class="hljs-attr">totalRows</span>=<span class="hljs-string">{1000}</span>
-        <span class="hljs-attr">rowsPerPage</span>=<span class="hljs-string">{30}</span>
-        <span class="hljs-attr">loadPage</span>=<span class="hljs-string">{loadPage}</span>
-        <span class="hljs-attr">lazy</span>
-        <span class="hljs-attr">renderCell</span>=<span class="hljs-string">{renderCell}</span> /&gt;</span>
-  )
-};</span></code></pre>
-				<a href="#spreadsheet" id="spreadsheet" style="color: inherit; text-decoration: none;">
-					<h2>Spreadsheet</h2>
-				</a>
-				<p>Excel-like tabular spreadsheet component. Serves as a base component for building custom spreadsheet. Supports the following features:</p>
-				<ul>
-					<li>Merged cells</li>
-					<li>Rows/columns resizing</li>
-					<li>Rows/columns grouping</li>
-					<li>Excel export</li>
-				</ul>
-				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
-					<h1>Documentation</h1>
-				</a>
-				<p>Documentation available <a href="https://vadim-sartakov.github.io/react-erp-ui/docs/">here</a>.</p>
-				<a href="#storybook" id="storybook" style="color: inherit; text-decoration: none;">
-					<h1>Storybook</h1>
-				</a>
-				<p>Interactive examples can be found <a href="https://vadim-sartakov.github.io/react-erp-ui/storybook/">here</a>.</p>
-			</div>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Modules</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-module"><a href="modules/scroller.html" class="tsd-kind-icon">Scroller</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
+					<li class="globals current ">
 						<a href="globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-module">

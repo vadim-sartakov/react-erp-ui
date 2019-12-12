@@ -7,13 +7,10 @@ import {
   getFixedOffsets,
   getItemsSize
 } from './utils';
-import './types';
 
 /**
- * @function
- * @memberof module:components/Scroller
- * @param {useScrollerOptions} options [useScrollerOptions]{@link module:components/Scroller~useScrollerOptions}
- * @returns {useScrollerResult} [useScrollerResult]{@link module:components/Scroller~useScrollerResult}
+ * @param {import('./').Scroller.useScrollerProps} props
+ * @returns {import('./').Scroller.useScrollerResult}
  */
 const useScroller = ({
   defaultRowHeight,

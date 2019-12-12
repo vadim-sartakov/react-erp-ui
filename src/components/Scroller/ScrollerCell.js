@@ -1,12 +1,10 @@
 import React, { useContext } from 'react';
 import ScrollerContext from './ScrollerContext';
 import './useScroller';
-import './types';
 
 /**
- * @function
- * @memberof module:components/Scroller
- * @param {ScrollerCellProps} props [ScrollerCellProps]{@link module:components/Scroller~ScrollerCellProps}
+ * @param {import('./').Scroller.ScrollerCellProps} props
+ * @returns {import('react').ReactNode}
  */
 const ScrollerCell = React.memo(({
   style = {},
