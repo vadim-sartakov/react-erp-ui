@@ -1,7 +1,7 @@
-import { CSSProperties } from "react";
+import { CSSProperties, ElementType } from "react";
 
-export as namespace Scroller;
 export = Scroller;
+export as namespace Scroller;
 
 /**
  * Data scrolling and buffering component, helps to deal with large data sets rendering, displaying only visible part of data.
@@ -27,6 +27,9 @@ declare namespace Scroller {
     pagesStyles: CSSProperties;
   }
 
+  /**
+   * Scroller container which also creates scroller context
+   */
   function ScrollerContainer(props: ScrollerContainerProps): JSX.Element;
 
   interface useScrollerOptions {
@@ -61,10 +64,13 @@ declare namespace Scroller {
     scrollerContainerProps: ScrollerContainerProps 
   }
 
+  /**
+   * Scroller hook which deals with all scroller state management 
+   */
   function useScroller(options: useScrollerOptions): useScrollerResult
 
   interface ScrollerCellProps {
-    Component?: any;
+    Component?: ElementType;
     row: Meta;
     column: Meta;
   }
