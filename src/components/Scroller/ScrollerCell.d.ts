@@ -7,6 +7,6 @@ export interface ScrollerCellProps {
   column: Meta;
 }
 
-declare const ScrollerCell: ElementType<ScrollerCellProps>;
+declare function ScrollerCell(props: ScrollerCellProps): JSX.Element;
 
 export default ScrollerCell;

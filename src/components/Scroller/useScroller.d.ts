@@ -33,4 +33,4 @@ export interface useScrollerResult {
   scrollerContainerProps: ScrollerContainerProps 
 }
 
-export default function useScroller(options: useScrollerOptions): useScrollerResult
+export default function useScroller(options: useScrollerOptions): useScrollerResult;

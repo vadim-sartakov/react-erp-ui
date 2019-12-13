@@ -12,6 +12,6 @@ export interface ScrollerContainerProps {
   pagesStyles: CSSProperties;
 }
 
-declare const ScrollerContainer: ElementType<ScrollerContainerProps>;
+declare function ScrollerContainer(props: ScrollerContainerProps): JSX.Element;
 
 export default ScrollerContainer;
