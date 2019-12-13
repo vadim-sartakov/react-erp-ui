@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>useScrollerResult | react-erp-ui</title>
+	<title>Meta | react-erp-ui</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="usescrollerresult.html">useScrollerResult</a>
+					<a href="../modules/scroller.html">Scroller</a>
+				</li>
+				<li>
+					<a href="scroller.meta.html">Meta</a>
 				</li>
 			</ul>
-			<h1>Interface useScrollerResult</h1>
+			<h1>Interface Meta</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">useScrollerResult</span>
+						<span class="target">Meta</span>
 					</li>
 				</ul>
 			</section>
@@ -76,63 +79,40 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
+						<section class="tsd-index-section tsd-is-not-exported">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="usescrollerresult.html#columnsstartindex" class="tsd-kind-icon">columns<wbr>Start<wbr>Index</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="usescrollerresult.html#loadedvalues" class="tsd-kind-icon">loaded<wbr>Values</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="usescrollerresult.html#rowsstartindex" class="tsd-kind-icon">rows<wbr>Start<wbr>Index</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="usescrollerresult.html#scrollercontainerprops" class="tsd-kind-icon">scroller<wbr>Container<wbr>Props</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.meta.html#offset" class="tsd-kind-icon">offset</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.meta.html#size" class="tsd-kind-icon">size</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
+			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="columnsstartindex" class="tsd-anchor"></a>
-					<h3>columns<wbr>Start<wbr>Index</h3>
-					<div class="tsd-signature tsd-kind-icon">columns<wbr>Start<wbr>Index<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="offset" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> offset</h3>
+					<div class="tsd-signature tsd-kind-icon">offset<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/7440fc1/src/components/Scroller/useScroller.d.ts#L32">useScroller.d.ts:32</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="loadedvalues" class="tsd-anchor"></a>
-					<h3>loaded<wbr>Values</h3>
-					<div class="tsd-signature tsd-kind-icon">loaded<wbr>Values<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/7440fc1/src/components/Scroller/useScroller.d.ts#L30">useScroller.d.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/1f5d263/src/components/Scroller/index.d.ts#L15">index.d.ts:15</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Values loaded asynchronously. Applicable only for &#39;async&#39; mode
-							when &#39;loadPage&#39; callback specified</p>
+							<p>Offset for sticky positioning</p>
 						</div>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="rowsstartindex" class="tsd-anchor"></a>
-					<h3>rows<wbr>Start<wbr>Index</h3>
-					<div class="tsd-signature tsd-kind-icon">rows<wbr>Start<wbr>Index<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="size" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> size</h3>
+					<div class="tsd-signature tsd-kind-icon">size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/7440fc1/src/components/Scroller/useScroller.d.ts#L31">useScroller.d.ts:31</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="scrollercontainerprops" class="tsd-anchor"></a>
-					<h3>scroller<wbr>Container<wbr>Props</h3>
-					<div class="tsd-signature tsd-kind-icon">scroller<wbr>Container<wbr>Props<span class="tsd-signature-symbol">:</span> <a href="scrollercontainerprops.html" class="tsd-signature-type">ScrollerContainerProps</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/7440fc1/src/components/Scroller/useScroller.d.ts#L33">useScroller.d.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/1f5d263/src/components/Scroller/index.d.ts#L13">index.d.ts:13</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -144,63 +124,51 @@
 					<li class="globals  ">
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
+					<li class="current tsd-kind-module tsd-is-not-exported">
+						<a href="../modules/scroller.html">Scroller</a>
+					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-interface">
-						<a href="meta.html" class="tsd-kind-icon">Meta</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="scrollercellprops.html" class="tsd-kind-icon">Scroller<wbr>Cell<wbr>Props</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="scrollercontainerprops.html" class="tsd-kind-icon">Scroller<wbr>Container<wbr>Props</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="scrollerprops.html" class="tsd-kind-icon">Scroller<wbr>Props</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="usescrolleroptions.html" class="tsd-kind-icon">use<wbr>Scroller<wbr>Options</a>
-					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="usescrollerresult.html" class="tsd-kind-icon">use<wbr>Scroller<wbr>Result</a>
+					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="scroller.meta.html" class="tsd-kind-icon">Meta</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="usescrollerresult.html#columnsstartindex" class="tsd-kind-icon">columns<wbr>Start<wbr>Index</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="scroller.meta.html#offset" class="tsd-kind-icon">offset</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="usescrollerresult.html#loadedvalues" class="tsd-kind-icon">loaded<wbr>Values</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="usescrollerresult.html#rowsstartindex" class="tsd-kind-icon">rows<wbr>Start<wbr>Index</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="usescrollerresult.html#scrollercontainerprops" class="tsd-kind-icon">scroller<wbr>Container<wbr>Props</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="scroller.meta.html#size" class="tsd-kind-icon">size</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#scroller" class="tsd-kind-icon">Scroller</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="scroller.scrollercellprops.html" class="tsd-kind-icon">Scroller<wbr>Cell<wbr>Props</a>
 					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#scrollercell" class="tsd-kind-icon">Scroller<wbr>Cell</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="scroller.scrollercontainerprops.html" class="tsd-kind-icon">Scroller<wbr>Container<wbr>Props</a>
 					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#scrollercontainer" class="tsd-kind-icon">Scroller<wbr>Container</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="scroller.scrollerprops.html" class="tsd-kind-icon">Scroller<wbr>Props</a>
 					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="../globals.html#gettotalpages" class="tsd-kind-icon">get<wbr>Total<wbr>Pages</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="scroller.usescrolleroptions.html" class="tsd-kind-icon">use<wbr>Scroller<wbr>Options</a>
 					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="../globals.html#getvisiblepages" class="tsd-kind-icon">get<wbr>Visible<wbr>Pages</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="scroller.usescrollerresult.html" class="tsd-kind-icon">use<wbr>Scroller<wbr>Result</a>
 					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#usescroller" class="tsd-kind-icon">use<wbr>Scroller</a>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/scroller.html#scrollercell" class="tsd-kind-icon">Scroller<wbr>Cell</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/scroller.html#scrollercontainer" class="tsd-kind-icon">Scroller<wbr>Container</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/scroller.html#usescroller" class="tsd-kind-icon">use<wbr>Scroller</a>
 					</li>
 				</ul>
 			</nav>
