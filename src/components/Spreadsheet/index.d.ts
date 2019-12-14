@@ -2,6 +2,10 @@ import { useScrollerOptionsBase } from '../Scroller/index';
 
 export = Spreadsheet;
 
+/**
+ * Data grid, Excel-like spreadsheet component.
+ * Integrated with [Scroller]{@link Scroller} to able to handle large sets of data.
+ */
 declare function Spreadsheet(props: Spreadsheet.SpreadsheetProps): JSX.Element
 
 declare namespace Spreadsheet {
@@ -30,6 +34,7 @@ declare namespace Spreadsheet {
   /** Group object describing grouped items range */
   interface Group {
     start: number;
+    /** Inclusive */
     end: number;
   }
 
@@ -76,7 +81,7 @@ declare namespace Spreadsheet {
   }
 
   /**
-   * @returns SpreadsheetCell component
+   * Should return [SpreadsheetCell]{@link Spreadsheet.SpreadsheetCell} component as root.
    */
   type renderCallback = (options: renderOptions) => JSX.Element
 
@@ -105,7 +110,9 @@ declare namespace Spreadsheet {
     value: Value;    
   }
 
-  /** Spreadsheet cell component. All render callbacks should return this component */
+  /**
+   * Integrated with [ScrollerCell]{@link Scroller.ScrollerCell}
+   */
   function SpreadsheetCell(props: SpreadsheetCellProps): JSX.Element
 
   interface SpreadsheetProps extends useSpreadsheetOptions, SpreadsheetContainerProps {}

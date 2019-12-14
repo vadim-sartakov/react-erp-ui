@@ -1,6 +1,6 @@
  /**
   * 
-  * @param {*} value
+  * @param {import('./').Meta} meta
   * @returns {import('./').Group[][]}
   */
-export const getGroups = value => {};
+export const getGroups = meta => {};
