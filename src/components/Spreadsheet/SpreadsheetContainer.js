@@ -2,15 +2,8 @@ import React, { useMemo } from 'react';
 import SpreadsheetContext from './SpreadsheetContext';
 
 /**
- * @typedef {import('react').HTMLAttributes} SpreadsheetContainerProps
- * @property {function} onRowsChange
- * @property {function} onColumnsChange
- * @property {number} defaultColumnWidth
- * @property {number} defaultRowHeight
- * @property {number} fixRows
- * @property {number} fixColumns
+ * @param {import('./').SpreadsheetContainerProps} props 
  */
-
 const SpreadsheetContainer = ({
   onRowsChange,
   onColumnsChange,

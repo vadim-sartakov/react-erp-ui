@@ -1,9 +1,7 @@
 import { useState, useMemo } from 'react';
-import './types';
 
 /**
- * @function
- * @param {useSpreadsheetOptions} props 
+ * @param {import('./').useSpreadsheetOptions} options 
  */
 const useSpreadsheet = ({
   rows: rowsProps,

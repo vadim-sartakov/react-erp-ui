@@ -10,6 +10,9 @@ const getMergedSize = ({ count, meta = [], startIndex, defaultSize }) => {
   }, 0);
 };
 
+/**
+ * @param {import('./').SpreadsheetCellProps} props 
+ */
 const SpreadsheetCell = ({
   rowIndex,
   columnIndex,

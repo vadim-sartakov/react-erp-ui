@@ -3,17 +3,17 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>react-erp-ui</title>
+	<title>Group | react-erp-ui</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
 <header>
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">react-erp-ui</a>
+					<a href="../index.html" class="title">react-erp-ui</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -51,92 +51,148 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="globals.html">Globals</a>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="../modules/spreadsheet.html">Spreadsheet</a>
+				</li>
+				<li>
+					<a href="spreadsheet.group.html">Group</a>
 				</li>
 			</ul>
-			<h1> react-erp-ui</h1>
+			<h1>Interface Group</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<a href="#react-erp-ui" id="react-erp-ui" style="color: inherit; text-decoration: none;">
-					<h1>React ERP UI</h1>
-				</a>
-				<p>UI library for building ERP applications.</p>
-				<a href="#scroller" id="scroller" style="color: inherit; text-decoration: none;">
-					<h2>Scroller</h2>
-				</a>
-				<p>Data scrolling and buffering component, helps to deal with large data sets rendering, displaying only visible part of data. Similar to <a href="https://github.com/bvaughn/react-virtualized">react-virtualized</a> or <a href="https://github.com/bvaughn/react-window">react-window</a> but with a bit different API. It combines List and Grid components, meanwile providing such features as:</p>
-				<ul>
-					<li>Async load</li>
-					<li>Load on demand (when scroller threshold is reached)</li>
-					<li>Fixed cells</li>
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Group object describing grouped items range</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Group</span>
+					</li>
 				</ul>
-				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
-					<h3>Example</h3>
-				</a>
-				<pre><code class="language-javascript"><span class="hljs-keyword">const</span> loadPage = <span class="hljs-keyword">async</span> (page, itemsPerPage) =&gt; {
-  <span class="hljs-keyword">return</span> fetch(<span class="hljs-string">`/endpoint?page=<span class="hljs-subst">${page}</span>&amp;size=<span class="hljs-subst">${itemsPerPage}</span>`</span>);
-};
-
-<span class="hljs-keyword">const</span> renderCell = <span class="hljs-function">(<span class="hljs-params">{ rowIndex, row, value }</span>) =&gt;</span> {
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ScrollerCell</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{rowIndex}</span> <span class="hljs-attr">row</span>=<span class="hljs-string">{row}</span> <span class="hljs-attr">index</span>=<span class="hljs-string">{rowIndex}</span>&gt;</span>
-      {value}
-    <span class="hljs-tag">&lt;/<span class="hljs-name">ScrollerCell</span>&gt;</span></span>
-  )
-};
-
-<span class="hljs-keyword">const</span> ListComponent = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Scroller</span>
-        <span class="hljs-attr">defaultRowHeight</span>=<span class="hljs-string">{40}</span>
-        <span class="hljs-attr">totalRows</span>=<span class="hljs-string">{1000}</span>
-        <span class="hljs-attr">rowsPerPage</span>=<span class="hljs-string">{30}</span>
-        <span class="hljs-attr">loadPage</span>=<span class="hljs-string">{loadPage}</span>
-        <span class="hljs-attr">lazy</span>
-        <span class="hljs-attr">renderCell</span>=<span class="hljs-string">{renderCell}</span> /&gt;</span>
-  )
-};</span></code></pre>
-				<a href="#spreadsheet" id="spreadsheet" style="color: inherit; text-decoration: none;">
-					<h2>Spreadsheet</h2>
-				</a>
-				<p>Excel-like tabular spreadsheet component. Serves as a base component for building custom spreadsheet. Supports the following features:</p>
-				<ul>
-					<li>Merged cells</li>
-					<li>Rows/columns resizing</li>
-					<li>Rows/columns grouping</li>
-					<li>Excel export</li>
-				</ul>
-				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
-					<h1>Documentation</h1>
-				</a>
-				<p>Documentation available <a href="https://vadim-sartakov.github.io/react-erp-ui/docs/">here</a>.</p>
-				<a href="#storybook" id="storybook" style="color: inherit; text-decoration: none;">
-					<h1>Storybook</h1>
-				</a>
-				<p>Interactive examples can be found <a href="https://vadim-sartakov.github.io/react-erp-ui/storybook/">here</a>.</p>
-			</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section tsd-is-not-exported">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.group.html#end" class="tsd-kind-icon">end</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.group.html#start" class="tsd-kind-icon">start</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="end" class="tsd-anchor"></a>
+					<h3>end</h3>
+					<div class="tsd-signature tsd-kind-icon">end<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Spreadsheet/index.d.ts#L33">Spreadsheet/index.d.ts:33</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="start" class="tsd-anchor"></a>
+					<h3>start</h3>
+					<div class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Spreadsheet/index.d.ts#L32">Spreadsheet/index.d.ts:32</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
+						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-not-exported">
-						<a href="modules/scroller.html">Scroller</a>
+						<a href="../modules/scroller.html">Scroller</a>
 					</li>
-					<li class=" tsd-kind-module tsd-is-not-exported">
-						<a href="modules/spreadsheet.html">Spreadsheet</a>
+					<li class="current tsd-kind-module tsd-is-not-exported">
+						<a href="../modules/spreadsheet.html">Spreadsheet</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="spreadsheet.group.html" class="tsd-kind-icon">Group</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.group.html#end" class="tsd-kind-icon">end</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.group.html#start" class="tsd-kind-icon">start</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="spreadsheet.meta.html" class="tsd-kind-icon">Meta</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="spreadsheet.spreadsheetcellprops.html" class="tsd-kind-icon">Spreadsheet<wbr>Cell<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="spreadsheet.spreadsheetcontainerprops.html" class="tsd-kind-icon">Spreadsheet<wbr>Container<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="spreadsheet.spreadsheetprops.html" class="tsd-kind-icon">Spreadsheet<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="spreadsheet.value.html" class="tsd-kind-icon">Value</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="spreadsheet.renderoptions.html" class="tsd-kind-icon">render<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="spreadsheet.usespreadsheetoptions.html" class="tsd-kind-icon">use<wbr>Spreadsheet<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="spreadsheet.usespreadsheetrenderoptions.html" class="tsd-kind-icon">use<wbr>Spreadsheet<wbr>Render<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="spreadsheet.usespreadsheetresult.html" class="tsd-kind-icon">use<wbr>Spreadsheet<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/spreadsheet.html#rendercallback" class="tsd-kind-icon">render<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/spreadsheet.html#spreadsheetcell" class="tsd-kind-icon">Spreadsheet<wbr>Cell</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/spreadsheet.html#spreadsheetcontainer" class="tsd-kind-icon">Spreadsheet<wbr>Container</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/spreadsheet.html#usespreadsheet" class="tsd-kind-icon">use<wbr>Spreadsheet</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/spreadsheet.html#usespreadsheetrender" class="tsd-kind-icon">use<wbr>Spreadsheet<wbr>Render</a>
+					</li>
 				</ul>
 			</nav>
 		</div>
@@ -206,7 +262,7 @@
 	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>

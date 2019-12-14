@@ -6,11 +6,7 @@ import useSpreadsheet from './useSpreadsheet';
 import useSpreadsheetRender from './useSpreadsheetRender';
 
 /**
- * @typedef {import('./SpreadsheetContainer').SpreadsheetContainerProps | import('./useSpreadsheet').useSpreadsheetOptions} SpreadsheetProps
- */
-
-/**
- * @param {SpreadsheetProps} props 
+ * @param {import('./').SpreadsheetProps} props 
  */
 const Spreadsheet = props => {
   const {

@@ -32,7 +32,7 @@ declare namespace Scroller {
    */
   function ScrollerContainer(props: ScrollerContainerProps): JSX.Element;
 
-  interface useScrollerOptions {
+  interface useScrollerOptionsBase {
     defaultRowHeight: number;
     defaultColumnWidth: number;
     totalRows: number;
@@ -41,19 +41,30 @@ declare namespace Scroller {
     columnsPerPage: number;
     rows?: Meta[];
     columns?: Meta[];
+    fixRows?: number;
+    fixColumns?: number
+  }
+
+  interface useScrollerOptions extends useScrollerOptionsBase {
     /** Sync value */
     value?: any[][];
     /** When set to true whe height of scroller will expand on demand */
-    lazy: boolean;
+    lazy?: boolean;
     /** Load async page callback */
     loadPage?: (page: number, itemsPerPage: number) => void;
     /** Render scroller cell callback. Should be memorized */
     renderCell?: (options: { row: Meta, column: Meta, value: any }) => JSX.Element;
-    fixRows?: number;
-    fixColumns?: number
   }
   
   interface useScrollerResult {
+    /** Rows indexes */
+    visibleRows: number[],
+    /** Columns indexes */
+    visibleColumns: number[],
+    /** Rows meta with added offset */
+    rows?: Meta[],
+    /** Columns meta with added offset */
+    columns?: Meta[]
     /**
      * Values loaded asynchronously. Applicable only for 'async' mode
      * when 'loadPage' callback specified
@@ -61,6 +72,10 @@ declare namespace Scroller {
     loadedValues: any[][];
     rowsStartIndex: number; 
     columnsStartIndex: number;
+    /** CSS grid styles. Should be passed to grid container */
+    gridStyles: CSSProperties;
+    /** Rendered elements. Calculated when 'renderCell' is specified */
+    elements: JSX.Element;
     scrollerContainerProps: ScrollerContainerProps 
   }
 

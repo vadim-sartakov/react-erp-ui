@@ -82,10 +82,16 @@
 						<section class="tsd-index-section tsd-is-not-exported">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.usescrollerresult.html#columns" class="tsd-kind-icon">columns</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.usescrollerresult.html#columnsstartindex" class="tsd-kind-icon">columns<wbr>Start<wbr>Index</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.usescrollerresult.html#elements" class="tsd-kind-icon">elements</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.usescrollerresult.html#gridstyles" class="tsd-kind-icon">grid<wbr>Styles</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.usescrollerresult.html#loadedvalues" class="tsd-kind-icon">loaded<wbr>Values</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.usescrollerresult.html#rows" class="tsd-kind-icon">rows</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.usescrollerresult.html#rowsstartindex" class="tsd-kind-icon">rows<wbr>Start<wbr>Index</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.usescrollerresult.html#scrollercontainerprops" class="tsd-kind-icon">scroller<wbr>Container<wbr>Props</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.usescrollerresult.html#visiblecolumns" class="tsd-kind-icon">visible<wbr>Columns</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="scroller.usescrollerresult.html#visiblerows" class="tsd-kind-icon">visible<wbr>Rows</a></li>
 							</ul>
 						</section>
 					</div>
@@ -94,14 +100,59 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="columns" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> columns</h3>
+					<div class="tsd-signature tsd-kind-icon">columns<span class="tsd-signature-symbol">:</span> <a href="scroller.meta.html" class="tsd-signature-type">Meta</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Scroller/index.d.ts#L67">Scroller/index.d.ts:67</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Columns meta with added offset</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
 					<a name="columnsstartindex" class="tsd-anchor"></a>
 					<h3>columns<wbr>Start<wbr>Index</h3>
 					<div class="tsd-signature tsd-kind-icon">columns<wbr>Start<wbr>Index<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/2ca3311/src/components/Scroller/index.d.ts#L63">index.d.ts:63</a></li>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Scroller/index.d.ts#L74">Scroller/index.d.ts:74</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="elements" class="tsd-anchor"></a>
+					<h3>elements</h3>
+					<div class="tsd-signature tsd-kind-icon">elements<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Element</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Scroller/index.d.ts#L78">Scroller/index.d.ts:78</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Rendered elements. Calculated when &#39;renderCell&#39; is specified</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="gridstyles" class="tsd-anchor"></a>
+					<h3>grid<wbr>Styles</h3>
+					<div class="tsd-signature tsd-kind-icon">grid<wbr>Styles<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CSSProperties</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Scroller/index.d.ts#L76">Scroller/index.d.ts:76</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>CSS grid styles. Should be passed to grid container</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
 					<a name="loadedvalues" class="tsd-anchor"></a>
@@ -109,7 +160,7 @@
 					<div class="tsd-signature tsd-kind-icon">loaded<wbr>Values<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/2ca3311/src/components/Scroller/index.d.ts#L61">index.d.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Scroller/index.d.ts#L72">Scroller/index.d.ts:72</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -120,12 +171,27 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="rows" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> rows</h3>
+					<div class="tsd-signature tsd-kind-icon">rows<span class="tsd-signature-symbol">:</span> <a href="scroller.meta.html" class="tsd-signature-type">Meta</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Scroller/index.d.ts#L65">Scroller/index.d.ts:65</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Rows meta with added offset</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
 					<a name="rowsstartindex" class="tsd-anchor"></a>
 					<h3>rows<wbr>Start<wbr>Index</h3>
 					<div class="tsd-signature tsd-kind-icon">rows<wbr>Start<wbr>Index<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/2ca3311/src/components/Scroller/index.d.ts#L62">index.d.ts:62</a></li>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Scroller/index.d.ts#L73">Scroller/index.d.ts:73</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -135,9 +201,39 @@
 					<div class="tsd-signature tsd-kind-icon">scroller<wbr>Container<wbr>Props<span class="tsd-signature-symbol">:</span> <a href="scroller.scrollercontainerprops.html" class="tsd-signature-type">ScrollerContainerProps</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/2ca3311/src/components/Scroller/index.d.ts#L64">index.d.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Scroller/index.d.ts#L79">Scroller/index.d.ts:79</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="visiblecolumns" class="tsd-anchor"></a>
+					<h3>visible<wbr>Columns</h3>
+					<div class="tsd-signature tsd-kind-icon">visible<wbr>Columns<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Scroller/index.d.ts#L63">Scroller/index.d.ts:63</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Columns indexes</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="visiblerows" class="tsd-anchor"></a>
+					<h3>visible<wbr>Rows</h3>
+					<div class="tsd-signature tsd-kind-icon">visible<wbr>Rows<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/cec11af/src/components/Scroller/index.d.ts#L61">Scroller/index.d.ts:61</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Rows indexes</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -149,6 +245,9 @@
 					</li>
 					<li class="current tsd-kind-module tsd-is-not-exported">
 						<a href="../modules/scroller.html">Scroller</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-not-exported">
+						<a href="../modules/spreadsheet.html">Spreadsheet</a>
 					</li>
 				</ul>
 			</nav>
@@ -169,22 +268,43 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
 						<a href="scroller.usescrolleroptions.html" class="tsd-kind-icon">use<wbr>Scroller<wbr>Options</a>
 					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="scroller.usescrolleroptionsbase.html" class="tsd-kind-icon">use<wbr>Scroller<wbr>Options<wbr>Base</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
 						<a href="scroller.usescrollerresult.html" class="tsd-kind-icon">use<wbr>Scroller<wbr>Result</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="scroller.usescrollerresult.html#columns" class="tsd-kind-icon">columns</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
 								<a href="scroller.usescrollerresult.html#columnsstartindex" class="tsd-kind-icon">columns<wbr>Start<wbr>Index</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="scroller.usescrollerresult.html#elements" class="tsd-kind-icon">elements</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="scroller.usescrollerresult.html#gridstyles" class="tsd-kind-icon">grid<wbr>Styles</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
 								<a href="scroller.usescrollerresult.html#loadedvalues" class="tsd-kind-icon">loaded<wbr>Values</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="scroller.usescrollerresult.html#rows" class="tsd-kind-icon">rows</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
 								<a href="scroller.usescrollerresult.html#rowsstartindex" class="tsd-kind-icon">rows<wbr>Start<wbr>Index</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
 								<a href="scroller.usescrollerresult.html#scrollercontainerprops" class="tsd-kind-icon">scroller<wbr>Container<wbr>Props</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="scroller.usescrollerresult.html#visiblecolumns" class="tsd-kind-icon">visible<wbr>Columns</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="scroller.usescrollerresult.html#visiblerows" class="tsd-kind-icon">visible<wbr>Rows</a>
 							</li>
 						</ul>
 					</li>
