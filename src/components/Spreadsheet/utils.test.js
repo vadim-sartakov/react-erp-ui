@@ -2,21 +2,21 @@ import {
   getGroups
 } from './utils';
 
-describe('spreadsheet utils', () => {
+describe('Spreadsheet utils', () => {
 
   describe('getGroups', () => {
 
-    it.skip('should calculate groups', () => {
+    it('should calculate groups', () => {
       const meta = [
-        {},
+        { level: 1 },
         { level: 1 },
         { level: 1 },
         { level: 2 },
         { level: 2 },
         { level: 3 },
         { level: 3 },
-        { level: 1 },
-        { level: 1 },
+        { level: 3 },
+        { level: 3 },
         {},
         { level: 1 },
         { level: 1 },
@@ -29,7 +29,7 @@ describe('spreadsheet utils', () => {
         // Level 1 group
         [
           {
-            start: 1,
+            start: 0,
             end: 8
           },
           {
@@ -41,7 +41,7 @@ describe('spreadsheet utils', () => {
         [
           {
             start: 3,
-            end: 4
+            end: 8
           },
           {
             start: 12,
@@ -52,7 +52,7 @@ describe('spreadsheet utils', () => {
         [
           {
             start: 5,
-            end: 6
+            end: 8
           }
         ]
       ]);
