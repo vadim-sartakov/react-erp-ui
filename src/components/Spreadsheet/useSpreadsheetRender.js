@@ -42,7 +42,7 @@ const useSpreadsheetRender = ({
   renderColumnNumber,
   renderRowNumber,
   renderCellValue
-}) => {  
+}) => {
   const elements = useMemo(() => {
     const mergedCells = [];
 

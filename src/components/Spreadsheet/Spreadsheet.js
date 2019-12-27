@@ -23,7 +23,7 @@ const Spreadsheet = props => {
     ...scrollerOptions
   });
 
-  const elements = useSpreadsheetRender({ ...renderOptions, ...props });
+  const elements = useSpreadsheetRender({ ...props, ...renderOptions });
 
   return (
     <ScrollerContainer {...props} {...scrollerContainerProps}>

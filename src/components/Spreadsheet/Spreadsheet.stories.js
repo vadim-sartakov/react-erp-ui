@@ -1,30 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { storiesOf } from '@storybook/react';
 import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell } from './';
 import { generateGridValues } from '../Scroller/Scroller.stories';
 import classes from './Spreadsheet-stories.module.sass';
 
-export const value = generateGridValues(1000, 50);
-// FIxed cells
-value[0][0] = { ...value[0][0], colSpan: 2, rowSpan: 2 };
-value[0][4] = { ...value[0][4], colSpan: 6, rowSpan: 2 };
-value[5][0] = { ...value[5][0], colSpan: 2, rowSpan: 6 };
-value[50][5] = { ...value[50][5], colSpan: 4, rowSpan: 3 };
-
-/*for (let i = 5; i < 100; i++) {
-  rows[i] = { level: 1 };
-}
-for (let i = 20; i < 50; i++) {
-  rows[i] = { level: 2 };
-}*/
-
-//const initialScroll = { top: 5000, left: 0 };
-
 /**
- * @param {import('../Scroller/useScroller').useScrollerOptions | import('./useSpreadsheet').useSpreadsheetOptions} props 
+ * @param {import('./').SpreadsheetProps} props 
  */
 const SpreadsheetComponent = props => {
+
+  const [rows, onRowsChange] = useState(props.rows);
+  const [columns, onColumnsChange] = useState(props.columns);
 
   const renderIntersectionColumn = ({ row, column, columnIndex }) => (
     <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
@@ -82,6 +69,10 @@ const SpreadsheetComponent = props => {
   return (
     <Spreadsheet
         {...props}
+        rows={rows}
+        onRowsChange={onRowsChange}
+        columns={columns}
+        onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
         renderIntersectionColumn={renderIntersectionColumn}
         renderColumnNumber={renderColumnNumber}
@@ -89,6 +80,8 @@ const SpreadsheetComponent = props => {
         renderCellValue={renderCellValue} />
   );
 };
+
+const defaultValue = generateGridValues(1000, 50);
 
 export const defaultComponent = props => (
   <SpreadsheetComponent
@@ -100,7 +93,7 @@ export const defaultComponent = props => (
       columnsPerPage={15}
       totalColumns={50}
       totalRows={1000}
-      value={value}
+      value={defaultValue}
       width={800}
       height={600}
       fixRows={2}
@@ -108,5 +101,58 @@ export const defaultComponent = props => (
       {...props} />
 );
 
+const valueWithMergedCells = generateGridValues(1000, 50);
+valueWithMergedCells[0][0] = { ...valueWithMergedCells[0][0], colSpan: 2, rowSpan: 2 };
+valueWithMergedCells[0][4] = { ...valueWithMergedCells[0][4], colSpan: 6, rowSpan: 2 };
+valueWithMergedCells[5][0] = { ...valueWithMergedCells[5][0], colSpan: 2, rowSpan: 6 };
+valueWithMergedCells[20][5] = { ...valueWithMergedCells[20][5], colSpan: 4, rowSpan: 3 };
+
+export const withMergedCells = props => (
+  <SpreadsheetComponent
+      columnNumbersRowHeight={20}
+      rowNumberColumnWidth={40}
+      defaultRowHeight={25}
+      defaultColumnWidth={120}
+      rowsPerPage={60}
+      columnsPerPage={15}
+      totalColumns={50}
+      totalRows={1000}
+      value={valueWithMergedCells}
+      width={800}
+      height={600}
+      fixRows={2}
+      fixColumns={2}
+      {...props} />
+);
+
+const rowsGrouped = [];
+for(let i = 1; i < 20; i++) {
+  rowsGrouped[i] = { level: 1 };
+}
+for(let i = 5; i < 10; i++) {
+  rowsGrouped[i] = { level: 2 };
+}
+
+export const withGroups = props => (
+  <SpreadsheetComponent
+      columnNumbersRowHeight={20}
+      rowNumberColumnWidth={40}
+      defaultRowHeight={25}
+      defaultColumnWidth={120}
+      rowsPerPage={60}
+      columnsPerPage={15}
+      totalColumns={50}
+      totalRows={1000}
+      value={defaultValue}
+      width={800}
+      height={600}
+      fixRows={2}
+      fixColumns={2}
+      rows={rowsGrouped}
+      {...props} />
+);
+
 storiesOf('Spreadsheet', module)
-  .add('default', defaultComponent);
+  .add('default', defaultComponent)
+  .add('merged cells', withMergedCells)
+  .add('groups', withGroups);
