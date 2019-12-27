@@ -1,36 +1,8 @@
 import { useMemo } from 'react';
 
 /**
- * @typedef {Object} Meta
- * @property {number} size
- * @property {number} offset
- * @property {'COLUMN_NUMBERS' | 'ROW_NUMBERS'} [type]
- */
-
-/**
- * @typedef {Object} renderOptions
- * @property {number} rowIndex 
- * @property {number} columnIndex
- * @property {import('./useSpreadsheet').Meta} row
- * @property {import('./useSpreadsheet').Meta} column
- */
-
-/**
- * @typedef {Object} useSpreadsheetRenderOptions
- * @property {import('./useSpreadsheet').CellValue[][]} value
- * @property {number[]} visibleRows
- * @property {number[]} visibleColumns
- * @property {Meta[]} rows
- * @property {Meta[]} columns
- * @property {function(renderOptions)} renderIntersectionColumn
- * @property {function(renderOptions)} renderColumnNumber
- * @property {function(renderOptions)} renderRowNumber
- * @property {function(renderOptions)} renderCellValue
- */
-
-/**
- * Renders spreadsheet values
- * @param {useSpreadsheetRenderOptions} options 
+ * @param {import('./').useSpreadsheetRenderOptions} options
+ * @returns {import('./').useSpreadsheetResult}
  */
 const useSpreadsheetRender = ({
   value,
@@ -38,7 +10,7 @@ const useSpreadsheetRender = ({
   visibleColumns,
   rows,
   columns,
-  renderIntersectionColumn,
+  renderRowColumnNumbersIntersection,
   renderColumnNumber,
   renderRowNumber,
   renderCellValue
@@ -59,7 +31,7 @@ const useSpreadsheetRender = ({
             const columnsType = column.type || 'VALUES';
             switch(columnsType) {
               case 'ROW_NUMBERS':
-                columnElement = renderIntersectionColumn({ row, column, columnIndex });
+                columnElement = renderRowColumnNumbersIntersection({ row, column, columnIndex });
                 break;
               default:
                 columnElement = renderColumnNumber({ row, column, columnIndex });
@@ -111,7 +83,7 @@ const useSpreadsheetRender = ({
     visibleRows,
     visibleColumns,
     value,
-    renderIntersectionColumn,
+    renderRowColumnNumbersIntersection,
     renderColumnNumber,
     renderRowNumber,
     renderCellValue

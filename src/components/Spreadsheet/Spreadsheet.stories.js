@@ -13,7 +13,7 @@ const SpreadsheetComponent = props => {
   const [rows, onRowsChange] = useState(props.rows);
   const [columns, onColumnsChange] = useState(props.columns);
 
-  const renderIntersectionColumn = ({ row, column, columnIndex }) => (
+  const renderRowColumnNumbersIntersection = ({ row, column, columnIndex }) => (
     <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
   );
 
@@ -74,7 +74,7 @@ const SpreadsheetComponent = props => {
         columns={columns}
         onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
-        renderIntersectionColumn={renderIntersectionColumn}
+        renderRowColumnNumbersIntersection={renderRowColumnNumbersIntersection}
         renderColumnNumber={renderColumnNumber}
         renderRowNumber={renderRowNumber}
         renderCellValue={renderCellValue} />

@@ -47,6 +47,23 @@ declare namespace Spreadsheet {
     fixColumns?: number
   }
 
+  interface RenderOptions {
+    /** Intersection area of rows and columns numbers */
+    renderRowColumnNumbersIntersection: renderCallback;
+    /**
+     * Empty area of rows and columns groups.
+     * Would be rendered between groups of the same level and on intersection level
+     * */
+    renderGroupsEmptyArea: renderCallback;
+    /** Group level buttons which allows to manage expand/collapse state */
+    renderGroupButton: renderCallback;
+    renderRowGroup: renderCallback;
+    renderColumnGroup: renderCallback;
+    renderColumnNumber: renderCallback;
+    renderRowNumber: renderCallback;
+    renderCellValue: renderCallback;
+  }
+
   function SpreadsheetContainer(props: SpreadsheetContainerProps): JSX.Element
 
   interface useSpreadsheetOptions extends useScrollerOptionsBase {
@@ -73,28 +90,25 @@ declare namespace Spreadsheet {
 
   function useSpreadsheet(options: useSpreadsheetOptions): useSpreadsheetResult
 
-  interface renderOptions {
-    rowIndex: number;
-    columnIndex: number;
-    row: Meta;
-    column: Meta
-  }
-
   /**
    * Should return [SpreadsheetCell]{@link Spreadsheet.SpreadsheetCell} component as root.
    */
-  type renderCallback = (options: renderOptions) => JSX.Element
+  type renderCallback = (options: {
+    rows: Meta[];
+    columns: Meta[];
+    rowIndex: number;
+    columnIndex: number;
+    row: Meta;
+    column: Meta;
+    value: Value;
+  }) => JSX.Element
 
-  interface useSpreadsheetRenderOptions {
+  interface useSpreadsheetRenderOptions extends RenderOptions {
     value: Value[][];
     visibleRows: number[];
     visibleColumns: number[];
     rows: Meta[];
     columns: Meta[];
-    renderIntersectionColumn: renderCallback;
-    renderColumnNumber: renderCallback;
-    renderRowNumber: renderCallback;
-    renderCellValue: renderCallback;
   }
 
   /** Renders spreadsheet elements by calling provided callbacks */
@@ -115,6 +129,6 @@ declare namespace Spreadsheet {
    */
   function SpreadsheetCell(props: SpreadsheetCellProps): JSX.Element
 
-  interface SpreadsheetProps extends useSpreadsheetOptions, SpreadsheetContainerProps {}
+  interface SpreadsheetProps extends useSpreadsheetOptions, RenderOptions, SpreadsheetContainerProps {}
 
 }
