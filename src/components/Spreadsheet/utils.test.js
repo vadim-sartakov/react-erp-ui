@@ -1,8 +1,27 @@
 import {
+  getMergedCellSize,
   getGroups
 } from './utils';
 
 describe('Spreadsheet utils', () => {
+
+  describe('getMergedCellSize', () => {
+
+    it('should calculate size', () => {
+      const meta = [
+        { size: 10 },
+        undefined,
+        { size: 50 },
+        { size: 60 },
+        undefined,
+        { size: 30 }
+      ];
+      const defaultSize = 20;
+      const result = getMergedCellSize({ meta, startIndex: 1, count: 4, defaultSize });
+      expect(result).toBe(150);
+    });
+
+  });
 
   describe('getGroups', () => {
 

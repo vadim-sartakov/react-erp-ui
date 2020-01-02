@@ -1,4 +1,27 @@
- /**
+/**
+ * Calculates merged cell position (top and left absolute position)
+ */
+export const getMergedCellPosition = () => {
+
+};
+
+/**
+ * Calculates merged cells size (width and height)
+ * @param {Object} options
+ * @param {number} options.count
+ * @param {import('./').Meta} options.meta
+ * @param {number} options.startIndex
+ * @param {number} options.defaultSize
+ */
+export const getMergedCellSize = ({ count, meta = [], startIndex, defaultSize }) => {
+  return count && [...new Array(count).keys()].reduce((acc, key, index) => {
+    const mergedMeta = meta[startIndex + index];
+    const size = (mergedMeta && mergedMeta.size) || defaultSize;
+    return acc + size;
+  }, 0);
+};
+ 
+/**
   * Calculates groups object of meta value
   * @param {import('./').Meta[]} meta
   * @returns {import('./').Group[][]}

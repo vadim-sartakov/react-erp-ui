@@ -12,7 +12,6 @@ const SpreadsheetComponent = props => {
 
   const [rows, onRowsChange] = useState(props.rows);
   const [columns, onColumnsChange] = useState(props.columns);
-  const [mergedCells, onMergedCellsChange] = useState(props.mergedCells);
 
   const renderRowColumnNumbersIntersection = ({ row, column, columnIndex }) => (
     <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
@@ -78,9 +77,7 @@ const SpreadsheetComponent = props => {
         renderRowColumnNumbersIntersection={renderRowColumnNumbersIntersection}
         renderColumnNumber={renderColumnNumber}
         renderRowNumber={renderRowNumber}
-        renderCellValue={renderCellValue}
-        mergedCells={mergedCells}
-        onMergedCellsChange={onMergedCellsChange} />
+        renderCellValue={renderCellValue} />
   );
 };
 

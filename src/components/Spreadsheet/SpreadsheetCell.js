@@ -1,14 +1,7 @@
 import React, { useContext } from 'react';
 import ScrollerCell from '../Scroller/ScrollerCell';
 import SpreadsheetContext from './SpreadsheetContext';
-
-const getMergedSize = ({ count, meta = [], startIndex, defaultSize }) => {
-  return count && [...new Array(count).keys()].reduce((acc, key, index) => {
-    const mergedMeta = meta[startIndex + index];
-    const size = (mergedMeta && mergedMeta.size) || defaultSize;
-    return acc + size;
-  }, 0);
-};
+import { getMergedCellSize } from './utils';
 
 /**
  * @param {import('./').SpreadsheetCellProps} props 
@@ -28,14 +21,14 @@ const SpreadsheetCell = ({
   const fixedRow = rowIndex <= fixRows;
   const fixedColumn = columnIndex <= fixColumns;
 
-  const width = value && value.colSpan && getMergedSize({
+  const width = value && value.colSpan && getMergedCellSize({
     // Preventing from merging more than fixed range
     count: fixedColumn ? fixColumns - (columnIndex - 1) : value.colSpan,
     meta: columns,
     startIndex: columnIndex,
     defaultSize: defaultColumnWidth
   });
-  const height = value && value.rowSpan && getMergedSize({
+  const height = value && value.rowSpan && getMergedCellSize({
     count: fixedRow ? fixRows - (rowIndex - 1) : value.rowSpan,
     meta: rows,
     startIndex: rowIndex,
