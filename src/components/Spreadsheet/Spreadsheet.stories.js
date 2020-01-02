@@ -12,6 +12,7 @@ const SpreadsheetComponent = props => {
 
   const [rows, onRowsChange] = useState(props.rows);
   const [columns, onColumnsChange] = useState(props.columns);
+  const [mergedCells, onMergedCellsChange] = useState(props.mergedCells);
 
   const renderRowColumnNumbersIntersection = ({ row, column, columnIndex }) => (
     <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
@@ -77,7 +78,9 @@ const SpreadsheetComponent = props => {
         renderRowColumnNumbersIntersection={renderRowColumnNumbersIntersection}
         renderColumnNumber={renderColumnNumber}
         renderRowNumber={renderRowNumber}
-        renderCellValue={renderCellValue} />
+        renderCellValue={renderCellValue}
+        mergedCells={mergedCells}
+        onMergedCellsChange={onMergedCellsChange} />
   );
 };
 
@@ -102,10 +105,30 @@ export const defaultComponent = props => (
 );
 
 const valueWithMergedCells = generateGridValues(1000, 50);
-valueWithMergedCells[0][0] = { ...valueWithMergedCells[0][0], colSpan: 2, rowSpan: 2 };
-valueWithMergedCells[0][4] = { ...valueWithMergedCells[0][4], colSpan: 6, rowSpan: 2 };
-valueWithMergedCells[5][0] = { ...valueWithMergedCells[5][0], colSpan: 2, rowSpan: 6 };
-valueWithMergedCells[20][5] = { ...valueWithMergedCells[20][5], colSpan: 4, rowSpan: 3 };
+
+/** @type {import('./').Ranges} */
+const mergedCells = [
+  // Overlapping with all fixed areas
+  {
+    start: { row: 0, column: 0 },
+    end: { row: 6, column: 6 }
+  },
+  // Overlapping with fixed rows area
+  {
+    start: { row: 0, column: 8 },
+    end: { row: 6, column: 10 }
+  },
+  // Overlapping with fixed columns area
+  {
+    start: { row: 10, column: 0 },
+    end: { row: 12, column: 8 }
+  },
+  // Not fixed area
+  {
+    start: { row: 20, column: 5 },
+    end: { row: 24, column: 8 }
+  }
+];
 
 export const withMergedCells = props => (
   <SpreadsheetComponent
@@ -117,6 +140,7 @@ export const withMergedCells = props => (
       columnsPerPage={15}
       totalColumns={50}
       totalRows={1000}
+      mergedCells={mergedCells}
       value={valueWithMergedCells}
       width={800}
       height={600}
