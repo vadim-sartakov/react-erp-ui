@@ -1,8 +1,16 @@
 /**
  * Calculates merged cell position (top and left absolute position)
+ * @param {Object} options
+ * @param {import('./').Meta} options.meta
+ * @param {number} index
+ * @param {number} defaultSize
  */
-export const getMergedCellPosition = () => {
-
+export const getMergedCellPosition = ({ meta = [], index, defaultSize }) => {
+  return [...new Array(index).keys()].reduce((acc, key, index) => {
+    const curMeta = meta[index];
+    const curSize = (curMeta && curMeta.size) || defaultSize;
+    return acc + curSize;
+  }, 0);
 };
 
 /**
