@@ -1,4 +1,11 @@
 import { useMemo } from 'react';
+import { getMergedCellSize, getMergedCellPosition } from './utils';
+
+const mergedCellIsInRange = ({ meta, start, end, fixCount }) => {
+  return meta.indexOf(start) !== -1 ||
+      meta.indexOf(end) !== -1 ||
+      (start < meta[fixCount] && end > meta[meta.length - 1]);
+}
 
 /**
  * @param {import('./').useSpreadsheetRenderOptions} options
@@ -13,11 +20,12 @@ const useSpreadsheetRender = ({
   renderRowColumnNumbersIntersection,
   renderColumnNumber,
   renderRowNumber,
-  renderCellValue
+  renderCellValue,
+  fixRows,
+  fixColumns,
+  mergedCells
 }) => {
-  const elements = useMemo(() => {
-    const mergedCells = [];
-
+  const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex) => {
       const row = rows[rowIndex] || {};
       let columnsElements;
@@ -46,17 +54,6 @@ const useSpreadsheetRender = ({
             const column = columns[columnIndex] || {};
             const rowValue = value[rowIndex - 1];
             const curValue = rowValue && rowValue[columnIndex - 1];
-
-            // Maintaining merged cells
-            if (curValue && (curValue.rowSpan || curValue.colSpan)) {
-              for (let i = 0; i < curValue.rowSpan ; i++) {
-                for (let j = 0; j < curValue.colSpan ; j++) {
-                  const resultRowIndex = rowIndex + i;
-                  const resultColumnIndex = columnIndex + j;
-                  (i > 0 || j > 0) && mergedCells.push([resultRowIndex, resultColumnIndex]);
-                }
-              }
-            };
             
             let element;
             const columnsType = column.type || 'VALUES';
@@ -65,8 +62,7 @@ const useSpreadsheetRender = ({
                 element = renderRowNumber({ row, column, rowIndex, columnIndex });
                 break;
               default:
-                const cellIsMerged = mergedCells.some(([row, column]) => row === rowIndex && column === columnIndex);
-                element = !cellIsMerged && renderCellValue({ row, rowIndex, column, columnIndex, value: curValue, columns, rows });
+                element = renderCellValue({ row, rowIndex, column, columnIndex, value: curValue });
                 break;
             }
             return element;
@@ -88,7 +84,37 @@ const useSpreadsheetRender = ({
     renderRowNumber,
     renderCellValue
   ]);
-  return elements;
+
+  const mergedCellsElements = useMemo(() => {
+    // Filtering out merged ranges which are not visible
+    return mergedCells ? mergedCells.filter(mergedRange => {
+      return mergedCellIsInRange({ meta: visibleRows, start: mergedRange.start.row, end: mergedRange.end.row, fixCount: fixRows }) &&
+          mergedCellIsInRange({ meta: visibleColumns, start: mergedRange.start.column, end: mergedRange.end.column, fixCount: fixColumns })
+    }).map(mergedRange => {
+
+      const width = value && value.colSpan && getMergedCellSize({
+        // Preventing from merging more than fixed range
+        count: fixedColumn ? fixColumns - (columnIndex - 1) : value.colSpan,
+        meta: columns,
+        startIndex: columnIndex,
+        defaultSize: defaultColumnWidth
+      });
+      const height = value && value.rowSpan && getMergedCellSize({
+        count: fixedRow ? fixRows - (rowIndex - 1) : value.rowSpan,
+        meta: rows,
+        startIndex: rowIndex,
+        defaultSize: defaultRowHeight
+      });
+
+    }, []) : [];
+  }, [
+    mergedCells
+  ]);
+
+  return [
+    ...cellsElements,
+    ...mergedCellsElements
+  ];
 };
 
 export default useSpreadsheetRender;

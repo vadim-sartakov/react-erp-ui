@@ -48,9 +48,6 @@ declare namespace Spreadsheet {
     end: CellAddress;
   }
 
-  /** Object describing cells ranges */
-  type Ranges = Array<CellAddress | CellsRange>
-
   interface SpreadsheetContainerProps {
     onRowsChange?: Function,
     onColumnsChange?: Function,
@@ -75,7 +72,7 @@ declare namespace Spreadsheet {
     renderColumnNumber: renderCallback;
     renderRowNumber: renderCallback;
     renderCellValue: renderCallback;
-    mergedCells?: Ranges;
+    mergedCells?: CellsRange[];
   }
 
   function SpreadsheetContainer(props: SpreadsheetContainerProps): JSX.Element
@@ -123,20 +120,14 @@ declare namespace Spreadsheet {
     visibleColumns: number[];
     rows: Meta[];
     columns: Meta[];
-    mergedCells?: Ranges;
   }
 
   /** Renders spreadsheet elements by calling provided callbacks */
   function useSpreadsheetRender(options: useSpreadsheetRenderOptions): JSX.Element
 
   interface SpreadsheetCellProps {
-    rowIndex: number;
-    columnIndex: number;
     row: Meta;
     column: Meta;
-    rows: Meta[];
-    columns: Meta[];
-    value: Value;    
   }
 
   /**

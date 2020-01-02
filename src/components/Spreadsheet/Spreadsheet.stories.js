@@ -103,7 +103,7 @@ export const defaultComponent = props => (
 
 const valueWithMergedCells = generateGridValues(1000, 50);
 
-/** @type {import('./').Ranges} */
+/** @type {import('./').CellsRange[]} */
 const mergedCells = [
   // Overlapping with all fixed areas
   {
