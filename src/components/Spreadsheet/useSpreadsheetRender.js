@@ -23,7 +23,9 @@ const useSpreadsheetRender = ({
   renderCellValue,
   fixRows,
   fixColumns,
-  mergedCells
+  mergedCells,
+  defaultColumnWidth,
+  defaultRowHeight
 }) => {
   const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex) => {
@@ -52,6 +54,9 @@ const useSpreadsheetRender = ({
         case 'VALUES':
           columnsElements = visibleColumns.map(columnIndex => {
             const column = columns[columnIndex] || {};
+            // TODO: instead of static '1' here should be some variable
+            // holding special rows and columns count
+            // it would be row/column numbers and groups
             const rowValue = value[rowIndex - 1];
             const curValue = rowValue && rowValue[columnIndex - 1];
             
@@ -91,23 +96,65 @@ const useSpreadsheetRender = ({
       return mergedCellIsInRange({ meta: visibleRows, start: mergedRange.start.row, end: mergedRange.end.row, fixCount: fixRows }) &&
           mergedCellIsInRange({ meta: visibleColumns, start: mergedRange.start.column, end: mergedRange.end.column, fixCount: fixColumns })
     }).map(mergedRange => {
-
-      const width = value && value.colSpan && getMergedCellSize({
-        // Preventing from merging more than fixed range
-        count: fixedColumn ? fixColumns - (columnIndex - 1) : value.colSpan,
+      const width = getMergedCellSize({
+        count: mergedRange.end.column - mergedRange.start.column,
         meta: columns,
-        startIndex: columnIndex,
+        startIndex: mergedRange.start.column,
         defaultSize: defaultColumnWidth
       });
-      const height = value && value.rowSpan && getMergedCellSize({
-        count: fixedRow ? fixRows - (rowIndex - 1) : value.rowSpan,
+      const height = getMergedCellSize({
+        count: mergedRange.end.row - mergedRange.start.row,
         meta: rows,
-        startIndex: rowIndex,
+        startIndex: mergedRange.start.row,
         defaultSize: defaultRowHeight
       });
+      
+      const top = getMergedCellPosition({
+        meta: rows,
+        index: mergedRange.start.row,
+        defaultSize: defaultRowHeight
+      });
+      const left = getMergedCellPosition({
+        meta: columns,
+        index: mergedRange.start.column,
+        defaultSize: defaultColumnWidth
+      });
 
+      const style = {
+        position: 'absolute',
+        top,
+        left,
+        width,
+        height
+      };
+
+      const columnIndex = mergedRange.start.column;
+      const rowIndex = mergedRange.start.row;
+
+      // TODO: replace '1' const with variable too
+      const rowValue = value[rowIndex - 1];
+      const curValue = rowValue && rowValue[columnIndex - 1];
+
+      return renderCellValue({
+        columnIndex,
+        rowIndex,
+        row: rows[rowIndex],
+        column: columns[columnIndex],
+        value: curValue,
+        style
+      });
     }, []) : [];
   }, [
+    rows,
+    columns,
+    defaultColumnWidth,
+    defaultRowHeight,
+    fixColumns,
+    fixRows,
+    visibleRows,
+    visibleColumns,
+    renderCellValue,
+    value,
     mergedCells
   ]);
 

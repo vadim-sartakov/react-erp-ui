@@ -5,6 +5,9 @@ import ScrollerCell from '../Scroller/ScrollerCell';
  * @param {import('./').SpreadsheetCellProps} props 
  */
 const SpreadsheetCell = ({
+  rowIndex,
+  columnIndex,
+  value,
   ...props
 }) => {
   return <ScrollerCell {...props} />;

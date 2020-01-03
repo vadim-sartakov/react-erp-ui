@@ -1,4 +1,5 @@
 import { useScrollerOptionsBase } from '../Scroller/index';
+import { CSSProperties } from 'react';
 
 export = Spreadsheet;
 
@@ -105,13 +106,12 @@ declare namespace Spreadsheet {
    * Should return [SpreadsheetCell]{@link Spreadsheet.SpreadsheetCell} component as root.
    */
   type renderCallback = (options: {
-    rows: Meta[];
-    columns: Meta[];
     rowIndex: number;
     columnIndex: number;
     row: Meta;
     column: Meta;
     value: Value;
+    style?: CSSProperties
   }) => JSX.Element
 
   interface useSpreadsheetRenderOptions extends RenderOptions {

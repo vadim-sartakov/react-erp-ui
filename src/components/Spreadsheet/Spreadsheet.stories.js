@@ -45,15 +45,14 @@ const SpreadsheetComponent = props => {
     </SpreadsheetCell>
   );
 
-  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, columns, rows }) => (
+  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, style }) => (
     <SpreadsheetCell
         key={`${rowIndex}_${columnIndex}`}
+        style={style}
         row={row}
         columnIndex={columnIndex}
         rowIndex={rowIndex}
         column={column}
-        columns={columns}
-        rows={rows}
         value={value}
         className={classNames(
           classes.cell,
@@ -106,7 +105,7 @@ const valueWithMergedCells = generateGridValues(1000, 50);
 /** @type {import('./').CellsRange[]} */
 const mergedCells = [
   // Overlapping with all fixed areas
-  {
+  /*{
     start: { row: 0, column: 0 },
     end: { row: 6, column: 6 }
   },
@@ -119,7 +118,7 @@ const mergedCells = [
   {
     start: { row: 10, column: 0 },
     end: { row: 12, column: 8 }
-  },
+  },*/
   // Not fixed area
   {
     start: { row: 20, column: 5 },
