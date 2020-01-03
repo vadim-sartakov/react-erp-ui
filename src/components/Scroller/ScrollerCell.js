@@ -15,12 +15,12 @@ const ScrollerCell = React.memo(({
   const width = style.width || columnSize || defaultColumnWidth;
   const height = style.height || rowSize || defaultRowHeight;
   let nextStyle = { ...style, height, width };
-  if (columnOffset !== undefined) {
+  if (columnOffset !== undefined && !style.left) {
     nextStyle.position = 'sticky';
     nextStyle.left = columnOffset;
     nextStyle.zIndex = 2;
   }
-  if (rowOffset !== undefined) {
+  if (rowOffset !== undefined && !style.top) {
     nextStyle.position = 'sticky';
     nextStyle.top = rowOffset;
     nextStyle.zIndex = 4;

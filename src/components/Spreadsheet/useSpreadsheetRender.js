@@ -25,7 +25,9 @@ const useSpreadsheetRender = ({
   fixColumns,
   mergedCells,
   defaultColumnWidth,
-  defaultRowHeight
+  defaultRowHeight,
+  specialRowsCount = 1,
+  specialColumnsCount = 1
 }) => {
   const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex) => {
@@ -54,11 +56,8 @@ const useSpreadsheetRender = ({
         case 'VALUES':
           columnsElements = visibleColumns.map(columnIndex => {
             const column = columns[columnIndex] || {};
-            // TODO: instead of static '1' here should be some variable
-            // holding special rows and columns count
-            // it would be row/column numbers and groups
-            const rowValue = value[rowIndex - 1];
-            const curValue = rowValue && rowValue[columnIndex - 1];
+            const rowValue = value[rowIndex - specialRowsCount];
+            const curValue = rowValue && rowValue[columnIndex - specialRowsCount];
             
             let element;
             const columnsType = column.type || 'VALUES';
@@ -87,36 +86,50 @@ const useSpreadsheetRender = ({
     renderRowColumnNumbersIntersection,
     renderColumnNumber,
     renderRowNumber,
-    renderCellValue
+    renderCellValue,
+    specialRowsCount
   ]);
 
   const mergedCellsElements = useMemo(() => {
     // Filtering out merged ranges which are not visible
     return mergedCells ? mergedCells.filter(mergedRange => {
-      return mergedCellIsInRange({ meta: visibleRows, start: mergedRange.start.row, end: mergedRange.end.row, fixCount: fixRows }) &&
-          mergedCellIsInRange({ meta: visibleColumns, start: mergedRange.start.column, end: mergedRange.end.column, fixCount: fixColumns })
+      return mergedCellIsInRange({
+            meta: visibleRows,
+            start: mergedRange.start.row + specialRowsCount,
+            end: mergedRange.end.row + specialRowsCount,
+            fixCount: fixRows
+          }) &&
+          mergedCellIsInRange({
+            meta: visibleColumns,
+            start: mergedRange.start.column + specialColumnsCount,
+            end: mergedRange.end.column + specialColumnsCount,
+            fixCount: fixColumns
+          })
     }).map(mergedRange => {
+      const columnIndex = mergedRange.start.column + specialColumnsCount;
+      const rowIndex = mergedRange.start.row + specialRowsCount;
+
       const width = getMergedCellSize({
         count: mergedRange.end.column - mergedRange.start.column,
         meta: columns,
-        startIndex: mergedRange.start.column,
+        startIndex: columnIndex,
         defaultSize: defaultColumnWidth
       });
       const height = getMergedCellSize({
         count: mergedRange.end.row - mergedRange.start.row,
         meta: rows,
-        startIndex: mergedRange.start.row,
+        startIndex: rowIndex,
         defaultSize: defaultRowHeight
       });
       
       const top = getMergedCellPosition({
         meta: rows,
-        index: mergedRange.start.row,
+        index: rowIndex,
         defaultSize: defaultRowHeight
       });
       const left = getMergedCellPosition({
         meta: columns,
-        index: mergedRange.start.column,
+        index: columnIndex,
         defaultSize: defaultColumnWidth
       });
 
@@ -128,18 +141,12 @@ const useSpreadsheetRender = ({
         height
       };
 
-      const columnIndex = mergedRange.start.column;
-      const rowIndex = mergedRange.start.row;
-
-      // TODO: replace '1' const with variable too
-      const rowValue = value[rowIndex - 1];
-      const curValue = rowValue && rowValue[columnIndex - 1];
+      const rowValue = value[rowIndex - specialRowsCount];
+      const curValue = rowValue && rowValue[columnIndex - specialColumnsCount];
 
       return renderCellValue({
         columnIndex,
         rowIndex,
-        row: rows[rowIndex],
-        column: columns[columnIndex],
         value: curValue,
         style
       });
@@ -155,7 +162,9 @@ const useSpreadsheetRender = ({
     visibleColumns,
     renderCellValue,
     value,
-    mergedCells
+    mergedCells,
+    specialColumnsCount,
+    specialRowsCount
   ]);
 
   return [

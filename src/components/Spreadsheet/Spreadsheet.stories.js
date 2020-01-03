@@ -113,12 +113,12 @@ const mergedCells = [
   {
     start: { row: 0, column: 8 },
     end: { row: 6, column: 10 }
-  },
+  },*/
   // Overlapping with fixed columns area
   {
     start: { row: 10, column: 0 },
     end: { row: 12, column: 8 }
-  },*/
+  },
   // Not fixed area
   {
     start: { row: 20, column: 5 },
