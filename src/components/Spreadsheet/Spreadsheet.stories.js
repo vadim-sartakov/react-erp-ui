@@ -45,15 +45,12 @@ const SpreadsheetComponent = props => {
     </SpreadsheetCell>
   );
 
-  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, style }) => (
+  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, style, children }) => (
     <SpreadsheetCell
         key={`${rowIndex}_${columnIndex}`}
         style={style}
         row={row}
-        columnIndex={columnIndex}
-        rowIndex={rowIndex}
         column={column}
-        value={value}
         className={classNames(
           classes.cell,
           {
@@ -62,6 +59,7 @@ const SpreadsheetComponent = props => {
           }
         )}>
       {value ? `Value ${value.row} - ${value.column}` : ''}
+      {children}
     </SpreadsheetCell>
   );
 

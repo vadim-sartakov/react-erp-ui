@@ -1,11 +1,75 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { getMergedCellSize, getMergedCellPosition } from './utils';
 
 const mergedCellIsInRange = ({ meta, start, end, fixCount }) => {
   return meta.indexOf(start) !== -1 ||
       meta.indexOf(end) !== -1 ||
       (start < meta[fixCount] && end > meta[meta.length - 1]);
-}
+};
+
+const getMergedCellProps = ({
+  mergedRange,
+  specialRowsCount,
+  specialColumnsCount,
+  rows,
+  columns,
+  defaultRowHeight,
+  defaultColumnWidth,
+  fixRows,
+  fixColumns
+}) => {
+  const columnIndex = mergedRange.start.column + specialColumnsCount;
+  const rowIndex = mergedRange.start.row + specialRowsCount;
+  
+  const top = getMergedCellPosition({
+    meta: rows,
+    index: rowIndex,
+    defaultSize: defaultRowHeight
+  });
+  const left = getMergedCellPosition({
+    meta: columns,
+    index: columnIndex,
+    defaultSize: defaultColumnWidth
+  });
+
+  const width = getMergedCellSize({
+    count: mergedRange.end.column - mergedRange.start.column,
+    meta: columns,
+    startIndex: columnIndex,
+    defaultSize: defaultColumnWidth
+  });
+  const height = getMergedCellSize({
+    count: mergedRange.end.row - mergedRange.start.row,
+    meta: rows,
+    startIndex: rowIndex,
+    defaultSize: defaultRowHeight
+  });
+
+  const fixWidth = fixColumns && columnIndex <= fixColumns && getMergedCellSize({
+    count: fixColumns - mergedRange.start.column,
+    meta: columns,
+    startIndex: columnIndex,
+    defaultSize: defaultColumnWidth
+  });
+
+  const fixHeight = fixRows && rowIndex <= fixRows && getMergedCellSize({
+    count: fixRows - mergedRange.start.row,
+    meta: rows,
+    startIndex: rowIndex,
+    defaultSize: defaultRowHeight
+  });
+
+  return {
+    rowIndex,
+    columnIndex,
+    top,
+    left,
+    width,
+    height,
+    fixWidth,
+    fixHeight
+  }
+};
 
 /**
  * @param {import('./').useSpreadsheetRenderOptions} options
@@ -58,17 +122,66 @@ const useSpreadsheetRender = ({
             const column = columns[columnIndex] || {};
             const rowValue = value[rowIndex - specialRowsCount];
             const curValue = rowValue && rowValue[columnIndex - specialRowsCount];
+
+            const isFixedColumnArea = columnIndex <= fixColumns;
+            const isFixedRowArea = rowIndex <= fixRows;
+            const mergedRange = mergedCells && mergedCells.find(mergedRange => {
+              return (mergedRange.start.row + specialRowsCount) === rowIndex &&
+                  (mergedRange.start.column + specialColumnsCount) === columnIndex
+            });
+            const shouldRenderMerged = (isFixedColumnArea || isFixedRowArea) && mergedRange;
             
             let element;
+
             const columnsType = column.type || 'VALUES';
             switch(columnsType) {
               case 'ROW_NUMBERS':
                 element = renderRowNumber({ row, column, rowIndex, columnIndex });
                 break;
               default:
-                element = renderCellValue({ row, rowIndex, column, columnIndex, value: curValue });
+
+                let children;
+                if (shouldRenderMerged) {
+                  const {
+                    width,
+                    height,
+                    fixWidth,
+                    fixHeight
+                  } = getMergedCellProps({
+                    mergedRange,
+                    specialRowsCount,
+                    specialColumnsCount,
+                    rows,
+                    columns,
+                    defaultRowHeight,
+                    defaultColumnWidth,
+                    fixRows,
+                    fixColumns
+                  });
+
+                  const containerStyle = {
+                    position: 'absolute',
+                    overflow: 'hidden',
+                    width: fixWidth,
+                    height,
+                    top: 0,
+                    left: 0
+                  };
+    
+                  const valueStyle = {
+                    width,
+                    height
+                  };
+                  children = (
+                    <div key={`${rowIndex}_${columnIndex}`} style={containerStyle}>
+                      {renderCellValue({ rowIndex, columnIndex, row, column, value: curValue, style: valueStyle })}
+                    </div>
+                  );
+                }
+                element = renderCellValue({ row, rowIndex, column, columnIndex, value: curValue, children });
                 break;
             }
+
             return element;
           });
           break;
@@ -87,7 +200,13 @@ const useSpreadsheetRender = ({
     renderColumnNumber,
     renderRowNumber,
     renderCellValue,
-    specialRowsCount
+    specialRowsCount,
+    specialColumnsCount,
+    fixRows,
+    fixColumns,
+    defaultColumnWidth,
+    defaultRowHeight,
+    mergedCells
   ]);
 
   const mergedCellsElements = useMemo(() => {
@@ -106,31 +225,21 @@ const useSpreadsheetRender = ({
             fixCount: fixColumns
           })
     }).map(mergedRange => {
-      const columnIndex = mergedRange.start.column + specialColumnsCount;
-      const rowIndex = mergedRange.start.row + specialRowsCount;
-
-      const width = getMergedCellSize({
-        count: mergedRange.end.column - mergedRange.start.column,
-        meta: columns,
-        startIndex: columnIndex,
-        defaultSize: defaultColumnWidth
-      });
-      const height = getMergedCellSize({
-        count: mergedRange.end.row - mergedRange.start.row,
-        meta: rows,
-        startIndex: rowIndex,
-        defaultSize: defaultRowHeight
-      });
-      
-      const top = getMergedCellPosition({
-        meta: rows,
-        index: rowIndex,
-        defaultSize: defaultRowHeight
-      });
-      const left = getMergedCellPosition({
-        meta: columns,
-        index: columnIndex,
-        defaultSize: defaultColumnWidth
+      const {
+        rowIndex,
+        columnIndex,
+        top,
+        left,
+        width,
+        height
+      } = getMergedCellProps({
+        mergedRange,
+        specialRowsCount,
+        specialColumnsCount,
+        rows,
+        columns,
+        defaultRowHeight,
+        defaultColumnWidth
       });
 
       const style = {
