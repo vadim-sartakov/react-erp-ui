@@ -45,13 +45,15 @@ const SpreadsheetComponent = props => {
     </SpreadsheetCell>
   );
 
-  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, mergedRange, style }) => (
+  const renderCellValue = ({ row, rowIndex, columnIndex, column, rows, columns, value, mergedRange, overscrolled }) => (
     <SpreadsheetCell
         key={`${rowIndex}_${columnIndex}`}
-        style={style}
         row={row}
         column={column}
+        rows={rows}
+        columns={columns}
         mergedRange={mergedRange}
+        overscrolled={overscrolled}
         className={classNames(
           classes.cell,
           {
