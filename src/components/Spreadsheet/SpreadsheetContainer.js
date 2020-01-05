@@ -11,6 +11,8 @@ const SpreadsheetContainer = ({
   defaultRowHeight,
   fixRows,
   fixColumns,
+  specialRowsCount,
+  specialColumnsCount,
   className,
   style,
   children
@@ -21,11 +23,21 @@ const SpreadsheetContainer = ({
     defaultColumnWidth,
     defaultRowHeight,
     fixRows,
-    fixColumns
-  }), [onRowsChange, onColumnsChange, defaultColumnWidth, defaultRowHeight, fixRows, fixColumns]);
+    fixColumns,
+    specialRowsCount,
+    specialColumnsCount
+  }), [
+    onRowsChange,
+    onColumnsChange,
+    defaultColumnWidth,
+    defaultRowHeight,
+    fixRows,
+    fixColumns,
+    specialRowsCount,
+    specialColumnsCount
+  ]);
   return (
-    <SpreadsheetContext.Provider
-        value={contextValue}>
+    <SpreadsheetContext.Provider value={contextValue}>
       <div className={className} style={style}>
         {children}
       </div>

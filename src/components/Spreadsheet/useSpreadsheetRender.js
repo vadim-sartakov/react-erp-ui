@@ -1,16 +1,8 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { getMergedCellSize, getMergedCellPosition } from './utils';
-
-const mergedCellIsInRange = ({ meta, start, end, fixCount }) => {
-  return meta.indexOf(start) !== -1 ||
-      meta.indexOf(end) !== -1 ||
-      (start < meta[fixCount] && end > meta[meta.length - 1]);
-};
 
 const getMergedCellProps = ({
   mergedRange,
-  specialRowsCount,
-  specialColumnsCount,
   rows,
   columns,
   defaultRowHeight,
@@ -18,8 +10,8 @@ const getMergedCellProps = ({
   fixRows,
   fixColumns
 }) => {
-  const columnIndex = mergedRange.start.column + specialColumnsCount;
-  const rowIndex = mergedRange.start.row + specialRowsCount;
+  const columnIndex = mergedRange.start.column;
+  const rowIndex = mergedRange.start.row;
   
   const top = getMergedCellPosition({
     meta: rows,
@@ -89,9 +81,7 @@ const useSpreadsheetRender = ({
   fixColumns,
   mergedCells,
   defaultColumnWidth,
-  defaultRowHeight,
-  specialRowsCount = 1,
-  specialColumnsCount = 1
+  defaultRowHeight
 }) => {
   const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex) => {
@@ -120,15 +110,15 @@ const useSpreadsheetRender = ({
         case 'VALUES':
           columnsElements = visibleColumns.map(columnIndex => {
             const column = columns[columnIndex] || {};
-            const rowValue = value[rowIndex - specialRowsCount];
-            const curValue = rowValue && rowValue[columnIndex - specialRowsCount];
+            const rowValue = value[rowIndex];
+            const curValue = rowValue && rowValue[columnIndex];
 
+            const mergedRange = mergedCells && mergedCells.find(mergedRange => {
+              return (mergedRange.start.row) === rowIndex &&
+                  (mergedRange.start.column) === columnIndex
+            });
             const isFixedColumnArea = columnIndex <= fixColumns;
             const isFixedRowArea = rowIndex <= fixRows;
-            const mergedRange = mergedCells && mergedCells.find(mergedRange => {
-              return (mergedRange.start.row + specialRowsCount) === rowIndex &&
-                  (mergedRange.start.column + specialColumnsCount) === columnIndex
-            });
             const shouldRenderMerged = (isFixedColumnArea || isFixedRowArea) && mergedRange;
             
             let element;
@@ -139,46 +129,7 @@ const useSpreadsheetRender = ({
                 element = renderRowNumber({ row, column, rowIndex, columnIndex });
                 break;
               default:
-
-                let children;
-                if (shouldRenderMerged) {
-                  const {
-                    width,
-                    height,
-                    fixWidth,
-                    fixHeight
-                  } = getMergedCellProps({
-                    mergedRange,
-                    specialRowsCount,
-                    specialColumnsCount,
-                    rows,
-                    columns,
-                    defaultRowHeight,
-                    defaultColumnWidth,
-                    fixRows,
-                    fixColumns
-                  });
-
-                  const containerStyle = {
-                    position: 'absolute',
-                    overflow: 'hidden',
-                    width: fixWidth,
-                    height,
-                    top: 0,
-                    left: 0
-                  };
-    
-                  const valueStyle = {
-                    width,
-                    height
-                  };
-                  children = (
-                    <div key={`${rowIndex}_${columnIndex}`} style={containerStyle}>
-                      {renderCellValue({ rowIndex, columnIndex, row, column, value: curValue, style: valueStyle })}
-                    </div>
-                  );
-                }
-                element = renderCellValue({ row, rowIndex, column, columnIndex, value: curValue, children });
+                element = renderCellValue({ row, rowIndex, column, columnIndex, value: curValue, mergedRange });
                 break;
             }
 
@@ -200,28 +151,31 @@ const useSpreadsheetRender = ({
     renderColumnNumber,
     renderRowNumber,
     renderCellValue,
-    specialRowsCount,
-    specialColumnsCount,
+    mergedCells,
     fixRows,
-    fixColumns,
-    defaultColumnWidth,
-    defaultRowHeight,
-    mergedCells
+    fixColumns
   ]);
 
+  // Overscrolled cells. When merge starts out of visible cells area
   const mergedCellsElements = useMemo(() => {
     // Filtering out merged ranges which are not visible
+    const mergedCellIsInRange = ({ meta, start, end, fixCount }) => {
+      return meta.indexOf(start) !== -1 ||
+          meta.indexOf(end) !== -1 ||
+          (start < meta[fixCount] && end > meta[meta.length - 1]);
+    };
+
     return mergedCells ? mergedCells.filter(mergedRange => {
       return mergedCellIsInRange({
             meta: visibleRows,
-            start: mergedRange.start.row + specialRowsCount,
-            end: mergedRange.end.row + specialRowsCount,
+            start: mergedRange.start.row,
+            end: mergedRange.end.row,
             fixCount: fixRows
           }) &&
           mergedCellIsInRange({
             meta: visibleColumns,
-            start: mergedRange.start.column + specialColumnsCount,
-            end: mergedRange.end.column + specialColumnsCount,
+            start: mergedRange.start.column,
+            end: mergedRange.end.column,
             fixCount: fixColumns
           })
     }).map(mergedRange => {
@@ -234,8 +188,6 @@ const useSpreadsheetRender = ({
         height
       } = getMergedCellProps({
         mergedRange,
-        specialRowsCount,
-        specialColumnsCount,
         rows,
         columns,
         defaultRowHeight,
@@ -250,8 +202,8 @@ const useSpreadsheetRender = ({
         height
       };
 
-      const rowValue = value[rowIndex - specialRowsCount];
-      const curValue = rowValue && rowValue[columnIndex - specialColumnsCount];
+      const rowValue = value[rowIndex];
+      const curValue = rowValue && rowValue[columnIndex];
 
       return renderCellValue({
         columnIndex,
@@ -271,9 +223,7 @@ const useSpreadsheetRender = ({
     visibleColumns,
     renderCellValue,
     value,
-    mergedCells,
-    specialColumnsCount,
-    specialRowsCount
+    mergedCells
   ]);
 
   return [

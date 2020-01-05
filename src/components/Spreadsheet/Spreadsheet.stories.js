@@ -45,12 +45,13 @@ const SpreadsheetComponent = props => {
     </SpreadsheetCell>
   );
 
-  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, style, children }) => (
+  const renderCellValue = ({ row, rowIndex, columnIndex, column, value, mergedRange, style }) => (
     <SpreadsheetCell
         key={`${rowIndex}_${columnIndex}`}
         style={style}
         row={row}
         column={column}
+        mergedRange={mergedRange}
         className={classNames(
           classes.cell,
           {
@@ -59,7 +60,6 @@ const SpreadsheetComponent = props => {
           }
         )}>
       {value ? `Value ${value.row} - ${value.column}` : ''}
-      {children}
     </SpreadsheetCell>
   );
 

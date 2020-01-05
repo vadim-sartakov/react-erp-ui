@@ -32,8 +32,7 @@ const SpreadsheetResizer = ({ mode, index, ...props }) => {
     const curSize = newSize[properties.resizeProperty];
     onChange(sizes => {
       const nextSizes = [...(sizes || [])];
-      // TODO: track special cells from context here instead of constant '1' value
-      nextSizes[index - 1] = { ...nextSizes[index - 1], size: curSize };
+      nextSizes[index] = { ...nextSizes[index], size: curSize };
       return nextSizes;
     });
   }, [index, onChange, properties.resizeProperty]);
