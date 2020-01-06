@@ -24,7 +24,15 @@ const SpreadsheetCell = ({
     fixColumns
   } = useContext(SpreadsheetContext);
 
-  let element;
+  let elements = [];
+
+  if (!overscrolled) {
+    elements.push((
+      <ScrollerCell {...props}>
+        {children}
+      </ScrollerCell>
+    ));
+  }
 
   if (mergedRange) {
 
@@ -72,57 +80,93 @@ const SpreadsheetCell = ({
       defaultSize: defaultRowHeight
     });
 
+    if (overscrolled) {
+      elements.push((
+        <ScrollerCell
+            {...props}
+            style={{
+              position: 'absolute',
+              top,
+              left,
+              float: 'left'
+            }}>
+          {children}
+        </ScrollerCell>
+      ));
+    }
+
     /*if (isFixedRowArea && isFixedColumnArea) {
       element = (
         <ScrollerCell {...props}>
           {children}
         </ScrollerCell>
       );
-    }
+    }*/
     if (isFixedColumnArea) {
-      element = (
-        <ScrollerCell {...props}>
-          {children}
-        </ScrollerCell>
+      const rootStyle = {
+        position: 'absolute',
+        top,
+        left,
+        width: '100%',
+        height,
+        zIndex: 3
+      };
+      const wrapperStyle = {
+        position: 'sticky',
+        width: fixWidth,
+        height,
+        overflow: 'hidden',
+        left
+      };
+      const valueStyle = {
+        width,
+        height
+      }
+      elements.push(
+        <div style={rootStyle}>
+          <ScrollerCell {...props} style={wrapperStyle}>
+            <ScrollerCell style={valueStyle}>
+              {children}
+            </ScrollerCell>
+          </ScrollerCell>
+        </div>
       );
     }
-    if (isFixedRowArea) {
+    /*if (isFixedRowArea) {
+      const style = {
+        position: 'absolute',
+        width,
+        height: fixHeight
+      };
       element = (
         <ScrollerCell {...props}>
           {children}
+          <ScrollerCell {...props} style={style}>
+            {children}
+          </ScrollerCell>
         </ScrollerCell>
       );
     }*/
-    // Value level
-    const style = {
-      position: 'absolute',
-      top,
-      left,
-      width,
-      height,
-      zIndex: 1
-    };
-    element = (
-      <>
-        {!overscrolled && (
-          <ScrollerCell {...props}>
-            {children}
-          </ScrollerCell>
-        )}
-        <ScrollerCell {...props} style={style}>
-          {children}
-        </ScrollerCell>
-      </>
-    );
-  } else {
-    element = (
-      <ScrollerCell {...props}>
+
+    // Not fixed area
+    elements.push((
+      <ScrollerCell
+          {...props}
+          style={{
+            position: 'absolute',
+            top,
+            left,
+            width,
+            height,
+            zIndex: 1
+          }}>
         {children}
       </ScrollerCell>
-    );
+    ));
+    
   }
 
-  return element;
+  return elements;
 
 };
 
