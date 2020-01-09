@@ -13,6 +13,8 @@ const SpreadsheetContainer = ({
   fixColumns,
   specialRowsCount,
   specialColumnsCount,
+  scrollerTop,
+  scrollerLeft,
   className,
   style,
   children
@@ -25,7 +27,9 @@ const SpreadsheetContainer = ({
     fixRows,
     fixColumns,
     specialRowsCount,
-    specialColumnsCount
+    specialColumnsCount,
+    scrollerTop,
+    scrollerLeft
   }), [
     onRowsChange,
     onColumnsChange,
@@ -34,7 +38,9 @@ const SpreadsheetContainer = ({
     fixRows,
     fixColumns,
     specialRowsCount,
-    specialColumnsCount
+    specialColumnsCount,
+    scrollerTop,
+    scrollerLeft,
   ]);
   return (
     <SpreadsheetContext.Provider value={contextValue}>

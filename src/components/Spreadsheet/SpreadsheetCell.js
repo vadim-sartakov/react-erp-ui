@@ -21,7 +21,9 @@ const SpreadsheetCell = ({
     defaultRowHeight,
     defaultColumnWidth,
     fixRows,
-    fixColumns
+    fixColumns,
+    scrollerTop,
+    scrollerLeft
   } = useContext(SpreadsheetContext);
 
   let elements = [];
@@ -79,21 +81,6 @@ const SpreadsheetCell = ({
       startIndex: rowIndex,
       defaultSize: defaultRowHeight
     });
-
-    if (overscrolled) {
-      elements.push((
-        <ScrollerCell
-            key="0"
-            {...props}
-            style={{
-              position: 'absolute',
-              top,
-              left
-            }}>
-          {children}
-        </ScrollerCell>
-      ));
-    }
 
     /*if (isFixedRowArea && isFixedColumnArea) {
       element = (
@@ -157,8 +144,8 @@ const SpreadsheetCell = ({
           {...props}
           style={{
             position: 'absolute',
-            top,
-            left,
+            top: top - scrollerTop,
+            left: left - scrollerLeft,
             width,
             height,
             zIndex: 1

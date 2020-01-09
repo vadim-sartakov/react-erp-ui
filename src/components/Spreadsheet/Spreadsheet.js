@@ -27,6 +27,8 @@ const Spreadsheet = props => {
       <SpreadsheetContainer
           {...props}
           {...spreadsheetProps}
+          scrollerTop={scrollerContainerProps.pagesStyles.top}
+          scrollerLeft={scrollerContainerProps.pagesStyles.left}
           style={gridStyles}>
         {elements}
       </SpreadsheetContainer>
