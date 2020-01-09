@@ -82,13 +82,39 @@ const SpreadsheetCell = ({
       defaultSize: defaultRowHeight
     });
 
-    /*if (isFixedRowArea && isFixedColumnArea) {
-      element = (
-        <ScrollerCell {...props}>
-          {children}
-        </ScrollerCell>
+    if (isFixedRowArea && isFixedColumnArea) {
+      const rootStyle = {
+        position: 'absolute',
+        top,
+        left,
+        width: '100%',
+        height: '100%',
+        zIndex: 7,
+        pointerEvents: 'none'
+      };
+      const wrapperStyle = {
+        position: 'sticky',
+        width: fixWidth,
+        height: fixHeight,
+        overflow: 'hidden',
+        top,
+        left,
+        pointerEvents: 'auto'
+      };
+      const valueStyle = {
+        width,
+        height
+      }
+      elements.push(
+        <div key="7" style={rootStyle}>
+          <div style={wrapperStyle}>
+            <ScrollerCell {...props} style={valueStyle}>
+              {children}
+            </ScrollerCell>
+          </div>
+        </div>
       );
-    }*/
+    }
     if (isFixedColumnArea) {
       const rootStyle = {
         position: 'absolute',
@@ -104,6 +130,7 @@ const SpreadsheetCell = ({
         width: fixWidth,
         height,
         overflow: 'hidden',
+        top,
         left,
         pointerEvents: 'auto'
       };
@@ -121,21 +148,39 @@ const SpreadsheetCell = ({
         </div>
       );
     }
-    /*if (isFixedRowArea) {
-      const style = {
+    if (isFixedRowArea) {
+      const rootStyle = {
         position: 'absolute',
+        top,
+        left,
         width,
-        height: fixHeight
+        height: '100%',
+        zIndex: 5,
+        pointerEvents: 'none'
       };
-      element = (
-        <ScrollerCell {...props}>
-          {children}
-          <ScrollerCell {...props} style={style}>
-            {children}
-          </ScrollerCell>
-        </ScrollerCell>
+      const wrapperStyle = {
+        position: 'sticky',
+        width,
+        height: fixHeight,
+        overflow: 'hidden',
+        top,
+        left,
+        pointerEvents: 'auto'
+      };
+      const valueStyle = {
+        width,
+        height
+      }
+      elements.push(
+        <div key="5" style={rootStyle}>
+          <div style={wrapperStyle}>
+            <ScrollerCell {...props} style={valueStyle}>
+              {children}
+            </ScrollerCell>
+          </div>
+        </div>
       );
-    }*/
+    }
 
     // Not fixed area
     elements.push((

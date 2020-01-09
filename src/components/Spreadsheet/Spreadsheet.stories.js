@@ -105,19 +105,19 @@ const valueWithMergedCells = generateGridValues(1000, 50);
 /** @type {import('./').CellsRange[]} */
 const mergedCells = [
   // Overlapping with all fixed areas
-  /*{
+  {
     start: { row: 0, column: 0 },
-    end: { row: 6, column: 6 }
+    end: { row: 4, column: 4 }
   },
   // Overlapping with fixed rows area
   {
     start: { row: 0, column: 8 },
     end: { row: 6, column: 10 }
-  },*/
+  },
   // Overlapping with fixed columns area
   {
     start: { row: 10, column: 0 },
-    end: { row: 12, column: 8 }
+    end: { row: 12, column: 6 }
   },
   // Not fixed area
   {
