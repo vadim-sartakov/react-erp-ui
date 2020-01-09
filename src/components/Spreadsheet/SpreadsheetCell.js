@@ -56,13 +56,13 @@ const SpreadsheetCell = ({
     });
 
     const width = getMergedCellSize({
-      count: mergedRange.end.column - mergedRange.start.column,
+      count: (mergedRange.end.column - mergedRange.start.column) + 1,
       meta: columns,
       startIndex: columnIndex,
       defaultSize: defaultColumnWidth
     });
     const height = getMergedCellSize({
-      count: mergedRange.end.row - mergedRange.start.row,
+      count: (mergedRange.end.row - mergedRange.start.row) + 1,
       meta: rows,
       startIndex: rowIndex,
       defaultSize: defaultRowHeight
@@ -85,10 +85,10 @@ const SpreadsheetCell = ({
     if (isFixedRowArea && isFixedColumnArea) {
       const rootStyle = {
         position: 'absolute',
-        top,
-        left,
-        width: '100%',
-        height: '100%',
+        top: top - scrollerTop,
+        left: left - scrollerLeft,
+        width: `calc(100% + ${scrollerLeft - left}px)`,
+        height: `calc(100% + ${scrollerTop - top}px)`,
         zIndex: 7,
         pointerEvents: 'none'
       };
@@ -103,7 +103,9 @@ const SpreadsheetCell = ({
       };
       const valueStyle = {
         width,
-        height
+        height,
+        top: 'auto',
+        left: 'auto'
       }
       elements.push(
         <div key="7" style={rootStyle}>
@@ -120,7 +122,7 @@ const SpreadsheetCell = ({
         position: 'absolute',
         top: top - scrollerTop,
         left: left - scrollerLeft,
-        width: '100%',
+        width: `calc(100% + ${scrollerLeft - left}px)`,
         height,
         zIndex: 3,
         pointerEvents: 'none'
@@ -136,7 +138,9 @@ const SpreadsheetCell = ({
       };
       const valueStyle = {
         width,
-        height
+        height,
+        top: 'auto',
+        left: 'auto'
       }
       elements.push(
         <div key="3" style={rootStyle}>
@@ -154,7 +158,7 @@ const SpreadsheetCell = ({
         top: top - scrollerTop,
         left: left - scrollerLeft,
         width,
-        height: '100%',
+        height: `calc(100% + ${scrollerTop - top}px)`,
         zIndex: 5,
         pointerEvents: 'none'
       };
@@ -169,7 +173,9 @@ const SpreadsheetCell = ({
       };
       const valueStyle = {
         width,
-        height
+        height,
+        top: 'auto',
+        left: 'auto'
       }
       elements.push(
         <div key="5" style={rootStyle}>
