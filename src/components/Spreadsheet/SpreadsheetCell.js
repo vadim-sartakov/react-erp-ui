@@ -28,7 +28,7 @@ const SpreadsheetCell = ({
 
   if (!overscrolled) {
     elements.push((
-      <ScrollerCell {...props}>
+      <ScrollerCell key="0" {...props}>
         {children}
       </ScrollerCell>
     ));
@@ -83,12 +83,12 @@ const SpreadsheetCell = ({
     if (overscrolled) {
       elements.push((
         <ScrollerCell
+            key="0"
             {...props}
             style={{
               position: 'absolute',
               top,
-              left,
-              float: 'left'
+              left
             }}>
           {children}
         </ScrollerCell>
@@ -109,26 +109,28 @@ const SpreadsheetCell = ({
         left,
         width: '100%',
         height,
-        zIndex: 3
+        zIndex: 3,
+        pointerEvents: 'none'
       };
       const wrapperStyle = {
         position: 'sticky',
         width: fixWidth,
         height,
         overflow: 'hidden',
-        left
+        left,
+        pointerEvents: 'auto'
       };
       const valueStyle = {
         width,
         height
       }
       elements.push(
-        <div style={rootStyle}>
-          <ScrollerCell {...props} style={wrapperStyle}>
-            <ScrollerCell style={valueStyle}>
+        <div key="3" style={rootStyle}>
+          <div style={wrapperStyle}>
+            <ScrollerCell {...props} style={valueStyle}>
               {children}
             </ScrollerCell>
-          </ScrollerCell>
+          </div>
         </div>
       );
     }
@@ -151,6 +153,7 @@ const SpreadsheetCell = ({
     // Not fixed area
     elements.push((
       <ScrollerCell
+          key="1"
           {...props}
           style={{
             position: 'absolute',

@@ -122,7 +122,12 @@ const mergedCells = [
   // Not fixed area
   {
     start: { row: 20, column: 5 },
-    end: { row: 24, column: 8 }
+    end: { row: 25, column: 8 }
+  },
+  // Overscrolled not fixed area
+  {
+    start: { row: 30, column: 5 },
+    end: { row: 150, column: 8 }
   }
 ];
 

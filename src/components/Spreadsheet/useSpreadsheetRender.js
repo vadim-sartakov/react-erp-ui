@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 
 /**
  * @param {import('./').useSpreadsheetRenderOptions} options
@@ -86,27 +86,17 @@ const useSpreadsheetRender = ({
     mergedCells
   ]);
 
+  const overscrolledFilter = useCallback(mergedRange => {
+    const result =
+        (mergedRange.start.row > fixRows && mergedRange.start.row < visibleRows[fixRows] && mergedRange.end.row >= visibleRows[fixRows]) ||
+        (mergedRange.start.column > fixColumns && mergedRange.start.column < visibleColumns[fixColumns] && mergedRange.end.column >= visibleColumns[fixColumns]);
+    return result;
+  }, [visibleRows, visibleColumns, fixRows, fixColumns]);
+
   // Overscrolled merged cells. When merge starts out of visible cells area
   const mergedCellsElements = useMemo(() => {
     // Filtering out merged ranges which are not visible
-    const rangeIsOverscrolled = ({ meta, start, end, fixCount }) => {
-      return start < meta[fixCount] && end >= meta[fixCount];
-    };
-
-    return mergedCells ? mergedCells.filter(mergedRange => {
-      return rangeIsOverscrolled({
-            meta: visibleRows,
-            start: mergedRange.start.row,
-            end: mergedRange.end.row,
-            fixCount: fixRows
-          }) &&
-          rangeIsOverscrolled({
-            meta: visibleColumns,
-            start: mergedRange.start.column,
-            end: mergedRange.end.column,
-            fixCount: fixColumns
-          })
-    }).map(mergedRange => {
+    return mergedCells ? mergedCells.filter(overscrolledFilter).map(mergedRange => {
       const columnIndex = mergedRange.start.column;
       const rowIndex = mergedRange.start.row;
       const rowValue = value[rowIndex];
@@ -124,13 +114,10 @@ const useSpreadsheetRender = ({
   }, [
     rows,
     columns,
-    fixColumns,
-    fixRows,
-    visibleRows,
-    visibleColumns,
     renderCellValue,
     value,
-    mergedCells
+    mergedCells,
+    overscrolledFilter
   ]);
 
   return [
