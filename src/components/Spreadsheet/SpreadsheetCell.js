@@ -118,8 +118,8 @@ const SpreadsheetCell = ({
     if (isFixedColumnArea) {
       const rootStyle = {
         position: 'absolute',
-        top,
-        left,
+        top: top - scrollerTop,
+        left: left - scrollerLeft,
         width: '100%',
         height,
         zIndex: 3,
@@ -151,8 +151,8 @@ const SpreadsheetCell = ({
     if (isFixedRowArea) {
       const rootStyle = {
         position: 'absolute',
-        top,
-        left,
+        top: top - scrollerTop,
+        left: left - scrollerLeft,
         width,
         height: '100%',
         zIndex: 5,

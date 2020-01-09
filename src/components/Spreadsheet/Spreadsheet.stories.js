@@ -128,6 +128,17 @@ const mergedCells = [
   {
     start: { row: 30, column: 5 },
     end: { row: 150, column: 8 }
+  },
+
+  // Overscrolled fixed columns area
+  {
+    start: { row: 14, column: 0 },
+    end: { row: 150, column: 2 }
+  },
+  // Overscrolled fixed rows area
+  {
+    start: { row: 0, column: 12 },
+    end: { row: 2, column: 30 }
   }
 ];
 
