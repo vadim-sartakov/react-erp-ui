@@ -183,7 +183,18 @@ const useSpreadsheetRender = ({
     }
 
     return result;
-  }, [fixColumns, fixRows, renderColumnsFixedArea, renderRowsFixedArea, columns, rows, defaultColumnWidth, defaultRowHeight]);
+  }, [
+    fixColumns,
+    fixRows,
+    renderColumnsFixedArea,
+    renderRowsFixedArea,
+    columns,
+    rows,
+    defaultColumnWidth,
+    defaultRowHeight,
+    specialColumnsCount,
+    specialRowsCount
+  ]);
 
   return [
     ...cellsElements,
