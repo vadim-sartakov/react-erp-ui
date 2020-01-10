@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import { storiesOf } from '@storybook/react';
 import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell } from './';
-import { generateGridValues } from '../Scroller/Scroller.stories';
 import classes from './Spreadsheet-stories.module.sass';
+import { generateGridValues } from '../test-utils/generateValues';
 
 /**
  * @param {import('./').SpreadsheetProps} props 
@@ -27,7 +27,7 @@ const SpreadsheetComponent = props => {
           { [classes.lastFixedColumn]: columnIndex === props.fixColumns }
         )}>
       {columnIndex}
-      <SpreadsheetResizer mode="column" index={columnIndex} column={column} className={classes.columnResizer} />
+      <SpreadsheetResizer mode="column" index={columnIndex} className={classes.columnResizer} />
     </SpreadsheetCell>
   );
 
@@ -41,7 +41,7 @@ const SpreadsheetComponent = props => {
           { [classes.lastFixedRow]: rowIndex === props.fixRows }
         )}>
       {rowIndex}
-      <SpreadsheetResizer mode="row" index={rowIndex} row={row} className={classes.rowResizer} />
+      <SpreadsheetResizer mode="row" index={rowIndex} className={classes.rowResizer} />
     </SpreadsheetCell>
   );
 
@@ -80,8 +80,6 @@ const SpreadsheetComponent = props => {
   );
 };
 
-const defaultValue = generateGridValues(1000, 50);
-
 export const defaultComponent = props => (
   <SpreadsheetComponent
       columnNumbersRowHeight={20}
@@ -92,7 +90,7 @@ export const defaultComponent = props => (
       columnsPerPage={15}
       totalColumns={50}
       totalRows={1000}
-      value={defaultValue}
+      value={generateGridValues(1000, 50)}
       width={800}
       height={600}
       fixRows={2}
@@ -100,66 +98,65 @@ export const defaultComponent = props => (
       {...props} />
 );
 
-const valueWithMergedCells = generateGridValues(1000, 50);
+export const withMergedCells = props => {
+  /** @type {import('./').CellsRange[]} */
+  const mergedCells = [
+    // Overlapping with all fixed areas
+    {
+      start: { row: 0, column: 0 },
+      end: { row: 3, column: 3 }
+    },
+    // Overlapping with fixed rows area
+    {
+      start: { row: 0, column: 8 },
+      end: { row: 5, column: 9 }
+    },
+    // Overlapping with fixed columns area
+    {
+      start: { row: 10, column: 0 },
+      end: { row: 11, column: 30 }
+    },
+    // Not fixed area
+    {
+      start: { row: 20, column: 5 },
+      end: { row: 25, column: 7 }
+    },
+    // Overscrolled not fixed area
+    {
+      start: { row: 30, column: 5 },
+      end: { row: 150, column: 7 }
+    },
 
-/** @type {import('./').CellsRange[]} */
-const mergedCells = [
-  // Overlapping with all fixed areas
-  {
-    start: { row: 0, column: 0 },
-    end: { row: 3, column: 3 }
-  },
-  // Overlapping with fixed rows area
-  {
-    start: { row: 0, column: 8 },
-    end: { row: 5, column: 9 }
-  },
-  // Overlapping with fixed columns area
-  {
-    start: { row: 10, column: 0 },
-    end: { row: 11, column: 5 }
-  },
-  // Not fixed area
-  {
-    start: { row: 20, column: 5 },
-    end: { row: 25, column: 7 }
-  },
-  // Overscrolled not fixed area
-  {
-    start: { row: 30, column: 5 },
-    end: { row: 150, column: 7 }
-  },
-
-  // Overscrolled fixed columns area
-  {
-    start: { row: 14, column: 0 },
-    end: { row: 150, column: 0 }
-  },
-  // Overscrolled fixed rows area
-  {
-    start: { row: 0, column: 12 },
-    end: { row: 1, column: 30 }
-  }
-];
-
-export const withMergedCells = props => (
-  <SpreadsheetComponent
-      columnNumbersRowHeight={20}
-      rowNumberColumnWidth={40}
-      defaultRowHeight={25}
-      defaultColumnWidth={120}
-      rowsPerPage={60}
-      columnsPerPage={15}
-      totalColumns={50}
-      totalRows={1000}
-      mergedCells={mergedCells}
-      value={valueWithMergedCells}
-      width={800}
-      height={600}
-      fixRows={2}
-      fixColumns={2}
-      {...props} />
-);
+    // Overscrolled fixed columns area
+    {
+      start: { row: 14, column: 0 },
+      end: { row: 150, column: 0 }
+    },
+    // Overscrolled fixed rows area
+    {
+      start: { row: 0, column: 12 },
+      end: { row: 1, column: 30 }
+    }
+  ];
+  return (
+    <SpreadsheetComponent
+        columnNumbersRowHeight={20}
+        rowNumberColumnWidth={40}
+        defaultRowHeight={25}
+        defaultColumnWidth={120}
+        rowsPerPage={60}
+        columnsPerPage={15}
+        totalColumns={50}
+        totalRows={1000}
+        mergedCells={mergedCells}
+        value={generateGridValues(1000, 50)}
+        width={800}
+        height={600}
+        fixRows={2}
+        fixColumns={2}
+        {...props} />
+  )
+};
 
 const rowsGrouped = [];
 for(let i = 1; i < 20; i++) {
@@ -179,7 +176,7 @@ export const withGroups = props => (
       columnsPerPage={15}
       totalColumns={50}
       totalRows={1000}
-      value={defaultValue}
+      value={generateGridValues(1000, 50)}
       width={800}
       height={600}
       fixRows={2}

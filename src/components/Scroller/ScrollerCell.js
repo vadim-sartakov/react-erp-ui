@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import ScrollerContext from './ScrollerContext';
 import './useScroller';
 
-const ScrollerCell = React.memo(({
+const ScrollerCell = ({
   style = {},
   row = {},
   column = {},
@@ -30,6 +30,6 @@ const ScrollerCell = React.memo(({
   }
   nextStyle = { ...nextStyle, ...style };
   return <Component {...props} style={nextStyle} />;
-});
+};
 
 export default ScrollerCell;
