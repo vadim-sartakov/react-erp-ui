@@ -3,24 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
 import ScrollerCell from './ScrollerCell';
 import Scroller from './Scroller';
-
-export const generateMeta = count => {
-  return [...new Array(count).keys()];
-};
-
-export const generateListValues = count => {
-  return generateMeta(count).map(row => {
-    return { row };
-  });
-};
-
-export const generateGridValues = (rowsCount, columnsCount) => {
-  return generateMeta(rowsCount).map(row => {
-    return generateMeta(columnsCount).map(column => {
-      return { row, column };
-    });
-  });
-};
+import { generateListValues, generateGridValues } from '../test-utils/generateValues';
 
 export const generateCustomMeta = (count, size) => [...new Array(count).keys()].map(() => ({ size }));
 

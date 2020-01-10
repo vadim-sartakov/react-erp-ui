@@ -11,6 +11,10 @@ const SpreadsheetContainer = ({
   defaultRowHeight,
   fixRows,
   fixColumns,
+  specialRowsCount,
+  specialColumnsCount,
+  scrollerTop,
+  scrollerLeft,
   className,
   style,
   children
@@ -21,11 +25,25 @@ const SpreadsheetContainer = ({
     defaultColumnWidth,
     defaultRowHeight,
     fixRows,
-    fixColumns
-  }), [onRowsChange, onColumnsChange, defaultColumnWidth, defaultRowHeight, fixRows, fixColumns]);
+    fixColumns,
+    specialRowsCount,
+    specialColumnsCount,
+    scrollerTop,
+    scrollerLeft
+  }), [
+    onRowsChange,
+    onColumnsChange,
+    defaultColumnWidth,
+    defaultRowHeight,
+    fixRows,
+    fixColumns,
+    specialRowsCount,
+    specialColumnsCount,
+    scrollerTop,
+    scrollerLeft,
+  ]);
   return (
-    <SpreadsheetContext.Provider
-        value={contextValue}>
+    <SpreadsheetContext.Provider value={contextValue}>
       <div className={className} style={style}>
         {children}
       </div>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 
 /**
  * @param {import('./').useSpreadsheetRenderOptions} options
@@ -13,11 +13,12 @@ const useSpreadsheetRender = ({
   renderRowColumnNumbersIntersection,
   renderColumnNumber,
   renderRowNumber,
-  renderCellValue
+  renderCellValue,
+  fixRows,
+  fixColumns,
+  mergedCells
 }) => {
-  const elements = useMemo(() => {
-    const mergedCells = [];
-
+  const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex) => {
       const row = rows[rowIndex] || {};
       let columnsElements;
@@ -44,31 +45,26 @@ const useSpreadsheetRender = ({
         case 'VALUES':
           columnsElements = visibleColumns.map(columnIndex => {
             const column = columns[columnIndex] || {};
-            const rowValue = value[rowIndex - 1];
-            const curValue = rowValue && rowValue[columnIndex - 1];
+            const rowValue = value[rowIndex];
+            const curValue = rowValue && rowValue[columnIndex];
 
-            // Maintaining merged cells
-            if (curValue && (curValue.rowSpan || curValue.colSpan)) {
-              for (let i = 0; i < curValue.rowSpan ; i++) {
-                for (let j = 0; j < curValue.colSpan ; j++) {
-                  const resultRowIndex = rowIndex + i;
-                  const resultColumnIndex = columnIndex + j;
-                  (i > 0 || j > 0) && mergedCells.push([resultRowIndex, resultColumnIndex]);
-                }
-              }
-            };
+            const mergedRange = mergedCells && mergedCells.find(mergedRange => {
+              return (mergedRange.start.row) === rowIndex &&
+                  (mergedRange.start.column) === columnIndex
+            });
             
             let element;
+
             const columnsType = column.type || 'VALUES';
             switch(columnsType) {
               case 'ROW_NUMBERS':
                 element = renderRowNumber({ row, column, rowIndex, columnIndex });
                 break;
               default:
-                const cellIsMerged = mergedCells.some(([row, column]) => row === rowIndex && column === columnIndex);
-                element = !cellIsMerged && renderCellValue({ row, rowIndex, column, columnIndex, value: curValue, columns, rows });
+                element = renderCellValue({ row, rowIndex, column, columnIndex, rows, columns, value: curValue, mergedRange });
                 break;
             }
+
             return element;
           });
           break;
@@ -86,9 +82,48 @@ const useSpreadsheetRender = ({
     renderRowColumnNumbersIntersection,
     renderColumnNumber,
     renderRowNumber,
-    renderCellValue
+    renderCellValue,
+    mergedCells
   ]);
-  return elements;
+
+  const overscrolledFilter = useCallback(mergedRange => {
+    const result =
+        (mergedRange.start.row > fixRows && mergedRange.start.row < visibleRows[fixRows] && mergedRange.end.row >= visibleRows[fixRows]) ||
+        (mergedRange.start.column > fixColumns && mergedRange.start.column < visibleColumns[fixColumns] && mergedRange.end.column >= visibleColumns[fixColumns]);
+    return result;
+  }, [visibleRows, visibleColumns, fixRows, fixColumns]);
+
+  // Overscrolled merged cells. When merge starts out of visible cells area
+  const mergedCellsElements = useMemo(() => {
+    // Filtering out merged ranges which are not visible
+    return mergedCells ? mergedCells.filter(overscrolledFilter).map(mergedRange => {
+      const columnIndex = mergedRange.start.column;
+      const rowIndex = mergedRange.start.row;
+      const rowValue = value[rowIndex];
+      const curValue = rowValue && rowValue[columnIndex];
+      return renderCellValue({
+        rowIndex,
+        columnIndex,
+        rows,
+        columns,
+        value: curValue,
+        mergedRange,
+        overscrolled: true
+      });
+    }, []) : [];
+  }, [
+    rows,
+    columns,
+    renderCellValue,
+    value,
+    mergedCells,
+    overscrolledFilter
+  ]);
+
+  return [
+    ...cellsElements,
+    ...mergedCellsElements
+  ];
 };
 
 export default useSpreadsheetRender;

@@ -32,7 +32,7 @@ declare namespace Scroller {
    */
   function ScrollerContainer(props: ScrollerContainerProps): JSX.Element;
 
-  interface useScrollerOptionsBase {
+  interface UseScrollerOptionsBase {
     defaultRowHeight: number;
     defaultColumnWidth: number;
     totalRows: number;
@@ -45,7 +45,7 @@ declare namespace Scroller {
     fixColumns?: number
   }
 
-  interface useScrollerOptions extends useScrollerOptionsBase {
+  interface UseScrollerOptions extends UseScrollerOptionsBase {
     /** Sync value */
     value?: any[][];
     /** When set to true whe height of scroller will expand on demand */
@@ -56,7 +56,7 @@ declare namespace Scroller {
     renderCell?: (options: { row: Meta, column: Meta, value: any }) => JSX.Element;
   }
   
-  interface useScrollerResult {
+  interface UseScrollerResult {
     /** Rows indexes */
     visibleRows: number[],
     /** Columns indexes */
@@ -82,7 +82,7 @@ declare namespace Scroller {
   /**
    * Scroller hook which deals with all scroller state management 
    */
-  function useScroller(options: useScrollerOptions): useScrollerResult
+  function useScroller(options: UseScrollerOptions): UseScrollerResult
 
   interface ScrollerCellProps {
     Component?: ElementType;
@@ -92,5 +92,5 @@ declare namespace Scroller {
 
   function ScrollerCell(props: ScrollerCellProps): JSX.Element
 
-  interface ScrollerProps extends useScrollerOptions, ScrollerContainerProps {}
+  interface ScrollerProps extends UseScrollerOptions, ScrollerContainerProps {}
 }
