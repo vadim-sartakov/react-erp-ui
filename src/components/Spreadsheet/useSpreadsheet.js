@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 
 /**
- * @param {import('./').useSpreadsheetOptions} options 
+ * @param {import('./').UseSpreadsheetOptions} options 
  */
 const useSpreadsheet = ({
   value: valueProp,

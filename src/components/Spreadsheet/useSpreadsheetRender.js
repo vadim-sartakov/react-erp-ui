@@ -21,7 +21,9 @@ const useSpreadsheetRender = ({
   fixColumns,
   defaultRowHeight,
   defaultColumnWidth,
-  mergedCells
+  mergedCells,
+  specialRowsCount,
+  specialColumnsCount
 }) => {
   const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex) => {
@@ -152,7 +154,7 @@ const useSpreadsheetRender = ({
       left: leftOffset,
     };
 
-    if (fixColumns && renderColumnsFixedArea) {
+    if ((fixColumns - specialColumnsCount) && renderColumnsFixedArea) {
       const width = getCellsRangeSize({ startIndex: columnNumbersMetaIndex, count: fixColumns, defaultSize: defaultColumnWidth, meta: columns });
       const style = {
         ...baseFixedAreaStyle,
@@ -166,7 +168,7 @@ const useSpreadsheetRender = ({
       ));
     }
 
-    if (fixRows && renderRowsFixedArea) {
+    if ((fixRows - specialRowsCount) && renderRowsFixedArea) {
       const height = getCellsRangeSize({ startIndex: rowNumbersMetaIndex, count: fixRows, defaultSize: defaultRowHeight, meta: rows });
       const style = {
         ...baseFixedAreaStyle,
