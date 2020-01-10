@@ -4,6 +4,7 @@ import { loadPage } from './utils';
 import ScrollerCell from './ScrollerCell';
 import Scroller from './Scroller';
 import { generateListValues, generateGridValues } from '../test-utils/generateValues';
+import classes from './Scroller-stories.module.sass';
 
 export const generateCustomMeta = (count, size) => [...new Array(count).keys()].map(() => ({ size }));
 
@@ -40,11 +41,10 @@ const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 export const GridTestComponent = props => {
   const renderCell = useCallback(({ rowIndex, columnIndex, row, column, value }) => (
     <ScrollerCell
-        className="cell"
+        className={classes.cell}
         key={`${rowIndex}_${columnIndex}`}
         row={row}
-        column={column}
-        style={{ backgroundColor: '#fff', borderBottom: 'solid 1px grey', borderRight: 'solid 1px grey' }}>
+        column={column}>
       {value ? `Value ${value.row} - ${value.column}` : 'Loading...'}
     </ScrollerCell>
   ), []);
