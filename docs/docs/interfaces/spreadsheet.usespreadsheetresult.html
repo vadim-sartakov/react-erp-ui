@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>useSpreadsheetResult | react-erp-ui</title>
+	<title>UseSpreadsheetResult | react-erp-ui</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,21 +57,30 @@
 					<a href="../modules/spreadsheet.html">Spreadsheet</a>
 				</li>
 				<li>
-					<a href="spreadsheet.usespreadsheetresult.html">useSpreadsheetResult</a>
+					<a href="spreadsheet.usespreadsheetresult.html">UseSpreadsheetResult</a>
 				</li>
 			</ul>
-			<h1>Interface useSpreadsheetResult</h1>
+			<h1>Interface UseSpreadsheetResult</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Transformed input properties as well as additional properties.
+							Transformation is the offset of input values and occures when
+						special rows/columns (rows, columns numbers, groups) appeared</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">useSpreadsheetResult</span>
+						<span class="target">UseSpreadsheetResult</span>
 					</li>
 				</ul>
 			</section>
@@ -82,8 +91,19 @@
 						<section class="tsd-index-section tsd-is-not-exported">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#scrolleroptions" class="tsd-kind-icon">scroller<wbr>Options</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#spreadsheetcontainerprops" class="tsd-kind-icon">spreadsheet<wbr>Container<wbr>Props</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#columns" class="tsd-kind-icon">columns</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#fixcolumns" class="tsd-kind-icon">fix<wbr>Columns</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#fixrows" class="tsd-kind-icon">fix<wbr>Rows</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#mergedcells" class="tsd-kind-icon">merged<wbr>Cells</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#onchange" class="tsd-kind-icon">on<wbr>Change</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#oncolumnschange" class="tsd-kind-icon">on<wbr>Columns<wbr>Change</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#onrowschange" class="tsd-kind-icon">on<wbr>Rows<wbr>Change</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#rows" class="tsd-kind-icon">rows</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#specialcolumnscount" class="tsd-kind-icon">special<wbr>Columns<wbr>Count</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#specialrowscount" class="tsd-kind-icon">special<wbr>Rows<wbr>Count</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#totalcolumns" class="tsd-kind-icon">total<wbr>Columns</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#totalrows" class="tsd-kind-icon">total<wbr>Rows</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="spreadsheet.usespreadsheetresult.html#value" class="tsd-kind-icon">value</a></li>
 							</ul>
 						</section>
 					</div>
@@ -92,22 +112,132 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-					<a name="scrolleroptions" class="tsd-anchor"></a>
-					<h3>scroller<wbr>Options</h3>
-					<div class="tsd-signature tsd-kind-icon">scroller<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="scroller.usescrolleroptionsbase.html" class="tsd-signature-type">useScrollerOptionsBase</a></div>
+					<a name="columns" class="tsd-anchor"></a>
+					<h3>columns</h3>
+					<div class="tsd-signature tsd-kind-icon">columns<span class="tsd-signature-symbol">:</span> <a href="spreadsheet.meta.html" class="tsd-signature-type">Meta</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/984ee00/src/components/Spreadsheet/index.d.ts#L102">Spreadsheet/index.d.ts:102</a></li>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L112">Spreadsheet/index.d.ts:112</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-					<a name="spreadsheetcontainerprops" class="tsd-anchor"></a>
-					<h3>spreadsheet<wbr>Container<wbr>Props</h3>
-					<div class="tsd-signature tsd-kind-icon">spreadsheet<wbr>Container<wbr>Props<span class="tsd-signature-symbol">:</span> <a href="spreadsheet.spreadsheetcontainerprops.html" class="tsd-signature-type">SpreadsheetContainerProps</a></div>
+					<a name="fixcolumns" class="tsd-anchor"></a>
+					<h3>fix<wbr>Columns</h3>
+					<div class="tsd-signature tsd-kind-icon">fix<wbr>Columns<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/984ee00/src/components/Spreadsheet/index.d.ts#L101">Spreadsheet/index.d.ts:101</a></li>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L118">Spreadsheet/index.d.ts:118</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="fixrows" class="tsd-anchor"></a>
+					<h3>fix<wbr>Rows</h3>
+					<div class="tsd-signature tsd-kind-icon">fix<wbr>Rows<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L117">Spreadsheet/index.d.ts:117</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="mergedcells" class="tsd-anchor"></a>
+					<h3>merged<wbr>Cells</h3>
+					<div class="tsd-signature tsd-kind-icon">merged<wbr>Cells<span class="tsd-signature-symbol">:</span> <a href="spreadsheet.cellsrange.html" class="tsd-signature-type">CellsRange</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L119">Spreadsheet/index.d.ts:119</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="onchange" class="tsd-anchor"></a>
+					<h3>on<wbr>Change</h3>
+					<div class="tsd-signature tsd-kind-icon">on<wbr>Change<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Function</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L110">Spreadsheet/index.d.ts:110</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="oncolumnschange" class="tsd-anchor"></a>
+					<h3>on<wbr>Columns<wbr>Change</h3>
+					<div class="tsd-signature tsd-kind-icon">on<wbr>Columns<wbr>Change<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Function</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L113">Spreadsheet/index.d.ts:113</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="onrowschange" class="tsd-anchor"></a>
+					<h3>on<wbr>Rows<wbr>Change</h3>
+					<div class="tsd-signature tsd-kind-icon">on<wbr>Rows<wbr>Change<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Function</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L114">Spreadsheet/index.d.ts:114</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="rows" class="tsd-anchor"></a>
+					<h3>rows</h3>
+					<div class="tsd-signature tsd-kind-icon">rows<span class="tsd-signature-symbol">:</span> <a href="spreadsheet.meta.html" class="tsd-signature-type">Meta</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L111">Spreadsheet/index.d.ts:111</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="specialcolumnscount" class="tsd-anchor"></a>
+					<h3>special<wbr>Columns<wbr>Count</h3>
+					<div class="tsd-signature tsd-kind-icon">special<wbr>Columns<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L121">Spreadsheet/index.d.ts:121</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="specialrowscount" class="tsd-anchor"></a>
+					<h3>special<wbr>Rows<wbr>Count</h3>
+					<div class="tsd-signature tsd-kind-icon">special<wbr>Rows<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L120">Spreadsheet/index.d.ts:120</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="totalcolumns" class="tsd-anchor"></a>
+					<h3>total<wbr>Columns</h3>
+					<div class="tsd-signature tsd-kind-icon">total<wbr>Columns<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L116">Spreadsheet/index.d.ts:116</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="totalrows" class="tsd-anchor"></a>
+					<h3>total<wbr>Rows</h3>
+					<div class="tsd-signature tsd-kind-icon">total<wbr>Rows<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L115">Spreadsheet/index.d.ts:115</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="value" class="tsd-anchor"></a>
+					<h3>value</h3>
+					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <a href="spreadsheet.value.html" class="tsd-signature-type">Value</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/vadim-sartakov/react-erp-ui/blob/9650c11/src/components/Spreadsheet/index.d.ts#L109">Spreadsheet/index.d.ts:109</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -154,34 +284,64 @@
 						<a href="spreadsheet.spreadsheetprops.html" class="tsd-kind-icon">Spreadsheet<wbr>Props</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
-						<a href="spreadsheet.value.html" class="tsd-kind-icon">Value</a>
+						<a href="spreadsheet.usespreadsheetoptions.html" class="tsd-kind-icon">Use<wbr>Spreadsheet<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
-						<a href="spreadsheet.usespreadsheetoptions.html" class="tsd-kind-icon">use<wbr>Spreadsheet<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
-						<a href="spreadsheet.usespreadsheetrenderoptions.html" class="tsd-kind-icon">use<wbr>Spreadsheet<wbr>Render<wbr>Options</a>
+						<a href="spreadsheet.usespreadsheetrenderoptions.html" class="tsd-kind-icon">Use<wbr>Spreadsheet<wbr>Render<wbr>Options</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
-						<a href="spreadsheet.usespreadsheetresult.html" class="tsd-kind-icon">use<wbr>Spreadsheet<wbr>Result</a>
+						<a href="spreadsheet.usespreadsheetresult.html" class="tsd-kind-icon">Use<wbr>Spreadsheet<wbr>Result</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-								<a href="spreadsheet.usespreadsheetresult.html#scrolleroptions" class="tsd-kind-icon">scroller<wbr>Options</a>
+								<a href="spreadsheet.usespreadsheetresult.html#columns" class="tsd-kind-icon">columns</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-								<a href="spreadsheet.usespreadsheetresult.html#spreadsheetcontainerprops" class="tsd-kind-icon">spreadsheet<wbr>Container<wbr>Props</a>
+								<a href="spreadsheet.usespreadsheetresult.html#fixcolumns" class="tsd-kind-icon">fix<wbr>Columns</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.usespreadsheetresult.html#fixrows" class="tsd-kind-icon">fix<wbr>Rows</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.usespreadsheetresult.html#mergedcells" class="tsd-kind-icon">merged<wbr>Cells</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.usespreadsheetresult.html#onchange" class="tsd-kind-icon">on<wbr>Change</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.usespreadsheetresult.html#oncolumnschange" class="tsd-kind-icon">on<wbr>Columns<wbr>Change</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.usespreadsheetresult.html#onrowschange" class="tsd-kind-icon">on<wbr>Rows<wbr>Change</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.usespreadsheetresult.html#rows" class="tsd-kind-icon">rows</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.usespreadsheetresult.html#specialcolumnscount" class="tsd-kind-icon">special<wbr>Columns<wbr>Count</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.usespreadsheetresult.html#specialrowscount" class="tsd-kind-icon">special<wbr>Rows<wbr>Count</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.usespreadsheetresult.html#totalcolumns" class="tsd-kind-icon">total<wbr>Columns</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.usespreadsheetresult.html#totalrows" class="tsd-kind-icon">total<wbr>Rows</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="spreadsheet.usespreadsheetresult.html#value" class="tsd-kind-icon">value</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
-						<a href="../modules/spreadsheet.html#ranges" class="tsd-kind-icon">Ranges</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+						<a href="spreadsheet.value.html" class="tsd-kind-icon">Value</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
-						<a href="../modules/spreadsheet.html#rendercallback" class="tsd-kind-icon">render<wbr>Callback</a>
+						<a href="../modules/spreadsheet.html#rendercallback" class="tsd-kind-icon">Render<wbr>Callback</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
 						<a href="../modules/spreadsheet.html#spreadsheetcell" class="tsd-kind-icon">Spreadsheet<wbr>Cell</a>

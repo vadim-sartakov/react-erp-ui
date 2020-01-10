@@ -10,8 +10,6 @@ const SpreadsheetCell = ({
   mergedRange,
   rows,
   columns,
-  rowIndex,
-  columnIndex,
   overscrolled,
   children,
   ...props

@@ -1,11 +1,8 @@
-import { useScrollerOptionsBase } from '../Scroller/index';
-import { CSSProperties } from 'react';
-
 export = Spreadsheet;
 
 /**
  * Data grid, Excel-like spreadsheet component.
- * Integrated with [Scroller]{@link Scroller} to able to handle large sets of data.
+ * Integrated with [Scroller]{@link Scroller} to be able to handle large sets of data.
  */
 declare function Spreadsheet(props: Spreadsheet.SpreadsheetProps): JSX.Element
 
@@ -55,30 +52,33 @@ declare namespace Spreadsheet {
     defaultColumnWidth: number,
     defaultRowHeight: number,
     fixRows?: number,
-    fixColumns?: number
+    fixColumns?: number,
+    specialRowsCount?: number,
+    specialColumnsCount?: number,
+    scrollerTop: number,
+    scrollerLeft: number,
   }
 
   interface RenderOptions {
     /** Intersection area of rows and columns numbers */
-    renderRowColumnNumbersIntersection: renderCallback;
+    renderRowColumnNumbersIntersection: RenderCallback;
     /**
      * Empty area of rows and columns groups.
      * Would be rendered between groups of the same level and on intersection level
      * */
-    renderGroupsEmptyArea: renderCallback;
+    renderGroupsEmptyArea: RenderCallback;
     /** Group level buttons which allows to manage expand/collapse state */
-    renderGroupButton: renderCallback;
-    renderRowGroup: renderCallback;
-    renderColumnGroup: renderCallback;
-    renderColumnNumber: renderCallback;
-    renderRowNumber: renderCallback;
-    renderCellValue: renderCallback;
-    mergedCells?: CellsRange[];
+    renderGroupButton: RenderCallback;
+    renderRowGroup: RenderCallback;
+    renderColumnGroup: RenderCallback;
+    renderColumnNumber: RenderCallback;
+    renderRowNumber: RenderCallback;
+    renderCellValue: RenderCallback;
   }
 
   function SpreadsheetContainer(props: SpreadsheetContainerProps): JSX.Element
 
-  interface useSpreadsheetOptions extends useScrollerOptionsBase {
+  interface UseSpreadsheetOptions {
     value?: Value[][];
     onChange?: Function;
     rows?: Meta[]; 
@@ -93,28 +93,50 @@ declare namespace Spreadsheet {
     rowNumberColumnWidth?: number;
     columnGroupHeight?: number;
     rowGroupWidth?: number;
+    mergedCells?: CellsRange[];
+    totalRows: number;
+    totalColumns: number;
+    fixRows?: number;
+    fixColumns?: number;
   }
 
-  interface useSpreadsheetResult {
-    spreadsheetContainerProps: SpreadsheetContainerProps;
-    scrollerOptions: useScrollerOptionsBase
+  /**
+   * Transformed input properties as well as additional properties.
+   * Transformation is the offset of input values and occures when
+   * special rows/columns (rows, columns numbers, groups) appeared
+   */
+  interface UseSpreadsheetResult {
+    value: Value[][];
+    onChange: Function;
+    rows: Meta[];
+    columns: Meta[];
+    onColumnsChange: Function;
+    onRowsChange: Function;
+    totalRows: number;
+    totalColumns: number;
+    fixRows: number;
+    fixColumns: number;
+    mergedCells: CellsRange[];
+    specialRowsCount: number;
+    specialColumnsCount: number;
   }
 
-  function useSpreadsheet(options: useSpreadsheetOptions): useSpreadsheetResult
+  function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
 
   /**
    * Should return [SpreadsheetCell]{@link Spreadsheet.SpreadsheetCell} component as root.
    */
-  type renderCallback = (options: {
+  type RenderCallback = (options: {
     rowIndex: number;
     columnIndex: number;
     row: Meta;
     column: Meta;
-    value: Value;
-    style?: CSSProperties
+    value?: Value;
+    overscrolled?: Boolean;
+    mergedRange?: CellsRange;
   }) => JSX.Element
 
-  interface useSpreadsheetRenderOptions extends RenderOptions {
+  interface UseSpreadsheetRenderOptions extends RenderOptions {
     value: Value[][];
     visibleRows: number[];
     visibleColumns: number[];
@@ -123,9 +145,14 @@ declare namespace Spreadsheet {
   }
 
   /** Renders spreadsheet elements by calling provided callbacks */
-  function useSpreadsheetRender(options: useSpreadsheetRenderOptions): JSX.Element
+  function useSpreadsheetRender(options: UseSpreadsheetRenderOptions): JSX.Element
 
   interface SpreadsheetCellProps {
+    mergedRange?: CellsRange;
+    rows: Meta[];
+    columns: Meta[];
+    /** Whether this cell is scrolled out or currently visible */
+    overscrolled?: Boolean;
     row: Meta;
     column: Meta;
   }
@@ -135,6 +162,6 @@ declare namespace Spreadsheet {
    */
   function SpreadsheetCell(props: SpreadsheetCellProps): JSX.Element
 
-  interface SpreadsheetProps extends useSpreadsheetOptions, RenderOptions, SpreadsheetContainerProps {}
+  interface SpreadsheetProps extends UseSpreadsheetOptions, RenderOptions {}
 
 }
