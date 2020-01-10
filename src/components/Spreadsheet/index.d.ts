@@ -60,6 +60,10 @@ declare namespace Spreadsheet {
   }
 
   interface RenderOptions {
+    /** Fixed columns vertical line */
+    renderColumnsFixedArea: RenderCallback;
+    /** Fixed rows horizontal line */
+    renderRowsFixedArea: RenderCallback;
     /** Intersection area of rows and columns numbers */
     renderRowColumnNumbersIntersection: RenderCallback;
     /**

@@ -1,9 +1,56 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
 import { storiesOf } from '@storybook/react';
 import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell } from './';
-import classes from './Spreadsheet-stories.module.sass';
 import { generateGridValues } from '../test-utils/generateValues';
+import classes from './Spreadsheet-stories.module.sass';
+
+const renderColumnsFixedArea = ({ style }) => {
+  return <div className={classes.lastFixedColumn} style={style} />;
+};
+
+const renderRowsFixedArea = ({ style }) => {
+  return <div className={classes.lastFixedRow} style={style} />;
+};
+
+const renderRowColumnNumbersIntersection = ({ row, column, columnIndex }) => (
+  <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
+);
+
+const renderColumnNumber = ({ row, column, columnIndex }) => (
+  <SpreadsheetCell
+      key={columnIndex}
+      row={row}
+      column={column}
+      className={classes.columnNumberCell}>
+    {columnIndex}
+    <SpreadsheetResizer mode="column" index={columnIndex} className={classes.columnResizer} />
+  </SpreadsheetCell>
+);
+
+const renderRowNumber = ({ row, column, rowIndex, columnIndex }) => (
+  <SpreadsheetCell
+      key={columnIndex}
+      row={row}
+      column={column}
+      className={classes.rowNumberCell}>
+    {rowIndex}
+    <SpreadsheetResizer mode="row" index={rowIndex} className={classes.rowResizer} />
+  </SpreadsheetCell>
+);
+
+const renderCellValue = ({ row, rowIndex, columnIndex, column, rows, columns, value, mergedRange, overscrolled }) => (
+  <SpreadsheetCell
+      key={`${rowIndex}_${columnIndex}`}
+      row={row}
+      column={column}
+      rows={rows}
+      columns={columns}
+      mergedRange={mergedRange}
+      overscrolled={overscrolled}
+      className={classes.cell}>
+    {value ? `Value ${value.row} - ${value.column}` : ''}
+  </SpreadsheetCell>
+);
 
 /**
  * @param {import('./').SpreadsheetProps} props 
@@ -13,58 +60,6 @@ const SpreadsheetComponent = props => {
   const [rows, onRowsChange] = useState(props.rows);
   const [columns, onColumnsChange] = useState(props.columns);
 
-  const renderRowColumnNumbersIntersection = ({ row, column, columnIndex }) => (
-    <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
-  );
-
-  const renderColumnNumber = ({ row, column, columnIndex }) => (
-    <SpreadsheetCell
-        key={columnIndex}
-        row={row}
-        column={column}
-        className={classNames(
-          classes.columnNumberCell,
-          { [classes.lastFixedColumn]: columnIndex === props.fixColumns }
-        )}>
-      {columnIndex}
-      <SpreadsheetResizer mode="column" index={columnIndex} className={classes.columnResizer} />
-    </SpreadsheetCell>
-  );
-
-  const renderRowNumber = ({ row, column, rowIndex, columnIndex }) => (
-    <SpreadsheetCell
-        key={columnIndex}
-        row={row}
-        column={column}
-        className={classNames(
-          classes.rowNumberCell,
-          { [classes.lastFixedRow]: rowIndex === props.fixRows }
-        )}>
-      {rowIndex}
-      <SpreadsheetResizer mode="row" index={rowIndex} className={classes.rowResizer} />
-    </SpreadsheetCell>
-  );
-
-  const renderCellValue = ({ row, rowIndex, columnIndex, column, rows, columns, value, mergedRange, overscrolled }) => (
-    <SpreadsheetCell
-        key={`${rowIndex}_${columnIndex}`}
-        row={row}
-        column={column}
-        rows={rows}
-        columns={columns}
-        mergedRange={mergedRange}
-        overscrolled={overscrolled}
-        className={classNames(
-          classes.cell,
-          {
-            [classes.lastFixedRow]: rowIndex === props.fixRows,
-            [classes.lastFixedColumn]: columnIndex === props.fixColumns
-          }
-        )}>
-      {value ? `Value ${value.row} - ${value.column}` : ''}
-    </SpreadsheetCell>
-  );
-
   return (
     <Spreadsheet
         {...props}
@@ -73,6 +68,8 @@ const SpreadsheetComponent = props => {
         columns={columns}
         onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
+        renderColumnsFixedArea={renderColumnsFixedArea}
+        renderRowsFixedArea={renderRowsFixedArea}
         renderRowColumnNumbersIntersection={renderRowColumnNumbersIntersection}
         renderColumnNumber={renderColumnNumber}
         renderRowNumber={renderRowNumber}

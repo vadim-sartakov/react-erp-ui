@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import ScrollerCell from '../Scroller/ScrollerCell';
 import SpreadsheetContext from './SpreadsheetContext';
-import { getMergedCellSize, getMergedCellPosition } from './utils';
+import { getCellsRangeSize, getMergedCellPosition } from './utils';
 
 /**
  * @param {import('./').SpreadsheetCellProps} props 
@@ -53,27 +53,27 @@ const SpreadsheetCell = ({
       defaultSize: defaultColumnWidth
     });
 
-    const width = getMergedCellSize({
+    const width = getCellsRangeSize({
       count: (mergedRange.end.column - mergedRange.start.column) + 1,
       meta: columns,
       startIndex: columnIndex,
       defaultSize: defaultColumnWidth
     });
-    const height = getMergedCellSize({
+    const height = getCellsRangeSize({
       count: (mergedRange.end.row - mergedRange.start.row) + 1,
       meta: rows,
       startIndex: rowIndex,
       defaultSize: defaultRowHeight
     });
 
-    const fixWidth = fixColumns && columnIndex <= fixColumns && getMergedCellSize({
+    const fixWidth = fixColumns && columnIndex <= fixColumns && getCellsRangeSize({
       count: fixColumns - mergedRange.start.column,
       meta: columns,
       startIndex: columnIndex,
       defaultSize: defaultColumnWidth
     });
 
-    const fixHeight = fixRows && rowIndex <= fixRows && getMergedCellSize({
+    const fixHeight = fixRows && rowIndex <= fixRows && getCellsRangeSize({
       count: fixRows - mergedRange.start.row,
       meta: rows,
       startIndex: rowIndex,
