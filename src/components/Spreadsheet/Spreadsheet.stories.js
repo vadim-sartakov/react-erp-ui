@@ -4,11 +4,29 @@ import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell } from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import classes from './Spreadsheet-stories.module.sass';
 
-const renderRowGroupButton = ({ column, row, columnIndex }) => {
+const renderRowGroupButton = ({ row, column, rowIndex, columnIndex }) => {
   return (
-    <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.groupButton}>
-      {columnIndex + 1}
+    <SpreadsheetCell row={row} column={column} className={classes.groupButtonContainer}>
+      <div className={classes.groupButton}>
+        {columnIndex + 1}
+      </div>
     </SpreadsheetCell>
+  )
+};
+
+const renderColumnGroupButton = ({ row, column, rowIndex, columnIndex }) => {
+  return (
+    <SpreadsheetCell row={row} column={column} className={classes.groupButtonContainer}>
+      <div className={classes.groupButton}>
+        {rowIndex + 1}
+      </div>
+    </SpreadsheetCell>
+  )
+};
+
+const renderGroupEmptyArea = ({ row, column }) => {
+  return (
+    <SpreadsheetCell row={row} column={column} className={classes.groupEmptyArea}/>
   )
 };
 
@@ -21,12 +39,11 @@ const renderRowsFixedArea = ({ style }) => {
 };
 
 const renderRowColumnNumbersIntersection = ({ row, column, columnIndex }) => (
-  <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
+  <SpreadsheetCell row={row} column={column} className={classes.columnNumberCell} />
 );
 
 const renderColumnNumber = ({ row, column, columnIndex }) => (
   <SpreadsheetCell
-      key={columnIndex}
       row={row}
       column={column}
       className={classes.columnNumberCell}>
@@ -37,7 +54,6 @@ const renderColumnNumber = ({ row, column, columnIndex }) => (
 
 const renderRowNumber = ({ row, column, rowIndex, columnIndex }) => (
   <SpreadsheetCell
-      key={columnIndex}
       row={row}
       column={column}
       className={classes.rowNumberCell}>
@@ -46,9 +62,8 @@ const renderRowNumber = ({ row, column, rowIndex, columnIndex }) => (
   </SpreadsheetCell>
 );
 
-const renderCellValue = ({ row, rowIndex, columnIndex, column, rows, columns, value, mergedRange, overscrolled }) => (
+const renderCellValue = ({ row, column, rows, columns, value, mergedRange, overscrolled }) => (
   <SpreadsheetCell
-      key={`${rowIndex}_${columnIndex}`}
       row={row}
       column={column}
       rows={rows}
@@ -76,6 +91,8 @@ const SpreadsheetComponent = props => {
         columns={columns}
         onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
+        renderGroupEmptyArea={renderGroupEmptyArea}
+        renderColumnGroupButton={renderColumnGroupButton}
         renderRowGroupButton={renderRowGroupButton}
         renderColumnsFixedArea={renderColumnsFixedArea}
         renderRowsFixedArea={renderRowsFixedArea}
@@ -172,6 +189,14 @@ export const withGroups = props => {
   for (let i = 5; i < 10; i++) {
     rows[i] = { level: 2 };
   }
+
+  const columns = [];
+  for (let i = 1; i < 20; i++) {
+    columns[i] = { level: 1 };
+  }
+  for (let i = 5; i < 10; i++) {
+    columns[i] = { level: 2 };
+  }
   return (
     <SpreadsheetComponent
         columnNumbersRowHeight={20}
@@ -188,6 +213,7 @@ export const withGroups = props => {
         fixRows={2}
         fixColumns={2}
         rows={rows}
+        columns={columns}
         groupSize={20}
         {...props} />
   )

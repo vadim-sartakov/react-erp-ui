@@ -72,7 +72,7 @@ declare namespace Spreadsheet {
      * Empty area of rows and columns groups.
      * Would be rendered between groups of the same level and on intersection level
      * */
-    renderGroupsEmptyArea: RenderCallback;
+    renderGroupEmptyArea: RenderCallback;
     /** Row group level buttons which allows to manage expand/collapse state */
     renderRowGroupButton: RenderCallback;
     renderColumnGroupButton: RenderCallback;

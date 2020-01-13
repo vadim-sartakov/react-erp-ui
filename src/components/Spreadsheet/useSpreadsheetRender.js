@@ -12,6 +12,8 @@ const useSpreadsheetRender = ({
   rows,
   columns,
   renderRowGroupButton,
+  renderColumnGroupButton,
+  renderGroupEmptyArea,
   renderRowColumnNumbersIntersection,
   renderColumnNumber,
   renderRowNumber,
@@ -27,37 +29,45 @@ const useSpreadsheetRender = ({
   specialColumnsCount
 }) => {
   const cellsElements = useMemo(() => {
-    return visibleRows.reduce((acc, rowIndex) => {
+    return visibleRows.reduce((acc, rowIndex, seqRowIndex) => {
       const row = rows[rowIndex] || {};
       let columnsElements;
       const rowType = row.type || 'VALUES';
 
       switch(rowType) {
-        /*case 'GROUP':
-          columnsElements = visibleColumns.map(columnIndex => {
+        case 'GROUP':
+          columnsElements = visibleColumns.map((columnIndex, seqColumnIndex) => {
             const column = columns[columnIndex] || {};
             let columnElement;
             const columnsType = column.type;
             switch(columnsType) {
-              //case 'GROUP'
+              case 'GROUP':
+                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
+                break;
+              case 'ROW_NUMBERS':
+                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnGroupButton({ row, column, rowIndex, columnIndex })}</React.Fragment>;
+                break;
+              default:
+                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
+                break;
             }
+            return columnElement;
           });
-          break;*/
+          break;
         case 'COLUMN_NUMBERS':
-          columnsElements = visibleColumns.map(columnIndex => {
+          columnsElements = visibleColumns.map((columnIndex, seqColumnIndex) => {
             const column = columns[columnIndex] || {};
             let columnElement;
             const columnsType = column.type || 'VALUES';
             switch(columnsType) {
-              case 'GROUP': {
-                columnElement = renderRowGroupButton({ row, column, columnIndex });
+              case 'GROUP':
+                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowGroupButton({ row, column, rowIndex, columnIndex })}</React.Fragment>;
                 break;
-              }
               case 'ROW_NUMBERS':
-                columnElement = renderRowColumnNumbersIntersection({ row, column, columnIndex });
+                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowColumnNumbersIntersection({ row, column, rowIndex, columnIndex })}</React.Fragment>;
                 break;
               default:
-                columnElement = renderColumnNumber({ row, column, columnIndex });
+                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnNumber({ row, column, columnIndex })}</React.Fragment>;
                 break;
             }
             return columnElement;
@@ -65,7 +75,7 @@ const useSpreadsheetRender = ({
           break;
 
         case 'VALUES':
-          columnsElements = visibleColumns.map(columnIndex => {
+          columnsElements = visibleColumns.map((columnIndex, seqColumnIndex) => {
             const column = columns[columnIndex] || {};
             const rowValue = value[rowIndex];
             const curValue = rowValue && rowValue[columnIndex];
@@ -79,11 +89,14 @@ const useSpreadsheetRender = ({
 
             const columnsType = column.type || 'VALUES';
             switch(columnsType) {
+              case 'GROUP':
+                element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
+                break;
               case 'ROW_NUMBERS':
-                element = renderRowNumber({ row, column, rowIndex, columnIndex });
+                element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowNumber({ row, column, rowIndex, columnIndex })}</React.Fragment>;
                 break;
               default:
-                element = renderCellValue({ row, rowIndex, column, columnIndex, rows, columns, value: curValue, mergedRange });
+                element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderCellValue({ row, rowIndex, column, columnIndex, rows, columns, value: curValue, mergedRange })}</React.Fragment>;
                 break;
             }
 
@@ -101,7 +114,9 @@ const useSpreadsheetRender = ({
     visibleRows,
     visibleColumns,
     value,
+    renderGroupEmptyArea,
     renderRowGroupButton,
+    renderColumnGroupButton,
     renderRowColumnNumbersIntersection,
     renderColumnNumber,
     renderRowNumber,
@@ -124,15 +139,19 @@ const useSpreadsheetRender = ({
       const rowIndex = mergedRange.start.row;
       const rowValue = value[rowIndex];
       const curValue = rowValue && rowValue[columnIndex];
-      return renderCellValue({
-        rowIndex,
-        columnIndex,
-        rows,
-        columns,
-        value: curValue,
-        mergedRange,
-        overscrolled: true
-      });
+      return (
+        <React.Fragment key={`merged_${rowIndex}_${columnIndex}`}>
+          {renderCellValue({
+            rowIndex,
+            columnIndex,
+            rows,
+            columns,
+            value: curValue,
+            mergedRange,
+            overscrolled: true
+          })}
+        </React.Fragment>
+      );
     }, []) : [];
   }, [
     rows,
@@ -145,45 +164,32 @@ const useSpreadsheetRender = ({
 
   const fixedAreasElements = useMemo(() => {
     const result = [];
-    const columnNumbersMetaIndex = rows.findIndex(row => row && row.type === 'COLUMN_NUMBERS');
-    const rowNumbersMetaIndex = columns.findIndex(column => column && column.type === 'ROW_NUMBERS');
-
-    const rowGroupsCount = columns.filter(column => column && column.type === 'GROUP').length;
-    const columnGroupsCount = rows.filter(row => row && row.type === 'GROUP').length;
-
-    const columnNumbersMeta = rows[columnNumbersMetaIndex];
-    const rowNumbersMeta = columns[rowNumbersMetaIndex];
-
-    const topOffset = (columnNumbersMeta && columnNumbersMeta.offset) || 0;
-    const leftOffset = (rowNumbersMeta && rowNumbersMeta.offset) || 0;
 
     const containerStyle = {
       position: 'absolute',
-      top: topOffset,
-      left: leftOffset,
-      height: `calc(100% - ${topOffset}px)`,
-      width: `calc(100% - ${leftOffset}px)`,
+      height: '100%',
+      width: '100%',
       pointerEvents: 'none',
       zIndex: 10
     };
 
     const baseFixedAreaStyle = {
       position: 'sticky',
-      top: topOffset,
-      left: leftOffset,
+      top: 0,
+      left: 0,
     };
 
     if ((fixColumns - specialColumnsCount) && renderColumnsFixedArea) {
       const width = getCellsRangeSize({
-        startIndex: rowNumbersMetaIndex,
-        count: fixColumns - rowGroupsCount,
+        startIndex: 0,
+        count: fixColumns,
         defaultSize: defaultColumnWidth,
         meta: columns
       });
       const style = {
         ...baseFixedAreaStyle,
         width,
-        height: `calc(100% - ${topOffset}px)`
+        height: '100%'
       };
       result.push((
         <div key="fixed_columns" style={containerStyle}>
@@ -194,14 +200,14 @@ const useSpreadsheetRender = ({
 
     if ((fixRows - specialRowsCount) && renderRowsFixedArea) {
       const height = getCellsRangeSize({
-        startIndex: columnNumbersMetaIndex,
-        count: fixRows - columnGroupsCount,
+        startIndex: 0,
+        count: fixRows,
         defaultSize: defaultRowHeight,
         meta: rows
       });
       const style = {
         ...baseFixedAreaStyle,
-        width: `calc(100% - ${leftOffset}px)`,
+        width: '100%',
         height
       };
       result.push((
