@@ -112,16 +112,16 @@ export const getPageNumberWithDefaultSize = ({ defaultSize, itemsPerPage, totalC
  * will be calculated depending on whether meta option is specified or not
  * @function
  * @param {Object} options
- * @param {Meta[]} options.meta [Meta]{@link module:components/Scroller~Meta}
+ * @param {ScrollPage} options.scrollPages
+ * @param {Meta[]} options.meta
  * @param {number} options.defaultSize
  * @param {number} options.itemsPerPage
  * @param {number} options.totalCount
  * @param {number} options.scroll
  */
-export const getPageNumber = ({ meta, defaultSize, itemsPerPage, totalCount, scroll }) => {
+export const getPageNumber = ({ scrollPages, defaultSize, itemsPerPage, totalCount, scroll }) => {
   let curPage;
-  if (meta && meta.length) {
-    const scrollPages = getScrollPages({ meta, defaultSize, itemsPerPage, totalCount });
+  if (scrollPages && scrollPages.length) {
     curPage = getPageNumberFromScrollPages(scrollPages, scroll);
   } else {
     curPage = getPageNumberWithDefaultSize({ defaultSize, itemsPerPage, totalCount, scroll });
@@ -188,17 +188,16 @@ export const getGapsFromScrollPages = ({ scrollPages, page }) => {
  * Generic function which calculates gaps depending on whether meta is specified or not.
  * @function
  * @param {Object} options
- * @param {Meta[]} options.meta [Meta]{@link module:components/Scroller~Meta}
+ * @param {ScrollPage} options.scrollPages
  * @param {number} options.defaultSize
  * @param {number} options.itemsPerPage
  * @param {number} options.totalCount
  * @param {number} options.page
  * @returns {Gaps} [Gaps]{@link module:components/Scroller/utils~Gaps}
  */
-export const getGaps = ({ meta, defaultSize, itemsPerPage, totalCount, page }) => {
+export const getGaps = ({ scrollPages, defaultSize, itemsPerPage, totalCount, page }) => {
   let gaps;
-  if (meta && meta.length) {
-    const scrollPages = getScrollPages({ meta, totalCount, defaultSize, itemsPerPage });
+  if (scrollPages && scrollPages.length) {
     gaps = getGapsFromScrollPages({ scrollPages, page });
   } else {
     gaps = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount, page });
