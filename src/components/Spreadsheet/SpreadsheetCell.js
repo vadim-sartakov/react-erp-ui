@@ -80,31 +80,40 @@ const SpreadsheetCell = ({
       defaultSize: defaultRowHeight
     });
 
+    const baseRootStyle = {
+      position: 'absolute',
+      top: top - scrollerTop,
+      left: left - scrollerLeft,
+      pointerEvents: 'none'
+    };
+
+    const baseWrapperStyle = {
+      position: 'sticky',
+      overflow: 'hidden',
+      top,
+      left,
+      pointerEvents: 'auto'
+    };
+
+    const valueStyle = {
+      width,
+      height,
+      top: 'auto',
+      left: 'auto'
+    };
+
     if (isFixedRowArea && isFixedColumnArea) {
       const rootStyle = {
-        position: 'absolute',
-        top: top - scrollerTop,
-        left: left - scrollerLeft,
+        ...baseRootStyle,
         width: `calc(100% + ${scrollerLeft - left}px)`,
         height: `calc(100% + ${scrollerTop - top}px)`,
-        zIndex: 7,
-        pointerEvents: 'none'
+        zIndex: 7
       };
       const wrapperStyle = {
-        position: 'sticky',
+        ...baseWrapperStyle,
         width: fixWidth,
-        height: fixHeight,
-        overflow: 'hidden',
-        top,
-        left,
-        pointerEvents: 'auto'
+        height: fixHeight
       };
-      const valueStyle = {
-        width,
-        height,
-        top: 'auto',
-        left: 'auto'
-      }
       elements.push(
         <div key="7" style={rootStyle}>
           <div style={wrapperStyle}>
@@ -117,29 +126,16 @@ const SpreadsheetCell = ({
     }
     if (isFixedColumnArea) {
       const rootStyle = {
-        position: 'absolute',
-        top: top - scrollerTop,
-        left: left - scrollerLeft,
+        ...baseRootStyle,
         width: `calc(100% + ${scrollerLeft - left}px)`,
         height,
-        zIndex: 3,
-        pointerEvents: 'none'
+        zIndex: 3
       };
       const wrapperStyle = {
-        position: 'sticky',
+        ...baseWrapperStyle,
         width: fixWidth,
-        height,
-        overflow: 'hidden',
-        top,
-        left,
-        pointerEvents: 'auto'
+        height
       };
-      const valueStyle = {
-        width,
-        height,
-        top: 'auto',
-        left: 'auto'
-      }
       elements.push(
         <div key="3" style={rootStyle}>
           <div style={wrapperStyle}>
@@ -152,29 +148,16 @@ const SpreadsheetCell = ({
     }
     if (isFixedRowArea) {
       const rootStyle = {
-        position: 'absolute',
-        top: top - scrollerTop,
-        left: left - scrollerLeft,
+        ...baseRootStyle,
         width,
         height: `calc(100% + ${scrollerTop - top}px)`,
-        zIndex: 5,
-        pointerEvents: 'none'
+        zIndex: 5
       };
       const wrapperStyle = {
-        position: 'sticky',
+        ...baseWrapperStyle,
         width,
-        height: fixHeight,
-        overflow: 'hidden',
-        top,
-        left,
-        pointerEvents: 'auto'
+        height: fixHeight
       };
-      const valueStyle = {
-        width,
-        height,
-        top: 'auto',
-        left: 'auto'
-      }
       elements.push(
         <div key="5" style={rootStyle}>
           <div style={wrapperStyle}>
