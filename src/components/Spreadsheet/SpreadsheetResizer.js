@@ -19,6 +19,7 @@ const propertiesMap = {
   }
 };
 
+/** @param {import('./').SpreadsheetResizerProps} props */
 const SpreadsheetResizer = ({ mode, index, ...props }) => {
   const properties = propertiesMap[mode];
   const context = useContext(SpreadsheetContext);

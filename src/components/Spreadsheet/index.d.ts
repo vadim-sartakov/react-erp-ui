@@ -167,6 +167,12 @@ declare namespace Spreadsheet {
     column: Meta;
   }
 
+  interface SpreadsheetResizerProps {
+    mode: 'row' | 'column';
+    row?: Meta;
+    column?: Meta
+  }
+
   /**
    * Integrated with [ScrollerCell]{@link Scroller.ScrollerCell}
    */

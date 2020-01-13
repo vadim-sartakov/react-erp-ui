@@ -48,7 +48,7 @@ const renderColumnNumber = ({ row, column, columnIndex }) => (
       column={column}
       className={classes.columnNumberCell}>
     {columnIndex}
-    <SpreadsheetResizer mode="column" index={columnIndex} className={classes.columnResizer} />
+    <SpreadsheetResizer mode="column" column={column} index={columnIndex} className={classes.columnResizer} />
   </SpreadsheetCell>
 );
 
@@ -58,7 +58,7 @@ const renderRowNumber = ({ row, column, rowIndex, columnIndex }) => (
       column={column}
       className={classes.rowNumberCell}>
     {rowIndex}
-    <SpreadsheetResizer mode="row" index={rowIndex} className={classes.rowResizer} />
+    <SpreadsheetResizer mode="row" row={row} index={rowIndex} className={classes.rowResizer} />
   </SpreadsheetCell>
 );
 
