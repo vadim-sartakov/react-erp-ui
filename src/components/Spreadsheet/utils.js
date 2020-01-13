@@ -39,7 +39,7 @@ export const getGroups = meta => {
 
   meta.forEach((metaItem, index, meta) => {
     const prevLevel = index > 0 ? (meta[index - 1] && meta[index - 1].level) || 0 : 0;
-    const curLevel = metaItem.level || 0;
+    const curLevel = (metaItem && metaItem.level) || 0;
 
     // Initializing groups of current level if there is no any
     let curLevelGroups;

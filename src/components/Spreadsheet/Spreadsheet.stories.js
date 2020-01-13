@@ -4,6 +4,14 @@ import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell } from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import classes from './Spreadsheet-stories.module.sass';
 
+const renderRowGroupButton = ({ column, row, columnIndex }) => {
+  return (
+    <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.groupButton}>
+      {columnIndex + 1}
+    </SpreadsheetCell>
+  )
+};
+
 const renderColumnsFixedArea = ({ style }) => {
   return <div className={classes.lastFixedColumn} style={style} />;
 };
@@ -68,6 +76,7 @@ const SpreadsheetComponent = props => {
         columns={columns}
         onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
+        renderRowGroupButton={renderRowGroupButton}
         renderColumnsFixedArea={renderColumnsFixedArea}
         renderRowsFixedArea={renderRowsFixedArea}
         renderRowColumnNumbersIntersection={renderRowColumnNumbersIntersection}
@@ -155,32 +164,34 @@ export const withMergedCells = props => {
   )
 };
 
-const rowsGrouped = [];
-for(let i = 1; i < 20; i++) {
-  rowsGrouped[i] = { level: 1 };
-}
-for(let i = 5; i < 10; i++) {
-  rowsGrouped[i] = { level: 2 };
-}
-
-export const withGroups = props => (
-  <SpreadsheetComponent
-      columnNumbersRowHeight={20}
-      rowNumberColumnWidth={40}
-      defaultRowHeight={25}
-      defaultColumnWidth={120}
-      rowsPerPage={60}
-      columnsPerPage={15}
-      totalColumns={50}
-      totalRows={1000}
-      value={generateGridValues(1000, 50)}
-      width={800}
-      height={600}
-      fixRows={2}
-      fixColumns={2}
-      rows={rowsGrouped}
-      {...props} />
-);
+export const withGroups = props => {
+  const rows = [];
+  for (let i = 1; i < 20; i++) {
+    rows[i] = { level: 1 };
+  }
+  for (let i = 5; i < 10; i++) {
+    rows[i] = { level: 2 };
+  }
+  return (
+    <SpreadsheetComponent
+        columnNumbersRowHeight={20}
+        rowNumberColumnWidth={40}
+        defaultRowHeight={25}
+        defaultColumnWidth={120}
+        rowsPerPage={60}
+        columnsPerPage={15}
+        totalColumns={50}
+        totalRows={1000}
+        value={generateGridValues(1000, 50)}
+        width={800}
+        height={600}
+        fixRows={2}
+        fixColumns={2}
+        rows={rows}
+        groupSize={20}
+        {...props} />
+  )
+};
 
 storiesOf('Spreadsheet', module)
   .add('default', defaultComponent)

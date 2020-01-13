@@ -8,7 +8,9 @@ declare function Spreadsheet(props: Spreadsheet.SpreadsheetProps): JSX.Element
 
 declare namespace Spreadsheet {
   interface Meta {
-    type?: 'ROW_NUMBERS' | 'COLUMN_NUMBERS';
+    type?: 'ROW_NUMBERS' | 'COLUMN_NUMBERS' | 'GROUP';
+    /** Sequential number */
+    key?: number;
     /** Width or height */
     size?: number;
     /** Whether current element expanded or collapsed */
@@ -71,8 +73,9 @@ declare namespace Spreadsheet {
      * Would be rendered between groups of the same level and on intersection level
      * */
     renderGroupsEmptyArea: RenderCallback;
-    /** Group level buttons which allows to manage expand/collapse state */
-    renderGroupButton: RenderCallback;
+    /** Row group level buttons which allows to manage expand/collapse state */
+    renderRowGroupButton: RenderCallback;
+    renderColumnGroupButton: RenderCallback;
     renderRowGroup: RenderCallback;
     renderColumnGroup: RenderCallback;
     renderColumnNumber: RenderCallback;
@@ -95,8 +98,11 @@ declare namespace Spreadsheet {
     columnNumbersRowHeight?: number;
     /** Width of special column with row numbers */
     rowNumberColumnWidth?: number;
-    columnGroupHeight?: number;
-    rowGroupWidth?: number;
+    /** 
+     * Width and height of groups special rows and columns.
+     * These areas serve for group buttons rendering and group lines.
+     */
+    groupSize?: number;
     mergedCells?: CellsRange[];
     totalRows: number;
     totalColumns: number;

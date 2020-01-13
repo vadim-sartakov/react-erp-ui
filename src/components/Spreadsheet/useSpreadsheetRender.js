@@ -11,6 +11,7 @@ const useSpreadsheetRender = ({
   visibleColumns,
   rows,
   columns,
+  renderRowGroupButton,
   renderRowColumnNumbersIntersection,
   renderColumnNumber,
   renderRowNumber,
@@ -32,12 +33,26 @@ const useSpreadsheetRender = ({
       const rowType = row.type || 'VALUES';
 
       switch(rowType) {
+        /*case 'GROUP':
+          columnsElements = visibleColumns.map(columnIndex => {
+            const column = columns[columnIndex] || {};
+            let columnElement;
+            const columnsType = column.type;
+            switch(columnsType) {
+              //case 'GROUP'
+            }
+          });
+          break;*/
         case 'COLUMN_NUMBERS':
           columnsElements = visibleColumns.map(columnIndex => {
             const column = columns[columnIndex] || {};
             let columnElement;
             const columnsType = column.type || 'VALUES';
             switch(columnsType) {
+              case 'GROUP': {
+                columnElement = renderRowGroupButton({ row, column, columnIndex });
+                break;
+              }
               case 'ROW_NUMBERS':
                 columnElement = renderRowColumnNumbersIntersection({ row, column, columnIndex });
                 break;
@@ -86,6 +101,7 @@ const useSpreadsheetRender = ({
     visibleRows,
     visibleColumns,
     value,
+    renderRowGroupButton,
     renderRowColumnNumbersIntersection,
     renderColumnNumber,
     renderRowNumber,
@@ -129,8 +145,11 @@ const useSpreadsheetRender = ({
 
   const fixedAreasElements = useMemo(() => {
     const result = [];
-    const columnNumbersMetaIndex = rows.findIndex(row => row.type === 'COLUMN_NUMBERS');
-    const rowNumbersMetaIndex = columns.findIndex(column => column.type === 'ROW_NUMBERS');
+    const columnNumbersMetaIndex = rows.findIndex(row => row && row.type === 'COLUMN_NUMBERS');
+    const rowNumbersMetaIndex = columns.findIndex(column => column && column.type === 'ROW_NUMBERS');
+
+    const rowGroupsCount = columns.filter(column => column && column.type === 'GROUP').length;
+    const columnGroupsCount = rows.filter(row => row && row.type === 'GROUP').length;
 
     const columnNumbersMeta = rows[columnNumbersMetaIndex];
     const rowNumbersMeta = columns[rowNumbersMetaIndex];
@@ -155,7 +174,12 @@ const useSpreadsheetRender = ({
     };
 
     if ((fixColumns - specialColumnsCount) && renderColumnsFixedArea) {
-      const width = getCellsRangeSize({ startIndex: columnNumbersMetaIndex, count: fixColumns, defaultSize: defaultColumnWidth, meta: columns });
+      const width = getCellsRangeSize({
+        startIndex: rowNumbersMetaIndex,
+        count: fixColumns - rowGroupsCount,
+        defaultSize: defaultColumnWidth,
+        meta: columns
+      });
       const style = {
         ...baseFixedAreaStyle,
         width,
@@ -169,7 +193,12 @@ const useSpreadsheetRender = ({
     }
 
     if ((fixRows - specialRowsCount) && renderRowsFixedArea) {
-      const height = getCellsRangeSize({ startIndex: rowNumbersMetaIndex, count: fixRows, defaultSize: defaultRowHeight, meta: rows });
+      const height = getCellsRangeSize({
+        startIndex: columnNumbersMetaIndex,
+        count: fixRows - columnGroupsCount,
+        defaultSize: defaultRowHeight,
+        meta: rows
+      });
       const style = {
         ...baseFixedAreaStyle,
         width: `calc(100% - ${leftOffset}px)`,
