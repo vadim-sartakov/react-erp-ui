@@ -28,6 +28,9 @@ const useSpreadsheetRender = ({
   specialRowsCount,
   specialColumnsCount
 }) => {
+  const rowGroupsCount = useMemo(() => columns.filter(column => column && column.type === 'GROUP').length, [columns]);
+  const columnGroupsCount = useMemo(() => rows.filter(row => row && row.type === 'GROUP').length, [rows]);
+
   const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex, seqRowIndex) => {
       const row = rows[rowIndex] || {};
@@ -67,7 +70,7 @@ const useSpreadsheetRender = ({
                 columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowColumnNumbersIntersection({ row, column, rowIndex, columnIndex })}</React.Fragment>;
                 break;
               default:
-                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnNumber({ row, column, columnIndex })}</React.Fragment>;
+                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnNumber({ row, column, columnIndex, columnNumber: columnIndex - rowGroupsCount })}</React.Fragment>;
                 break;
             }
             return columnElement;
@@ -93,7 +96,7 @@ const useSpreadsheetRender = ({
                 element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
                 break;
               case 'ROW_NUMBERS':
-                element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowNumber({ row, column, rowIndex, columnIndex })}</React.Fragment>;
+                element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowNumber({ row, column, rowIndex, rowNumber: rowIndex - columnGroupsCount, columnIndex })}</React.Fragment>;
                 break;
               default:
                 element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderCellValue({ row, rowIndex, column, columnIndex, rows, columns, value: curValue, mergedRange })}</React.Fragment>;
@@ -114,6 +117,8 @@ const useSpreadsheetRender = ({
     visibleRows,
     visibleColumns,
     value,
+    rowGroupsCount,
+    columnGroupsCount,
     renderGroupEmptyArea,
     renderRowGroupButton,
     renderColumnGroupButton,

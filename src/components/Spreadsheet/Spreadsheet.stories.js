@@ -42,22 +42,22 @@ const renderRowColumnNumbersIntersection = ({ row, column, columnIndex }) => (
   <SpreadsheetCell row={row} column={column} className={classes.columnNumberCell} />
 );
 
-const renderColumnNumber = ({ row, column, columnIndex }) => (
+const renderColumnNumber = ({ row, column, columnIndex, columnNumber }) => (
   <SpreadsheetCell
       row={row}
       column={column}
       className={classes.columnNumberCell}>
-    {columnIndex}
+    {columnNumber}
     <SpreadsheetResizer mode="column" column={column} index={columnIndex} className={classes.columnResizer} />
   </SpreadsheetCell>
 );
 
-const renderRowNumber = ({ row, column, rowIndex, columnIndex }) => (
+const renderRowNumber = ({ row, column, rowIndex, rowNumber }) => (
   <SpreadsheetCell
       row={row}
       column={column}
       className={classes.rowNumberCell}>
-    {rowIndex}
+    {rowNumber}
     <SpreadsheetResizer mode="row" row={row} index={rowIndex} className={classes.rowResizer} />
   </SpreadsheetCell>
 );
