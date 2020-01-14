@@ -39,61 +39,44 @@ const useSpreadsheetRender = ({
   const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex, seqRowIndex) => {
       const row = rows[rowIndex] || {};
-      let columnsElements;
-      const rowType = row.type || 'VALUES';
+      const rowType = row.type;
 
-      switch(rowType) {
-        case 'GROUP':
-          columnsElements = visibleColumns.map((columnIndex, seqColumnIndex) => {
-            const column = columns[columnIndex] || {};
-            let columnElement;
-            const columnsType = column.type;
+      const columnsElements = visibleColumns.map((columnIndex, seqColumnIndex) => {
+        const column = columns[columnIndex] || {};
+        const columnsType = column.type;
+
+        switch(rowType) {
+          case 'GROUP':
+
             switch(columnsType) {
               case 'GROUP':
-                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
-                break;
+                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
               case 'ROW_NUMBERS':
-                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnGroupButton({ row, column, rowIndex, columnIndex })}</React.Fragment>;
-                break;
+                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnGroupButton({ row, column, rowIndex, columnIndex })}</React.Fragment>;
               default:
                 const currentLevelGroups = columnsGroups[rowIndex];
                 const columnGroup = currentLevelGroups && currentLevelGroups.find(group => group.start === columnIndex);
                 const groupMergedRange = columnGroup && { start: { row: rowIndex, column:  columnGroup.start - 1 }, end: { row: rowIndex, column: columnGroup.end } };
-                columnElement = (
+                return (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
                     {groupMergedRange ?
                         renderColumnGroup({ row, column, rows, columns, mergedRange: groupMergedRange, columnIndex, defaultColumnWidth, groupSize }) :
                         renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}
                   </React.Fragment>
                 );
-                break;
             }
-            return columnElement;
-          });
-          break;
-        case 'COLUMN_NUMBERS':
-          columnsElements = visibleColumns.map((columnIndex, seqColumnIndex) => {
-            const column = columns[columnIndex] || {};
-            let columnElement;
-            const columnsType = column.type || 'VALUES';
+          case 'COLUMN_NUMBERS':
+
             switch(columnsType) {
               case 'GROUP':
-                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowGroupButton({ row, column, rowIndex, columnIndex })}</React.Fragment>;
-                break;
+                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowGroupButton({ row, column, rowIndex, columnIndex })}</React.Fragment>;
               case 'ROW_NUMBERS':
-                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowColumnNumbersIntersection({ row, column, rowIndex, columnIndex })}</React.Fragment>;
-                break;
+                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowColumnNumbersIntersection({ row, column, rowIndex, columnIndex })}</React.Fragment>;
               default:
-                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnNumber({ row, column, columnIndex, columnNumber: columnIndex - rowGroupsCount })}</React.Fragment>;
-                break;
+                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnNumber({ row, column, columnIndex, columnNumber: columnIndex - rowGroupsCount })}</React.Fragment>;
             }
-            return columnElement;
-          });
-          break;
 
-        case 'VALUES':
-          columnsElements = visibleColumns.map((columnIndex, seqColumnIndex) => {
-            const column = columns[columnIndex] || {};
+          default:
             const rowValue = value[rowIndex];
             const curValue = rowValue && rowValue[columnIndex];
 
@@ -102,35 +85,26 @@ const useSpreadsheetRender = ({
                   (mergedRange.start.column) === columnIndex
             });
             
-            let element;
-
-            const columnsType = column.type || 'VALUES';
             switch(columnsType) {
               case 'GROUP':
                 const currentLevelGroups = rowsGroups[columnIndex];
                 const rowGroup = currentLevelGroups && currentLevelGroups.find(group => group.start === rowIndex);
                 const groupMergedRange = rowGroup && { start: { row: rowGroup.start - 1, column: columnIndex }, end: { row: rowGroup.end, column: columnIndex } };
-                element = (
+                return (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
                     {groupMergedRange ?
                         renderRowGroup({ row, column, rows, columns, mergedRange: groupMergedRange, rowIndex, defaultRowHeight, groupSize }) :
                         renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}
                   </React.Fragment>
                 );
-                break;
               case 'ROW_NUMBERS':
-                element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowNumber({ row, column, rowIndex, rowNumber: rowIndex - columnGroupsCount, columnIndex })}</React.Fragment>;
-                break;
+                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowNumber({ row, column, rowIndex, rowNumber: rowIndex - columnGroupsCount, columnIndex })}</React.Fragment>;
               default:
-                element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderCellValue({ row, rowIndex, column, columnIndex, rows, columns, value: curValue, mergedRange })}</React.Fragment>;
-                break;
+                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderCellValue({ row, rowIndex, column, columnIndex, rows, columns, value: curValue, mergedRange })}</React.Fragment>;
             }
+        }
 
-            return element;
-          });
-          break;
-        default:
-      }
+      });
 
       return [acc, ...columnsElements];   
     }, [])
