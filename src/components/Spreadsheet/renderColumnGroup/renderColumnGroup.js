@@ -11,13 +11,12 @@ const renderColumnGroup = ({ mergedRange, row, column, rows, columns, columnInde
         rows={rows}
         columns={columns}
         mergedRange={mergedRange}
-        className={classes.columnGroup}
         style={{ backgroundColor }}>
       <div className={classes.buttonContainer} style={{ width }}>
         <div className={classes.groupButton} style={{ backgroundColor }}>-</div>
       </div>
       <div
-          className={classes.groupHorizontalLine}
+          className={classes.groupLine}
           style={{
             width: `calc(100% - ${width / 2}px)`,
             left: width / 2,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell, renderColumnGroup } from './';
+import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell, renderColumnGroup, renderRowGroup } from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import classes from './Spreadsheet-stories.module.sass';
 
@@ -24,14 +24,7 @@ const renderColumnGroupButton = ({ row, column, rowIndex, columnIndex }) => {
   )
 };
 
-const renderRowGroup = ({ mergedRange, row, column, rows, columns }) => {
-  return (
-    <SpreadsheetCell row={row} column={column} rows={rows} columns={columns} mergedRange={mergedRange} className={classes.group}>
-      
-    </SpreadsheetCell>
-  )
-};
-
+const renderRowGroupCustom = props => renderRowGroup({ ...props, backgroundColor: '#f1f1f1' });
 const renderColumnGroupCustom = props => renderColumnGroup({ ...props, backgroundColor: '#f1f1f1' });
 
 const renderGroupEmptyArea = ({ row, column }) => {
@@ -104,7 +97,7 @@ const SpreadsheetComponent = props => {
         renderGroupEmptyArea={renderGroupEmptyArea}
         renderColumnGroupButton={renderColumnGroupButton}
         renderRowGroupButton={renderRowGroupButton}
-        renderRowGroup={renderRowGroup}
+        renderRowGroup={renderRowGroupCustom}
         renderColumnGroup={renderColumnGroupCustom}
         renderColumnsFixedArea={renderColumnsFixedArea}
         renderRowsFixedArea={renderRowsFixedArea}

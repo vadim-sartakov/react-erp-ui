@@ -21,8 +21,8 @@
 
 .groupLine {
   position: absolute;
-  top: calc(50% - 1px);
-  border-top: solid 2px #a9a9a9;
-  border-right: solid 2px #a9a9a9;
+  left: calc(50% - 1px);
+  border-bottom: solid 2px #a9a9a9;
+  border-left: solid 2px #a9a9a9;
   z-index: -1;
 }

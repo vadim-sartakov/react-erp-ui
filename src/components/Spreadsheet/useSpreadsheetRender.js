@@ -113,7 +113,7 @@ const useSpreadsheetRender = ({
                 element = (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
                     {groupMergedRange ?
-                        renderRowGroup({ row, column, rows, columns, mergedRange: groupMergedRange, rowIndex }) :
+                        renderRowGroup({ row, column, rows, columns, mergedRange: groupMergedRange, rowIndex, defaultRowHeight, groupSize }) :
                         renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}
                   </React.Fragment>
                 );
@@ -137,6 +137,7 @@ const useSpreadsheetRender = ({
   }, [
     groupSize,
     defaultColumnWidth,
+    defaultRowHeight,
     rows,
     columns,
     visibleRows,
