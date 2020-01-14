@@ -1,0 +1,28 @@
+.groupButton {
+  width: 20px;
+  height: 20px;
+  border: solid 1px #c3c3c3;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.groupButton {
+  font-size: 18px;
+}
+
+.groupHorizontalLine {
+  position: absolute;
+  top: 50%;
+  border-top: solid 2px #a9a9a9;
+  border-right: solid 2px #a9a9a9;
+  z-index: -1;
+}

@@ -113,7 +113,7 @@ const useSpreadsheetRender = ({
                 element = (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
                     {groupMergedRange ?
-                        renderRowGroup({ row, column, rows, columns, mergedRange: groupMergedRange }) :
+                        renderRowGroup({ row, column, rows, columns, mergedRange: groupMergedRange, rowIndex }) :
                         renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}
                   </React.Fragment>
                 );

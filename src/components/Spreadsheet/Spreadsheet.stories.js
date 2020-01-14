@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell } from './';
+import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell, renderColumnGroup } from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import classes from './Spreadsheet-stories.module.sass';
 
@@ -32,45 +32,7 @@ const renderRowGroup = ({ mergedRange, row, column, rows, columns }) => {
   )
 };
 
-const renderColumnGroup = ({ mergedRange, row, column, rows, columns, columnIndex, defaultColumnWidth, groupSize }) => {
-  const width = (columns[columnIndex] && columns[columnIndex].size) || defaultColumnWidth;
-  return (
-    <SpreadsheetCell
-        row={row}
-        column={column}
-        rows={rows}
-        columns={columns}
-        mergedRange={mergedRange}
-        className={classes.columnGroup}>
-      <div
-          style={{
-            display: 'flex',
-            height: '100%',
-            position: 'relative'
-          }}>
-        <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width,
-              height: '100%',
-              flexShrink: 0
-            }}>
-          <div className={classes.expandCollapseGroupButton}>-</div>
-        </div>
-        <div style={{ width: '100%', height: '100%' }} />
-        <div
-            className={classes.groupHorizontalLine}
-            style={{
-              width: `calc(100% - ${width / 2}px)`,
-              left: width / 2,
-              height: groupSize / 2
-            }} />
-      </div>
-    </SpreadsheetCell>
-  )
-};
+const renderColumnGroupCustom = props => renderColumnGroup({ ...props, backgroundColor: '#f1f1f1' });
 
 const renderGroupEmptyArea = ({ row, column }) => {
   return (
@@ -143,7 +105,7 @@ const SpreadsheetComponent = props => {
         renderColumnGroupButton={renderColumnGroupButton}
         renderRowGroupButton={renderRowGroupButton}
         renderRowGroup={renderRowGroup}
-        renderColumnGroup={renderColumnGroup}
+        renderColumnGroup={renderColumnGroupCustom}
         renderColumnsFixedArea={renderColumnsFixedArea}
         renderRowsFixedArea={renderRowsFixedArea}
         renderRowColumnNumbersIntersection={renderRowColumnNumbersIntersection}
