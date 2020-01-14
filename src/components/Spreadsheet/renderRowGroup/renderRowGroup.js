@@ -3,7 +3,7 @@ import SpreadsheetCell from '../SpreadsheetCell';
 import classes from './renderRowGroup.module.css';
 
 const renderRowGroup = ({ mergedRange, row, column, rows, columns, rowIndex, defaultRowHeight, groupSize, backgroundColor }) => {
-  const height = (rows[rowIndex] && rows[rowIndex].size) || defaultRowHeight;
+  const height = (rows[rowIndex - 1] && rows[rowIndex  - 1].size) || defaultRowHeight;
   return (
     <SpreadsheetCell
         row={row}

@@ -3,7 +3,7 @@ import SpreadsheetCell from '../SpreadsheetCell';
 import classes from './renderColumnGroup.module.css';
 
 const renderColumnGroup = ({ mergedRange, row, column, rows, columns, columnIndex, defaultColumnWidth, groupSize, backgroundColor }) => {
-  const width = (columns[columnIndex] && columns[columnIndex].size) || defaultColumnWidth;
+  const width = (columns[columnIndex - 1] && columns[columnIndex - 1].size) || defaultColumnWidth;
   return (
     <SpreadsheetCell
         row={row}

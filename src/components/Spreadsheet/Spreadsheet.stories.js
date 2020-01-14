@@ -6,7 +6,7 @@ import classes from './Spreadsheet-stories.module.sass';
 
 const renderRowGroupButton = ({ row, column, rowIndex, columnIndex }) => {
   return (
-    <SpreadsheetCell row={row} column={column} className={classes.groupButtonContainer}>
+    <SpreadsheetCell row={row} column={column} className={classes.groupButtonContainer} style={{ zIndex: 8 }}>
       <div className={classes.groupButton}>
         {columnIndex + 1}
       </div>
@@ -16,7 +16,7 @@ const renderRowGroupButton = ({ row, column, rowIndex, columnIndex }) => {
 
 const renderColumnGroupButton = ({ row, column, rowIndex, columnIndex }) => {
   return (
-    <SpreadsheetCell row={row} column={column} className={classes.groupButtonContainer}>
+    <SpreadsheetCell row={row} column={column} className={classes.groupButtonContainer} style={{ zIndex: 8 }}>
       <div className={classes.groupButton}>
         {rowIndex + 1}
       </div>
@@ -188,7 +188,7 @@ export const withMergedCells = props => {
 
 export const withGroups = props => {
   const rows = [];
-  for (let i = 1; i < 20; i++) {
+  for (let i = 0; i < 20; i++) {
     rows[i] = { level: 1 };
   }
   for (let i = 5; i < 10; i++) {
@@ -196,7 +196,7 @@ export const withGroups = props => {
   }
 
   const columns = [];
-  for (let i = 1; i < 20; i++) {
+  for (let i = 0; i < 20; i++) {
     columns[i] = { level: 1 };
   }
   for (let i = 5; i < 10; i++) {

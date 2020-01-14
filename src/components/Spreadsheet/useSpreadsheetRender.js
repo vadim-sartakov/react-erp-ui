@@ -58,7 +58,7 @@ const useSpreadsheetRender = ({
               default:
                 const currentLevelGroups = columnsGroups[rowIndex];
                 const columnGroup = currentLevelGroups && currentLevelGroups.find(group => group.start === columnIndex);
-                const groupMergedRange = columnGroup && { start: { row: rowIndex, column:  columnGroup.start }, end: { row: rowIndex, column: columnGroup.end } };
+                const groupMergedRange = columnGroup && { start: { row: rowIndex, column:  columnGroup.start - 1 }, end: { row: rowIndex, column: columnGroup.end } };
                 columnElement = (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
                     {groupMergedRange ?
@@ -109,7 +109,7 @@ const useSpreadsheetRender = ({
               case 'GROUP':
                 const currentLevelGroups = rowsGroups[columnIndex];
                 const rowGroup = currentLevelGroups && currentLevelGroups.find(group => group.start === rowIndex);
-                const groupMergedRange = rowGroup && { start: { row: rowGroup.start, column: columnIndex }, end: { row: rowGroup.end, column: columnIndex } };
+                const groupMergedRange = rowGroup && { start: { row: rowGroup.start - 1, column: columnIndex }, end: { row: rowGroup.end, column: columnIndex } };
                 element = (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
                     {groupMergedRange ?
