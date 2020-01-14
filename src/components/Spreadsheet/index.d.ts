@@ -127,6 +127,8 @@ declare namespace Spreadsheet {
     mergedCells: CellsRange[];
     specialRowsCount: number;
     specialColumnsCount: number;
+    rowsGroups: Group[];
+    columnsGroups: Group[];
   }
 
   function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult

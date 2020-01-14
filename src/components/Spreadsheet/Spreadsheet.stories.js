@@ -24,6 +24,22 @@ const renderColumnGroupButton = ({ row, column, rowIndex, columnIndex }) => {
   )
 };
 
+const renderRowGroup = ({ mergedRange, row, column, rows, columns }) => {
+  return (
+    <SpreadsheetCell row={row} column={column} rows={rows} columns={columns} mergedRange={mergedRange} className={classes.group}>
+      
+    </SpreadsheetCell>
+  )
+};
+
+const renderColumnGroup = ({ mergedRange, row, column, rows, columns }) => {
+  return (
+    <SpreadsheetCell row={row} column={column} rows={rows} columns={columns} mergedRange={mergedRange} className={classes.group}>
+      
+    </SpreadsheetCell>
+  )
+};
+
 const renderGroupEmptyArea = ({ row, column }) => {
   return (
     <SpreadsheetCell row={row} column={column} className={classes.groupEmptyArea}/>
@@ -94,6 +110,8 @@ const SpreadsheetComponent = props => {
         renderGroupEmptyArea={renderGroupEmptyArea}
         renderColumnGroupButton={renderColumnGroupButton}
         renderRowGroupButton={renderRowGroupButton}
+        renderRowGroup={renderRowGroup}
+        renderColumnGroup={renderColumnGroup}
         renderColumnsFixedArea={renderColumnsFixedArea}
         renderRowsFixedArea={renderRowsFixedArea}
         renderRowColumnNumbersIntersection={renderRowColumnNumbersIntersection}

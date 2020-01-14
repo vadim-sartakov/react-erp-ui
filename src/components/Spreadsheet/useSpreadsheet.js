@@ -117,6 +117,16 @@ const useSpreadsheet = ({
     });
   }, [mergedCellsProp, specialRowsCount, specialColumnsCount]);
 
+  const groupMapper = useCallback(specialMetaCount => group => ({ start: group.start + specialMetaCount, end: group.end + specialMetaCount }), []);
+
+  const rowsGroups = useMemo(() => {
+    return getGroups(rows).map(curLevelGroups => curLevelGroups.map(groupMapper(specialRowsCount)));
+  }, [rows, groupMapper, specialRowsCount]);
+  
+  const columnsGroups = useMemo(() => {
+    return getGroups(columns).map(curLevelGroups => curLevelGroups.map(groupMapper(specialColumnsCount)));
+  }, [columns, groupMapper, specialColumnsCount]);
+
   return {
     value,
     onChange,
@@ -130,7 +140,9 @@ const useSpreadsheet = ({
     fixColumns: fixColumns + specialColumnsCount,
     mergedCells,
     specialRowsCount,
-    specialColumnsCount
+    specialColumnsCount,
+    rowsGroups,
+    columnsGroups
   };
 };
 

@@ -111,8 +111,8 @@ const SpreadsheetCell = ({
       };
       const wrapperStyle = {
         ...baseWrapperStyle,
-        width: fixWidth,
-        height: fixHeight
+        width: Math.min(fixWidth, width),
+        height: Math.min(fixHeight, height)
       };
       elements.push(
         <div key="7" style={rootStyle}>
@@ -133,7 +133,7 @@ const SpreadsheetCell = ({
       };
       const wrapperStyle = {
         ...baseWrapperStyle,
-        width: fixWidth,
+        width: Math.min(fixWidth, width),
         height
       };
       elements.push(
@@ -156,7 +156,7 @@ const SpreadsheetCell = ({
       const wrapperStyle = {
         ...baseWrapperStyle,
         width,
-        height: fixHeight
+        height: Math.min(fixHeight, height)
       };
       elements.push(
         <div key="5" style={rootStyle}>

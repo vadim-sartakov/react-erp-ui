@@ -13,6 +13,8 @@ const useSpreadsheetRender = ({
   columns,
   renderRowGroupButton,
   renderColumnGroupButton,
+  renderRowGroup,
+  renderColumnGroup,
   renderGroupEmptyArea,
   renderRowColumnNumbersIntersection,
   renderColumnNumber,
@@ -26,7 +28,9 @@ const useSpreadsheetRender = ({
   defaultColumnWidth,
   mergedCells,
   specialRowsCount,
-  specialColumnsCount
+  specialColumnsCount,
+  rowsGroups,
+  columnsGroups
 }) => {
   const rowGroupsCount = useMemo(() => columns.filter(column => column && column.type === 'GROUP').length, [columns]);
   const columnGroupsCount = useMemo(() => rows.filter(row => row && row.type === 'GROUP').length, [rows]);
@@ -51,7 +55,16 @@ const useSpreadsheetRender = ({
                 columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnGroupButton({ row, column, rowIndex, columnIndex })}</React.Fragment>;
                 break;
               default:
-                columnElement = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
+                const currentLevelGroups = columnsGroups[rowIndex];
+                const columnGroup = currentLevelGroups && currentLevelGroups.find(group => group.start === columnIndex);
+                const groupMergedRange = columnGroup && { start: { row: rowIndex, column:  columnGroup.start }, end: { row: rowIndex, column: columnGroup.end } };
+                columnElement = (
+                  <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
+                    {groupMergedRange ?
+                        renderColumnGroup({ row, column, rows, columns, mergedRange: groupMergedRange }) :
+                        renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}
+                  </React.Fragment>
+                );
                 break;
             }
             return columnElement;
@@ -93,7 +106,16 @@ const useSpreadsheetRender = ({
             const columnsType = column.type || 'VALUES';
             switch(columnsType) {
               case 'GROUP':
-                element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
+                const currentLevelGroups = rowsGroups[columnIndex];
+                const rowGroup = currentLevelGroups && currentLevelGroups.find(group => group.start === rowIndex);
+                const groupMergedRange = rowGroup && { start: { row: rowGroup.start, column: columnIndex }, end: { row: rowGroup.end, column: columnIndex } };
+                element = (
+                  <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
+                    {groupMergedRange ?
+                        renderRowGroup({ row, column, rows, columns, mergedRange: groupMergedRange }) :
+                        renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}
+                  </React.Fragment>
+                );
                 break;
               case 'ROW_NUMBERS':
                 element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowNumber({ row, column, rowIndex, rowNumber: rowIndex - columnGroupsCount, columnIndex })}</React.Fragment>;
@@ -122,11 +144,15 @@ const useSpreadsheetRender = ({
     renderGroupEmptyArea,
     renderRowGroupButton,
     renderColumnGroupButton,
+    renderRowGroup,
+    renderColumnGroup,
     renderRowColumnNumbersIntersection,
     renderColumnNumber,
     renderRowNumber,
     renderCellValue,
-    mergedCells
+    mergedCells,
+    rowsGroups,
+    columnsGroups
   ]);
 
   const overscrolledFilter = useCallback(mergedRange => {
