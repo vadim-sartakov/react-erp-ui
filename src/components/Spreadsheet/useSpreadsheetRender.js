@@ -30,6 +30,7 @@ const useSpreadsheetRender = ({
   specialRowsCount,
   specialColumnsCount,
   rowsGroups,
+  groupSize,
   columnsGroups
 }) => {
   const rowGroupsCount = useMemo(() => columns.filter(column => column && column.type === 'GROUP').length, [columns]);
@@ -61,7 +62,7 @@ const useSpreadsheetRender = ({
                 columnElement = (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
                     {groupMergedRange ?
-                        renderColumnGroup({ row, column, rows, columns, mergedRange: groupMergedRange }) :
+                        renderColumnGroup({ row, column, rows, columns, mergedRange: groupMergedRange, columnIndex, defaultColumnWidth, groupSize }) :
                         renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}
                   </React.Fragment>
                 );
@@ -134,6 +135,8 @@ const useSpreadsheetRender = ({
       return [acc, ...columnsElements];   
     }, [])
   }, [
+    groupSize,
+    defaultColumnWidth,
     rows,
     columns,
     visibleRows,

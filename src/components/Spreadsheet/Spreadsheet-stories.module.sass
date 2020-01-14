@@ -68,5 +68,19 @@
   cursor: pointer
 
 .group
-  background-color: red
-  opacity: 0.5
+  background-color: #f1f1f1
+
+.columnGroup
+  composes: group
+
+.expandCollapseGroupButton
+  composes: groupButton
+  background-color: #f1f1f1
+  font-size: 18px
+
+.groupHorizontalLine
+  position: absolute
+  top: 50%
+  border-top: solid 2px #a9a9a9
+  border-right: solid 2px #a9a9a9
+  z-index: -1

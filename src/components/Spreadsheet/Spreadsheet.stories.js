@@ -32,10 +32,42 @@ const renderRowGroup = ({ mergedRange, row, column, rows, columns }) => {
   )
 };
 
-const renderColumnGroup = ({ mergedRange, row, column, rows, columns }) => {
+const renderColumnGroup = ({ mergedRange, row, column, rows, columns, columnIndex, defaultColumnWidth, groupSize }) => {
+  const width = (columns[columnIndex] && columns[columnIndex].size) || defaultColumnWidth;
   return (
-    <SpreadsheetCell row={row} column={column} rows={rows} columns={columns} mergedRange={mergedRange} className={classes.group}>
-      
+    <SpreadsheetCell
+        row={row}
+        column={column}
+        rows={rows}
+        columns={columns}
+        mergedRange={mergedRange}
+        className={classes.columnGroup}>
+      <div
+          style={{
+            display: 'flex',
+            height: '100%',
+            position: 'relative'
+          }}>
+        <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width,
+              height: '100%',
+              flexShrink: 0
+            }}>
+          <div className={classes.expandCollapseGroupButton}>-</div>
+        </div>
+        <div style={{ width: '100%', height: '100%' }} />
+        <div
+            className={classes.groupHorizontalLine}
+            style={{
+              width: `calc(100% - ${width / 2}px)`,
+              left: width / 2,
+              height: groupSize / 2
+            }} />
+      </div>
     </SpreadsheetCell>
   )
 };
