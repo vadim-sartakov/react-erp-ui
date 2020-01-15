@@ -78,69 +78,78 @@ const useSpreadsheet = ({
   const hiddenRowsIndexes = useMemo(() => rows.reduce(metaReducer, []), [rows, metaReducer]);
   const hiddenColumnsIndexes = useMemo(() => columns.reduce(metaReducer, []), [columns, metaReducer]);
 
-  const transformRows = useCallback(rows => {
-    const result = [];
+  const convertExternalRowsToInternal = useCallback(rows => {
     const groups = getGroups(columns);
-    groups.length && [...new Array(groups.length + 1).keys()].forEach(group => result.push({ size: groupSize, type: 'GROUP' }));
-    if (!hideRowColumnNumbers) result.push({ size: columnNumbersRowHeight, type: 'NUMBER' });
-    result.push(...(rows || []));
-    return result;
-  }, [columnNumbersRowHeight, hideRowColumnNumbers, groupSize, columns]);
+    return convertExternalMetaToInternal({
+      meta: rows,
+      numberMetaSize: columnNumbersRowHeight,
+      groups,
+      groupSize,
+      hideRowColumnNumbers,
+      hiddenIndexes: hiddenRowsIndexes
+    });
+  }, [columnNumbersRowHeight, columns, groupSize, hiddenRowsIndexes, hideRowColumnNumbers]);
 
-  const nextRows = useMemo(() => transformRows(rows), [rows, transformRows]);
+  const convertExternalColumnsToInternal = useCallback(columns => {
+    const groups = getGroups(rows);
+    return convertExternalMetaToInternal({
+      meta: columns,
+      numberMetaSize: rowNumberColumnWidth,
+      groups,
+      groupSize,
+      hideRowColumnNumbers,
+      hiddenIndexes: hiddenRowsIndexes
+    });
+  }, [rowNumberColumnWidth, rows, groupSize, hiddenRowsIndexes, hideRowColumnNumbers]);
+
+  const nextRows = useMemo(() => convertExternalRowsToInternal(rows), [rows, convertExternalRowsToInternal]);
 
   const onRowsChange = useCallback(setRows => {
     const onRowsChange = onRowsChangeProp || setRowsState;
     onRowsChange(rows => {
       let nextRows;
-      if (typeof setRows === 'function') nextRows = setRows(transformRows(rows));
+      if (typeof setRows === 'function') nextRows = setRows(convertExternalRowsToInternal(rows));
       else nextRows = setRows;
       nextRows = [...nextRows].filter(row => row ? !row.type : true);
       return nextRows;
     });
-  }, [onRowsChangeProp, setRowsState, transformRows]);
+  }, [onRowsChangeProp, setRowsState, convertExternalRowsToInternal]);
 
-  const transformColumns = useCallback(columns => {
-    const result = [];
-    const groups = getGroups(rows);
-    groups.length && [...new Array(groups.length + 1).keys()].forEach((group, index) => result.push({ size: groupSize, type: 'GROUP', index }));
-    if (!hideRowColumnNumbers) result.push({ size: rowNumberColumnWidth, type: 'NUMBER' });
-    result.push(...(columns || []));
-    return result;
-  }, [rowNumberColumnWidth, hideRowColumnNumbers, groupSize, rows]);
-
-  const nextColumns = useMemo(() => transformColumns(columns), [transformColumns, columns]);
+  const nextColumns = useMemo(() => convertExternalColumnsToInternal(columns), [columns, convertExternalColumnsToInternal]);
 
   const onColumnsChange = useCallback(setColumns => {
     const onColumnsChange = onColumnsChangeProp || setColumnsState;
     onColumnsChange(columns => {
       let nextColumns;
-      if (typeof setColumns === 'function') nextColumns = setColumns(transformColumns(columns));
+      if (typeof setColumns === 'function') nextColumns = setColumns(convertExternalColumnsToInternal(columns));
       else nextColumns = setColumns;
       nextColumns = [...nextColumns].filter(column => column ? !column.type : true);
       return nextColumns;
     });
-  }, [onColumnsChangeProp, transformColumns]);
+  }, [onColumnsChangeProp, convertExternalColumnsToInternal]);
 
   const specialRowsCount = useMemo(() => nextRows.filter(row => row && row.type).length, [nextRows]);
   const specialColumnsCount = useMemo(() => nextColumns.filter(column => column && column.type).length, [nextColumns]);
 
   const [valueState, setValueState] = useState([]);
 
-  const transformValue = useCallback(value => {
-    let result = value;
-    if (specialRowsCount) result = [...new Array(specialRowsCount), ...value];
-    if (specialColumnsCount) result = result.map(row => [...new Array(specialColumnsCount), ...(row || [])]);
-    return result;
-  }, [specialRowsCount, specialColumnsCount]);
+  const convertExternalValueToInternalCallback = useCallback(value => {
+    return convertExternalValueToInternal({
+      value,
+      specialRowsCount,
+      specialColumnsCount,
+      hiddenRowsIndexes,
+      hiddenColumnsIndexes
+    });
+  }, [specialRowsCount, specialColumnsCount, hiddenColumnsIndexes, hiddenRowsIndexes]);
 
-  const value = useMemo(() => transformValue(valueProp || valueState), [transformValue, valueProp, valueState]);
+  const value = useMemo(() => convertExternalValueToInternalCallback(valueProp || valueState), [convertExternalValueToInternalCallback, valueProp, valueState]);
 
   const onChange = useCallback(setValue => {
     const onChange = onChangeProp || setValueState;
     onChange(value => {
       let nextValue;
-      if (typeof value === 'function') nextValue = setValue(transformValue(value));
+      if (typeof value === 'function') nextValue = setValue(convertExternalValueToInternalCallback(value));
       else nextValue = setValue;
       if (specialRowsCount) nextValue = nextValue.splice(0, specialRowsCount);
       if (specialColumnsCount) nextValue = nextValue.map(row => {
@@ -150,7 +159,7 @@ const useSpreadsheet = ({
       });
       return nextValue;
     });
-  }, [transformValue, specialRowsCount, specialColumnsCount, onChangeProp, setValueState]);
+  }, [convertExternalValueToInternalCallback, specialRowsCount, specialColumnsCount, onChangeProp, setValueState]);
 
   const mergedCells = useMemo(() => {
     return mergedCellsProp && mergedCellsProp.map(mergedRange => {
