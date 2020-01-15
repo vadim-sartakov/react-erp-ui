@@ -1,6 +1,52 @@
 import { useState, useMemo, useCallback } from 'react';
 import { getGroups } from './utils';
 
+export const convertExternalMetaToInternal = ({ meta = [], groups, groupSize, numberMetaSize, hiddenIndexes, hideRowColumnNumbers }) => {
+  const result = [];
+  
+  groups.length && [...new Array(groups.length + 1).keys()].forEach(group => result.push({ size: groupSize, type: 'GROUP' }));
+  if (!hideRowColumnNumbers) result.push({ size: numberMetaSize, type: 'NUMBER' });
+  
+  const filteredMeta = meta.filter((metaItem, index) => metaItem ? hiddenIndexes.indexOf(index) === -1 : true);
+  result.push(...filteredMeta);
+  return result;
+};
+
+export const convertInternalMetaToExternal = ({ meta, originExternalMeta, hiddenIndexes }) => {
+  let result = [...meta].filter(metaItem => metaItem ? !metaItem.type : true);
+  hiddenIndexes.forEach(index => result.splice(index, 0, originExternalMeta[index]));
+  return result;
+};
+
+export const convertExternalValueToInternal = ({ value, specialRowsCount, specialColumnsCount, hiddenRowsIndexes, hiddenColumnsIndexes }) => {
+  let result = value;
+  if (hiddenRowsIndexes) result = result.filter((row, index) => hiddenRowsIndexes.indexOf(index) === -1);
+  if (hiddenColumnsIndexes) result = result.map(row => row.filter((column, index) => hiddenColumnsIndexes.indexOf(index) === -1));
+
+  if (specialRowsCount) result = [...new Array(specialRowsCount), ...result];
+  if (specialColumnsCount) result = result.map(row => row ? [...new Array(specialColumnsCount), ...(row || [])] : row);
+  return result;
+};
+
+export const convertInternalValueToExternal = ({ value, originExternalValue, hiddenRowsIndexes, hiddenColumnsIndexes, specialRowsCount, specialColumnsCount }) => {
+  let result = [...value];
+  if (specialRowsCount) result.splice(0, specialRowsCount);
+  if (specialColumnsCount) result = result.map(row => {
+    if (!row) return row;
+    const nextRow = [...row];
+    nextRow.splice(0, specialColumnsCount);
+    return nextRow;
+  });
+  hiddenRowsIndexes.forEach(index => result.splice(index, 0, originExternalValue[index]));
+  if (hiddenColumnsIndexes) result = result.map((row, rowIndex) => {
+    if (hiddenRowsIndexes.indexOf(rowIndex) !== -1 || !row) return row;
+    const nextRow = [...row];
+    hiddenColumnsIndexes.forEach(columnIndex => nextRow.splice(columnIndex, 0, originExternalValue[rowIndex][columnIndex]));
+    return nextRow;
+  });
+  return result;
+};
+
 /**
  * @param {import('./').UseSpreadsheetOptions} options 
  */
@@ -28,11 +74,15 @@ const useSpreadsheet = ({
   const rows = rowsProp || rowsState;
   const columns = columnsProp || columnsState;
 
+  const metaReducer = useCallback((acc, metaItem, index) => metaItem && metaItem.hidden ? [...acc, index] : acc, []);
+  const hiddenRowsIndexes = useMemo(() => rows.reduce(metaReducer, []), [rows, metaReducer]);
+  const hiddenColumnsIndexes = useMemo(() => columns.reduce(metaReducer, []), [columns, metaReducer]);
+
   const transformRows = useCallback(rows => {
     const result = [];
     const groups = getGroups(columns);
     groups.length && [...new Array(groups.length + 1).keys()].forEach(group => result.push({ size: groupSize, type: 'GROUP' }));
-    if (!hideRowColumnNumbers) result.push({ size: columnNumbersRowHeight, type: 'COLUMN_NUMBERS' });
+    if (!hideRowColumnNumbers) result.push({ size: columnNumbersRowHeight, type: 'NUMBER' });
     result.push(...(rows || []));
     return result;
   }, [columnNumbersRowHeight, hideRowColumnNumbers, groupSize, columns]);
@@ -54,7 +104,7 @@ const useSpreadsheet = ({
     const result = [];
     const groups = getGroups(rows);
     groups.length && [...new Array(groups.length + 1).keys()].forEach((group, index) => result.push({ size: groupSize, type: 'GROUP', index }));
-    if (!hideRowColumnNumbers) result.push({ size: rowNumberColumnWidth, type: 'ROW_NUMBERS' });
+    if (!hideRowColumnNumbers) result.push({ size: rowNumberColumnWidth, type: 'NUMBER' });
     result.push(...(columns || []));
     return result;
   }, [rowNumberColumnWidth, hideRowColumnNumbers, groupSize, rows]);
@@ -134,8 +184,8 @@ const useSpreadsheet = ({
     columns: nextColumns,
     onColumnsChange,
     onRowsChange,
-    totalRows: totalRows + specialRowsCount,
-    totalColumns: totalColumns + specialColumnsCount,
+    totalRows: (totalRows + specialRowsCount) - hiddenRowsIndexes.length,
+    totalColumns: (totalColumns + specialColumnsCount) - hiddenColumnsIndexes.length,
     fixRows: fixRows + specialRowsCount,
     fixColumns: fixColumns + specialColumnsCount,
     mergedCells,

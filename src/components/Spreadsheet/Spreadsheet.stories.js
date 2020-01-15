@@ -195,6 +195,8 @@ export const withGroups = props => {
     rows[i] = { level: 2 };
   }
 
+  rows[30] = { hidden: true };
+
   const columns = [];
   for (let i = 0; i < 20; i++) {
     columns[i] = { level: 1 };

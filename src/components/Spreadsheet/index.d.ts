@@ -8,7 +8,7 @@ declare function Spreadsheet(props: Spreadsheet.SpreadsheetProps): JSX.Element
 
 declare namespace Spreadsheet {
   interface Meta {
-    type?: 'ROW_NUMBERS' | 'COLUMN_NUMBERS' | 'GROUP';
+    type?: 'NUMBER' | 'GROUP';
     /** Width or height */
     size?: number;
     /** Whether current element expanded or collapsed */

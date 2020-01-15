@@ -51,7 +51,7 @@ const useSpreadsheetRender = ({
             switch(columnsType) {
               case 'GROUP':
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
-              case 'ROW_NUMBERS':
+              case 'NUMBER':
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnGroupButton({ row, column, rowIndex, columnIndex })}</React.Fragment>;
               default:
                 const currentLevelGroups = columnsGroups[rowIndex];
@@ -65,12 +65,12 @@ const useSpreadsheetRender = ({
                   </React.Fragment>
                 );
             }
-          case 'COLUMN_NUMBERS':
+          case 'NUMBER':
 
             switch(columnsType) {
               case 'GROUP':
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowGroupButton({ row, column, rowIndex, columnIndex })}</React.Fragment>;
-              case 'ROW_NUMBERS':
+              case 'NUMBER':
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowColumnNumbersIntersection({ row, column, rowIndex, columnIndex })}</React.Fragment>;
               default:
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnNumber({ row, column, columnIndex, columnNumber: columnIndex - rowGroupsCount })}</React.Fragment>;
@@ -97,7 +97,7 @@ const useSpreadsheetRender = ({
                         renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}
                   </React.Fragment>
                 );
-              case 'ROW_NUMBERS':
+              case 'NUMBER':
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowNumber({ row, column, rowIndex, rowNumber: rowIndex - columnGroupsCount, columnIndex })}</React.Fragment>;
               default:
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderCellValue({ row, rowIndex, column, columnIndex, rows, columns, value: curValue, mergedRange })}</React.Fragment>;

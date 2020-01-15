@@ -37,7 +37,8 @@ export const getCellsRangeSize = ({ count, meta = [], startIndex, defaultSize })
 export const getGroups = meta => {
   const groups = [];
 
-  meta.forEach((metaItem, index, meta) => {
+  [...new Array(meta.length).keys()].forEach((key, index) => {
+    const metaItem = meta[index];
     const prevLevel = index > 0 ? (meta[index - 1] && meta[index - 1].level) || 0 : 0;
     const curLevel = (metaItem && metaItem.level) || 0;
 
