@@ -110,10 +110,10 @@ const useSpreadsheet = ({
       let nextRows;
       if (typeof setRows === 'function') nextRows = setRows(convertExternalRowsToInternal(rows));
       else nextRows = setRows;
-      nextRows = [...nextRows].filter(row => row ? !row.type : true);
+      nextRows = convertInternalMetaToExternal({ meta: nextRows, originExternalMeta: rows, hiddenIndexes: hiddenRowsIndexes });
       return nextRows;
     });
-  }, [onRowsChangeProp, setRowsState, convertExternalRowsToInternal]);
+  }, [onRowsChangeProp, setRowsState, convertExternalRowsToInternal, hiddenRowsIndexes]);
 
   const nextColumns = useMemo(() => convertExternalColumnsToInternal(columns), [columns, convertExternalColumnsToInternal]);
 
@@ -123,10 +123,10 @@ const useSpreadsheet = ({
       let nextColumns;
       if (typeof setColumns === 'function') nextColumns = setColumns(convertExternalColumnsToInternal(columns));
       else nextColumns = setColumns;
-      nextColumns = [...nextColumns].filter(column => column ? !column.type : true);
+      nextColumns = convertInternalMetaToExternal({ meta: nextColumns, originExternalMeta: columns, hiddenIndexes: hiddenColumnsIndexes });
       return nextColumns;
     });
-  }, [onColumnsChangeProp, convertExternalColumnsToInternal]);
+  }, [onColumnsChangeProp, convertExternalColumnsToInternal, hiddenColumnsIndexes]);
 
   const specialRowsCount = useMemo(() => nextRows.filter(row => row && row.type).length, [nextRows]);
   const specialColumnsCount = useMemo(() => nextColumns.filter(column => column && column.type).length, [nextColumns]);

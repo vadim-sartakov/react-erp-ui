@@ -206,6 +206,11 @@ export const withGroups = props => {
   for (let i = 5; i < 10; i++) {
     columns[i] = { level: 2 };
   }
+
+  columns[30] = { hidden: true };
+  columns[31] = { hidden: true };
+  columns[32] = { hidden: true };
+  
   return (
     <SpreadsheetComponent
         columnNumbersRowHeight={20}
