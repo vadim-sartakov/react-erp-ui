@@ -45,22 +45,22 @@ const renderRowColumnNumbersIntersection = ({ row, column, columnIndex }) => (
   <SpreadsheetCell row={row} column={column} className={classes.columnNumberCell} />
 );
 
-const renderColumnNumber = ({ row, column, columnIndex, columnNumber }) => (
+const renderColumnNumber = ({ row, column, columnIndex, key }) => (
   <SpreadsheetCell
       row={row}
       column={column}
       className={classes.columnNumberCell}>
-    {columnNumber}
+    {key + 1}
     <SpreadsheetResizer mode="column" column={column} index={columnIndex} className={classes.columnResizer} />
   </SpreadsheetCell>
 );
 
-const renderRowNumber = ({ row, column, rowIndex, rowNumber }) => (
+const renderRowNumber = ({ row, column, rowIndex, key }) => (
   <SpreadsheetCell
       row={row}
       column={column}
       className={classes.rowNumberCell}>
-    {rowNumber}
+    {key + 1}
     <SpreadsheetResizer mode="row" row={row} index={rowIndex} className={classes.rowResizer} />
   </SpreadsheetCell>
 );
@@ -210,7 +210,7 @@ export const withGroups = props => {
   columns[30] = { hidden: true };
   columns[31] = { hidden: true };
   columns[32] = { hidden: true };
-  
+
   return (
     <SpreadsheetComponent
         columnNumbersRowHeight={20}

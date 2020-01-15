@@ -13,6 +13,8 @@ describe('Spreadsheet', () => {
         ...json,
         props: {
           ...json.props,
+          rows: json.props.rows && `length: ${json.props.rows.length}`,
+          columns: json.props.columns && `length: ${json.props.columns.length}`,
           value: `length: ${json.props.value.length} - ${json.props.value[json.props.value.length - 1].length}`
         }
       }
@@ -23,7 +25,9 @@ describe('Spreadsheet', () => {
         props: {
           ...json.props,
           rows: json.props.rows && `length: ${json.props.rows.length}`,
-          columns: json.props.columns && `length: ${json.props.columns.length}`
+          columns: json.props.columns && `length: ${json.props.columns.length}`,
+          row: undefined,
+          column: undefined
         }
       }
     }

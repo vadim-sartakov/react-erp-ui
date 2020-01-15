@@ -33,9 +33,6 @@ const useSpreadsheetRender = ({
   groupSize,
   columnsGroups
 }) => {
-  const rowGroupsCount = useMemo(() => columns.filter(column => column && column.type === 'GROUP').length, [columns]);
-  const columnGroupsCount = useMemo(() => rows.filter(row => row && row.type === 'GROUP').length, [rows]);
-
   const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex, seqRowIndex) => {
       const row = rows[rowIndex] || {};
@@ -73,7 +70,7 @@ const useSpreadsheetRender = ({
               case 'NUMBER':
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowColumnNumbersIntersection({ row, column, rowIndex, columnIndex })}</React.Fragment>;
               default:
-                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnNumber({ row, column, columnIndex, columnNumber: columnIndex - rowGroupsCount })}</React.Fragment>;
+                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnNumber({ row, column, columnIndex, key: column.key })}</React.Fragment>;
             }
 
           default:
@@ -98,7 +95,7 @@ const useSpreadsheetRender = ({
                   </React.Fragment>
                 );
               case 'NUMBER':
-                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowNumber({ row, column, rowIndex, rowNumber: rowIndex - columnGroupsCount, columnIndex })}</React.Fragment>;
+                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowNumber({ row, column, rowIndex, key: row.key, columnIndex })}</React.Fragment>;
               default:
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderCellValue({ row, rowIndex, column, columnIndex, rows, columns, value: curValue, mergedRange })}</React.Fragment>;
             }
@@ -117,8 +114,6 @@ const useSpreadsheetRender = ({
     visibleRows,
     visibleColumns,
     value,
-    rowGroupsCount,
-    columnGroupsCount,
     renderGroupEmptyArea,
     renderRowGroupButton,
     renderColumnGroupButton,
