@@ -98,9 +98,9 @@ const useSpreadsheet = ({
       groups,
       groupSize,
       hideRowColumnNumbers,
-      hiddenIndexes: hiddenRowsIndexes
+      hiddenIndexes: hiddenColumnsIndexes
     });
-  }, [rowNumberColumnWidth, rows, groupSize, hiddenRowsIndexes, hideRowColumnNumbers]);
+  }, [rowNumberColumnWidth, rows, groupSize, hiddenColumnsIndexes, hideRowColumnNumbers]);
 
   const nextRows = useMemo(() => {
     const result = [...new Array(totalRows).keys()].map(key => {
@@ -188,12 +188,12 @@ const useSpreadsheet = ({
     });
   }, [mergedCellsProp, specialRowsCount, specialColumnsCount]);
 
-  const groupMapper = useCallback(specialMetaCount => group => ({ start: group.start + specialMetaCount, end: group.end + specialMetaCount }), []);
+  const groupMapper = useCallback(specialMetaCount => group => ({ ...group, start: group.start + specialMetaCount, end: group.end + specialMetaCount }), []);
 
   const rowsGroups = useMemo(() => {
     return getGroups(rows).map(curLevelGroups => curLevelGroups.map(groupMapper(specialRowsCount)));
   }, [rows, groupMapper, specialRowsCount]);
-  
+
   const columnsGroups = useMemo(() => {
     return getGroups(columns).map(curLevelGroups => curLevelGroups.map(groupMapper(specialColumnsCount)));
   }, [columns, groupMapper, specialColumnsCount]);

@@ -194,10 +194,21 @@ export const withGroups = props => {
   for (let i = 5; i < 10; i++) {
     rows[i] = { level: 2 };
   }
+  for (let i = 15; i < 20; i++) {
+    rows[i] = { level: 2 };
+  }
 
-  rows[30] = { hidden: true };
-  rows[31] = { hidden: true };
-  rows[32] = { hidden: true };
+  /*for (let i = 11; i < 19; i++) {
+    rows[i] = { ...rows[i], hidden: true };
+  }*/
+
+  for (let i = 5; i < 10; i++) {
+    rows[i] = { ...rows[i], hidden: true };
+  }
+
+  for (let i = 15; i < 20; i++) {
+    rows[i] = { ...rows[i], hidden: true };
+  }
 
   const columns = [];
   for (let i = 0; i < 20; i++) {
@@ -206,10 +217,6 @@ export const withGroups = props => {
   for (let i = 5; i < 10; i++) {
     columns[i] = { level: 2 };
   }
-
-  columns[30] = { hidden: true };
-  columns[31] = { hidden: true };
-  columns[32] = { hidden: true };
 
   return (
     <SpreadsheetComponent

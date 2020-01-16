@@ -47,7 +47,7 @@ describe('Spreadsheet utils', () => {
 
   describe('getGroups', () => {
 
-    it('should calculate groups', () => {
+    it('should calculate plain groups', () => {
       const meta = [
         { level: 1 },
         { level: 1 },
@@ -97,6 +97,50 @@ describe('Spreadsheet utils', () => {
           }
         ]
       ]);
+    });
+
+    it('should offset end parts when there are hidden meta', () => {
+      const meta = [
+        { level: 1 },
+        { level: 1, hidden: true },
+        { level: 1, hidden: true },
+        { level: 1 },
+      ];
+      const result = getGroups(meta);
+      expect(result).toEqual([
+        [
+          { start: 0, end: 1 }
+        ]
+      ]);
+
+    });
+
+    it('should collapse group when all meta is hidden', () => {
+      const meta = [
+        { level: 1 },
+        { level: 2, hidden: true },
+        { level: 2, hidden: true },
+        { level: 2, hidden: true },
+        { level: 2, hidden: true },
+        { level: 1 },
+        { level: 1 },
+        {},
+        {},
+        { level: 2 },
+        { level: 2 },
+        { level: 2 }
+      ];
+      const result = getGroups(meta);
+      expect(result).toEqual([
+        [
+          { start: 0, end: 2 }
+        ],
+        [
+          { start: 1, end: 1, collapsed: true },
+          { start: 5, end: 7 }
+        ]
+      ]);
+
     });
 
   });

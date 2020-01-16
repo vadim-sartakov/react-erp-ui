@@ -2,8 +2,8 @@ import React from 'react';
 import SpreadsheetCell from '../SpreadsheetCell';
 import classes from './renderRowGroup.module.css';
 
-const renderRowGroup = ({ mergedRange, row, column, rows, columns, rowIndex, defaultRowHeight, groupSize, backgroundColor }) => {
-  const height = (rows[rowIndex - 1] && rows[rowIndex  - 1].size) || defaultRowHeight;
+const renderRowGroup = ({ mergedRange, row, column, rows, columns, rowIndex, defaultRowHeight, groupSize, collapsed, backgroundColor }) => {
+  const height = (rows[rowIndex] && rows[rowIndex].size) || defaultRowHeight;
   return (
     <SpreadsheetCell
         row={row}
@@ -13,7 +13,7 @@ const renderRowGroup = ({ mergedRange, row, column, rows, columns, rowIndex, def
         mergedRange={mergedRange}
         style={{ backgroundColor }}>
       <div className={classes.buttonContainer} style={{ height }}>
-        <div className={classes.groupButton} style={{ backgroundColor }}>-</div>
+        <div className={classes.groupButton} style={{ backgroundColor }}>{collapsed ? '+' : '-'}</div>
       </div>
       <div
           className={classes.groupLine}

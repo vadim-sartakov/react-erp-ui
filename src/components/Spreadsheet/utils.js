@@ -35,7 +35,7 @@ export const getCellsRangeSize = ({ count, meta = [], startIndex, defaultSize })
   * @returns {import('./').Group[][]}
   */
 export const getGroups = meta => {
-  const groups = [];
+  let groups = [];
 
   [...new Array(meta.length).keys()].forEach((key, index) => {
     const metaItem = meta[index];
@@ -69,6 +69,22 @@ export const getGroups = meta => {
 
     if (index === meta.length - 1) closeGroups(prevLevel, 0, index);
     
+  });
+
+  // Applying hidden meta items
+  const hiddenIndexes = meta.reduce((acc, meta, index) => meta && meta.hidden ? [...acc, index] : acc, []);
+  groups = groups.map(levelGroups => {
+    let offset = 0;
+    return levelGroups.map(group => {
+      const hiddenCount = hiddenIndexes.reduce((acc, hiddenIndex) => {
+        if (hiddenIndex >= group.start && hiddenIndex <= group.end) return acc + 1;
+        else return acc;
+      }, 0);
+      const collapsed = hiddenCount > group.end - group.start ? true : undefined;
+      const result = { ...group, start: group.start - offset, end: collapsed ? group.start : group.end - hiddenCount - offset, collapsed };
+      offset += hiddenCount;
+      return result;
+    })
   });
 
   return groups;

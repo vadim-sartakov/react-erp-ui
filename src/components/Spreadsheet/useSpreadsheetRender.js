@@ -53,7 +53,16 @@ const useSpreadsheetRender = ({
               default:
                 const currentLevelGroups = columnsGroups[rowIndex];
                 const columnGroup = currentLevelGroups && currentLevelGroups.find(group => group.start === columnIndex);
-                const groupMergedRange = columnGroup && { start: { row: rowIndex, column:  columnGroup.start - 1 }, end: { row: rowIndex, column: columnGroup.end } };
+                const groupMergedRange = columnGroup && {
+                  start: {
+                    row: rowIndex,
+                    column:  columnGroup.start - 1
+                  },
+                  end: {
+                    row: rowIndex,
+                    column: columnGroup.end
+                  }
+                };
                 return (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
                     {groupMergedRange ?
@@ -85,12 +94,21 @@ const useSpreadsheetRender = ({
             switch(columnsType) {
               case 'GROUP':
                 const currentLevelGroups = rowsGroups[columnIndex];
-                const rowGroup = currentLevelGroups && currentLevelGroups.find(group => group.start === rowIndex);
-                const groupMergedRange = rowGroup && { start: { row: rowGroup.start - 1, column: columnIndex }, end: { row: rowGroup.end, column: columnIndex } };
+                const rowGroup = currentLevelGroups && currentLevelGroups.find(group => (group.start - 1) === rowIndex);
+                const groupMergedRange = rowGroup && {
+                  start: {
+                    row: rowGroup.start - 1,
+                    column: columnIndex
+                  },
+                  end: {
+                    row: rowGroup.collapsed ? rowGroup.start - 1 : rowGroup.end,
+                    column: columnIndex
+                  }
+                };
                 return (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
                     {groupMergedRange ?
-                        renderRowGroup({ row, column, rows, columns, mergedRange: groupMergedRange, rowIndex, defaultRowHeight, groupSize }) :
+                        renderRowGroup({ row, column, rows, columns, mergedRange: groupMergedRange, rowIndex, defaultRowHeight, groupSize, collapsed: rowGroup.collapsed }) :
                         renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}
                   </React.Fragment>
                 );
