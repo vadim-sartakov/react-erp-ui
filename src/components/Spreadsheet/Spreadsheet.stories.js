@@ -187,10 +187,11 @@ export const withMergedCells = props => {
 };
 
 export const withGroups = props => {
-  const rows = [];
+  const rows = new Array(100).fill();
   for (let i = 0; i < 20; i++) {
     rows[i] = { level: 1 };
   }
+
   for (let i = 5; i < 10; i++) {
     rows[i] = { level: 2 };
   }
@@ -203,6 +204,25 @@ export const withGroups = props => {
   }
 
   for (let i = 15; i < 20; i++) {
+    rows[i] = { ...rows[i], hidden: true };
+  }
+
+  for (let i = 30; i < 50; i++) {
+    rows[i] = { level: 1 };
+  }
+
+  for (let i = 35; i < 40; i++) {
+    rows[i] = { level: 2 };
+  }
+  for (let i = 45; i < 50; i++) {
+    rows[i] = { level: 2 };
+  }
+
+  for (let i = 35; i < 40; i++) {
+    rows[i] = { ...rows[i], hidden: true };
+  }
+
+  for (let i = 45; i < 50; i++) {
     rows[i] = { ...rows[i], hidden: true };
   }
 
