@@ -56,6 +56,19 @@ export const convertInternalValueToExternal = ({ value, originExternalValue, hid
   return result;
 };
 
+const clickGroupButton = (meta, level) => {
+  const result = meta.map(metaItem => {
+    if (!metaItem || !metaItem.level) return metaItem;
+    else if (metaItem.level >= level) return { ...metaItem, hidden: true };
+    else {
+      const nextItem = { ...metaItem };
+      delete nextItem.hidden;
+      return nextItem;
+    };
+  });
+  return result;
+};
+
 /**
  * @param {import('./').UseSpreadsheetOptions} options 
  */
@@ -82,6 +95,9 @@ const useSpreadsheet = ({
 
   const rows = rowsProp || rowsState;
   const columns = columnsProp || columnsState;
+
+  const onRowsChange = onRowsChangeProp || setRowsState;
+  const onColumnsChange = onColumnsChangeProp || setColumnsState
 
   const metaReducer = useCallback((acc, metaItem, index) => metaItem && metaItem.hidden ? [...acc, index] : acc, []);
   const hiddenRowsIndexes = useMemo(() => rows.reduce(metaReducer, []), [rows, metaReducer]);
@@ -117,8 +133,7 @@ const useSpreadsheet = ({
     return convertExternalRowsToInternal(result);
   }, [rows, totalRows, convertExternalRowsToInternal]);
 
-  const onRowsChange = useCallback(setRows => {
-    const onRowsChange = onRowsChangeProp || setRowsState;
+  const nextOnRowsChange = useCallback(setRows => {
     onRowsChange(rows => {
       let nextRows;
       if (typeof setRows === 'function') nextRows = setRows(convertExternalRowsToInternal(rows));
@@ -126,7 +141,12 @@ const useSpreadsheet = ({
       nextRows = convertInternalMetaToExternal({ meta: nextRows, originExternalMeta: rows, hiddenIndexes: hiddenRowsIndexes });
       return nextRows;
     });
-  }, [onRowsChangeProp, setRowsState, convertExternalRowsToInternal, hiddenRowsIndexes]);
+  }, [onRowsChange, convertExternalRowsToInternal, hiddenRowsIndexes]);
+
+  const handleRowGroupButtonClick = useCallback(level => event => {
+    let nextRows = clickGroupButton(rows, level);
+    onRowsChange(nextRows);
+  }, [rows, onRowsChange]);
 
   const nextColumns = useMemo(() => {
     const result = [...new Array(totalColumns).keys()].map(key => {
@@ -136,8 +156,7 @@ const useSpreadsheet = ({
     return convertExternalColumnsToInternal(result);
   }, [columns, convertExternalColumnsToInternal, totalColumns]);
 
-  const onColumnsChange = useCallback(setColumns => {
-    const onColumnsChange = onColumnsChangeProp || setColumnsState;
+  const nextOnColumnsChange = useCallback(setColumns => {
     onColumnsChange(columns => {
       let nextColumns;
       if (typeof setColumns === 'function') nextColumns = setColumns(convertExternalColumnsToInternal(columns));
@@ -145,7 +164,12 @@ const useSpreadsheet = ({
       nextColumns = convertInternalMetaToExternal({ meta: nextColumns, originExternalMeta: columns, hiddenIndexes: hiddenColumnsIndexes });
       return nextColumns;
     });
-  }, [onColumnsChangeProp, convertExternalColumnsToInternal, hiddenColumnsIndexes]);
+  }, [convertExternalColumnsToInternal, hiddenColumnsIndexes, onColumnsChange]);
+
+  const handleColumnGroupButtonClick = useCallback(level => event => {
+    let nextColumns = clickGroupButton(columns, level);
+    onColumnsChange(nextColumns);
+  }, [columns, onColumnsChange]);
 
   const specialRowsCount = useMemo(() => nextRows.filter(row => row && row.type).length, [nextRows]);
   const specialColumnsCount = useMemo(() => nextColumns.filter(column => column && column.type).length, [nextColumns]);
@@ -210,8 +234,8 @@ const useSpreadsheet = ({
     onChange,
     rows: nextRows,
     columns: nextColumns,
-    onColumnsChange,
-    onRowsChange,
+    onColumnsChange: nextOnColumnsChange,
+    onRowsChange: nextOnRowsChange,
     totalRows: (totalRows + specialRowsCount) - hiddenRowsIndexes.length,
     totalColumns: (totalColumns + specialColumnsCount) - hiddenColumnsIndexes.length,
     fixRows: fixRows + specialRowsCount,
@@ -220,7 +244,9 @@ const useSpreadsheet = ({
     specialRowsCount,
     specialColumnsCount,
     rowsGroups,
-    columnsGroups
+    columnsGroups,
+    handleRowGroupButtonClick,
+    handleColumnGroupButtonClick
   };
 };
 

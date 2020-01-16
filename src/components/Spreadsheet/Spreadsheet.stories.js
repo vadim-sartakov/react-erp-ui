@@ -4,20 +4,20 @@ import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell, renderColumnGroup, re
 import { generateGridValues } from '../test-utils/generateValues';
 import classes from './Spreadsheet-stories.module.sass';
 
-const renderRowGroupButton = ({ row, column, rowIndex, columnIndex }) => {
+const renderRowGroupButton = ({ row, column, rowIndex, columnIndex, onClick }) => {
   return (
     <SpreadsheetCell row={row} column={column} className={classes.groupButtonContainer} style={{ zIndex: 8 }}>
-      <div className={classes.groupButton}>
+      <div className={classes.groupButton} onClick={onClick}>
         {columnIndex + 1}
       </div>
     </SpreadsheetCell>
   )
 };
 
-const renderColumnGroupButton = ({ row, column, rowIndex, columnIndex }) => {
+const renderColumnGroupButton = ({ row, column, rowIndex, columnIndex, onClick }) => {
   return (
     <SpreadsheetCell row={row} column={column} className={classes.groupButtonContainer} style={{ zIndex: 8 }}>
-      <div className={classes.groupButton}>
+      <div className={classes.groupButton} onClick={onClick}>
         {rowIndex + 1}
       </div>
     </SpreadsheetCell>
@@ -199,14 +199,6 @@ export const withGroups = props => {
     rows[i] = { level: 2 };
   }
 
-  for (let i = 5; i < 10; i++) {
-    rows[i] = { ...rows[i], hidden: true };
-  }
-
-  for (let i = 15; i < 20; i++) {
-    rows[i] = { ...rows[i], hidden: true };
-  }
-
   for (let i = 30; i < 50; i++) {
     rows[i] = { level: 1 };
   }
@@ -218,24 +210,12 @@ export const withGroups = props => {
     rows[i] = { level: 2 };
   }
 
-  for (let i = 35; i < 40; i++) {
-    rows[i] = { ...rows[i], hidden: true };
-  }
-
-  for (let i = 45; i < 50; i++) {
-    rows[i] = { ...rows[i], hidden: true };
-  }
-
   const columns = [];
   for (let i = 0; i < 20; i++) {
     columns[i] = { level: 1 };
   }
   for (let i = 5; i < 10; i++) {
     columns[i] = { level: 2 };
-  }
-
-  for (let i = 5; i < 10; i++) {
-    columns[i] = { ...columns[i], hidden: true };
   }
 
   return (
