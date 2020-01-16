@@ -1,13 +1,22 @@
 import { useState, useMemo, useCallback } from 'react';
 import { getGroups } from './utils';
 
-export const convertExternalMetaToInternal = ({ meta = [], groups, groupSize, numberMetaSize, hiddenIndexes, hideRowColumnNumbers }) => {
+export const convertExternalMetaToInternal = ({ meta = [], groups, groupSize, numberMetaSize, hideRowColumnNumbers }) => {
   const result = [];
   
   groups.length && [...new Array(groups.length + 1).keys()].forEach(group => result.push({ size: groupSize, type: 'GROUP' }));
   if (!hideRowColumnNumbers) result.push({ size: numberMetaSize, type: 'NUMBER' });
   
-  const filteredMeta = meta.filter((metaItem, index) => metaItem ? hiddenIndexes.indexOf(index) === -1 : true);
+  // Not using filter here because meta may contain empty items
+  // And it's not processing by filter function
+  let filteredMeta = [...meta];
+  for (let index = 0; index < filteredMeta.length; index++) {
+    const metaItem = filteredMeta[index];
+    if (metaItem && metaItem.hidden) {
+      filteredMeta.splice(index, 1);
+      index -= 1;
+    }
+  }
   result.push(...filteredMeta);
   return result;
 };
@@ -85,10 +94,9 @@ const useSpreadsheet = ({
       numberMetaSize: columnNumbersRowHeight,
       groups,
       groupSize,
-      hideRowColumnNumbers,
-      hiddenIndexes: hiddenRowsIndexes
+      hideRowColumnNumbers
     });
-  }, [columnNumbersRowHeight, columns, groupSize, hiddenRowsIndexes, hideRowColumnNumbers]);
+  }, [columnNumbersRowHeight, columns, groupSize, hideRowColumnNumbers]);
 
   const convertExternalColumnsToInternal = useCallback(columns => {
     const groups = getGroups(rows);
@@ -97,10 +105,9 @@ const useSpreadsheet = ({
       numberMetaSize: rowNumberColumnWidth,
       groups,
       groupSize,
-      hideRowColumnNumbers,
-      hiddenIndexes: hiddenColumnsIndexes
+      hideRowColumnNumbers
     });
-  }, [rowNumberColumnWidth, rows, groupSize, hiddenColumnsIndexes, hideRowColumnNumbers]);
+  }, [rowNumberColumnWidth, rows, groupSize, hideRowColumnNumbers]);
 
   const nextRows = useMemo(() => {
     const result = [...new Array(totalRows).keys()].map(key => {

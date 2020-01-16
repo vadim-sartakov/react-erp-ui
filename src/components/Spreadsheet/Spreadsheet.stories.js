@@ -187,7 +187,7 @@ export const withMergedCells = props => {
 };
 
 export const withGroups = props => {
-  const rows = new Array(100).fill();
+  const rows = [];
   for (let i = 0; i < 20; i++) {
     rows[i] = { level: 1 };
   }

@@ -10,9 +10,9 @@ describe('useSpreadsheet', () => {
   describe('convertExternalMetaToInternal', () => {
     it('should convert external meta to internal', () => {
       const meta = [
-        { size: 10 },
+        { size: 10, hidden: true },
         { size: 20 },
-        { size: 30 },
+        { size: 30, hidden: true },
         { size: 40 },
         { size: 50 },
         { size: 60 }
@@ -25,8 +25,7 @@ describe('useSpreadsheet', () => {
           { start: 2, end: 5 }
         ]
       ];
-      const hiddenIndexes = [0, 2];
-      const result = convertExternalMetaToInternal({ meta, groups, groupSize: 20, numberMetaSize: 30, hiddenIndexes });
+      const result = convertExternalMetaToInternal({ meta, groups, groupSize: 20, numberMetaSize: 30 });
       expect(result).toEqual([
         { type: 'GROUP', size: 20 },
         { type: 'GROUP', size: 20 },
