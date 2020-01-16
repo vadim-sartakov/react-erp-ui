@@ -143,6 +143,26 @@ describe('Spreadsheet utils', () => {
 
     });
 
+    it('should remove lower level enclosed groups when parent is collapsed', () => {
+      const meta = [
+        { level: 1, hidden: true },
+        { level: 1, hidden: true },
+        { level: 2, hidden: true },
+        { level: 2, hidden: true },
+        { level: 2, hidden: true },
+        { level: 2, hidden: true },
+        { level: 1, hidden: true },
+        { level: 1, hidden: true }
+      ];
+      const result = getGroups(meta);
+      expect(result).toEqual([
+        [
+          { start: 0, end: 0, collapsed: true }
+        ],
+        []
+      ]);
+    });
+
   });
 
 });

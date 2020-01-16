@@ -33,6 +33,35 @@ const useSpreadsheetRender = ({
   groupSize,
   columnsGroups
 }) => {
+
+  const renderRowGroupCallback = useCallback(({ rowIndex, columnIndex, row, column, overscrolled }) => {
+    const currentLevelGroups = rowsGroups[columnIndex];
+    const rowGroup = currentLevelGroups && currentLevelGroups.find(group => (group.start - 1) === rowIndex);
+    const groupMergedRange = rowGroup && {
+      start: {
+        row: rowGroup.start - 1,
+        column: columnIndex
+      },
+      end: {
+        row: rowGroup.collapsed ? rowGroup.start - 1 : rowGroup.end,
+        column: columnIndex
+      }
+    };
+    return groupMergedRange ?
+        renderRowGroup({
+          row,
+          column,
+          rows,
+          columns,
+          mergedRange: groupMergedRange,
+          rowIndex, defaultRowHeight,
+          groupSize,
+          collapsed: rowGroup.collapsed,
+          overscrolled
+        }) :
+        !overscrolled && renderGroupEmptyArea({ row, column, rowIndex, columnIndex });
+  }, [rows, columns, defaultRowHeight, groupSize, renderGroupEmptyArea, renderRowGroup, rowsGroups]);
+
   const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex, seqRowIndex) => {
       const row = rows[rowIndex] || {};
@@ -75,7 +104,12 @@ const useSpreadsheetRender = ({
 
             switch(columnsType) {
               case 'GROUP':
-                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowGroupButton({ row, column, rowIndex, columnIndex })}</React.Fragment>;
+                return (
+                  <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
+                    {renderRowGroupCallback({ row, column, rowIndex, columnIndex, overscrolled: true })}
+                    {renderRowGroupButton({ row, column, rowIndex, columnIndex })}
+                  </React.Fragment>  
+                );
               case 'NUMBER':
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowColumnNumbersIntersection({ row, column, rowIndex, columnIndex })}</React.Fragment>;
               default:
@@ -93,23 +127,9 @@ const useSpreadsheetRender = ({
             
             switch(columnsType) {
               case 'GROUP':
-                const currentLevelGroups = rowsGroups[columnIndex];
-                const rowGroup = currentLevelGroups && currentLevelGroups.find(group => (group.start - 1) === rowIndex);
-                const groupMergedRange = rowGroup && {
-                  start: {
-                    row: rowGroup.start - 1,
-                    column: columnIndex
-                  },
-                  end: {
-                    row: rowGroup.collapsed ? rowGroup.start - 1 : rowGroup.end,
-                    column: columnIndex
-                  }
-                };
                 return (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
-                    {groupMergedRange ?
-                        renderRowGroup({ row, column, rows, columns, mergedRange: groupMergedRange, rowIndex, defaultRowHeight, groupSize, collapsed: rowGroup.collapsed }) :
-                        renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}
+                    {renderRowGroupCallback({ row, column, rowIndex, columnIndex })}
                   </React.Fragment>
                 );
               case 'NUMBER':
@@ -126,7 +146,6 @@ const useSpreadsheetRender = ({
   }, [
     groupSize,
     defaultColumnWidth,
-    defaultRowHeight,
     rows,
     columns,
     visibleRows,
@@ -135,14 +154,13 @@ const useSpreadsheetRender = ({
     renderGroupEmptyArea,
     renderRowGroupButton,
     renderColumnGroupButton,
-    renderRowGroup,
+    renderRowGroupCallback,
     renderColumnGroup,
     renderRowColumnNumbersIntersection,
     renderColumnNumber,
     renderRowNumber,
     renderCellValue,
     mergedCells,
-    rowsGroups,
     columnsGroups
   ]);
 

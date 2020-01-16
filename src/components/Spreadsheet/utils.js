@@ -73,18 +73,31 @@ export const getGroups = meta => {
 
   // Applying hidden meta items
   const hiddenIndexes = meta.reduce((acc, meta, index) => meta && meta.hidden ? [...acc, index] : acc, []);
+
   groups = groups.map(levelGroups => {
     let offset = 0;
-    return levelGroups.map(group => {
+    return levelGroups.reduce((acc, group) => {
       const hiddenCount = hiddenIndexes.reduce((acc, hiddenIndex) => {
         if (hiddenIndex >= group.start && hiddenIndex <= group.end) return acc + 1;
         else return acc;
       }, 0);
       const collapsed = hiddenCount > group.end - group.start ? true : undefined;
-      const result = { ...group, start: group.start - offset, end: collapsed ? group.start : group.end - hiddenCount - offset, collapsed };
+
+      const prevMeta = meta[group.start - 1];
+      if (prevMeta && prevMeta.hidden) return acc;
+
+      const start = group.start - offset;
+      const end = collapsed ? group.start : group.end - hiddenCount - offset;
+
+      const result = {
+        ...group,
+        start,
+        end,
+        collapsed
+      };
       offset += hiddenCount;
-      return result;
-    })
+      return [...acc, result];
+    }, [])
   });
 
   return groups;

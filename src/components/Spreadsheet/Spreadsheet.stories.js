@@ -198,10 +198,6 @@ export const withGroups = props => {
     rows[i] = { level: 2 };
   }
 
-  /*for (let i = 11; i < 19; i++) {
-    rows[i] = { ...rows[i], hidden: true };
-  }*/
-
   for (let i = 5; i < 10; i++) {
     rows[i] = { ...rows[i], hidden: true };
   }
