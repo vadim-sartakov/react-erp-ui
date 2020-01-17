@@ -53,14 +53,32 @@ export const getGroups = meta => {
       for (let i = fromLevel; i > toLevel; i--) {
         const curLevelGroups = groups[i - 1];
         const lastGroup = curLevelGroups[curLevelGroups.length - 1];
+        
+        const prevMeta = meta[lastGroup.start - 1];
+        if (prevMeta && prevMeta.hidden) {
+          curLevelGroups.pop();
+          return;
+        }
+
         if (!lastGroup.end) lastGroup.end = toIndex;
+
+        const offsetReducer = (acc, metaItem) => metaItem && metaItem.hidden ? acc + 1 : acc;
+
+        const startOffset = meta.slice(0, lastGroup.start).reduce(offsetReducer, 0);
+        const endOffset = meta.slice(lastGroup.start, toIndex).reduce(offsetReducer, 0);
+
+        const collapsed = endOffset && endOffset === lastGroup.end - lastGroup.start;
+        lastGroup.offsetStart = lastGroup.start - startOffset;
+        lastGroup.offsetEnd = lastGroup.end - startOffset - endOffset;
+
+        if (collapsed) lastGroup.collapsed = true;
       }
     };
 
     const levelDiff = curLevel - prevLevel;
     // Level increased
     if (levelDiff > 0) {
-      curLevelGroups.push({ start: index });
+      curLevelGroups.push({ start: index, level: curLevel });
     // Level decreased
     } else if (levelDiff < 0) {
       // Closing all currently opened groups
@@ -69,36 +87,6 @@ export const getGroups = meta => {
 
     if (index === meta.length - 1) closeGroups(curLevel, 0, index);
     
-  });
-
-  // Applying hidden meta items
-  const hiddenIndexes = meta.reduce((acc, meta, index) => meta && meta.hidden ? [...acc, index] : acc, []);
-
-  groups = groups.map((levelGroups, level) => {
-    let offset = 0;
-    return levelGroups.reduce((acc, group) => {
-      const hiddenCount = hiddenIndexes.reduce((acc, hiddenIndex) => {
-        if (hiddenIndex >= group.start && hiddenIndex <= group.end) return acc + 1;
-        else return acc;
-      }, 0);
-      const collapsed = hiddenCount > group.end - group.start ? true : undefined;
-
-      const prevMeta = meta[group.start - 1];
-      if (prevMeta && prevMeta.hidden) return acc;
-
-      const offsetStart = group.start - offset;
-      const offsetEnd = collapsed ? group.start : group.end - hiddenCount - offset;
-
-      const result = {
-        ...group,
-        level: level + 1,
-        offsetStart,
-        offsetEnd,
-        collapsed
-      };
-      offset += hiddenCount;
-      return [...acc, result];
-    }, [])
   });
 
   return groups;

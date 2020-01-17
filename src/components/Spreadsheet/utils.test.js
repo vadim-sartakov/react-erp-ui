@@ -195,6 +195,30 @@ describe('Spreadsheet utils', () => {
       ]);
     });
 
+    it('should offset higher level group elements when previous group of lower level is collapsed', () => {
+      const meta = [
+        { level: 1, hidden: true },
+        { level: 1, hidden: true },
+        {},
+        { level: 1 },
+        { level: 2 },
+        { level: 2 }
+      ];
+      const result = getGroups(meta);
+      console.log(result)
+      expect(result).toEqual([
+        [
+          [
+            { start: 0, end: 1, level: 1, offsetStart: 0, offsetEnd: 0, collapsed: true },
+            { start: 3, end: 5, level: 1, offsetStart: 1, offsetEnd: 4 }
+          ],
+          [
+            { start: 4, end: 5, level: 2, offsetStart: 3, offsetEnd: 4 }
+          ]
+        ]
+      ]);
+    });
+
   });
 
 });
