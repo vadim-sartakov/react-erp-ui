@@ -114,6 +114,23 @@ describe('Spreadsheet utils', () => {
       ]);
     });
 
+    it('should correctly close group when last item\'s level is greater than previous', () => {
+      const meta = [
+        { level: 1 },
+        { level: 1 },
+        { level: 2 }
+      ];
+      const result = getGroups(meta);
+      expect(result).toEqual([
+        [
+          { start: 0, end: 2, level: 1, offsetStart: 0, offsetEnd: 2 }
+        ],
+        [
+          { start: 2, end: 2, level: 2, offsetStart: 2, offsetEnd: 2 }
+        ]
+      ]);
+    });
+
     it('should offset end parts when there are hidden meta', () => {
       const meta = [
         { level: 1 },

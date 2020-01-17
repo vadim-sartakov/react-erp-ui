@@ -67,7 +67,7 @@ export const getGroups = meta => {
       closeGroups(prevLevel, curLevel, index - 1);
     }
 
-    if (index === meta.length - 1) closeGroups(prevLevel, 0, index);
+    if (index === meta.length - 1) closeGroups(curLevel, 0, index);
     
   });
 

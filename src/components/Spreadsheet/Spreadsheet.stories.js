@@ -191,7 +191,6 @@ export const withGroups = props => {
   for (let i = 0; i < 20; i++) {
     rows[i] = { level: 1 };
   }
-
   for (let i = 5; i < 10; i++) {
     rows[i] = { level: 2 };
   }
@@ -202,7 +201,6 @@ export const withGroups = props => {
   for (let i = 30; i < 50; i++) {
     rows[i] = { level: 1 };
   }
-
   for (let i = 35; i < 40; i++) {
     rows[i] = { level: 2 };
   }
@@ -211,10 +209,23 @@ export const withGroups = props => {
   }
 
   const columns = [];
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 10; i++) {
     columns[i] = { level: 1 };
   }
-  for (let i = 5; i < 10; i++) {
+  for (let i = 2; i < 5; i++) {
+    columns[i] = { level: 2 };
+  }
+  for (let i = 6; i < 10; i++) {
+    columns[i] = { level: 2 };
+  }
+
+  for (let i = 12; i < 20; i++) {
+    columns[i] = { level: 1 };
+  }
+  for (let i = 14; i < 16; i++) {
+    columns[i] = { level: 2 };
+  }
+  for (let i = 19; i < 20; i++) {
     columns[i] = { level: 2 };
   }
 
