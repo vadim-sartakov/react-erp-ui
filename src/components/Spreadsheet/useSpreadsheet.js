@@ -56,17 +56,25 @@ export const convertInternalValueToExternal = ({ value, originExternalValue, hid
   return result;
 };
 
-const clickGroupButton = (meta, level) => {
-  const result = meta.map(metaItem => {
+const clickGroupLevelButton = (meta, level) => {
+  return meta.map(metaItem => {
     if (!metaItem || !metaItem.level) return metaItem;
     else if (metaItem.level >= level) return { ...metaItem, hidden: true };
     else {
       const nextItem = { ...metaItem };
       delete nextItem.hidden;
       return nextItem;
-    };
+    }
   });
-  return result;
+};
+
+const clickGroupButton = (meta, group, specialMetaCount) => {
+  const nextMeta = [...meta];
+  for (let index = group.start - specialMetaCount; index <= group.end - specialMetaCount; index++) {
+    const metaItem = meta[index] || {};
+    nextMeta[index] = { ...metaItem, hidden: !group.collapsed };
+  }
+  return nextMeta;
 };
 
 /**
@@ -143,10 +151,10 @@ const useSpreadsheet = ({
     });
   }, [onRowsChange, convertExternalRowsToInternal, hiddenRowsIndexes]);
 
-  const handleRowGroupButtonClick = useCallback(level => event => {
-    let nextRows = clickGroupButton(rows, level);
-    onRowsChange(nextRows);
-  }, [rows, onRowsChange]);
+  const specialRowsCount = useMemo(() => nextRows.filter(row => row && row.type).length, [nextRows]);
+
+  const onRowGroupLevelButtonClick = useCallback(level => event => onRowsChange(clickGroupLevelButton(rows, level)), [rows, onRowsChange]);
+  const onRowGroupButtonClick = useCallback(group => event => onRowsChange(clickGroupButton(rows, group, specialRowsCount)), [rows, onRowsChange, specialRowsCount]);
 
   const nextColumns = useMemo(() => {
     const result = [...new Array(totalColumns).keys()].map(key => {
@@ -155,6 +163,8 @@ const useSpreadsheet = ({
     });
     return convertExternalColumnsToInternal(result);
   }, [columns, convertExternalColumnsToInternal, totalColumns]);
+
+  const specialColumnsCount = useMemo(() => nextColumns.filter(column => column && column.type).length, [nextColumns]);
 
   const nextOnColumnsChange = useCallback(setColumns => {
     onColumnsChange(columns => {
@@ -166,13 +176,8 @@ const useSpreadsheet = ({
     });
   }, [convertExternalColumnsToInternal, hiddenColumnsIndexes, onColumnsChange]);
 
-  const handleColumnGroupButtonClick = useCallback(level => event => {
-    let nextColumns = clickGroupButton(columns, level);
-    onColumnsChange(nextColumns);
-  }, [columns, onColumnsChange]);
-
-  const specialRowsCount = useMemo(() => nextRows.filter(row => row && row.type).length, [nextRows]);
-  const specialColumnsCount = useMemo(() => nextColumns.filter(column => column && column.type).length, [nextColumns]);
+  const onColumnGroupLevelButtonClick = useCallback(level => event => onColumnsChange(clickGroupLevelButton(columns, level)), [columns, onColumnsChange]);
+  const onColumnGroupButtonClick = useCallback(group => event => onColumnsChange(clickGroupButton(columns, group, specialColumnsCount)), [columns, onColumnsChange, specialColumnsCount]);
 
   const [valueState, setValueState] = useState([]);
 
@@ -219,7 +224,16 @@ const useSpreadsheet = ({
     });
   }, [mergedCellsProp, specialRowsCount, specialColumnsCount]);
 
-  const groupMapper = useCallback(specialMetaCount => group => ({ ...group, start: group.start + specialMetaCount, end: group.end + specialMetaCount }), []);
+  // Using mapper here because we calculated groups based on external (not filtered meta)
+  // We can't calculate groups of internal meta because it does not have hidden items
+  // This, we need to apply special meta offset
+  const groupMapper = useCallback(specialMetaCount => group => ({
+    ...group,
+    start: group.start + specialMetaCount,
+    end: group.end + specialMetaCount,
+    offsetStart: group.offsetStart + specialMetaCount,
+    offsetEnd: group.offsetEnd + specialMetaCount
+  }), []);
 
   const rowsGroups = useMemo(() => {
     return getGroups(rows).map(curLevelGroups => curLevelGroups.map(groupMapper(specialRowsCount)));
@@ -245,8 +259,10 @@ const useSpreadsheet = ({
     specialColumnsCount,
     rowsGroups,
     columnsGroups,
-    handleRowGroupButtonClick,
-    handleColumnGroupButtonClick
+    onRowGroupLevelButtonClick,
+    onColumnGroupLevelButtonClick,
+    onRowGroupButtonClick,
+    onColumnGroupButtonClick
   };
 };
 

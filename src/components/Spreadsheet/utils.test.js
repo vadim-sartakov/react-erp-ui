@@ -71,29 +71,44 @@ describe('Spreadsheet utils', () => {
         [
           {
             start: 0,
-            end: 8
+            end: 8,
+            offsetStart: 0,
+            offsetEnd: 8,
+            level: 1
           },
           {
             start: 10,
-            end: 14
+            end: 14,
+            offsetStart: 10,
+            offsetEnd: 14,
+            level: 1
           }
         ],
         // Level 2 group
         [
           {
             start: 3,
-            end: 8
+            end: 8,
+            offsetStart: 3,
+            offsetEnd: 8,
+            level: 2
           },
           {
             start: 12,
-            end: 13
+            end: 13,
+            offsetStart: 12,
+            offsetEnd: 13,
+            level: 2
           }
         ],
         // Level 3 group
         [
           {
             start: 5,
-            end: 8
+            end: 8,
+            offsetStart: 5,
+            offsetEnd: 8,
+            level: 3
           }
         ]
       ]);
@@ -109,7 +124,7 @@ describe('Spreadsheet utils', () => {
       const result = getGroups(meta);
       expect(result).toEqual([
         [
-          { start: 0, end: 1 }
+          { start: 0, end: 3, offsetStart: 0, offsetEnd: 1, level: 1 }
         ]
       ]);
 
@@ -133,11 +148,11 @@ describe('Spreadsheet utils', () => {
       const result = getGroups(meta);
       expect(result).toEqual([
         [
-          { start: 0, end: 2 }
+          { start: 0, end: 6, offsetStart: 0, offsetEnd: 2, level: 1 }
         ],
         [
-          { start: 1, end: 1, collapsed: true },
-          { start: 5, end: 7 }
+          { start: 1, end: 4, offsetStart: 1, offsetEnd: 1, collapsed: true, level: 2 },
+          { start: 9, end: 11, offsetStart: 5, offsetEnd: 7, level: 2 }
         ]
       ]);
 
@@ -157,7 +172,7 @@ describe('Spreadsheet utils', () => {
       const result = getGroups(meta);
       expect(result).toEqual([
         [
-          { start: 0, end: 0, collapsed: true }
+          { start: 0, end: 7, offsetStart: 0, offsetEnd: 0, collapsed: true, level: 1 }
         ],
         []
       ]);

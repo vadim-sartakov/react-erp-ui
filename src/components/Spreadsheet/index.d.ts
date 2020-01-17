@@ -34,6 +34,11 @@ declare namespace Spreadsheet {
     start: number;
     /** Inclusive */
     end: number;
+    /** Origin group start with offset caused by hidden items */
+    offsetStart?: number;
+    /** Origin group end with offset caused by hidden items */
+    offsetEnd?: number;
+    collapsed?: boolean;
   }
 
   interface CellAddress {
