@@ -52,17 +52,35 @@ declare namespace Spreadsheet {
   }
 
   interface SpreadsheetContainerProps {
-    onRowsChange?: Function,
-    onColumnsChange?: Function,
-    defaultColumnWidth: number,
-    defaultRowHeight: number,
-    fixRows?: number,
-    fixColumns?: number,
-    specialRowsCount?: number,
-    specialColumnsCount?: number,
-    scrollerTop: number,
-    scrollerLeft: number,
+    onRowsChange?: Function;
+    onColumnsChange?: Function;
+    defaultColumnWidth: number;
+    defaultRowHeight: number;
+    fixRows?: number;
+    fixColumns?: number;
+    specialRowsCount?: number;
+    specialColumnsCount?: number;
+    specialCellsBackgroundColor: string;
+    scrollerTop: number;
+    scrollerLeft: number;
   }
+
+  /** Row group level buttons which allows to manage expand/collapse state */
+  function GroupLevelButtonComponent(props: { rowIndex: number, row: Meta, column: Meta, onClick: Function }): JSX.Element;
+  function GroupLine(props: {
+    type: 'row' | 'column';
+    mergedRange: CellsRange;
+    row: Meta;
+    column: Meta;
+    rows: Meta[];
+    columns: Meta[];
+    rowIndex: number;
+    columnIndex: number;
+    groupSize: number;
+    collapsed: boolean;
+    onClick: Function;
+    overscrolled: boolean;
+  }): JSX.Element;
 
   interface RenderOptions {
     /** Fixed columns vertical line */
@@ -74,13 +92,11 @@ declare namespace Spreadsheet {
     /**
      * Empty area of rows and columns groups.
      * Would be rendered between groups of the same level and on intersection level
-     * */
+     */
     renderGroupEmptyArea: RenderCallback;
     /** Row group level buttons which allows to manage expand/collapse state */
-    renderRowGroupButton: RenderCallback;
-    renderColumnGroupButton: RenderCallback;
-    renderRowGroup: RenderCallback;
-    renderColumnGroup: RenderCallback;
+    GroupLevelButtonComponent?: GroupLevelButtonComponent;
+    GroupComponent?: GroupComponent;
     renderColumnNumber: RenderCallback;
     renderRowNumber: RenderCallback;
     renderCellValue: RenderCallback;

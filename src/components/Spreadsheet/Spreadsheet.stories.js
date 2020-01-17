@@ -1,31 +1,11 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell, renderColumnGroup, renderRowGroup } from './';
+import Spreadsheet, {
+  SpreadsheetResizer,
+  SpreadsheetCell
+} from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import classes from './Spreadsheet-stories.module.sass';
-
-const renderRowGroupButton = ({ row, column, rowIndex, columnIndex, onClick }) => {
-  return (
-    <SpreadsheetCell row={row} column={column} className={classes.groupButtonContainer} style={{ zIndex: 8 }}>
-      <div className={classes.groupButton} onClick={onClick}>
-        {columnIndex + 1}
-      </div>
-    </SpreadsheetCell>
-  )
-};
-
-const renderColumnGroupButton = ({ row, column, rowIndex, columnIndex, onClick }) => {
-  return (
-    <SpreadsheetCell row={row} column={column} className={classes.groupButtonContainer} style={{ zIndex: 8 }}>
-      <div className={classes.groupButton} onClick={onClick}>
-        {rowIndex + 1}
-      </div>
-    </SpreadsheetCell>
-  )
-};
-
-const renderRowGroupCustom = props => renderRowGroup({ ...props, backgroundColor: '#f1f1f1' });
-const renderColumnGroupCustom = props => renderColumnGroup({ ...props, backgroundColor: '#f1f1f1' });
 
 const renderGroupEmptyArea = ({ row, column }) => {
   return (
@@ -95,10 +75,6 @@ const SpreadsheetComponent = props => {
         onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
         renderGroupEmptyArea={renderGroupEmptyArea}
-        renderColumnGroupButton={renderColumnGroupButton}
-        renderRowGroupButton={renderRowGroupButton}
-        renderRowGroup={renderRowGroupCustom}
-        renderColumnGroup={renderColumnGroupCustom}
         renderColumnsFixedArea={renderColumnsFixedArea}
         renderRowsFixedArea={renderRowsFixedArea}
         renderRowColumnNumbersIntersection={renderRowColumnNumbersIntersection}

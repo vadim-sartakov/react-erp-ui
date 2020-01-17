@@ -1,4 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
+import GroupLevelButton from './GroupLevelButton';
+import GroupLine from './GroupLine';
 import { getCellsRangeSize } from './utils';
 
 /**
@@ -11,10 +13,8 @@ const useSpreadsheetRender = ({
   visibleColumns,
   rows,
   columns,
-  renderRowGroupButton,
-  renderColumnGroupButton,
-  renderRowGroup,
-  renderColumnGroup,
+  GroupLevelButtonComponent = GroupLevelButton,
+  GroupLineComponent = GroupLine,
   renderGroupEmptyArea,
   renderRowColumnNumbersIntersection,
   renderColumnNumber,
@@ -52,21 +52,21 @@ const useSpreadsheetRender = ({
     };
     const handleButtonClick = onRowGroupButtonClick(rowGroup);
     return groupMergedRange ?
-        renderRowGroup({
+        <GroupLineComponent {...{
+          type: 'row',
           row,
           column,
           rows,
           columns,
           mergedRange: groupMergedRange,
           rowIndex,
-          defaultRowHeight,
           groupSize,
           collapsed: rowGroup.collapsed,
           overscrolled,
           onClick: handleButtonClick
-        }) :
+        }} /> :
         !overscrolled && renderGroupEmptyArea({ row, column, rowIndex, columnIndex });
-  }, [rows, columns, defaultRowHeight, groupSize, renderGroupEmptyArea, renderRowGroup, rowsGroups, onRowGroupButtonClick]);
+  }, [rows, columns, groupSize, renderGroupEmptyArea, rowsGroups, onRowGroupButtonClick]);
 
   const renderColumnGroupCallback = useCallback(({ rowIndex, columnIndex, row, column, overscrolled }) => {
     const currentLevelGroups = columnsGroups[rowIndex];
@@ -83,21 +83,21 @@ const useSpreadsheetRender = ({
     };
     const handleButtonClick = onColumnGroupButtonClick(columnGroup);
     return groupMergedRange ?
-        renderColumnGroup({
+        <GroupLineComponent {...{
+          type: 'column',
           row,
           column,
           rows,
           columns,
           mergedRange: groupMergedRange,
           columnIndex,
-          defaultColumnWidth,
           groupSize,
           collapsed: columnGroup.collapsed,
           overscrolled,
           onClick: handleButtonClick
-        }) :
+        }} /> :
         !overscrolled && renderGroupEmptyArea({ row, column, rowIndex, columnIndex });
-  }, [rows, columns, defaultColumnWidth, groupSize, renderGroupEmptyArea, renderColumnGroup, columnsGroups, onColumnGroupButtonClick]);
+  }, [rows, columns, groupSize, renderGroupEmptyArea, columnsGroups, onColumnGroupButtonClick]);
 
   const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex, seqRowIndex) => {
@@ -115,10 +115,11 @@ const useSpreadsheetRender = ({
               case 'GROUP':
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
               case 'NUMBER':
+                const groupLevelButtonProps = { row, column, index: rowIndex, onClick: onColumnGroupLevelButtonClick(rowIndex + 1) };
                 return (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
                     {renderColumnGroupCallback({ row, column, rowIndex, columnIndex, overscrolled: true })}
-                    {renderColumnGroupButton({ row, column, rowIndex, columnIndex, onClick: onColumnGroupLevelButtonClick(rowIndex + 1) })}
+                    <GroupLevelButtonComponent {...groupLevelButtonProps} />
                   </React.Fragment>
                 );
               default:
@@ -132,10 +133,11 @@ const useSpreadsheetRender = ({
 
             switch(columnsType) {
               case 'GROUP':
+                const groupLevelButtonProps = { row, column, index: columnIndex, onClick: onRowGroupLevelButtonClick(columnIndex + 1) };
                 return (
                   <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
                     {renderRowGroupCallback({ row, column, rowIndex, columnIndex, overscrolled: true })}
-                    {renderRowGroupButton({ row, column, rowIndex, columnIndex, onClick: onRowGroupLevelButtonClick(columnIndex + 1) })}
+                    <GroupLevelButtonComponent {...groupLevelButtonProps} />
                   </React.Fragment>  
                 );
               case 'NUMBER':
@@ -178,8 +180,6 @@ const useSpreadsheetRender = ({
     visibleColumns,
     value,
     renderGroupEmptyArea,
-    renderRowGroupButton,
-    renderColumnGroupButton,
     renderRowGroupCallback,
     renderColumnGroupCallback,
     renderRowColumnNumbersIntersection,
