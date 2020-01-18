@@ -1,29 +1,27 @@
 import { mount } from 'enzyme';
 import toJSON from 'enzyme-to-json';
 import Spreadsheet from './Spreadsheet';
-import { defaultComponent, withMergedCells } from './Spreadsheet.stories';
+import { defaultComponent, withMergedCells, withGroups } from './Spreadsheet.stories';
 import { ScrollerContainer } from '../Scroller';
 import { act } from 'react-dom/test-utils';
 
 describe('Spreadsheet', () => {
 
   const mapper = json => {
-    if (json.type === 'Spreadsheet' || json.type === 'ScrollerContainer' || json.type === 'SpreadsheetContainer') {
-      return {
-        ...json,
-        props: {
-          ...json.props,
-          value: `length: ${json.props.value.length} - ${json.props.value[json.props.value.length - 1].length}`
-        }
-      }
-    }
-    if (json.type === 'SpreadsheetCell') {
+    if (json.type === 'Spreadsheet' ||
+        json.type === 'ScrollerContainer' ||
+        json.type === 'SpreadsheetContainer' ||
+        json.type === 'SpreadsheetCell' ||
+        json.type === 'GroupLine') {
       return {
         ...json,
         props: {
           ...json.props,
           rows: json.props.rows && `length: ${json.props.rows.length}`,
-          columns: json.props.columns && `length: ${json.props.columns.length}`
+          columns: json.props.columns && `length: ${json.props.columns.length}`,
+          row: undefined,
+          column: undefined,
+          value: json.props.value && `length: ${json.props.value.length} - ${json.props.value[json.props.value.length - 1].length}`
         }
       }
     }
@@ -61,6 +59,16 @@ describe('Spreadsheet', () => {
 
     it('end columns', () => {
       wrapper.find(ScrollerContainer).find('div').first().simulate('scroll', { target: { scrollLeft: 5200 } });
+      expect(toJSON(wrapper.find(Spreadsheet), { map: mapper })).toMatchSnapshot();
+    });
+
+  });
+
+  describe('groups', () => {
+
+    const wrapper = mount(withGroups({ rowsPerPage: 50, columnsPerPage: 10 }));
+
+    it('initial - all expanded', () => {
       expect(toJSON(wrapper.find(Spreadsheet), { map: mapper })).toMatchSnapshot();
     });
 

@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import Spreadsheet, { SpreadsheetResizer, SpreadsheetCell } from './';
+import Spreadsheet, {
+  SpreadsheetResizer,
+  SpreadsheetCell
+} from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import classes from './Spreadsheet-stories.module.sass';
+
+const renderGroupEmptyArea = ({ row, column }) => {
+  return (
+    <SpreadsheetCell row={row} column={column} className={classes.groupEmptyArea}/>
+  )
+};
 
 const renderColumnsFixedArea = ({ style }) => {
   return <div className={classes.lastFixedColumn} style={style} />;
@@ -13,34 +22,31 @@ const renderRowsFixedArea = ({ style }) => {
 };
 
 const renderRowColumnNumbersIntersection = ({ row, column, columnIndex }) => (
-  <SpreadsheetCell key={columnIndex} row={row} column={column} className={classes.columnNumberCell} />
+  <SpreadsheetCell row={row} column={column} className={classes.columnNumberCell} />
 );
 
-const renderColumnNumber = ({ row, column, columnIndex }) => (
+const renderColumnNumber = ({ row, column, columnIndex, key }) => (
   <SpreadsheetCell
-      key={columnIndex}
       row={row}
       column={column}
       className={classes.columnNumberCell}>
-    {columnIndex}
-    <SpreadsheetResizer mode="column" index={columnIndex} className={classes.columnResizer} />
+    {key + 1}
+    <SpreadsheetResizer mode="column" column={column} index={columnIndex} className={classes.columnResizer} />
   </SpreadsheetCell>
 );
 
-const renderRowNumber = ({ row, column, rowIndex, columnIndex }) => (
+const renderRowNumber = ({ row, column, rowIndex, key }) => (
   <SpreadsheetCell
-      key={columnIndex}
       row={row}
       column={column}
       className={classes.rowNumberCell}>
-    {rowIndex}
-    <SpreadsheetResizer mode="row" index={rowIndex} className={classes.rowResizer} />
+    {key + 1}
+    <SpreadsheetResizer mode="row" row={row} index={rowIndex} className={classes.rowResizer} />
   </SpreadsheetCell>
 );
 
-const renderCellValue = ({ row, rowIndex, columnIndex, column, rows, columns, value, mergedRange, overscrolled }) => (
+const renderCellValue = ({ row, column, rows, columns, value, mergedRange, overscrolled }) => (
   <SpreadsheetCell
-      key={`${rowIndex}_${columnIndex}`}
       row={row}
       column={column}
       rows={rows}
@@ -68,6 +74,7 @@ const SpreadsheetComponent = props => {
         columns={columns}
         onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
+        renderGroupEmptyArea={renderGroupEmptyArea}
         renderColumnsFixedArea={renderColumnsFixedArea}
         renderRowsFixedArea={renderRowsFixedArea}
         renderRowColumnNumbersIntersection={renderRowColumnNumbersIntersection}
@@ -155,32 +162,70 @@ export const withMergedCells = props => {
   )
 };
 
-const rowsGrouped = [];
-for(let i = 1; i < 20; i++) {
-  rowsGrouped[i] = { level: 1 };
-}
-for(let i = 5; i < 10; i++) {
-  rowsGrouped[i] = { level: 2 };
-}
+export const withGroups = props => {
+  const rows = [];
+  for (let i = 0; i < 20; i++) {
+    rows[i] = { level: 1 };
+  }
+  for (let i = 5; i < 10; i++) {
+    rows[i] = { level: 2 };
+  }
+  for (let i = 15; i < 20; i++) {
+    rows[i] = { level: 2 };
+  }
 
-export const withGroups = props => (
-  <SpreadsheetComponent
-      columnNumbersRowHeight={20}
-      rowNumberColumnWidth={40}
-      defaultRowHeight={25}
-      defaultColumnWidth={120}
-      rowsPerPage={60}
-      columnsPerPage={15}
-      totalColumns={50}
-      totalRows={1000}
-      value={generateGridValues(1000, 50)}
-      width={800}
-      height={600}
-      fixRows={2}
-      fixColumns={2}
-      rows={rowsGrouped}
-      {...props} />
-);
+  for (let i = 30; i < 50; i++) {
+    rows[i] = { level: 1 };
+  }
+  for (let i = 35; i < 40; i++) {
+    rows[i] = { level: 2 };
+  }
+  for (let i = 45; i < 50; i++) {
+    rows[i] = { level: 2 };
+  }
+
+  const columns = [];
+  for (let i = 0; i < 10; i++) {
+    columns[i] = { level: 1 };
+  }
+  for (let i = 2; i < 5; i++) {
+    columns[i] = { level: 2 };
+  }
+  for (let i = 6; i < 10; i++) {
+    columns[i] = { level: 2 };
+  }
+
+  for (let i = 12; i < 20; i++) {
+    columns[i] = { level: 1 };
+  }
+  for (let i = 14; i < 16; i++) {
+    columns[i] = { level: 2 };
+  }
+  for (let i = 19; i < 20; i++) {
+    columns[i] = { level: 2 };
+  }
+
+  return (
+    <SpreadsheetComponent
+        columnNumbersRowHeight={20}
+        rowNumberColumnWidth={40}
+        defaultRowHeight={25}
+        defaultColumnWidth={120}
+        rowsPerPage={60}
+        columnsPerPage={15}
+        totalColumns={50}
+        totalRows={1000}
+        value={generateGridValues(1000, 50)}
+        width={800}
+        height={600}
+        fixRows={2}
+        fixColumns={2}
+        rows={rows}
+        columns={columns}
+        groupSize={20}
+        {...props} />
+  )
+};
 
 storiesOf('Spreadsheet', module)
   .add('default', defaultComponent)

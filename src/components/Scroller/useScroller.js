@@ -5,7 +5,8 @@ import {
   getPageNumber,
   getGaps,
   getFixedOffsets,
-  getItemsSize
+  getItemsSize,
+  getScrollPages
 } from './utils';
 
 const useScroller = ({
@@ -29,16 +30,33 @@ const useScroller = ({
   const [rowsPage, setRowsPage] = useState(0);
   const [columnsPage, setColumnsPage] = useState(0);
 
+  const rowsScrollPages = useMemo(() => {
+    return rows && getScrollPages({ meta: rows, totalCount: totalRows, defaultSize: defaultRowHeight, itemsPerPage: rowsPerPage });
+  }, [
+    rows,
+    totalRows,
+    defaultRowHeight,
+    rowsPerPage
+  ]);
+  const columnsScrollPages = useMemo(() => {
+    return columns && getScrollPages({ meta: columns, totalCount: totalColumns, defaultSize: defaultColumnWidth, itemsPerPage: columnsPerPage });
+  }, [
+    columns,
+    totalColumns,
+    defaultColumnWidth,
+    columnsPerPage
+  ]);
+
   const handleScroll = useCallback(e => {
     const curRowsPage = getPageNumber({
-      meta: rows,
+      scrollPages: rowsScrollPages,
       defaultSize: defaultRowHeight,
       itemsPerPage: rowsPerPage,
       totalCount: totalRows,
       scroll: e.target.scrollTop
     });
     const curColumnsPage = getPageNumber({
-      meta: columns,
+      scrollPages: columnsScrollPages,
       defaultSize: defaultColumnWidth,
       itemsPerPage: columnsPerPage,
       totalCount: totalColumns,
@@ -48,16 +66,16 @@ const useScroller = ({
     if (rowsPage !== curRowsPage) setRowsPage(curRowsPage);
     if (columnsPage !== curColumnsPage) setColumnsPage(curColumnsPage);
   }, [
-    columns,
     columnsPage,
     columnsPerPage,
     defaultColumnWidth,
     totalColumns,
-    rows,
     rowsPage,
     rowsPerPage,
     defaultRowHeight,
-    totalRows
+    totalRows,
+    rowsScrollPages,
+    columnsScrollPages
   ]);
   
   const visibleRowsPageNumbers = useMemo(() => getVisiblePages(rowsPage), [rowsPage]);
@@ -132,14 +150,14 @@ const useScroller = ({
 
   const rowsGaps = useMemo(() => {
     return getGaps({
-      meta: rows,
+      scrollPages: rowsScrollPages,
       defaultSize: defaultRowHeight,
       itemsPerPage: rowsPerPage,
       totalCount: totalRows,
       page: rowsPage,
       fixed: fixRows
     });
-  }, [rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows, fixRows]);
+  }, [rowsPage, rowsPerPage, defaultRowHeight, totalRows, fixRows, rowsScrollPages]);
 
   const lastRowsPageGaps = useMemo(() => lazy && getGaps({
     meta: rows,
@@ -152,14 +170,14 @@ const useScroller = ({
 
   const columnsGaps = useMemo(() => {
     return totalColumns && getGaps({
-      meta: columns,
+      scrollPages: columnsScrollPages,
       defaultSize: defaultColumnWidth,
       itemsPerPage: columnsPerPage,
       totalCount: totalColumns,
       page: columnsPage,
       fixed: fixColumns
     });
-  }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, fixColumns]);
+  }, [columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, fixColumns, columnsScrollPages]);
 
   const fixedRowsSize = useMemo(() => getItemsSize({ meta: rows, count: fixRows, defaultSize: defaultRowHeight }), [rows, fixRows, defaultRowHeight]);
   const fixedColumnsSize = useMemo(() => getItemsSize({ meta: columns, count: fixColumns, defaultSize: defaultColumnWidth }), [columns, fixColumns, defaultColumnWidth]);

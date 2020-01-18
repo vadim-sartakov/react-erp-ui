@@ -11,6 +11,7 @@ const SpreadsheetCell = ({
   rows,
   columns,
   overscrolled,
+  style,
   children,
   ...props
 }) => {
@@ -28,7 +29,7 @@ const SpreadsheetCell = ({
 
   if (!overscrolled) {
     elements.push((
-      <ScrollerCell key="0" {...props}>
+      <ScrollerCell key="0" {...props} style={style}>
         {children}
       </ScrollerCell>
     ));
@@ -99,7 +100,8 @@ const SpreadsheetCell = ({
       width,
       height,
       top: 'auto',
-      left: 'auto'
+      left: 'auto',
+      ...style
     };
 
     if (isFixedRowArea && isFixedColumnArea) {
@@ -111,8 +113,8 @@ const SpreadsheetCell = ({
       };
       const wrapperStyle = {
         ...baseWrapperStyle,
-        width: fixWidth,
-        height: fixHeight
+        width: Math.min(fixWidth, width),
+        height: Math.min(fixHeight, height)
       };
       elements.push(
         <div key="7" style={rootStyle}>
@@ -133,7 +135,7 @@ const SpreadsheetCell = ({
       };
       const wrapperStyle = {
         ...baseWrapperStyle,
-        width: fixWidth,
+        width: Math.min(fixWidth, width),
         height
       };
       elements.push(
@@ -156,7 +158,7 @@ const SpreadsheetCell = ({
       const wrapperStyle = {
         ...baseWrapperStyle,
         width,
-        height: fixHeight
+        height: Math.min(fixHeight, height)
       };
       elements.push(
         <div key="5" style={rootStyle}>
@@ -180,7 +182,8 @@ const SpreadsheetCell = ({
             left: left - scrollerLeft,
             width,
             height,
-            zIndex: 1
+            zIndex: 1,
+            ...style
           }}>
         {children}
       </ScrollerCell>

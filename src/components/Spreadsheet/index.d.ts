@@ -8,7 +8,7 @@ declare function Spreadsheet(props: Spreadsheet.SpreadsheetProps): JSX.Element
 
 declare namespace Spreadsheet {
   interface Meta {
-    type?: 'ROW_NUMBERS' | 'COLUMN_NUMBERS';
+    type?: 'NUMBER' | 'GROUP';
     /** Width or height */
     size?: number;
     /** Whether current element expanded or collapsed */
@@ -34,6 +34,11 @@ declare namespace Spreadsheet {
     start: number;
     /** Inclusive */
     end: number;
+    /** Origin group start with offset caused by hidden items */
+    offsetStart?: number;
+    /** Origin group end with offset caused by hidden items */
+    offsetEnd?: number;
+    collapsed?: boolean;
   }
 
   interface CellAddress {
@@ -47,17 +52,35 @@ declare namespace Spreadsheet {
   }
 
   interface SpreadsheetContainerProps {
-    onRowsChange?: Function,
-    onColumnsChange?: Function,
-    defaultColumnWidth: number,
-    defaultRowHeight: number,
-    fixRows?: number,
-    fixColumns?: number,
-    specialRowsCount?: number,
-    specialColumnsCount?: number,
-    scrollerTop: number,
-    scrollerLeft: number,
+    onRowsChange?: Function;
+    onColumnsChange?: Function;
+    defaultColumnWidth: number;
+    defaultRowHeight: number;
+    fixRows?: number;
+    fixColumns?: number;
+    specialRowsCount?: number;
+    specialColumnsCount?: number;
+    specialCellsBackgroundColor: string;
+    scrollerTop: number;
+    scrollerLeft: number;
   }
+
+  /** Row group level buttons which allows to manage expand/collapse state */
+  function GroupLevelButtonComponent(props: { rowIndex: number, row: Meta, column: Meta, onClick: Function }): JSX.Element;
+  function GroupLine(props: {
+    type: 'row' | 'column';
+    mergedRange: CellsRange;
+    row: Meta;
+    column: Meta;
+    rows: Meta[];
+    columns: Meta[];
+    rowIndex: number;
+    columnIndex: number;
+    groupSize: number;
+    collapsed: boolean;
+    onClick: Function;
+    overscrolled: boolean;
+  }): JSX.Element;
 
   interface RenderOptions {
     /** Fixed columns vertical line */
@@ -69,12 +92,11 @@ declare namespace Spreadsheet {
     /**
      * Empty area of rows and columns groups.
      * Would be rendered between groups of the same level and on intersection level
-     * */
-    renderGroupsEmptyArea: RenderCallback;
-    /** Group level buttons which allows to manage expand/collapse state */
-    renderGroupButton: RenderCallback;
-    renderRowGroup: RenderCallback;
-    renderColumnGroup: RenderCallback;
+     */
+    renderGroupEmptyArea: RenderCallback;
+    /** Row group level buttons which allows to manage expand/collapse state */
+    GroupLevelButtonComponent?: GroupLevelButtonComponent;
+    GroupComponent?: GroupComponent;
     renderColumnNumber: RenderCallback;
     renderRowNumber: RenderCallback;
     renderCellValue: RenderCallback;
@@ -95,8 +117,11 @@ declare namespace Spreadsheet {
     columnNumbersRowHeight?: number;
     /** Width of special column with row numbers */
     rowNumberColumnWidth?: number;
-    columnGroupHeight?: number;
-    rowGroupWidth?: number;
+    /** 
+     * Width and height of groups special rows and columns.
+     * These areas serve for group buttons rendering and group lines.
+     */
+    groupSize?: number;
     mergedCells?: CellsRange[];
     totalRows: number;
     totalColumns: number;
@@ -123,6 +148,8 @@ declare namespace Spreadsheet {
     mergedCells: CellsRange[];
     specialRowsCount: number;
     specialColumnsCount: number;
+    rowsGroups: Group[];
+    columnsGroups: Group[];
   }
 
   function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
@@ -159,6 +186,12 @@ declare namespace Spreadsheet {
     overscrolled?: Boolean;
     row: Meta;
     column: Meta;
+  }
+
+  interface SpreadsheetResizerProps {
+    mode: 'row' | 'column';
+    row?: Meta;
+    column?: Meta
   }
 
   /**
