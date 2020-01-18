@@ -57,7 +57,7 @@ export const getGroups = meta => {
         const prevMeta = meta[lastGroup.start - 1];
         if (prevMeta && prevMeta.hidden) {
           curLevelGroups.pop();
-          return;
+          continue;
         }
 
         if (!lastGroup.end) lastGroup.end = toIndex;
