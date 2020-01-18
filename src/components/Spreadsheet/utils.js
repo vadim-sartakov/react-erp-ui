@@ -65,11 +65,11 @@ export const getGroups = meta => {
         const offsetReducer = (acc, metaItem) => metaItem && metaItem.hidden ? acc + 1 : acc;
 
         const startOffset = meta.slice(0, lastGroup.start).reduce(offsetReducer, 0);
-        const endOffset = meta.slice(lastGroup.start, toIndex).reduce(offsetReducer, 0);
+        const endOffset = meta.slice(lastGroup.start, toIndex + 1).reduce(offsetReducer, 0);
 
-        const collapsed = endOffset && endOffset === lastGroup.end - lastGroup.start;
+        const collapsed = endOffset && endOffset === (lastGroup.end - lastGroup.start) + 1;
         lastGroup.offsetStart = lastGroup.start - startOffset;
-        lastGroup.offsetEnd = lastGroup.end - startOffset - endOffset;
+        lastGroup.offsetEnd = collapsed ? lastGroup.offsetStart : lastGroup.end - startOffset - endOffset;
 
         if (collapsed) lastGroup.collapsed = true;
       }

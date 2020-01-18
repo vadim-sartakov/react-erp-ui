@@ -137,11 +137,16 @@ describe('Spreadsheet utils', () => {
         { level: 1, hidden: true },
         { level: 1, hidden: true },
         { level: 1 },
+        { level: 2 },
+        { level: 2 }
       ];
       const result = getGroups(meta);
       expect(result).toEqual([
         [
-          { start: 0, end: 3, offsetStart: 0, offsetEnd: 1, level: 1 }
+          { start: 0, end: 5, offsetStart: 0, offsetEnd: 3, level: 1 }
+        ],
+        [
+          { start: 4, end: 5, offsetStart: 2, offsetEnd: 3, level: 2 }
         ]
       ]);
 
@@ -201,17 +206,18 @@ describe('Spreadsheet utils', () => {
         { level: 1, hidden: true },
         {},
         { level: 1 },
-        { level: 2 },
-        { level: 2 }
+        { level: 1 },
+        { level: 2, hidden: true },
+        { level: 2, hidden: true }
       ];
       const result = getGroups(meta);
       expect(result).toEqual([
         [
           { start: 0, end: 1, level: 1, offsetStart: 0, offsetEnd: 0, collapsed: true },
-          { start: 3, end: 5, level: 1, offsetStart: 1, offsetEnd: 3 }
+          { start: 3, end: 6, level: 1, offsetStart: 1, offsetEnd: 2 }
         ],
         [
-          { start: 4, end: 5, level: 2, offsetStart: 2, offsetEnd: 3 }
+          { start: 5, end: 6, level: 2, offsetStart: 3, offsetEnd: 3, collapsed: true }
         ]
       ]);
     });
