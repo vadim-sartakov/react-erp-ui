@@ -11,36 +11,28 @@ export const generateCustomMeta = (count, size) => [...new Array(count).keys()].
 export const listValue = generateListValues(1000);
 const listRows = generateCustomMeta(listValue.length, 80);
 
-/**
- * @param {import('./Scroller').ScrollerProps} props 
- */
+const ListCellComponent = ({ rowIndex, row, value }) => (
+  <ScrollerCell className="row" rowIndex={rowIndex} row={row}>
+    {value ? `Value ${value.row}` : 'Loading...'}
+  </ScrollerCell>
+);
+
 export const ListTestComponent = props => {
-  const renderCell = useCallback(({ rowIndex, row, value }) => (
-    <ScrollerCell className="row" key={rowIndex} row={row} index={rowIndex}>
-      {value ? `Value ${value.row}` : 'Loading...'}
-    </ScrollerCell>
-  ), []);
-  return <Scroller renderCell={renderCell} height={600} {...props} />;
+  return <Scroller CellComponent={ListCellComponent} height={600} {...props} />;
 };
 
 export const gridValue = generateGridValues(1000, 50);
 const gridRows = generateCustomMeta(gridValue.length, 60);
 const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
-/**
- * @param {import('./Scroller').ScrollerProps} props 
- */
+const GridCellComponent = ({ rowIndex, columnIndex, row, column, value }) => (
+  <ScrollerCell className={classes.cell} rowIndex={rowIndex} columnIndex={columnIndex} row={row} column={column}>
+    {value ? `Value ${value.row} - ${value.column}` : 'Loading...'}
+  </ScrollerCell>
+);
+
 export const GridTestComponent = props => {
-  const renderCell = useCallback(({ rowIndex, columnIndex, row, column, value }) => (
-    <ScrollerCell
-        className={classes.cell}
-        key={`${rowIndex}_${columnIndex}`}
-        row={row}
-        column={column}>
-      {value ? `Value ${value.row} - ${value.column}` : 'Loading...'}
-    </ScrollerCell>
-  ), []);
-  return <Scroller renderCell={renderCell} width={800} height={600} {...props} />;
+  return <Scroller CellComponent={GridCellComponent} width={800} height={600} {...props} />;
 };
 
 export const loadPageAsync = value => (page, itemsPerPage) => {

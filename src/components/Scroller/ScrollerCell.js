@@ -3,13 +3,16 @@ import ScrollerContext from './ScrollerContext';
 import './useScroller';
 
 const ScrollerCell = ({
-  style = {},
-  row = {},
-  column = {},
+  style,
+  rowIndex,
+  columnIndex,
   Component = 'div',
   ...props
 }) => {
-  const { defaultColumnWidth, defaultRowHeight } = useContext(ScrollerContext);
+  const { defaultColumnWidth, defaultRowHeight, rows, columns } = useContext(ScrollerContext);
+  const row = (rows && rows[rowIndex]) || {};
+  const column = (columns && columns[columnIndex]) || {};
+  
   const { size: rowSize, offset: rowOffset } = row;
   const { size: columnSize, offset: columnOffset } = column;
   const width = columnSize || defaultColumnWidth;

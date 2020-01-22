@@ -1,6 +1,5 @@
 import React from 'react';
-import { useScroller } from '../Scroller';
-import { ScrollerContainer } from '../Scroller';
+import { useScroller, ScrollerContainer } from '../Scroller';
 import SpreadsheetContainer from './SpreadsheetContainer';
 import useSpreadsheet from './useSpreadsheet';
 import useSpreadsheetRender from './useSpreadsheetRender';

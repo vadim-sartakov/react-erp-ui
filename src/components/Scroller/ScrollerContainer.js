@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import ScrollContext from './ScrollerContext';
 
+/** @type {import('.').ScrollerContainer<import('.').ScrollerContainerProps>} */
 const ScrollerContainer = ({
   width,
   height,
@@ -8,22 +9,28 @@ const ScrollerContainer = ({
   style,
   defaultRowHeight,
   defaultColumnWidth,
+  rows,
+  columns,
   onScroll,
   coverStyles,
   pagesStyles,
+  gridStyles,
   className
 }) => {
   const contextValue = useMemo(() => ({
     defaultRowHeight,
     defaultColumnWidth,
-    pagesStyles
-  }), [defaultRowHeight, defaultColumnWidth, pagesStyles]);
+    rows,
+    columns
+  }), [defaultRowHeight, defaultColumnWidth, rows, columns]);
   return (
     <ScrollContext.Provider value={contextValue}>
       <div onScroll={onScroll} className={className} style={{ width, height, overflow: 'auto', ...style }}>
         <div style={coverStyles}>
           <div style={pagesStyles}>
-            {children}
+            <div style={gridStyles}>
+              {children}
+            </div>
           </div>
         </div>
       </div>

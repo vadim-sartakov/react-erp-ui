@@ -18,10 +18,8 @@ const useScroller = ({
   columnsPerPage,
   rows,
   columns,
-  value,
   lazy,
   loadPage,
-  renderCell,
   fixRows = 0,
   fixColumns = 0
 }) => {
@@ -188,12 +186,11 @@ const useScroller = ({
     position: 'relative'
   }), [lazy, rowsGaps, columnsGaps, lastRowsPageGaps]);
   const pagesStyles = useMemo(() => {
-    const pagesStyles = {
+    return {
       top: rowsGaps.start - (rowsStartIndex > fixRows ? fixedRowsSize : 0),
       left: columnsGaps && (columnsGaps.start - (columnsStartIndex > fixColumns ? fixedColumnsSize : 0)),
       position: 'absolute'
     };
-    return pagesStyles;
   }, [rowsGaps, columnsGaps, columnsStartIndex, fixColumns, fixRows, fixedColumnsSize, fixedRowsSize, rowsStartIndex]);
 
   const gridStyles = useMemo(() => totalColumns && {
@@ -216,43 +213,16 @@ const useScroller = ({
     return nextColumns.map((key, index) => ({ ...columnsMeta[index], offset: columnsOffsets[index]} ));
   }, [columns, columnsOffsets]);
 
-  const elements = useMemo(() => renderCell && visibleRows.reduce((acc, visibleRow) => {
-    const row = nextRows && nextRows[visibleRow];
-    if (visibleColumns) {
-      const columnsElements = visibleColumns.map(visibleColumn => {
-        const column = nextColumns && nextColumns[visibleColumn];
-        const valueArray = loadedValues || value;
-        const curValue = valueArray[visibleRow] && valueArray[visibleRow][visibleColumn];
-        return renderCell({ rowIndex: visibleRow, columnIndex: visibleColumn, row, column, value: curValue });
-      });
-      return [...acc, ...columnsElements];
-    } else {
-      const valueArray = loadedValues || value;
-      const curValue = valueArray[visibleRow];
-      const rowElement = renderCell({ rowIndex: visibleRow, row, value: curValue });
-      return [...acc, rowElement];
-    }
-  }, []), [nextRows, nextColumns, renderCell, visibleRows, visibleColumns, loadedValues, value]);
-
-  const scrollerContainerProps = {
-    onScroll: handleScroll,
-    coverStyles,
-    pagesStyles,
-    defaultRowHeight,
-    defaultColumnWidth
-  };
-
   return {
     rows: nextRows,
     columns: nextColumns,
     visibleRows,
     visibleColumns,
     loadedValues,
-    rowsStartIndex,
-    columnsStartIndex,
-    gridStyles,
-    elements,
-    scrollerContainerProps
+    onScroll: handleScroll,
+    coverStyles,
+    pagesStyles,
+    gridStyles
   };
 
 };

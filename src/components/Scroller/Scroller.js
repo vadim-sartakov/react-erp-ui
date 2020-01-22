@@ -1,18 +1,14 @@
 import React from 'react';
 import useScroller from './useScroller';
 import ScrollerContainer from './ScrollerContainer';
+import useScrollerRender from './useScrollerRender';
 
 const Scroller = props => {
-  const {
-    gridStyles,
-    scrollerContainerProps,
-    elements
-  } = useScroller(props);
+  const scrollerContainerProps = useScroller(props);
+  const elements = useScrollerRender({ ...props, ...scrollerContainerProps });
   return (
     <ScrollerContainer {...props} {...scrollerContainerProps}>
-      <div style={gridStyles}>
-        {elements}
-      </div>
+      {elements}
     </ScrollerContainer>
   )
 };
