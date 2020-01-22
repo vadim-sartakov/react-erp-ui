@@ -20,15 +20,7 @@ export const ListTestComponent = props => {
       {value ? `Value ${value.row}` : 'Loading...'}
     </ScrollerCell>
   ), []);
-  return (
-    <Scroller
-        className="scroller-container"
-        coverProps={{ className: 'cover' }}
-        pagesProps={{ className: 'pages' }}
-        renderCell={renderCell}
-        height={600}
-        {...props} />
-  )
+  return <Scroller renderCell={renderCell} height={600} {...props} />;
 };
 
 export const gridValue = generateGridValues(1000, 50);
@@ -48,16 +40,7 @@ export const GridTestComponent = props => {
       {value ? `Value ${value.row} - ${value.column}` : 'Loading...'}
     </ScrollerCell>
   ), []);
-  return (
-    <Scroller
-        renderCell={renderCell}
-        width={800}
-        height={600}
-        className="scroller-container"
-        coverProps={{ className: 'cover' }}
-        pagesProps={{ className: 'pages' }}
-        {...props} />
-  )
+  return <Scroller renderCell={renderCell} width={800} height={600} {...props} />;
 };
 
 export const loadPageAsync = value => (page, itemsPerPage) => {

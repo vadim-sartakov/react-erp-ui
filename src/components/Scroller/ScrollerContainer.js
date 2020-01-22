@@ -5,8 +5,6 @@ const ScrollerContainer = ({
   width,
   height,
   children,
-  coverProps,
-  pagesProps,
   style,
   defaultRowHeight,
   defaultColumnWidth,
@@ -23,8 +21,8 @@ const ScrollerContainer = ({
   return (
     <ScrollContext.Provider value={contextValue}>
       <div onScroll={onScroll} className={className} style={{ width, height, overflow: 'auto', ...style }}>
-        <div {...coverProps} style={{ ...(coverProps && coverProps.styles), ...coverStyles }}>
-          <div {...pagesProps} style={{ ...(pagesProps && pagesProps.pages), ...pagesStyles }}>
+        <div style={coverStyles}>
+          <div style={pagesStyles}>
             {children}
           </div>
         </div>
