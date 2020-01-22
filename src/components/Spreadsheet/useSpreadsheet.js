@@ -209,24 +209,9 @@ const useSpreadsheet = ({
     });
   }, [convertExternalValueToInternalCallback, specialRowsCount, specialColumnsCount, onChangeProp, setValueState]);
 
-  const mergedCells = useMemo(() => {
-    return mergedCellsProp && mergedCellsProp.map(mergedRange => {
-      return {
-        start: {
-          row: mergedRange.start.row + specialRowsCount,
-          column: mergedRange.start.column + specialColumnsCount
-        },
-        end: {
-          row: mergedRange.end.row + specialRowsCount,
-          column: mergedRange.end.column + specialColumnsCount
-        }
-      }
-    });
-  }, [mergedCellsProp, specialRowsCount, specialColumnsCount]);
-
   // Using mapper here because we calculated groups based on external (not filtered meta)
   // We can't calculate groups of internal meta because it does not have hidden items
-  // This, we need to apply special meta offset
+  // Thus, we need to apply special meta offset
   const groupMapper = useCallback(specialMetaCount => group => ({
     ...group,
     start: group.start + specialMetaCount,
@@ -242,6 +227,69 @@ const useSpreadsheet = ({
   const columnsGroups = useMemo(() => {
     return getGroups(columns).map(curLevelGroups => curLevelGroups.map(groupMapper(specialColumnsCount)));
   }, [columns, groupMapper, specialColumnsCount]);
+
+  const mergedCells = useMemo(() => {
+    const mergedCellsWithOffset =  (mergedCellsProp || []).map(mergedRange => {
+      return {
+        start: {
+          row: mergedRange.start.row + specialRowsCount,
+          column: mergedRange.start.column + specialColumnsCount
+        },
+        end: {
+          row: mergedRange.end.row + specialRowsCount,
+          column: mergedRange.end.column + specialColumnsCount
+        }
+      }
+    });
+    // Adding groups merges
+    const mergedRowGroups = rowsGroups.reduce((acc, rowLevelGroups, level) => {
+      const rowGroups = rowLevelGroups.reduce((acc, rowGroup) => {
+        return [
+          ...acc,
+          {
+            start: {
+              row: rowGroup.offsetStart - 1,
+              column: level
+            },
+            end: {
+              row: rowGroup.collapsed ? rowGroup.offsetStart - 1 : rowGroup.offsetEnd,
+              column: level
+            }
+          }
+        ]
+      }, []);
+      return [
+        ...acc,
+        ...rowGroups
+      ]
+    }, []);
+    const mergedColumnsGroups = columnsGroups.reduce((acc, columnLevelGroups, level) => {
+      const columnGroups = columnLevelGroups.reduce((acc, columnGroup) => {
+        return [
+          ...acc,
+          {
+            start: {
+              row: level,
+              column: columnGroup.offsetStart - 1
+            },
+            end: {
+              row: level,
+              column: columnGroup.collapsed ? columnGroup.offsetStart - 1 : columnGroup.offsetEnd
+            }
+          }
+        ]
+      }, []);
+      return [
+        ...acc,
+        ...columnGroups
+      ]
+    }, []);
+    return [
+      ...mergedCellsWithOffset,
+      ...mergedRowGroups,
+      ...mergedColumnsGroups
+    ];
+  }, [mergedCellsProp, specialRowsCount, specialColumnsCount, rowsGroups, columnsGroups]);
 
   return {
     value,

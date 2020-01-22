@@ -56,6 +56,7 @@ declare namespace Spreadsheet {
     onColumnsChange?: Function;
     defaultColumnWidth: number;
     defaultRowHeight: number;
+    groupSize: number;
     fixRows?: number;
     fixColumns?: number;
     specialRowsCount?: number;
