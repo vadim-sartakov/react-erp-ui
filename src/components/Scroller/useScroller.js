@@ -152,19 +152,17 @@ const useScroller = ({
       defaultSize: defaultRowHeight,
       itemsPerPage: rowsPerPage,
       totalCount: totalRows,
-      page: rowsPage,
-      fixed: fixRows
+      page: rowsPage
     });
-  }, [rowsPage, rowsPerPage, defaultRowHeight, totalRows, fixRows, rowsScrollPages]);
+  }, [rowsPage, rowsPerPage, defaultRowHeight, totalRows, rowsScrollPages]);
 
   const lastRowsPageGaps = useMemo(() => lazy && getGaps({
     meta: rows,
     defaultSize: defaultRowHeight,
     itemsPerPage: rowsPerPage,
     totalCount: totalRows,
-    page: lastRowsPage,
-    fixed: fixRows
-  }), [lazy, rows, lastRowsPage, rowsPerPage, defaultRowHeight, totalRows, fixRows]);
+    page: lastRowsPage
+  }), [lazy, rows, lastRowsPage, rowsPerPage, defaultRowHeight, totalRows]);
 
   const columnsGaps = useMemo(() => {
     return totalColumns && getGaps({
