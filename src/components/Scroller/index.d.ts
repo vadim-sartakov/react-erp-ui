@@ -45,6 +45,8 @@ declare namespace Scroller {
     lazy?: boolean;
     /** Load async page callback */
     loadPage?: (page: number, itemsPerPage: number) => void;
+    fixRows?: number;
+    fixColumns?: number;
   }
 
   export interface UseScrollerResult {
