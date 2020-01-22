@@ -1,0 +1,37 @@
+.cell {
+  padding: 4px 6px;
+  border-bottom: solid 1px #c3c3c3;
+  border-right: solid 1px #c3c3c3;
+  font-size: 12px;
+  background-color: #f1f1f1;
+}
+
+.rowNumber {
+  text-align: right;
+}
+
+.columnNumber {
+  text-align: center;
+}
+
+.resizer {
+  position: absolute;
+  z-index: 1;
+  user-select: none;
+}
+
+.rowResizer {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 8px;
+  cursor: ns-resize;
+}
+
+.columnResizer {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+}

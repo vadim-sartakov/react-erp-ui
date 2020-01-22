@@ -65,9 +65,12 @@ declare namespace Spreadsheet {
     scrollerLeft: number;
   }
 
+  type RowColumnNumber = (props : { type: 'row' | 'column', row: Meta, column: Meta, index: number, intersection: boolean }) => JSX.Element;
+
   /** Row group level buttons which allows to manage expand/collapse state */
-  function GroupLevelButtonComponent(props: { rowIndex: number, row: Meta, column: Meta, onClick: Function }): JSX.Element;
-  function GroupLine(props: {
+  type GroupLevelButton = (props: { index: number, row: Meta, column: Meta, onClick: Function }) => JSX.Element;
+  /** Group line which located along with grouped items */
+  type GroupLine = (props: {
     type: 'row' | 'column';
     mergedRange: CellsRange;
     row: Meta;
@@ -80,25 +83,22 @@ declare namespace Spreadsheet {
     collapsed: boolean;
     onClick: Function;
     overscrolled: boolean;
-  }): JSX.Element;
+  }) => JSX.Element;
 
   interface RenderOptions {
     /** Fixed columns vertical line */
     renderColumnsFixedArea: RenderCallback;
     /** Fixed rows horizontal line */
     renderRowsFixedArea: RenderCallback;
-    /** Intersection area of rows and columns numbers */
-    renderRowColumnNumbersIntersection: RenderCallback;
     /**
      * Empty area of rows and columns groups.
      * Would be rendered between groups of the same level and on intersection level
      */
-    renderGroupEmptyArea: RenderCallback;
+    RowColumnNumberComponent?: RowColumnNumber;
     /** Row group level buttons which allows to manage expand/collapse state */
-    GroupLevelButtonComponent?: GroupLevelButtonComponent;
-    GroupComponent?: GroupComponent;
-    renderColumnNumber: RenderCallback;
-    renderRowNumber: RenderCallback;
+    renderGroupEmptyArea: RenderCallback;
+    GroupLevelButtonComponent?: GroupLevelButton;
+    GroupLineComponent?: GroupLine;
     renderCellValue: RenderCallback;
   }
 

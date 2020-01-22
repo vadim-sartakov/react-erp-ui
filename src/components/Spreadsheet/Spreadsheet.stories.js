@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import Spreadsheet, {
-  SpreadsheetResizer,
-  SpreadsheetCell
-} from './';
+import Spreadsheet, { SpreadsheetCell } from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import classes from './Spreadsheet-stories.module.sass';
 
@@ -23,26 +20,6 @@ const renderRowsFixedArea = ({ style }) => {
 
 const renderRowColumnNumbersIntersection = ({ row, column, columnIndex }) => (
   <SpreadsheetCell row={row} column={column} className={classes.columnNumberCell} />
-);
-
-const renderColumnNumber = ({ row, column, columnIndex, key }) => (
-  <SpreadsheetCell
-      row={row}
-      column={column}
-      className={classes.columnNumberCell}>
-    {key + 1}
-    <SpreadsheetResizer mode="column" column={column} index={columnIndex} className={classes.columnResizer} />
-  </SpreadsheetCell>
-);
-
-const renderRowNumber = ({ row, column, rowIndex, key }) => (
-  <SpreadsheetCell
-      row={row}
-      column={column}
-      className={classes.rowNumberCell}>
-    {key + 1}
-    <SpreadsheetResizer mode="row" row={row} index={rowIndex} className={classes.rowResizer} />
-  </SpreadsheetCell>
 );
 
 const renderCellValue = ({ row, column, rows, columns, value, mergedRange, overscrolled }) => (
@@ -78,8 +55,6 @@ const SpreadsheetComponent = props => {
         renderColumnsFixedArea={renderColumnsFixedArea}
         renderRowsFixedArea={renderRowsFixedArea}
         renderRowColumnNumbersIntersection={renderRowColumnNumbersIntersection}
-        renderColumnNumber={renderColumnNumber}
-        renderRowNumber={renderRowNumber}
         renderCellValue={renderCellValue} />
   );
 };

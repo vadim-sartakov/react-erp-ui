@@ -1,6 +1,7 @@
 import React, { useMemo, useCallback } from 'react';
 import GroupLevelButton from './GroupLevelButton';
 import GroupLine from './GroupLine';
+import RowColumnNumber from './RowColumnNumber';
 import { getCellsRangeSize } from './utils';
 
 /**
@@ -13,12 +14,10 @@ const useSpreadsheetRender = ({
   visibleColumns,
   rows,
   columns,
+  RowColumnNumberComponent = RowColumnNumber,
   GroupLevelButtonComponent = GroupLevelButton,
   GroupLineComponent = GroupLine,
   renderGroupEmptyArea,
-  renderRowColumnNumbersIntersection,
-  renderColumnNumber,
-  renderRowNumber,
   renderCellValue,
   renderColumnsFixedArea,
   renderRowsFixedArea,
@@ -141,9 +140,9 @@ const useSpreadsheetRender = ({
                   </React.Fragment>  
                 );
               case 'NUMBER':
-                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowColumnNumbersIntersection({ row, column, rowIndex, columnIndex })}</React.Fragment>;
+                return <RowColumnNumberComponent key={`${seqRowIndex}_${seqColumnIndex}`} row={row} column={column} intersection />;
               default:
-                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderColumnNumber({ row, column, columnIndex, key: column.key })}</React.Fragment>;
+                return <RowColumnNumberComponent key={`${seqRowIndex}_${seqColumnIndex}`} type="column" row={row} column={column} index={columnIndex} />;
             }
 
           default:
@@ -163,7 +162,7 @@ const useSpreadsheetRender = ({
                   </React.Fragment>
                 );
               case 'NUMBER':
-                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderRowNumber({ row, column, rowIndex, key: row.key, columnIndex })}</React.Fragment>;
+                return <RowColumnNumberComponent key={`${seqRowIndex}_${seqColumnIndex}`} type="row" row={row} column={column} index={rowIndex} />;
               default:
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderCellValue({ row, rowIndex, column, columnIndex, rows, columns, value: curValue, mergedRange })}</React.Fragment>;
             }
@@ -182,9 +181,6 @@ const useSpreadsheetRender = ({
     renderGroupEmptyArea,
     renderRowGroupCallback,
     renderColumnGroupCallback,
-    renderRowColumnNumbersIntersection,
-    renderColumnNumber,
-    renderRowNumber,
     renderCellValue,
     mergedCells,
     onRowGroupLevelButtonClick,

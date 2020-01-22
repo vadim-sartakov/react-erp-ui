@@ -3,6 +3,7 @@ import SpreadsheetContext from '../SpreadsheetContext';
 import SpreadsheetCell from '../SpreadsheetCell';
 import classes from './GroupLine.module.css';
 
+/** @type {import('../').GroupLine} */
 const GroupLine = ({
   type,
   mergedRange,
