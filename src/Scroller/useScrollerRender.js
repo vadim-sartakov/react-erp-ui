@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 
+/** @type {import('.').useScrollerRender} */
 const useScrollerRender = ({
   CellComponent,
   visibleRows,

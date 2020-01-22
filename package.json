@@ -19,7 +19,7 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public -o docs/storybook",
-    "build-docs": "typedoc --includeDeclarations --excludeExternals --ignoreCompilerErrors --out docs/docs --mode file --readme README.md src/",
+    "build-docs": "typedoc --includeDeclarations --excludeExternals --ignoreCompilerErrors --out docs/docs --readme README.md src/",
     "typescript": "tsc"
   },
   "eslintConfig": {
