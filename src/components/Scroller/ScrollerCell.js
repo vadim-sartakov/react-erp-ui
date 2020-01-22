@@ -4,14 +4,12 @@ import './useScroller';
 
 const ScrollerCell = ({
   style,
-  rowIndex,
-  columnIndex,
+  row = {},
+  column = {},
   Component = 'div',
   ...props
 }) => {
-  const { defaultColumnWidth, defaultRowHeight, rows, columns } = useContext(ScrollerContext);
-  const row = (rows && rows[rowIndex]) || {};
-  const column = (columns && columns[columnIndex]) || {};
+  const { defaultColumnWidth, defaultRowHeight } = useContext(ScrollerContext);
   
   const { size: rowSize, offset: rowOffset } = row;
   const { size: columnSize, offset: columnOffset } = column;

@@ -18,14 +18,12 @@ const renderRowsFixedArea = ({ style }) => {
   return <div className={classes.lastFixedRow} style={style} />;
 };
 
-const renderRowColumnNumbersIntersection = ({ row, column, columnIndex }) => (
-  <SpreadsheetCell row={row} column={column} className={classes.columnNumberCell} />
-);
-
-const renderCellValue = ({ row, column, rows, columns, value, mergedRange, overscrolled }) => (
+const renderCellValue = ({ row, column, rowIndex, columnIndex, rows, columns, value, mergedRange, overscrolled }) => (
   <SpreadsheetCell
       row={row}
       column={column}
+      rowIndex={rowIndex}
+      columnIndex={columnIndex}
       rows={rows}
       columns={columns}
       mergedRange={mergedRange}
@@ -54,7 +52,6 @@ const SpreadsheetComponent = props => {
         renderGroupEmptyArea={renderGroupEmptyArea}
         renderColumnsFixedArea={renderColumnsFixedArea}
         renderRowsFixedArea={renderRowsFixedArea}
-        renderRowColumnNumbersIntersection={renderRowColumnNumbersIntersection}
         renderCellValue={renderCellValue} />
   );
 };

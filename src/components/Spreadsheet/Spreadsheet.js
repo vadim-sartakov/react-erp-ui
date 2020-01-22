@@ -10,11 +10,7 @@ import useSpreadsheetRender from './useSpreadsheetRender';
 const Spreadsheet = props => {
   const spreadsheetProps = useSpreadsheet(props);
 
-  const {
-    scrollerContainerProps,
-    gridStyles,
-    ...scrollerProps
-  } = useScroller({
+  const { gridStyles, ...scrollerProps } = useScroller({
     ...props,
     ...spreadsheetProps
   });
@@ -22,12 +18,12 @@ const Spreadsheet = props => {
   const elements = useSpreadsheetRender({ ...props, ...spreadsheetProps, ...scrollerProps });
 
   return (
-    <ScrollerContainer {...props} {...scrollerContainerProps}>
+    <ScrollerContainer {...props} {...scrollerProps}>
       <SpreadsheetContainer
           {...props}
           {...spreadsheetProps}
-          scrollerTop={scrollerContainerProps.pagesStyles.top}
-          scrollerLeft={scrollerContainerProps.pagesStyles.left}
+          scrollerTop={scrollerProps.pagesStyles.top}
+          scrollerLeft={scrollerProps.pagesStyles.left}
           style={gridStyles}>
         {elements}
       </SpreadsheetContainer>

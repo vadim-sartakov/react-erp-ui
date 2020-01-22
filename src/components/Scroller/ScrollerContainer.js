@@ -9,8 +9,6 @@ const ScrollerContainer = ({
   style,
   defaultRowHeight,
   defaultColumnWidth,
-  rows,
-  columns,
   onScroll,
   coverStyles,
   pagesStyles,
@@ -19,10 +17,8 @@ const ScrollerContainer = ({
 }) => {
   const contextValue = useMemo(() => ({
     defaultRowHeight,
-    defaultColumnWidth,
-    rows,
-    columns
-  }), [defaultRowHeight, defaultColumnWidth, rows, columns]);
+    defaultColumnWidth
+  }), [defaultRowHeight, defaultColumnWidth]);
   return (
     <ScrollContext.Provider value={contextValue}>
       <div onScroll={onScroll} className={className} style={{ width, height, overflow: 'auto', ...style }}>

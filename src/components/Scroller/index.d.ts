@@ -20,6 +20,7 @@ declare namespace Scroller {
     defaultColumnWidth: number;
     coverStyles: CSSProperties;
     pagesStyles: CSSProperties;
+    gridStyles?: CSSProperties;
     onScroll: UIEventHandler;
   }
 
@@ -86,7 +87,9 @@ declare namespace Scroller {
   export interface ScrollerCellProps {
     Component?: ElementType;
     rowIndex: number;
-    columnIndex: Meta;
+    columnIndex: number;
+    row: Meta;
+    column: Meta;
   }
 
   export const ScrollerCell: FunctionComponent<ScrollerCellProps>
