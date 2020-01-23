@@ -4,11 +4,11 @@ export interface Meta {
   size: number;
 }
 
-export interface ContextProps {
+export interface ScrollerContextProps {
   defaultRowHeight: number;
   defaultColumnWidth: number;
 }
-export type ScrollerContext = Context<ContextProps>;
+export const ScrollerContext: Context<ScrollerContextProps>
 
 export interface ScrollerContainerProps extends HTMLAttributes<{}> {
   width?: number;
@@ -24,7 +24,7 @@ export interface ScrollerContainerProps extends HTMLAttributes<{}> {
 /**
  * Scroller container component which creates scrollable container, also provides scroller context
  */
-export type ScrollerContainer = FunctionComponent<ScrollerContainerProps>
+export const ScrollerContainer: FunctionComponent<ScrollerContainerProps>
 
 export interface ScrollerOptionsBase {
   defaultRowHeight: number;
@@ -69,7 +69,7 @@ export interface UseScrollerResult {
 /**
  * Scroller hook which deals with all scroller state management 
  */
-export declare type useScoller = (options: UseScrollerOptions) => UseScrollerResult
+export function useScroller(options: UseScrollerOptions): UseScrollerResult
 
 export interface useScrollerRenderOptions {
   CellComponent: (props: { rowIndex: number, columnIndex: number }) => JSX.Element,
@@ -84,12 +84,10 @@ export interface useScrollerRenderOptions {
 /**
  * Scroller cells elements render hook
  */
-export declare type useScrollerRender = (options: useScrollerRenderOptions) => JSX.Element
+export function useScrollerRender(options: useScrollerRenderOptions): JSX.Element
 
 export interface ScrollerCellProps {
   Component?: ElementType;
-  rowIndex: number;
-  columnIndex: number;
   row: Meta;
   column: Meta;
 }
@@ -97,7 +95,7 @@ export interface ScrollerCellProps {
 /**
  * Scroller cell unit
  */
-export type ScrollerCell = FunctionComponent<ScrollerCellProps>
+export const ScrollerCell: FunctionComponent<ScrollerCellProps>
 
 export interface ScrollerProps extends UseScrollerOptions {
   width?: number;
@@ -107,6 +105,6 @@ export interface ScrollerProps extends UseScrollerOptions {
 /**
  * Data scrolling and buffering component, helps to deal with large data sets rendering, displaying only visible part of data.
  */
-declare type Scroller = FunctionComponent<ScrollerProps>
+declare const Scroller: FunctionComponent<ScrollerProps>
 
 export default Scroller;

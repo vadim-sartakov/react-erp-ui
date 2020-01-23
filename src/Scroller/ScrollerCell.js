@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
-import ScrollerContext from './ScrollerContext';
+import { ScrollerContext } from './';
 
-/** @type {import('.').ScrollerCell} */
 const ScrollerCell = ({
   style,
   row = {},

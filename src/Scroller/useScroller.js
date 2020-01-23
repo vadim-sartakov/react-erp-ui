@@ -9,7 +9,6 @@ import {
   getScrollPages
 } from './utils';
 
-/** @type {import('.').useScoller} */
 const useScroller = ({
   defaultRowHeight,
   defaultColumnWidth,

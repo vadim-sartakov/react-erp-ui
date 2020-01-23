@@ -1,10 +1,7 @@
 import React from 'react';
 import { useScroller, ScrollerContainer } from '../Scroller';
-import SpreadsheetContainer from './SpreadsheetContainer';
-import useSpreadsheet from './useSpreadsheet';
-import useSpreadsheetRender from './useSpreadsheetRender';
+import { SpreadsheetContainer, useSpreadsheet, useSpreadsheetRender } from './';
 
-/** @type {import('.')} */
 const Spreadsheet = props => {
   const spreadsheetProps = useSpreadsheet(props);
 

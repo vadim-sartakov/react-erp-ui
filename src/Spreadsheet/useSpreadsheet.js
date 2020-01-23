@@ -77,9 +77,6 @@ const clickGroupButton = (meta, group, specialMetaCount) => {
   return nextMeta;
 };
 
-/**
- * @param {import('./').UseSpreadsheetOptions} options 
- */
 const useSpreadsheet = ({
   value: valueProp,
   onChange: onChangeProp,

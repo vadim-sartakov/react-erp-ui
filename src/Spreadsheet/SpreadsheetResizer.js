@@ -1,5 +1,5 @@
 import React, { useContext, useCallback } from 'react';
-import SpreadsheetContext from './SpreadsheetContext';
+import { SpreadsheetContext } from './';
 import useResize from '../useResize';
 
 const propertiesMap = {
@@ -19,7 +19,6 @@ const propertiesMap = {
   }
 };
 
-/** @param {import('./').SpreadsheetResizerProps} props */
 const SpreadsheetResizer = ({ mode, index, ...props }) => {
   const properties = propertiesMap[mode];
   const context = useContext(SpreadsheetContext);

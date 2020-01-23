@@ -53,7 +53,7 @@ export interface RowColumnNumberProps {
 }
 
 /** Row number column component. If no index specified, then intersection area is rendered */
-export type RowColumnNumber = FunctionComponent<RowColumnNumberProps>
+export const RowColumnNumber: FunctionComponent<RowColumnNumberProps>
 
 export interface GroupLevelButtonProps {
   index: number;
@@ -63,7 +63,7 @@ export interface GroupLevelButtonProps {
 }
 
 /** Row group level buttons which allows to manage expand/collapse state */
-export type GroupLevelButton = FunctionComponent<GroupLevelButtonProps>
+export const GroupLevelButton: FunctionComponent<GroupLevelButtonProps>
 
 export interface GroupLineProps {
   type: 'row' | 'column';
@@ -81,7 +81,7 @@ export interface GroupLineProps {
 }
 
 /** Group line which located along with grouped items */
-export type GroupLine = FunctionComponent<GroupLineProps>
+export const GroupLine: FunctionComponent<GroupLineProps>
 
 export interface RenderOptions {
   /** Fixed columns vertical line */
@@ -92,11 +92,11 @@ export interface RenderOptions {
    * Empty area of rows and columns groups.
    * Would be rendered between groups of the same level and on intersection level
    */
-  RowColumnNumberComponent?: RowColumnNumber;
+  RowColumnNumberComponent?: FunctionComponent<RowColumnNumberProps>;
   /** Row group level buttons which allows to manage expand/collapse state */
   renderGroupEmptyArea: Function;
-  GroupLevelButtonComponent?: GroupLevelButton;
-  GroupLineComponent?: GroupLine;
+  GroupLevelButtonComponent?: FunctionComponent<GroupLevelButtonProps>;
+  GroupLineComponent?: FunctionComponent<GroupLineProps>;
   renderCellValue: Function;
 }
 
@@ -114,7 +114,7 @@ export interface SpreadsheetContextProps {
   scrollerTop: number,
   scrollerLeft: number
 }
-export type SpreadsheetContext = Context<SpreadsheetContextProps>
+export const SpreadsheetContext: Context<SpreadsheetContextProps>
 
 export interface SpreadsheetContainerProps {
   onRowsChange?: Function;
@@ -130,7 +130,7 @@ export interface SpreadsheetContainerProps {
   scrollerTop: number;
   scrollerLeft: number;
 }
-export type SpreadsheetContainer = FunctionComponent<SpreadsheetContainerProps>
+export const SpreadsheetContainer: FunctionComponent<SpreadsheetContainerProps>
 
 export interface UseSpreadsheetOptions {
   value?: Value[][];
@@ -178,7 +178,7 @@ export interface UseSpreadsheetResult {
   rowsGroups: Group[];
   columnsGroups: Group[];
 }
-export type useSpreadsheet = (options: UseSpreadsheetOptions) => UseSpreadsheetResult
+export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
 
 interface UseSpreadsheetRenderOptions extends RenderOptions {
   value: Value[][];
@@ -188,14 +188,14 @@ interface UseSpreadsheetRenderOptions extends RenderOptions {
   columns: Meta[];
 }
 /** Renders spreadsheet elements by calling provided callbacks */
-export type useSpreadsheetRender = (options: UseSpreadsheetRenderOptions) => JSX.Element
+export function useSpreadsheetRender(options: UseSpreadsheetRenderOptions): JSX.Element
 
 export interface SpreadsheetResizerProps {
   mode: 'row' | 'column';
   row?: Meta;
   column?: Meta
 }
-export type SpreadsheetResizer = FunctionComponent<SpreadsheetResizerProps>
+export const SpreadsheetResizer: FunctionComponent<SpreadsheetResizerProps>
 
 export interface SpreadsheetCellProps {
   mergedRange?: CellsRange;
@@ -206,15 +206,14 @@ export interface SpreadsheetCellProps {
   row: Meta;
   column: Meta;
 }
-export type SpreadsheetCell = FunctionComponent<SpreadsheetCellProps>
+export const SpreadsheetCell: FunctionComponent<SpreadsheetCellProps>
 
 export interface SpreadsheetProps extends UseSpreadsheetOptions, RenderOptions {}
-
 /**
  * Data grid, Excel-like spreadsheet component.
  * Integrated with [Scroller]{@link Scroller} to be able to handle large sets of data.
  * Supports resizing, fixing areas, cell merges and grouping
  */
-declare type Spreadsheet = FunctionComponent<SpreadsheetProps>
+declare const Spreadsheet: FunctionComponent<SpreadsheetProps>
 
 export default Spreadsheet;

@@ -1,11 +1,8 @@
 import React, { useContext } from 'react';
-import ScrollerCell from '../Scroller/ScrollerCell';
-import SpreadsheetContext from './SpreadsheetContext';
+import { ScrollerCell } from '../Scroller';
+import { SpreadsheetContext } from './';
 import { getCellsRangeSize, getMergedCellPosition } from './utils';
 
-/**
- * @param {import('./').SpreadsheetCellProps} props 
- */
 const SpreadsheetCell = ({
   mergedRange,
   rows,

@@ -1,9 +1,6 @@
 import React, { useMemo } from 'react';
-import SpreadsheetContext from './SpreadsheetContext';
+import { SpreadsheetContext } from './';
 
-/**
- * @param {import('./').SpreadsheetContainerProps} props 
- */
 const SpreadsheetContainer = ({
   onRowsChange,
   onColumnsChange,

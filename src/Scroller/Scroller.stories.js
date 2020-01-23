@@ -1,8 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
-import ScrollerCell from './ScrollerCell';
-import Scroller from './Scroller';
+import Scroller, { ScrollerCell } from './';
 import { generateListValues, generateGridValues } from '../test-utils/generateValues';
 import classes from './Scroller-stories.module.sass';
 
@@ -11,12 +10,14 @@ export const generateCustomMeta = (count, size) => [...new Array(count).keys()].
 export const listValue = generateListValues(1000);
 const listRows = generateCustomMeta(listValue.length, 80);
 
-const ListCellComponent = ({ rowIndex, row, value }) => (
-  <ScrollerCell className="row" rowIndex={rowIndex} row={row}>
+/** @type {import('react').FunctionComponent<import('.').ScrollerCellProps>} */
+const ListCellComponent = ({ row, value }) => (
+  <ScrollerCell className="row" row={row}>
     {value ? `Value ${value.row}` : 'Loading...'}
   </ScrollerCell>
 );
 
+/** @type {import('react').FunctionComponent<import('.').ScrollerProps>} */
 export const ListTestComponent = props => {
   return <Scroller CellComponent={ListCellComponent} height={600} {...props} />;
 };
@@ -25,12 +26,14 @@ export const gridValue = generateGridValues(1000, 50);
 const gridRows = generateCustomMeta(gridValue.length, 60);
 const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
+/** @type {import('react').FunctionComponent<import('.').ScrollerCellProps>} */
 const GridCellComponent = ({ rowIndex, columnIndex, row, column, value }) => (
   <ScrollerCell className={classes.cell} rowIndex={rowIndex} columnIndex={columnIndex} row={row} column={column}>
     {value ? `Value ${value.row} - ${value.column}` : 'Loading...'}
   </ScrollerCell>
 );
 
+/** @type {import('react').FunctionComponent<import('.').ScrollerProps>} */
 export const GridTestComponent = props => {
   return <Scroller CellComponent={GridCellComponent} width={800} height={600} {...props} />;
 };

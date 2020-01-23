@@ -1,13 +1,8 @@
 import React, { useMemo, useCallback } from 'react';
 import GroupLevelButton from './GroupLevelButton';
-import GroupLine from './GroupLine';
-import RowColumnNumber from './RowColumnNumber';
+import { GroupLine, RowColumnNumber } from './';
 import { getCellsRangeSize } from './utils';
 
-/**
- * @param {import('./').UseSpreadsheetRenderOptions} options
- * @returns {import('./').UseSpreadsheetResult}
- */
 const useSpreadsheetRender = ({
   value,
   visibleRows,
