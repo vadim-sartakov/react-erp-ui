@@ -170,13 +170,34 @@ const gapsReducer = (acc, scrollPage) => acc + (scrollPage.end - scrollPage.star
  * @param {Object} options
  * @param {ScrollPage[]} options.scrollPages [ScrollPage]{@link module:components/Scroller/utils~ScrollPage}
  * @param {number} options.page
+ * @param {Meta[]} options.meta
+ * @param {number} options.fixCount
+ * @param {number} options.defaultSize
  * @returns {Gaps} [Gaps]{@link module:components/Scroller/utils~Gaps}
  */
-export const getGapsFromScrollPages = ({ scrollPages, page }) => {
-  const visiblePages = getVisiblePages(page);
-  const startSectionSize = scrollPages.slice(0, visiblePages[0]).reduce(gapsReducer, 0);
-  const middleSectionSize = scrollPages.slice(visiblePages[0], ((visiblePages[1] || 0) + 1)).reduce(gapsReducer, 0);
-  const endSectionSize = scrollPages.slice((visiblePages[1] || 0) + 1, scrollPages.length).reduce(gapsReducer, 0);
+export const getGapsFromScrollPages = ({ scrollPages, page, fixCount, meta, defaultSize, itemsPerPage }) => {
+  const [startPage, endPage] = getVisiblePages(page);
+
+  const startIndex = startPage === 0 ? 0 : startPage * itemsPerPage;
+
+  let startSectionSize = scrollPages.slice(0, startPage).reduce(gapsReducer, 0);
+  let middleSectionSize = scrollPages.slice(startPage, endPage + 1).reduce(gapsReducer, 0);
+  let endSectionSize = scrollPages.slice(endPage + 1, scrollPages.length).reduce(gapsReducer, 0);
+
+  const displayFixed = startIndex > fixCount;
+  let fixedSize = 0, hiddenSize = 0;
+
+  if (displayFixed) {
+    fixedSize = getItemsSize({ meta, count: fixCount, defaultSize });
+    hiddenSize = getItemsSize({ startIndex: fixCount, count: fixCount, meta, defaultSize });
+  }
+
+  startSectionSize += hiddenSize;
+  startSectionSize -= fixedSize;
+
+  middleSectionSize -= hiddenSize;
+  middleSectionSize += fixedSize;
+
   return {
     start: startSectionSize,
     middle: middleSectionSize,
@@ -195,10 +216,10 @@ export const getGapsFromScrollPages = ({ scrollPages, page }) => {
  * @param {number} options.page
  * @returns {Gaps} [Gaps]{@link module:components/Scroller/utils~Gaps}
  */
-export const getGaps = ({ scrollPages, defaultSize, itemsPerPage, totalCount, page }) => {
+export const getGaps = ({ scrollPages, defaultSize, itemsPerPage, totalCount, page, meta, fixCount }) => {
   let gaps;
   if (scrollPages && scrollPages.length) {
-    gaps = getGapsFromScrollPages({ scrollPages, page });
+    gaps = getGapsFromScrollPages({ scrollPages, page, fixCount, meta, defaultSize, itemsPerPage });
   } else {
     gaps = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount, page });
   }
@@ -232,10 +253,10 @@ export const getFixedOffsets = ({ meta, defaultSize, fixed }) => {
  * @param {number} options.defaultSize
  * @returns {number}
  */
-export const getItemsSize = ({ meta, count, defaultSize }) => {
+export const getItemsSize = ({ startIndex = 0, meta, count, defaultSize }) => {
   if (!count) return 0;
   return meta ? [...new Array(count).keys()].reduce((acc, key, index) => {
-    const curMeta = meta[index];
+    const curMeta = meta[index + startIndex];
     const curSize = (curMeta && curMeta.size) || defaultSize;
     return acc + curSize;
   }, 0) : count * defaultSize;

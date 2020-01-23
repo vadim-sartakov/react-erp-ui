@@ -10,12 +10,10 @@ const renderGroupEmptyArea = ({ row, column }) => {
   )
 };
 
-const renderCellValue = ({ row, column, rowIndex, columnIndex, rows, columns, value, mergedRange, overscrolled }) => (
+const renderCellValue = ({ row, column, rows, columns, value, mergedRange, overscrolled }) => (
   <SpreadsheetCell
       row={row}
       column={column}
-      rowIndex={rowIndex}
-      columnIndex={columnIndex}
       rows={rows}
       columns={columns}
       mergedRange={mergedRange}

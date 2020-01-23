@@ -5,7 +5,6 @@ import {
   getPageNumber,
   getGaps,
   getFixedOffsets,
-  getItemsSize,
   getScrollPages
 } from './utils';
 
@@ -96,7 +95,8 @@ const useScroller = ({
       const pageIndexes = [...new Array(itemsCount).keys()].map(index => pageNumber * itemsPerPage + index);
       return [...acc, pageIndexes];
     }, shouldRenderFixed ? fixedIndexes : []);
-    const result = visibleIndexes.reduce((acc, item) => [...acc, ...item], [])
+    const result = visibleIndexes.reduce((acc, item) => [...acc, ...item], []);
+    if (shouldRenderFixed) result.splice(fix, fix)
     return result;
   }, []);
 
@@ -148,35 +148,36 @@ const useScroller = ({
 
   const rowsGaps = useMemo(() => {
     return getGaps({
+      meta: rows,
       scrollPages: rowsScrollPages,
       defaultSize: defaultRowHeight,
       itemsPerPage: rowsPerPage,
       totalCount: totalRows,
-      page: rowsPage
+      page: rowsPage,
+      fixCount: fixRows
     });
-  }, [rowsPage, rowsPerPage, defaultRowHeight, totalRows, rowsScrollPages]);
+  }, [fixRows, rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows, rowsScrollPages]);
 
   const lastRowsPageGaps = useMemo(() => lazy && getGaps({
     meta: rows,
     defaultSize: defaultRowHeight,
     itemsPerPage: rowsPerPage,
     totalCount: totalRows,
-    page: lastRowsPage
-  }), [lazy, rows, lastRowsPage, rowsPerPage, defaultRowHeight, totalRows]);
+    page: lastRowsPage,
+    fixCount: fixRows
+  }), [lazy, rows, fixRows, lastRowsPage, rowsPerPage, defaultRowHeight, totalRows]);
 
   const columnsGaps = useMemo(() => {
     return totalColumns && getGaps({
+      meta: columns,
       scrollPages: columnsScrollPages,
       defaultSize: defaultColumnWidth,
       itemsPerPage: columnsPerPage,
       totalCount: totalColumns,
       page: columnsPage,
-      fixed: fixColumns
+      fixCount: fixColumns
     });
-  }, [columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, fixColumns, columnsScrollPages]);
-
-  const fixedRowsSize = useMemo(() => getItemsSize({ meta: rows, count: fixRows, defaultSize: defaultRowHeight }), [rows, fixRows, defaultRowHeight]);
-  const fixedColumnsSize = useMemo(() => getItemsSize({ meta: columns, count: fixColumns, defaultSize: defaultColumnWidth }), [columns, fixColumns, defaultColumnWidth]);
+  }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, fixColumns, columnsScrollPages]);
 
   const coverStyles = useMemo(() => ({
     height: lazy ? lastRowsPageGaps.start + lastRowsPageGaps.middle : rowsGaps.start + rowsGaps.middle + rowsGaps.end,
@@ -185,11 +186,11 @@ const useScroller = ({
   }), [lazy, rowsGaps, columnsGaps, lastRowsPageGaps]);
   const pagesStyles = useMemo(() => {
     return {
-      top: rowsGaps.start - (rowsStartIndex > fixRows ? fixedRowsSize : 0),
-      left: columnsGaps && (columnsGaps.start - (columnsStartIndex > fixColumns ? fixedColumnsSize : 0)),
+      top: rowsGaps.start,
+      left: columnsGaps && columnsGaps.start,
       position: 'absolute'
     };
-  }, [rowsGaps, columnsGaps, columnsStartIndex, fixColumns, fixRows, fixedColumnsSize, fixedRowsSize, rowsStartIndex]);
+  }, [rowsGaps, columnsGaps]);
 
   const gridStyles = useMemo(() => totalColumns && {
     display: 'inline-grid',
