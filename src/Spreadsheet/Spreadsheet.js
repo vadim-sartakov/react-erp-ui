@@ -4,9 +4,7 @@ import SpreadsheetContainer from './SpreadsheetContainer';
 import useSpreadsheet from './useSpreadsheet';
 import useSpreadsheetRender from './useSpreadsheetRender';
 
-/**
- * @param {import('./').SpreadsheetProps} props 
- */
+/** @type {import('.')} */
 const Spreadsheet = props => {
   const spreadsheetProps = useSpreadsheet(props);
 

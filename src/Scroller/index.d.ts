@@ -1,8 +1,14 @@
-import { CSSProperties, ElementType, UIEventHandler, HTMLAttributes, FunctionComponent } from 'react';
+import { CSSProperties, ElementType, UIEventHandler, HTMLAttributes, FunctionComponent, Context } from 'react';
 
 export interface Meta {
   size: number;
 }
+
+export interface ContextProps {
+  defaultRowHeight: number;
+  defaultColumnWidth: number;
+}
+export type ScrollerContext = Context<ContextProps>;
 
 export interface ScrollerContainerProps extends HTMLAttributes<{}> {
   width?: number;
@@ -16,7 +22,7 @@ export interface ScrollerContainerProps extends HTMLAttributes<{}> {
 }
 
 /**
- * Scroller container which also creates scroller context
+ * Scroller container component which creates scrollable container, also provides scroller context
  */
 export type ScrollerContainer = FunctionComponent<ScrollerContainerProps>
 
@@ -75,6 +81,9 @@ export interface useScrollerRenderOptions {
   value?: any[][];
 }
 
+/**
+ * Scroller cells elements render hook
+ */
 export declare type useScrollerRender = (options: useScrollerRenderOptions) => JSX.Element
 
 export interface ScrollerCellProps {
@@ -85,6 +94,9 @@ export interface ScrollerCellProps {
   column: Meta;
 }
 
+/**
+ * Scroller cell unit
+ */
 export type ScrollerCell = FunctionComponent<ScrollerCellProps>
 
 export interface ScrollerProps extends UseScrollerOptions {

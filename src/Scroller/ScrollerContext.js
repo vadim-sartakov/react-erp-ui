@@ -1,3 +1,6 @@
 import { createContext } from 'react';
 
-export default createContext();
+/** @type {import('.').ScrollerContext} */
+const ScrollerContext = createContext();
+
+export default ScrollerContext;
