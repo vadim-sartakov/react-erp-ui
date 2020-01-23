@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from 'react';
 import GroupLevelButton from './GroupLevelButton';
-import { GroupLine, RowColumnNumber, FixLines } from './';
-import { getCellsRangeSize } from './utils';
+import { GroupLine, RowColumnNumber } from './';
+import FixLines from './FixLines';
 
 /**
  * @param {import('.').UseSpreadsheetRenderOptions} options
@@ -16,13 +16,11 @@ const useSpreadsheetRender = ({
   RowColumnNumberComponent = RowColumnNumber,
   GroupLevelButtonComponent = GroupLevelButton,
   GroupLineComponent = GroupLine,
-  FixLinesComponent = FixLines,
+  FixLinesComponent,
   renderGroupEmptyArea,
   renderCellValue,
   fixRows,
   fixColumns,
-  defaultRowHeight,
-  defaultColumnWidth,
   mergedCells,
   specialRowsCount,
   specialColumnsCount,
@@ -198,69 +196,20 @@ const useSpreadsheetRender = ({
     overscrolledFilter
   ]);
 
-  const fixedAreasElements = useMemo(() => {
-    const result = [];
-
-    const containerStyle = {
-      position: 'absolute',
-      height: '100%',
-      width: '100%',
-      pointerEvents: 'none',
-      zIndex: 10
-    };
-
-    const baseFixedAreaStyle = {
-      position: 'sticky',
-      top: 0,
-      left: 0,
-    };
-
-    if (fixColumns - specialColumnsCount) {
-      const width = getCellsRangeSize({
-        startIndex: 0,
-        count: fixColumns,
-        defaultSize: defaultColumnWidth,
-        meta: columns
-      });
-      const style = {
-        ...baseFixedAreaStyle,
-        width,
-        height: '100%'
-      };
-      result.push((
-        <div key="fixed_columns" style={containerStyle}>
-          <FixLinesComponent type="columns" style={style} />
-        </div>
-      ));
-    }
-
-    if (fixRows - specialRowsCount) {
-      const height = getCellsRangeSize({
-        startIndex: 0,
-        count: fixRows,
-        defaultSize: defaultRowHeight,
-        meta: rows
-      });
-      const style = {
-        ...baseFixedAreaStyle,
-        width: '100%',
-        height
-      };
-      result.push((
-        <div key="fixed_rows" style={containerStyle}>
-          <FixLinesComponent type="rows" style={style} />
-        </div>
-      ));
-    }
-
-    return result;
+  const fixedAreasElement = useMemo(() => {
+    return (
+      <FixLines
+          key="fixed-area"
+          Component={FixLinesComponent}
+          rows={rows}
+          columns={columns}
+          specialRowsCount={specialRowsCount}
+          specialColumnsCount={specialColumnsCount} />
+    )
   }, [
-    fixColumns,
-    fixRows,
+    FixLinesComponent,
     columns,
     rows,
-    defaultColumnWidth,
-    defaultRowHeight,
     specialColumnsCount,
     specialRowsCount
   ]);
@@ -268,7 +217,7 @@ const useSpreadsheetRender = ({
   return [
     ...cellsElements,
     ...mergedCellsElements,
-    ...fixedAreasElements
+    fixedAreasElement
   ];
 };
 

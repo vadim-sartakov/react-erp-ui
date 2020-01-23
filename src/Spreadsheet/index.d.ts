@@ -198,8 +198,6 @@ export interface UseSpreadsheetRenderOptions extends ComponentsOptions {
   mergedCells: CellsRange[];
   fixRows: number;
   fixColumns: number;
-  defaultRowHeight: number;
-  defaultColumnWidth: number;
   specialRowsCount: number;
   specialColumnsCount: number;
   rowsGroups: Group[];
