@@ -10,14 +10,6 @@ const renderGroupEmptyArea = ({ row, column }) => {
   )
 };
 
-const renderColumnsFixedArea = ({ style }) => {
-  return <div className={classes.lastFixedColumn} style={style} />;
-};
-
-const renderRowsFixedArea = ({ style }) => {
-  return <div className={classes.lastFixedRow} style={style} />;
-};
-
 const renderCellValue = ({ row, column, rowIndex, columnIndex, rows, columns, value, mergedRange, overscrolled }) => (
   <SpreadsheetCell
       row={row}
@@ -34,7 +26,7 @@ const renderCellValue = ({ row, column, rowIndex, columnIndex, rows, columns, va
 );
 
 /**
- * @param {import('./').SpreadsheetProps} props 
+ * @type {import('react').FunctionComponent<import('.').SpreadsheetProps>}
  */
 const SpreadsheetComponent = props => {
 
@@ -50,8 +42,6 @@ const SpreadsheetComponent = props => {
         onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
         renderGroupEmptyArea={renderGroupEmptyArea}
-        renderColumnsFixedArea={renderColumnsFixedArea}
-        renderRowsFixedArea={renderRowsFixedArea}
         renderCellValue={renderCellValue} />
   );
 };

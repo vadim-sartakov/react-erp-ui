@@ -1,8 +1,12 @@
 import React, { useMemo, useCallback } from 'react';
 import GroupLevelButton from './GroupLevelButton';
-import { GroupLine, RowColumnNumber } from './';
+import { GroupLine, RowColumnNumber, FixLines } from './';
 import { getCellsRangeSize } from './utils';
 
+/**
+ * @param {import('.').UseSpreadsheetRenderOptions}
+ * @returns {JSX.Element}
+ */
 const useSpreadsheetRender = ({
   value,
   visibleRows,
@@ -12,10 +16,9 @@ const useSpreadsheetRender = ({
   RowColumnNumberComponent = RowColumnNumber,
   GroupLevelButtonComponent = GroupLevelButton,
   GroupLineComponent = GroupLine,
+  FixLinesComponent = FixLines,
   renderGroupEmptyArea,
   renderCellValue,
-  renderColumnsFixedArea,
-  renderRowsFixedArea,
   fixRows,
   fixColumns,
   defaultRowHeight,
@@ -24,8 +27,8 @@ const useSpreadsheetRender = ({
   specialRowsCount,
   specialColumnsCount,
   rowsGroups,
-  groupSize,
   columnsGroups,
+  groupSize,
   onRowGroupLevelButtonClick,
   onColumnGroupLevelButtonClick,
   onRowGroupButtonClick,
@@ -219,7 +222,7 @@ const useSpreadsheetRender = ({
       left: 0,
     };
 
-    if ((fixColumns - specialColumnsCount) && renderColumnsFixedArea) {
+    if (fixColumns - specialColumnsCount) {
       const width = getCellsRangeSize({
         startIndex: 0,
         count: fixColumns,
@@ -233,12 +236,12 @@ const useSpreadsheetRender = ({
       };
       result.push((
         <div key="fixed_columns" style={containerStyle}>
-          {renderColumnsFixedArea({ style })}
+          <FixLinesComponent type="columns" style={style} />
         </div>
       ));
     }
 
-    if ((fixRows - specialRowsCount) && renderRowsFixedArea) {
+    if (fixRows - specialRowsCount) {
       const height = getCellsRangeSize({
         startIndex: 0,
         count: fixRows,
@@ -252,7 +255,7 @@ const useSpreadsheetRender = ({
       };
       result.push((
         <div key="fixed_rows" style={containerStyle}>
-          {renderRowsFixedArea({ style })}
+          <FixLinesComponent type="rows" style={style} />
         </div>
       ));
     }
@@ -261,8 +264,6 @@ const useSpreadsheetRender = ({
   }, [
     fixColumns,
     fixRows,
-    renderColumnsFixedArea,
-    renderRowsFixedArea,
     columns,
     rows,
     defaultColumnWidth,

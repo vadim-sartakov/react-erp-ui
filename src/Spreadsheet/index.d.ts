@@ -1,4 +1,4 @@
-import { FunctionComponent, MouseEventHandler, Context } from 'react';
+import { FunctionComponent, MouseEventHandler, Context, HTMLAttributes, CSSProperties } from 'react';
 
 export interface Meta {
   type?: 'NUMBER' | 'GROUP';
@@ -44,6 +44,12 @@ export interface CellsRange {
   end: CellAddress;
 }
 
+export interface FixLinesProps extends HTMLAttributes<{}> {
+  type: 'rows' | 'columns';
+  style: CSSProperties;
+}
+export const FixLines: FunctionComponent<FixLinesProps>
+
 export interface RowColumnNumberProps {
   type: 'row' | 'column';
   row: Meta;
@@ -51,7 +57,6 @@ export interface RowColumnNumberProps {
   index: number;
   intersection?: boolean
 }
-
 /** Row number column component. If no index specified, then intersection area is rendered */
 export const RowColumnNumber: FunctionComponent<RowColumnNumberProps>
 
@@ -83,11 +88,9 @@ export interface GroupLineProps {
 /** Group line which located along with grouped items */
 export const GroupLine: FunctionComponent<GroupLineProps>
 
-export interface RenderOptions {
-  /** Fixed columns vertical line */
-  renderColumnsFixedArea: Function;
-  /** Fixed rows horizontal line */
-  renderRowsFixedArea: Function;
+export interface ComponentsOptions {
+  /** Fixed rows and columns lines */
+  FixLinesComponent: FunctionComponent<FixLinesProps>;
   /**
    * Empty area of rows and columns groups.
    * Would be rendered between groups of the same level and on intersection level
@@ -156,6 +159,8 @@ export interface UseSpreadsheetOptions {
   fixRows?: number;
   fixColumns?: number;
 }
+export type GroupLevelButtonClickHandlerFactory = (level: number) => MouseEventHandler;
+export type GroupButtonClickHandlerFactory = (group: Group) => MouseEventHandler;
 /**
  * Transformed input properties as well as additional properties.
  * Transformation is the offset of input values and occures when
@@ -177,23 +182,40 @@ export interface UseSpreadsheetResult {
   specialColumnsCount: number;
   rowsGroups: Group[];
   columnsGroups: Group[];
+  onRowGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
+  onColumnGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
+  onRowGroupButtonClick: GroupButtonClickHandlerFactory;
+  onColumnGroupButtonClick: GroupButtonClickHandlerFactory;
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
 
-interface UseSpreadsheetRenderOptions extends RenderOptions {
+export interface UseSpreadsheetRenderOptions extends ComponentsOptions {
   value: Value[][];
   visibleRows: number[];
   visibleColumns: number[];
   rows: Meta[];
   columns: Meta[];
+  mergedCells: CellsRange[];
+  fixRows: number;
+  fixColumns: number;
+  defaultRowHeight: number;
+  defaultColumnWidth: number;
+  specialRowsCount: number;
+  specialColumnsCount: number;
+  rowsGroups: Group[];
+  columnsGroups: Group[];
+  groupSize: number;
+  onRowGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
+  onColumnGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
+  onRowGroupButtonClick: GroupButtonClickHandlerFactory;
+  onColumnGroupButtonClick: GroupButtonClickHandlerFactory;
 }
 /** Renders spreadsheet elements by calling provided callbacks */
 export function useSpreadsheetRender(options: UseSpreadsheetRenderOptions): JSX.Element
 
 export interface SpreadsheetResizerProps {
   mode: 'row' | 'column';
-  row?: Meta;
-  column?: Meta
+  index: number;
 }
 export const SpreadsheetResizer: FunctionComponent<SpreadsheetResizerProps>
 
@@ -208,7 +230,7 @@ export interface SpreadsheetCellProps {
 }
 export const SpreadsheetCell: FunctionComponent<SpreadsheetCellProps>
 
-export interface SpreadsheetProps extends UseSpreadsheetOptions, RenderOptions {}
+export interface SpreadsheetProps extends UseSpreadsheetOptions, ComponentsOptions {}
 /**
  * Data grid, Excel-like spreadsheet component.
  * Integrated with [Scroller]{@link Scroller} to be able to handle large sets of data.

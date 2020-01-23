@@ -1,12 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
-import SpreadsheetCell from '../SpreadsheetCell';
-import SpreadsheetResizer from '../SpreadsheetResizer';
+import { SpreadsheetCell, SpreadsheetResizer } from '../';
 import classes from './RowColumnNumber.module.css';
 
-/**
- * @type {import('../').RowColumnNumber}
- */
 const RowColumnNumber = ({
   type,
   row,

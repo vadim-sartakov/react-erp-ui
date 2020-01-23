@@ -1,9 +1,7 @@
 import React, { useContext, useMemo } from 'react';
-import SpreadsheetContext from '../SpreadsheetContext';
-import SpreadsheetCell from '../SpreadsheetCell';
+import { SpreadsheetContext, SpreadsheetCell } from '../';
 import classes from './GroupLine.module.css';
 
-/** @type {import('../').GroupLine} */
 const GroupLine = ({
   type,
   mergedRange,
