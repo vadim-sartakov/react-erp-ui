@@ -204,7 +204,6 @@ export interface UseSpreadsheetRenderOptions extends ComponentsOptions {
   specialColumnsCount: number;
   rowsGroups: Group[];
   columnsGroups: Group[];
-  groupSize: number;
   onRowGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
   onColumnGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
   onRowGroupButtonClick: GroupButtonClickHandlerFactory;

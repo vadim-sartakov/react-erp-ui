@@ -11,12 +11,11 @@ const GroupLine = ({
   columns,
   rowIndex,
   columnIndex,
-  groupSize,
   collapsed,
   onClick,
   overscrolled
 }) => {
-  const { specialCellsBackgroundColor, defaultRowHeight, defaultColumnWidth } = useContext(SpreadsheetContext);
+  const { specialCellsBackgroundColor, defaultRowHeight, defaultColumnWidth, groupSize } = useContext(SpreadsheetContext);
   
   const { lineProps, containerStyle } = useMemo(() => {
     let lineProps, containerStyle;

@@ -4,7 +4,7 @@ import { GroupLine, RowColumnNumber, FixLines } from './';
 import { getCellsRangeSize } from './utils';
 
 /**
- * @param {import('.').UseSpreadsheetRenderOptions}
+ * @param {import('.').UseSpreadsheetRenderOptions} options
  * @returns {JSX.Element}
  */
 const useSpreadsheetRender = ({
@@ -28,7 +28,6 @@ const useSpreadsheetRender = ({
   specialColumnsCount,
   rowsGroups,
   columnsGroups,
-  groupSize,
   onRowGroupLevelButtonClick,
   onColumnGroupLevelButtonClick,
   onRowGroupButtonClick,
@@ -40,21 +39,18 @@ const useSpreadsheetRender = ({
     const groupMergedRange = rowGroup && mergedCells.find(range => range.start.row === rowIndex && range.start.column === columnIndex);
     const handleButtonClick = onRowGroupButtonClick(rowGroup);
     return groupMergedRange ?
-        <GroupLineComponent {...{
-          type: 'row',
-          row,
-          column,
-          rows,
-          columns,
-          mergedRange: groupMergedRange,
-          rowIndex,
-          groupSize,
-          collapsed: rowGroup.collapsed,
-          overscrolled,
-          onClick: handleButtonClick
-        }} /> :
-        !overscrolled && renderGroupEmptyArea({ row, column, rowIndex, columnIndex });
-  }, [rows, columns, groupSize, renderGroupEmptyArea, rowsGroups, onRowGroupButtonClick, mergedCells]);
+        <GroupLineComponent
+            type="row"
+            row={row}
+            column={column}
+            rows={rows}
+            columns={columns}
+            mergedRange={groupMergedRange}
+            rowIndex={rowIndex}
+            collapsed={rowGroup.collapsed}
+            overscrolled={overscrolled}
+            onClick={handleButtonClick}/> : !overscrolled && renderGroupEmptyArea({ row, column, rowIndex, columnIndex });
+  }, [rows, columns, renderGroupEmptyArea, rowsGroups, onRowGroupButtonClick, mergedCells]);
 
   const renderColumnGroupCallback = useCallback(({ rowIndex, columnIndex, row, column, overscrolled }) => {
     const currentLevelGroups = columnsGroups[rowIndex];
@@ -62,21 +58,18 @@ const useSpreadsheetRender = ({
     const groupMergedRange = columnGroup && mergedCells.find(range => range.start.row === rowIndex && range.start.column === columnIndex);
     const handleButtonClick = onColumnGroupButtonClick(columnGroup);
     return groupMergedRange ?
-        <GroupLineComponent {...{
-          type: 'column',
-          row,
-          column,
-          rows,
-          columns,
-          mergedRange: groupMergedRange,
-          columnIndex,
-          groupSize,
-          collapsed: columnGroup.collapsed,
-          overscrolled,
-          onClick: handleButtonClick
-        }} /> :
-        !overscrolled && renderGroupEmptyArea({ row, column, rowIndex, columnIndex });
-  }, [rows, columns, groupSize, renderGroupEmptyArea, columnsGroups, onColumnGroupButtonClick, mergedCells]);
+        <GroupLineComponent
+            type="column"
+            row={row}
+            column={column}
+            rows={rows}
+            columns={columns}
+            mergedRange={groupMergedRange}
+            columnIndex={columnIndex}
+            collapsed={columnGroup.collapsed}
+            overscrolled={overscrolled}
+            onClick={handleButtonClick} /> : !overscrolled && renderGroupEmptyArea({ row, column, rowIndex, columnIndex });
+  }, [rows, columns, renderGroupEmptyArea, columnsGroups, onColumnGroupButtonClick, mergedCells]);
 
   const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex, seqRowIndex) => {
