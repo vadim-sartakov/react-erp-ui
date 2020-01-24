@@ -13,6 +13,8 @@ const useSpreadsheetRender = ({
   value,
   visibleRows,
   visibleColumns,
+  fixRows,
+  fixColumns,
   rows,
   columns,
   onRowsChange,
@@ -206,21 +208,42 @@ const useSpreadsheetRender = ({
     specialColumnsCount
   ]);
 
-  const mergedCellsElement = (
+  const mergedValueCells = (
     <MergedCells
         key="value-merged-cells"
         rows={rows}
         columns={columns}
+        value={value}
+        fixRows={fixRows}
+        fixColumns={fixColumns}
+        specialRowsCount={specialRowsCount}
+        specialColumnsCount={specialColumnsCount}
         mergedCells={mergedCells}
         scrollerTop={scrollerTop}
         scrollerLeft={scrollerLeft}
         visibleRows={visibleRows}
         visibleColumns={visibleColumns}
-        value={value}
-        CellComponent={CellComponent}>
-      {(props) => <CellComponent {...props} />}
-    </MergedCells>
+        CellComponent={CellComponent} />
   );
+
+  /*const mergedSpecialCells = (
+    <MergedCells
+        key="special-merged-cells"
+        rows={rows}
+        columns={columns}
+        value={value}
+        specialRowsCount={specialRowsCount}
+        specialColumnsCount={specialColumnsCount}
+        mergedCells={mergedCells}
+        scrollerTop={scrollerTop}
+        scrollerLeft={scrollerLeft}
+        visibleRows={visibleRows.slice(0, specialRowsCount)}
+        visibleColumns={visibleColumns.slice(0, specialColumnsCount)}
+        CellComponent="div"
+        componentProps={{
+          style: { backgroundColor: 'red', height: '100%' }
+        }} />
+  );*/
 
   const fixedAreasElement = (
     <FixLines
@@ -234,7 +257,8 @@ const useSpreadsheetRender = ({
 
   return [
     ...cellsElements,
-    mergedCellsElement,
+    mergedValueCells,
+    //mergedSpecialCells,
     fixedAreasElement
   ];
 };

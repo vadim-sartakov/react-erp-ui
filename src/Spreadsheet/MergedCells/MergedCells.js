@@ -2,25 +2,39 @@ import React, { useContext } from 'react';
 import { SpreadsheetContext } from '../';
 import { getMergedCellPosition, getCellsRangeSize } from '../utils';
 
+export const visibleMergesFilter = ({
+  fixRows,
+  fixColumns,
+  visibleRows,
+  visibleColumns
+}) => mergedRange => {
+  return (mergedRange.start.row < fixRows && mergedRange.start.column < visibleColumns[visibleColumns.length - 1]) ||
+      (mergedRange.start.column < fixColumns && mergedRange.start.row < visibleRows[visibleRows.length - 1]) ||
+      (mergedRange.start.row <= visibleRows[visibleRows.length - 1] &&
+          mergedRange.start.column <= visibleColumns[visibleColumns.length - 1] &&
+          mergedRange.end.row >= visibleRows[fixRows] &&
+          mergedRange.end.column >= visibleColumns[fixColumns]);
+};
+
 const MergedCells = ({
   mergedCells,
   rows,
   columns,
   value,
+  fixRows,
+  fixColumns,
+  specialRowsCount,
+  specialColumnsCount,
   scrollerTop,
   scrollerLeft,
   visibleRows,
   visibleColumns,
-  children
+  CellComponent,
+  componentProps
 }) => {
-  const { fixRows, fixColumns, defaultRowHeight, defaultColumnWidth } = useContext(SpreadsheetContext);
+  const { defaultRowHeight, defaultColumnWidth } = useContext(SpreadsheetContext);
 
-  const visibleMerges = mergedCells.filter(mergedRange => {
-    return (visibleRows.indexOf(mergedRange.start.row) !== -1 && visibleColumns.indexOf(mergedRange.start.column) !== -1) ||
-        ((mergedRange.start.row < visibleRows[fixRows] && mergedRange.end.row >= visibleRows[fixRows]) ||
-            (mergedRange.start.column < visibleColumns[fixColumns] && mergedRange.end.column >= visibleColumns[fixRows]));
-  });
-
+  const visibleMerges = mergedCells.filter(visibleMergesFilter({ fixRows, fixColumns, visibleRows, visibleColumns }));
   const elements = visibleMerges.reduce((acc, mergedRange) => {
     const curResult = [];
 
@@ -29,10 +43,18 @@ const MergedCells = ({
 
     const row = rows[rowIndex] || {};
     const column = columns[columnIndex] || {};
-    const rowValue = value[rowIndex];
-    const curValue = rowValue && rowValue[columnIndex];
+    const rowValue = value[rowIndex - specialRowsCount];
+    const curValue = rowValue && rowValue[columnIndex - specialColumnsCount];
 
-    const valueElement = children({ row, column, rowIndex, columnIndex, value: curValue });
+    const valueElement = (
+      <CellComponent
+          row={row}
+          column={column}
+          rowIndex={rowIndex}
+          columnIndex={columnIndex}
+          value={curValue}
+          {...componentProps} />
+    );
 
     const isFixedColumnArea = columnIndex <= fixColumns;
     const isFixedRowArea = rowIndex <= fixRows;
