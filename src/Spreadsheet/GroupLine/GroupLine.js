@@ -4,6 +4,7 @@ import classes from './GroupLine.module.css';
 
 const GroupLine = ({
   type,
+  backgroundColor,
   mergedRange,
   row,
   column,
@@ -15,7 +16,7 @@ const GroupLine = ({
   onClick,
   overscrolled
 }) => {
-  const { specialCellsBackgroundColor, defaultRowHeight, defaultColumnWidth, groupSize } = useContext(SpreadsheetContext);
+  const { defaultRowHeight, defaultColumnWidth, groupSize } = useContext(SpreadsheetContext);
   
   const { lineProps, containerStyle } = useMemo(() => {
     let lineProps, containerStyle;
@@ -53,9 +54,9 @@ const GroupLine = ({
         columns={columns}
         mergedRange={mergedRange}
         overscrolled={overscrolled}>
-      <div className={classes.root} style={{ backgroundColor: specialCellsBackgroundColor }}>
-        <div className={classes.buttonContainer} style={{ ...containerStyle, backgroundColor: specialCellsBackgroundColor }}>
-          <div className={classes.groupButton} style={{ backgroundColor: specialCellsBackgroundColor }} onClick={onClick}>
+      <div className={classes.root} style={{ backgroundColor }}>
+        <div className={classes.buttonContainer} style={{ ...containerStyle, backgroundColor }}>
+          <div className={classes.groupButton} style={{ backgroundColor }} onClick={onClick}>
             {collapsed ? '+' : '-'}
           </div>
         </div>

@@ -51,6 +51,8 @@ export interface FixLinesProps extends HTMLAttributes<{}> {
 export const FixLines: FunctionComponent<FixLinesProps>
 
 export interface RowColumnNumberProps {
+  onRowsChange: Function;
+  onColumnsChange: Function;
   type: 'row' | 'column';
   row: Meta;
   column: Meta;
@@ -71,6 +73,7 @@ export interface GroupLevelButtonProps {
 export const GroupLevelButton: FunctionComponent<GroupLevelButtonProps>
 
 export interface GroupLineProps {
+  backgroundColor: string;
   type: 'row' | 'column';
   mergedRange: CellsRange;
   row: Meta;
@@ -104,12 +107,9 @@ export interface ComponentsOptions {
 }
 
 export interface SpreadsheetContextProps {
-  onRowsChange: Function,
-  onColumnsChange: Function,
   defaultColumnWidth: number,
   defaultRowHeight: number,
   groupSize: number,
-  specialCellsBackgroundColor: string,
   fixRows: number,
   fixColumns: number,
   specialRowsCount: number,
@@ -120,8 +120,6 @@ export interface SpreadsheetContextProps {
 export const SpreadsheetContext: Context<SpreadsheetContextProps>
 
 export interface SpreadsheetContainerProps {
-  onRowsChange?: Function;
-  onColumnsChange?: Function;
   defaultColumnWidth: number;
   defaultRowHeight: number;
   groupSize: number;
@@ -129,7 +127,6 @@ export interface SpreadsheetContainerProps {
   fixColumns?: number;
   specialRowsCount?: number;
   specialColumnsCount?: number;
-  specialCellsBackgroundColor: string;
   scrollerTop: number;
   scrollerLeft: number;
 }
@@ -211,6 +208,7 @@ export interface UseSpreadsheetRenderOptions extends ComponentsOptions {
 export function useSpreadsheetRender(options: UseSpreadsheetRenderOptions): JSX.Element
 
 export interface SpreadsheetResizerProps {
+  onChange: Function;
   mode: 'row' | 'column';
   index: number;
 }

@@ -13,6 +13,8 @@ const useSpreadsheetRender = ({
   visibleColumns,
   rows,
   columns,
+  onRowsChange,
+  onColumnsChange,
   RowColumnNumberComponent = RowColumnNumber,
   GroupLevelButtonComponent = GroupLevelButton,
   GroupLineComponent = GroupLine,
@@ -113,7 +115,16 @@ const useSpreadsheetRender = ({
               case 'NUMBER':
                 return <RowColumnNumberComponent key={`${seqRowIndex}_${seqColumnIndex}`} row={row} column={column} intersection />;
               default:
-                return <RowColumnNumberComponent key={`${seqRowIndex}_${seqColumnIndex}`} type="column" row={row} column={column} index={columnIndex} />;
+                return (
+                  <RowColumnNumberComponent
+                      key={`${seqRowIndex}_${seqColumnIndex}`}
+                      type="column"
+                      row={row}
+                      column={column}
+                      index={columnIndex}
+                      onRowsChange={onRowsChange}
+                      onColumnsChange={onColumnsChange} />
+                );
             }
 
           default:
@@ -133,7 +144,16 @@ const useSpreadsheetRender = ({
                   </React.Fragment>
                 );
               case 'NUMBER':
-                return <RowColumnNumberComponent key={`${seqRowIndex}_${seqColumnIndex}`} type="row" row={row} column={column} index={rowIndex} />;
+                return (
+                  <RowColumnNumberComponent
+                      key={`${seqRowIndex}_${seqColumnIndex}`}
+                      type="row"
+                      row={row}
+                      column={column}
+                      index={rowIndex}
+                      onRowsChange={onRowsChange}
+                      onColumnsChange={onColumnsChange} />
+                );
               default:
                 return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderCellValue({ row, rowIndex, column, columnIndex, rows, columns, value: curValue, mergedRange })}</React.Fragment>;
             }
@@ -155,7 +175,9 @@ const useSpreadsheetRender = ({
     renderCellValue,
     mergedCells,
     onRowGroupLevelButtonClick,
-    onColumnGroupLevelButtonClick
+    onColumnGroupLevelButtonClick,
+    onRowsChange,
+    onColumnsChange
   ]);
 
   const overscrolledFilter = useCallback(mergedRange => {

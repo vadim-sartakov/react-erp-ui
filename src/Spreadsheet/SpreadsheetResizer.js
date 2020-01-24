@@ -4,14 +4,12 @@ import useResize from '../useResize';
 
 const propertiesMap = {
   row: {
-    onChange: 'onRowsChange',
     defaultSize: 'defaultRowHeight',
     resizeProperty: 'height',
     otherResizeProperty: 'width',
     metaProp: 'row'
   },
   column: {
-    onChange: 'onColumnsChange',
     defaultSize: 'defaultColumnWidth',
     resizeProperty: 'width',
     otherResizeProperty: 'height',
@@ -19,11 +17,10 @@ const propertiesMap = {
   }
 };
 
-const SpreadsheetResizer = ({ mode, index, ...props }) => {
+const SpreadsheetResizer = ({ mode, index, onChange, ...props }) => {
   const properties = propertiesMap[mode];
   const context = useContext(SpreadsheetContext);
 
-  const onChange = context[properties.onChange];
   const defaultSize = context[properties.defaultSize];
   const metaProp = props[properties.metaProp];
 

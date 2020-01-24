@@ -1,17 +1,13 @@
 import React, { useMemo } from 'react';
 import { SpreadsheetContext } from './';
 
+/** @type {import('react').FunctionComponent<import('.').SpreadsheetContainerProps>} */
 const SpreadsheetContainer = ({
-  onRowsChange,
-  onColumnsChange,
   defaultColumnWidth,
   defaultRowHeight,
   groupSize,
   fixRows,
   fixColumns,
-  specialRowsCount,
-  specialColumnsCount,
-  specialCellsBackgroundColor,
   scrollerTop,
   scrollerLeft,
   className,
@@ -19,31 +15,21 @@ const SpreadsheetContainer = ({
   children
 }) => {
   const contextValue = useMemo(() => ({
-    onRowsChange,
-    onColumnsChange,
     defaultColumnWidth,
     defaultRowHeight,
     groupSize,
-    specialCellsBackgroundColor,
     fixRows,
     fixColumns,
-    specialRowsCount,
-    specialColumnsCount,
     scrollerTop,
     scrollerLeft
   }), [
-    onRowsChange,
-    onColumnsChange,
     defaultColumnWidth,
     defaultRowHeight,
     groupSize,
-    specialCellsBackgroundColor,
     fixRows,
     fixColumns,
-    specialRowsCount,
-    specialColumnsCount,
     scrollerTop,
-    scrollerLeft,
+    scrollerLeft
   ]);
   return (
     <SpreadsheetContext.Provider value={contextValue}>
