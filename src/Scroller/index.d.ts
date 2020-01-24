@@ -1,4 +1,4 @@
-import { CSSProperties, ElementType, UIEventHandler, HTMLAttributes, FunctionComponent, Context } from 'react';
+import { CSSProperties, UIEventHandler, HTMLAttributes, FunctionComponent, Context } from 'react';
 
 export interface Meta {
   size: number;
@@ -59,8 +59,8 @@ export interface UseScrollerResult {
    * Values loaded asynchronously. Applicable only for 'async' mode
    * when 'loadPage' callback specified
    */
-  loadedValues: any[][];
-  onScroll: Function;
+  loadedValues: any[];
+  onScroll: UIEventHandler;
   coverStyles: CSSProperties;
   pagesStyles: CSSProperties;
   gridStyles: CSSProperties;
@@ -71,25 +71,13 @@ export interface UseScrollerResult {
  */
 export function useScroller(options: UseScrollerOptions): UseScrollerResult
 
-export interface useScrollerRenderOptions {
-  CellComponent: (props: { rowIndex: number, columnIndex: number }) => JSX.Element,
-  visibleRows: number[];
-  visibleColumns: number[];
-  loadedValues: any[][];
-  rows: Meta[];
-  columns: Meta[];
-  value?: any[][];
-}
-
-/**
- * Scroller cells elements render hook
- */
-export function useScrollerRender(options: useScrollerRenderOptions): JSX.Element
-
-export interface ScrollerCellProps {
-  Component?: ElementType;
+export interface ScrollerCellProps extends HTMLAttributes<{}> {
+  Component?: FunctionComponent;
+  rowIndex: number;
+  columnIndex: number;
   row: Meta;
   column: Meta;
+  value: any;
 }
 
 /**
@@ -98,6 +86,8 @@ export interface ScrollerCellProps {
 export const ScrollerCell: FunctionComponent<ScrollerCellProps>
 
 export interface ScrollerProps extends UseScrollerOptions {
+  CellComponent: FunctionComponent<ScrollerCellProps>;
+  value: any[];
   width?: number;
   height: number;
 }

@@ -1,17 +1,17 @@
 import React, { useContext } from 'react';
 import { ScrollerContext } from './';
 
+/** @type {import('react').FunctionComponent<import('.').ScrollerCellProps>} */
 const ScrollerCell = ({
   style,
-  row = {},
-  column = {},
-  Component = 'div',
-  ...props
+  row,
+  column,
+  children
 }) => {
   const { defaultColumnWidth, defaultRowHeight } = useContext(ScrollerContext);
   
-  const { size: rowSize, offset: rowOffset } = row;
-  const { size: columnSize, offset: columnOffset } = column;
+  const { size: rowSize, offset: rowOffset } = row || {};
+  const { size: columnSize, offset: columnOffset } = column || {};
   const width = columnSize || defaultColumnWidth;
   const height = rowSize || defaultRowHeight;
   let nextStyle = { height, width };
@@ -29,7 +29,11 @@ const ScrollerCell = ({
     nextStyle.zIndex = 6;
   }
   nextStyle = { ...nextStyle, ...style };
-  return <Component {...props} style={nextStyle} />;
+  return (
+    <div style={nextStyle}>
+      {children}
+    </div>
+  );
 };
 
 export default ScrollerCell;

@@ -28,14 +28,15 @@ const RowColumnNumber = ({
   return (
     <SpreadsheetCell
         row={row}
-        column={column}
-        className={className}>
-      {(key !== undefined) && (
-        <>
-          {key + 1}
-          <SpreadsheetResizer mode={type} row={row} column={column} index={index} className={resizerClassName} />
-        </>
-      )}
+        column={column}>
+      <div className={className}>
+        {(key !== undefined) && (
+          <>
+            {key + 1}
+            <SpreadsheetResizer mode={type} row={row} column={column} index={index} className={resizerClassName} />
+          </>
+        )}
+      </div>
     </SpreadsheetCell>
   )
 };

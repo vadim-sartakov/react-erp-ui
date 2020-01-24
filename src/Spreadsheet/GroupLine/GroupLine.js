@@ -1,4 +1,5 @@
 import React, { useContext, useMemo } from 'react';
+import classNames from 'classnames';
 import { SpreadsheetContext, SpreadsheetCell } from '../';
 import classes from './GroupLine.module.css';
 
@@ -52,15 +53,15 @@ const GroupLine = ({
         rows={rows}
         columns={columns}
         mergedRange={mergedRange}
-        overscrolled={overscrolled}
-        className={classes.root}
-        style={{ backgroundColor: specialCellsBackgroundColor }}>
-      <div className={classes.buttonContainer} style={containerStyle}>
-        <div className={classes.groupButton} style={{ backgroundColor: specialCellsBackgroundColor }} onClick={onClick}>
-          {collapsed ? '+' : '-'}
+        overscrolled={overscrolled}>
+      <div className={classes.root} style={{ backgroundColor: specialCellsBackgroundColor }}>
+        <div className={classes.buttonContainer} style={{ ...containerStyle, backgroundColor: specialCellsBackgroundColor }}>
+          <div className={classes.groupButton} style={{ backgroundColor: specialCellsBackgroundColor }} onClick={onClick}>
+            {collapsed ? '+' : '-'}
+          </div>
         </div>
+        {!collapsed && <div {...lineProps} />}
       </div>
-      {!collapsed && <div {...lineProps} />}
     </SpreadsheetCell>
   )
 };

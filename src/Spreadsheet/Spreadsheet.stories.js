@@ -6,7 +6,9 @@ import classes from './Spreadsheet-stories.module.sass';
 
 const renderGroupEmptyArea = ({ row, column }) => {
   return (
-    <SpreadsheetCell row={row} column={column} className={classes.groupEmptyArea}/>
+    <SpreadsheetCell row={row} column={column}>
+      <div className={classes.groupEmptyArea} />
+    </SpreadsheetCell>
   )
 };
 
@@ -17,9 +19,10 @@ const renderCellValue = ({ row, column, rows, columns, value, mergedRange, overs
       rows={rows}
       columns={columns}
       mergedRange={mergedRange}
-      overscrolled={overscrolled}
-      className={classes.cell}>
-    {value ? `Value ${value.row} - ${value.column}` : ''}
+      overscrolled={overscrolled} >
+    <div className={classes.cell}>
+      {value ? `Value ${value.row} - ${value.column}` : ''}
+    </div>
   </SpreadsheetCell>
 );
 

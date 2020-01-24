@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
-import Scroller, { ScrollerCell } from './';
+import Scroller from './';
 import { generateListValues, generateGridValues } from '../test-utils/generateValues';
 import classes from './Scroller-stories.module.sass';
 
@@ -11,11 +11,13 @@ export const listValue = generateListValues(1000);
 const listRows = generateCustomMeta(listValue.length, 80);
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerCellProps>} */
-const ListCellComponent = ({ row, value }) => (
-  <ScrollerCell className="row" row={row}>
-    {value ? `Value ${value.row}` : 'Loading...'}
-  </ScrollerCell>
-);
+const ListCellComponent = ({ value }) => {
+  return (
+    <div className="row">
+      {value ? `Value ${value.row}` : 'Loading...'}
+    </div>
+  )
+};
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerProps>} */
 export const ListTestComponent = props => {
@@ -27,11 +29,13 @@ const gridRows = generateCustomMeta(gridValue.length, 60);
 const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerCellProps>} */
-const GridCellComponent = ({ row, column, value }) => (
-  <ScrollerCell className={classes.cell} row={row} column={column}>
-    {value ? `Value ${value.row} - ${value.column}` : 'Loading...'}
-  </ScrollerCell>
-);
+const GridCellComponent = ({ value }) => {
+  return (
+    <div className={classes.cell}>
+      {value ? `Value ${value.row} - ${value.column}` : 'Loading...'}
+    </div>
+  )
+};
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerProps>} */
 export const GridTestComponent = props => {
