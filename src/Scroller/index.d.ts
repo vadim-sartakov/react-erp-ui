@@ -71,8 +71,7 @@ export interface UseScrollerResult {
  */
 export function useScroller(options: UseScrollerOptions): UseScrollerResult
 
-export interface ScrollerCellProps extends HTMLAttributes<{}> {
-  Component?: FunctionComponent;
+export interface ScrollerCellProps {
   rowIndex: number;
   columnIndex: number;
   row: Meta;
@@ -87,7 +86,7 @@ export const ScrollerCell: FunctionComponent<ScrollerCellProps>
 
 export interface ScrollerProps extends UseScrollerOptions {
   CellComponent: FunctionComponent<ScrollerCellProps>;
-  value: any[];
+  value?: any[];
   width?: number;
   height: number;
 }
