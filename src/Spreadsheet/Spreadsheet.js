@@ -10,15 +10,15 @@ const Spreadsheet = props => {
     ...spreadsheetProps
   });
 
-  const elements = useSpreadsheetRender({ ...props, ...spreadsheetProps, ...scrollerProps });
+  const elements = useSpreadsheetRender({ ...props, ...spreadsheetProps, ...scrollerProps, scrollerTop: scrollerProps.pagesStyles.top, scrollerLeft: scrollerProps.pagesStyles.left });
 
   return (
-    <ScrollerContainer {...props} {...scrollerProps}>
+    <ScrollerContainer
+          {...props}
+          {...scrollerProps}>
       <SpreadsheetContainer
           {...props}
           {...spreadsheetProps}
-          scrollerTop={scrollerProps.pagesStyles.top}
-          scrollerLeft={scrollerProps.pagesStyles.left}
           style={gridStyles}>
         {elements}
       </SpreadsheetContainer>

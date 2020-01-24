@@ -12,18 +12,10 @@ const renderGroupEmptyArea = ({ row, column }) => {
   )
 };
 
-const renderCellValue = ({ row, column, rows, columns, value, mergedRange, overscrolled }) => (
-  <SpreadsheetCell
-      row={row}
-      column={column}
-      rows={rows}
-      columns={columns}
-      mergedRange={mergedRange}
-      overscrolled={overscrolled} >
-    <div className={classes.cell}>
-      {value ? `Value ${value.row} - ${value.column}` : ''}
-    </div>
-  </SpreadsheetCell>
+const CellComponent = ({ value }) => (
+  <div className={classes.cell}>
+    {value ? `Value ${value.row} - ${value.column}` : ''}
+  </div>
 );
 
 /**
@@ -43,7 +35,7 @@ const SpreadsheetComponent = props => {
         onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
         renderGroupEmptyArea={renderGroupEmptyArea}
-        renderCellValue={renderCellValue} />
+        CellComponent={CellComponent} />
   );
 };
 

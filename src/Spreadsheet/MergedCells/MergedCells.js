@@ -1,41 +1,38 @@
 import React, { useContext } from 'react';
-import { ScrollerCell } from '../Scroller';
-import { SpreadsheetContext } from './';
-import { getCellsRangeSize, getMergedCellPosition } from './utils';
+import { SpreadsheetContext } from '../';
+import { getMergedCellPosition, getCellsRangeSize } from '../utils';
 
-const SpreadsheetCell = ({
-  mergedRange,
+const MergedCells = ({
+  mergedCells,
   rows,
   columns,
-  overscrolled,
-  style,
-  children,
-  ...props
+  value,
+  scrollerTop,
+  scrollerLeft,
+  visibleRows,
+  visibleColumns,
+  CellComponent
 }) => {
+  const { fixRows, fixColumns, defaultRowHeight, defaultColumnWidth } = useContext(SpreadsheetContext);
 
-  const {
-    defaultRowHeight,
-    defaultColumnWidth,
-    fixRows,
-    fixColumns,
-    scrollerTop,
-    scrollerLeft
-  } = useContext(SpreadsheetContext);
+  const visibleMerges = mergedCells.filter(mergedRange => {
+    return (visibleRows.indexOf(mergedRange.start.row) !== -1 && visibleColumns.indexOf(mergedRange.start.column) !== -1) ||
+        ((mergedRange.start.row < visibleRows[fixRows] && mergedRange.end.row >= visibleRows[fixRows]) ||
+            (mergedRange.start.column < visibleColumns[fixColumns] && mergedRange.end.column >= visibleColumns[fixRows]));
+  });
 
-  let elements = [];
-
-  if (!overscrolled) {
-    elements.push((
-      <ScrollerCell key="0" {...props} style={style}>
-        {children}
-      </ScrollerCell>
-    ));
-  }
-
-  /*if (mergedRange) {
+  const elements = visibleMerges.reduce((acc, mergedRange) => {
+    const curResult = [];
 
     const columnIndex = mergedRange.start.column;
     const rowIndex = mergedRange.start.row;
+
+    const row = rows[rowIndex] || {};
+    const column = columns[columnIndex] || {};
+    const rowValue = value[rowIndex];
+    const curValue = rowValue && rowValue[columnIndex];
+
+    const valueElement = <CellComponent row={row} column={column} rowIndex={rowIndex} columnIndex={columnIndex} value={curValue} />;
 
     const isFixedColumnArea = columnIndex <= fixColumns;
     const isFixedRowArea = rowIndex <= fixRows;
@@ -97,8 +94,7 @@ const SpreadsheetCell = ({
       width,
       height,
       top: 'auto',
-      left: 'auto',
-      ...style
+      left: 'auto'
     };
 
     if (isFixedRowArea && isFixedColumnArea) {
@@ -113,12 +109,12 @@ const SpreadsheetCell = ({
         width: Math.min(fixWidth, width),
         height: Math.min(fixHeight, height)
       };
-      elements.push(
-        <div key="7" style={rootStyle}>
+      curResult.push(
+        <div key={`fix-row-column-${rowIndex}-${columnIndex}`} style={rootStyle}>
           <div style={wrapperStyle}>
-            <ScrollerCell {...props} style={valueStyle}>
-              {children}
-            </ScrollerCell>
+            <div style={valueStyle}>
+              {valueElement}
+            </div>
           </div>
         </div>
       );
@@ -135,12 +131,12 @@ const SpreadsheetCell = ({
         width: Math.min(fixWidth, width),
         height
       };
-      elements.push(
-        <div key="3" style={rootStyle}>
+      curResult.push(
+        <div key={`fix-column-${rowIndex}-${columnIndex}`} style={rootStyle}>
           <div style={wrapperStyle}>
-            <ScrollerCell {...props} style={valueStyle}>
-              {children}
-            </ScrollerCell>
+            <div style={valueStyle}>
+              {valueElement}
+            </div>
           </div>
         </div>
       );
@@ -157,39 +153,38 @@ const SpreadsheetCell = ({
         width,
         height: Math.min(fixHeight, height)
       };
-      elements.push(
-        <div key="5" style={rootStyle}>
+      curResult.push(
+        <div key={`fix-row-${rowIndex}-${columnIndex}`} style={rootStyle}>
           <div style={wrapperStyle}>
-            <ScrollerCell {...props} style={valueStyle}>
-              {children}
-            </ScrollerCell>
+            <div style={valueStyle}>
+              {valueElement}
+            </div>
           </div>
         </div>
       );
     }
 
     // Not fixed area
-    elements.push((
-      <ScrollerCell
-          key="1"
-          {...props}
+    curResult.push((
+      <div
+          key={`fix-cell-${rowIndex}-${columnIndex}`}
           style={{
             position: 'absolute',
             top: top - scrollerTop,
             left: left - scrollerLeft,
             width,
             height,
-            zIndex: 1,
-            ...style
+            zIndex: 1
           }}>
-        {children}
-      </ScrollerCell>
+        {valueElement}
+      </div>
     ));
-    
-  }*/
+
+    return [...acc, ...curResult];
+  }, []);
 
   return elements;
 
 };
 
-export default SpreadsheetCell;
+export default MergedCells;
