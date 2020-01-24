@@ -21,24 +21,10 @@ export const loadPageAsync = value => async (page, itemsPerPage) => loadPage(val
 describe('Scroller', () => {
 
   const mapper = json => {
-    if (json.type === 'Scroller' || json.type === 'ScrollerContainer') {
+    if (json.type !== 'div') {
       return {
         ...json,
-        props: {
-          ...json.props,
-          value: json.props.value && `length: ${json.props.value.length}`,
-          rows: json.props.rows && `length: ${json.props.rows.length}`,
-          columns: json.props.columns && `length: ${json.props.columns.length}`
-        }
-      }
-    }
-    if (json.type === 'ScrollerCell') {
-      return {
-        ...json,
-        props: {
-          ...json.props,
-          style: undefined
-        }
+        props: {}
       }
     }
     return json;
@@ -47,14 +33,14 @@ describe('Scroller', () => {
   describe('list', () => {
 
     it('should load first rows pages with default sizes', () => {
-      const wrapper = mount(syncListWithDefaultSizes());
+      const wrapper = mount(syncListWithDefaultSizes({ rowsPerPage: 10 }));
       expect(toJSON(wrapper.find(Scroller), { map: mapper })).toMatchSnapshot();
     });
 
     it('should load first rows pages without full height when list is lazy', async () => {
       const loadPage = jest.fn(loadPageAsync(listValue));
       let wrapper;
-      await act(async () => { wrapper = mount(asyncLazyListWithDefaultSizes({ loadPage })) });
+      await act(async () => { wrapper = mount(asyncLazyListWithDefaultSizes({ loadPage, rowsPerPage: 10 })) });
       wrapper.update();
       expect(toJSON(wrapper.find(Scroller), { map: mapper })).toMatchSnapshot();
     });
@@ -64,8 +50,8 @@ describe('Scroller', () => {
 
     describe('sync', () => {
 
-      const defaultWrapper = mount(syncGridWithDefaultSizes());
-      const customWrapper = mount(syncGridWithCustomSizes());
+      const defaultWrapper = mount(syncGridWithDefaultSizes({ rowsPerPage: 10, columnsPerPage: 5 }));
+      const customWrapper = mount(syncGridWithCustomSizes({ rowsPerPage: 10, columnsPerPage: 5 }));
 
       it('should load first rows and columns pages with default sizes', () => {
         const wrapper = defaultWrapper;
@@ -109,7 +95,7 @@ describe('Scroller', () => {
         let loadPage = jest.fn(loadPageAsync(gridValue));
         let wrapper;
         
-        await act(async () => { wrapper = mount(asyncGridWithDefaultSizes({ loadPage })); });
+        await act(async () => { wrapper = mount(asyncGridWithDefaultSizes({ loadPage, rowsPerPage: 10, columnsPerPage: 5 })); });
         expect(toJSON(wrapper.find(Scroller), { map: mapper })).toMatchSnapshot();
 
         wrapper.update();
@@ -120,7 +106,7 @@ describe('Scroller', () => {
 
       it('should load middle rows and columns pages with default sizes', async () => {
         let loadPage = jest.fn(loadPageAsync(gridValue));
-        let wrapper = mount(asyncGridWithDefaultSizes({ loadPage }));
+        let wrapper = mount(asyncGridWithDefaultSizes());
         wrapper.find(ScrollerContainer).find('div').first().simulate('scroll', { target: { scrollTop: 1800, scrollLeft: 2250 } });
 
         expect(toJSON(wrapper.find(Scroller), { map: mapper })).toMatchSnapshot();
@@ -178,12 +164,12 @@ describe('Scroller', () => {
     describe('fixed rows, columns', () => {
 
       it('should load first rows and columns pages with default sizes', () => {
-        const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns());
+        const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns({ rowsPerPage: 10, columnsPerPage: 5 }));
         expect(toJSON(wrapper.find(Scroller), { map: mapper })).toMatchSnapshot();
       });
 
       it('should load middle rows and columns pages with default sizes', () => {
-        const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns());
+        const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns({ rowsPerPage: 10, columnsPerPage: 5 }));
         wrapper.find(ScrollerContainer).find('div').first().simulate('scroll', { target: { scrollTop: 1800, scrollLeft: 2250 } })
         expect(toJSON(wrapper.find(Scroller), { map: mapper })).toMatchSnapshot();
       });

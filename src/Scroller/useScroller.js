@@ -5,7 +5,8 @@ import {
   getPageNumber,
   getGaps,
   getFixedOffsets,
-  getScrollPages
+  getScrollPages,
+  getItemsSize
 } from './utils';
 
 const useScroller = ({
@@ -146,38 +147,52 @@ const useScroller = ({
     return [...acc, ...curPage];
   }, []), [loadPage, buffer, rowsPerPage, totalRows]);
 
+  const adjustGapsWithFixed = useCallback(({ gaps, meta, startIndex, fixCount, defaultSize }) => {
+    const displayFixed = startIndex > fixCount;
+    let fixedSize = 0, hiddenSize = 0;
+    if (displayFixed) {
+      fixedSize = getItemsSize({ meta, count: fixCount, defaultSize });
+      hiddenSize = getItemsSize({ startIndex: fixCount, count: fixCount, meta, defaultSize });
+    }
+    return {
+      ...gaps,
+      start: (gaps.start + hiddenSize) - fixedSize,
+      middle: (gaps.middle - hiddenSize) + fixedSize
+    }
+  }, []);
+
   const rowsGaps = useMemo(() => {
-    return getGaps({
-      meta: rows,
+    let gaps = getGaps({
       scrollPages: rowsScrollPages,
       defaultSize: defaultRowHeight,
       itemsPerPage: rowsPerPage,
       totalCount: totalRows,
-      page: rowsPage,
-      fixCount: fixRows
+      page: rowsPage
     });
-  }, [fixRows, rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows, rowsScrollPages]);
+    gaps = adjustGapsWithFixed({ gaps, meta: rows, startIndex: rowsStartIndex, fixCount: fixRows, defaultSize: defaultRowHeight });
+    return gaps;
+  }, [fixRows, rows, rowsPage, rowsPerPage, defaultRowHeight, totalRows, rowsScrollPages, adjustGapsWithFixed, rowsStartIndex]);
 
   const lastRowsPageGaps = useMemo(() => lazy && getGaps({
-    meta: rows,
+    scrollPages: rowsScrollPages,
     defaultSize: defaultRowHeight,
     itemsPerPage: rowsPerPage,
     totalCount: totalRows,
-    page: lastRowsPage,
-    fixCount: fixRows
-  }), [lazy, rows, fixRows, lastRowsPage, rowsPerPage, defaultRowHeight, totalRows]);
+    page: lastRowsPage
+  }), [rowsScrollPages, lazy, lastRowsPage, rowsPerPage, defaultRowHeight, totalRows]);
 
   const columnsGaps = useMemo(() => {
-    return totalColumns && getGaps({
-      meta: columns,
+    if (!totalColumns) return;
+    let gaps = getGaps({
       scrollPages: columnsScrollPages,
       defaultSize: defaultColumnWidth,
       itemsPerPage: columnsPerPage,
       totalCount: totalColumns,
-      page: columnsPage,
-      fixCount: fixColumns
+      page: columnsPage
     });
-  }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, fixColumns, columnsScrollPages]);
+    gaps = adjustGapsWithFixed({ gaps, meta: columns, startIndex: columnsStartIndex, fixCount: fixColumns, defaultSize: defaultColumnWidth });
+    return gaps;
+  }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, fixColumns, columnsScrollPages, adjustGapsWithFixed, columnsStartIndex]);
 
   const coverStyles = useMemo(() => ({
     height: lazy ? lastRowsPageGaps.start + lastRowsPageGaps.middle : rowsGaps.start + rowsGaps.middle + rowsGaps.end,

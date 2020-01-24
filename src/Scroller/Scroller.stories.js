@@ -27,8 +27,8 @@ const gridRows = generateCustomMeta(gridValue.length, 60);
 const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerCellProps>} */
-const GridCellComponent = ({ rowIndex, columnIndex, row, column, value }) => (
-  <ScrollerCell className={classes.cell} rowIndex={rowIndex} columnIndex={columnIndex} row={row} column={column}>
+const GridCellComponent = ({ row, column, value }) => (
+  <ScrollerCell className={classes.cell} row={row} column={column}>
     {value ? `Value ${value.row} - ${value.column}` : 'Loading...'}
   </ScrollerCell>
 );
