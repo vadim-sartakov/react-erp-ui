@@ -10,7 +10,8 @@ import {
   syncGridWithCustomSizes,
   asyncGridWithDefaultSizes,
   asyncGridWithCustomSizes,
-  syncGridWithDefaultSizesAndFixedRowsColumns
+  syncGridWithDefaultSizesAndFixedRowsColumns,
+  syncGridWithCustomSizesAndFixedRowsColumns
 } from './Scroller.stories';
 import { loadPage } from './utils';
 import Scroller from './Scroller';
@@ -171,6 +172,12 @@ describe('Scroller', () => {
       it('should load middle rows and columns pages with default sizes', () => {
         const wrapper = mount(syncGridWithDefaultSizesAndFixedRowsColumns({ rowsPerPage: 10, columnsPerPage: 5 }));
         wrapper.find(ScrollerContainer).find('div').first().simulate('scroll', { target: { scrollTop: 1800, scrollLeft: 2250 } })
+        expect(toJSON(wrapper.find(Scroller), { map: mapper })).toMatchSnapshot();
+      });
+
+      it('should load middle rows and columns pages with custom sizes', () => {
+        const wrapper = mount(syncGridWithCustomSizesAndFixedRowsColumns({ rowsPerPage: 10, columnsPerPage: 5 }));
+        wrapper.find(ScrollerContainer).find('div').first().simulate('scroll', { target: { scrollTop: 33000, scrollLeft: 4400 } })
         expect(toJSON(wrapper.find(Scroller), { map: mapper })).toMatchSnapshot();
       });
 
