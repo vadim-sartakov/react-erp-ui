@@ -146,8 +146,8 @@ const useSpreadsheetRender = ({
               }
               break;
             default:
-              const rowValue = value[rowIndex];
-              const curValue = rowValue && rowValue[columnIndex];
+              const rowValue = value[rowIndex - specialRowsCount];
+              const curValue = rowValue && rowValue[columnIndex - specialColumnsCount];
               
               switch(columnsType) {
                 case 'GROUP':
@@ -201,7 +201,9 @@ const useSpreadsheetRender = ({
     onColumnGroupLevelButtonClick,
     onRowsChange,
     onColumnsChange,
-    mergedCells
+    mergedCells,
+    specialRowsCount,
+    specialColumnsCount
   ]);
 
   const mergedCellsElement = (
