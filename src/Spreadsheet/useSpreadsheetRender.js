@@ -1,6 +1,7 @@
 import React, { useMemo, useCallback } from 'react';
 import GroupLevelButton from './GroupLevelButton';
-import { GroupLine, RowColumnNumber, SpreadsheetCell } from './';
+import { GroupLine, SpreadsheetCell } from './';
+import { RowColumnNumber, RowColumnNumberIntersection } from './RowColumnNumber';
 import FixLines from './FixLines';
 import MergedCells from './MergedCells';
 
@@ -22,8 +23,6 @@ const useSpreadsheetRender = ({
   FixLinesComponent,
   renderGroupEmptyArea,
   CellComponent,
-  fixRows,
-  fixColumns,
   mergedCells,
   specialRowsCount,
   specialColumnsCount,
@@ -83,86 +82,107 @@ const useSpreadsheetRender = ({
         const column = columns[columnIndex] || {};
         const columnsType = column.type;
 
-        switch(rowType) {
-          case 'GROUP':
+        let element;
 
-            switch(columnsType) {
-              case 'GROUP':
-                return <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
-              case 'NUMBER':
-                const groupLevelButtonProps = { row, column, index: rowIndex, onClick: onColumnGroupLevelButtonClick(rowIndex + 1) };
-                return (
-                  <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
-                    {renderColumnGroupCallback({ row, column, rowIndex, columnIndex, overscrolled: true })}
-                    <GroupLevelButtonComponent {...groupLevelButtonProps} />
-                  </React.Fragment>
-                );
-              default:
-                return (
-                  <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
-                    {renderColumnGroupCallback({ row, column, rowIndex, columnIndex })}
-                  </React.Fragment>
-                );
-            }
-          case 'NUMBER':
+        const isMerged = mergedCells.some(mergedRange =>
+            rowIndex >= mergedRange.start.row &&
+            columnIndex >= mergedRange.start.column &&
+            rowIndex <= mergedRange.end.row &&
+            columnIndex <= mergedRange.end.column);
 
-            switch(columnsType) {
-              case 'GROUP':
-                const groupLevelButtonProps = { row, column, index: columnIndex, onClick: onRowGroupLevelButtonClick(columnIndex + 1) };
-                return (
-                  <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
-                    {renderRowGroupCallback({ row, column, rowIndex, columnIndex, overscrolled: true })}
-                    <GroupLevelButtonComponent {...groupLevelButtonProps} />
-                  </React.Fragment>  
-                );
-              case 'NUMBER':
-                return <RowColumnNumberComponent key={`${seqRowIndex}_${seqColumnIndex}`} row={row} column={column} intersection />;
-              default:
-                return (
-                  <RowColumnNumberComponent
-                      key={`${seqRowIndex}_${seqColumnIndex}`}
-                      type="column"
-                      row={row}
-                      column={column}
-                      index={columnIndex}
-                      onRowsChange={onRowsChange}
-                      onColumnsChange={onColumnsChange} />
-                );
-            }
+        if (!isMerged) {
+          
+          switch(rowType) {
+            case 'GROUP':
 
-          default:
-            const rowValue = value[rowIndex];
-            const curValue = rowValue && rowValue[columnIndex];
-            
-            switch(columnsType) {
-              case 'GROUP':
-                return (
-                  <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
-                    {renderRowGroupCallback({ row, column, rowIndex, columnIndex })}
-                  </React.Fragment>
-                );
-              case 'NUMBER':
-                return (
-                  <RowColumnNumberComponent
-                      key={`${seqRowIndex}_${seqColumnIndex}`}
-                      type="row"
-                      row={row}
-                      column={column}
-                      index={rowIndex}
-                      onRowsChange={onRowsChange}
-                      onColumnsChange={onColumnsChange} />
-                );
-              default:
-                return (
-                  <SpreadsheetCell
-                      key={`${seqRowIndex}_${seqColumnIndex}`}
-                      row={row}
-                      column={column}>
-                    <CellComponent value={curValue} />
-                  </SpreadsheetCell>
-                );
-            }
+              switch(columnsType) {
+                case 'GROUP':
+                  element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
+                  break;
+                case 'NUMBER':
+                  const groupLevelButtonProps = { row, column, index: rowIndex, onClick: onColumnGroupLevelButtonClick(rowIndex + 1) };
+                  element = (
+                    <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
+                      {renderColumnGroupCallback({ row, column, rowIndex, columnIndex, overscrolled: true })}
+                      <GroupLevelButtonComponent {...groupLevelButtonProps} />
+                    </React.Fragment>
+                  );
+                  break;
+                default:
+                  element = (
+                    <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
+                      {renderColumnGroupCallback({ row, column, rowIndex, columnIndex })}
+                    </React.Fragment>
+                  );
+              }
+              break;
+            case 'NUMBER':
+
+              switch(columnsType) {
+                case 'GROUP':
+                  const groupLevelButtonProps = { row, column, index: columnIndex, onClick: onRowGroupLevelButtonClick(columnIndex + 1) };
+                  element = (
+                    <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
+                      {renderRowGroupCallback({ row, column, rowIndex, columnIndex, overscrolled: true })}
+                      <GroupLevelButtonComponent {...groupLevelButtonProps} />
+                    </React.Fragment>  
+                  );
+                  break;
+                case 'NUMBER':
+                  element = <RowColumnNumberIntersection />;
+                  break;
+                default:
+                  element = (
+                    <RowColumnNumberComponent
+                        key={`${seqRowIndex}_${seqColumnIndex}`}
+                        type="column"
+                        row={row}
+                        column={column}
+                        index={columnIndex}
+                        onRowsChange={onRowsChange}
+                        onColumnsChange={onColumnsChange} />
+                  );
+                  break;
+              }
+              break;
+            default:
+              const rowValue = value[rowIndex];
+              const curValue = rowValue && rowValue[columnIndex];
+              
+              switch(columnsType) {
+                case 'GROUP':
+                  element = (
+                    <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
+                      {renderRowGroupCallback({ row, column, rowIndex, columnIndex })}
+                    </React.Fragment>
+                  );
+                  break
+                case 'NUMBER':
+                  element = (
+                    <RowColumnNumberComponent
+                        key={`${seqRowIndex}_${seqColumnIndex}`}
+                        type="row"
+                        row={row}
+                        column={column}
+                        index={rowIndex}
+                        onRowsChange={onRowsChange}
+                        onColumnsChange={onColumnsChange} />
+                  );
+                  break;
+                default:
+                  element = <CellComponent value={curValue} />;
+              }
+          }
         }
+
+        return (
+          <SpreadsheetCell
+                key={`${seqRowIndex}_${seqColumnIndex}`}
+                row={row}
+                column={column}>
+            {element}
+          </SpreadsheetCell>
+        );
 
       });
 
@@ -180,12 +200,13 @@ const useSpreadsheetRender = ({
     onRowGroupLevelButtonClick,
     onColumnGroupLevelButtonClick,
     onRowsChange,
-    onColumnsChange
+    onColumnsChange,
+    mergedCells
   ]);
 
   const mergedCellsElement = (
     <MergedCells
-        key="merged-cells"
+        key="value-merged-cells"
         rows={rows}
         columns={columns}
         mergedCells={mergedCells}
@@ -194,7 +215,9 @@ const useSpreadsheetRender = ({
         visibleRows={visibleRows}
         visibleColumns={visibleColumns}
         value={value}
-        CellComponent={CellComponent} />
+        CellComponent={CellComponent}>
+      {(props) => <CellComponent {...props} />}
+    </MergedCells>
   );
 
   const fixedAreasElement = (

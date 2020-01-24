@@ -11,7 +11,7 @@ const MergedCells = ({
   scrollerLeft,
   visibleRows,
   visibleColumns,
-  CellComponent
+  children
 }) => {
   const { fixRows, fixColumns, defaultRowHeight, defaultColumnWidth } = useContext(SpreadsheetContext);
 
@@ -32,7 +32,7 @@ const MergedCells = ({
     const rowValue = value[rowIndex];
     const curValue = rowValue && rowValue[columnIndex];
 
-    const valueElement = <CellComponent row={row} column={column} rowIndex={rowIndex} columnIndex={columnIndex} value={curValue} />;
+    const valueElement = children({ row, column, rowIndex, columnIndex, value: curValue });
 
     const isFixedColumnArea = columnIndex <= fixColumns;
     const isFixedRowArea = rowIndex <= fixRows;

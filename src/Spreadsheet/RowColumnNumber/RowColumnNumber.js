@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { SpreadsheetCell, SpreadsheetResizer } from '../';
+import { SpreadsheetResizer } from '../';
 import classes from './RowColumnNumber.module.css';
 
 const RowColumnNumber = ({
@@ -25,23 +25,16 @@ const RowColumnNumber = ({
       resizerClassName = classNames(classes.resizer, classes.rowResizer);
       onChange = onRowsChange;
       break;
-    // Intersection
     default:
       className = classes.cell
   }
   return (
-    <SpreadsheetCell
-        row={row}
-        column={column}>
-      <div className={className}>
-        {(key !== undefined) && (
-          <>
-            {key + 1}
-            <SpreadsheetResizer mode={type} row={row} column={column} index={index} className={resizerClassName} onChange={onChange} />
-          </>
-        )}
-      </div>
-    </SpreadsheetCell>
+    <div className={className}>
+      <>
+        {key + 1}
+        <SpreadsheetResizer mode={type} row={row} column={column} index={index} className={resizerClassName} onChange={onChange} />
+      </>
+    </div>
   )
 };
 

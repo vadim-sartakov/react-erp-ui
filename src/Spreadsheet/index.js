@@ -5,7 +5,6 @@ export { default as SpreadsheetContainer } from './SpreadsheetContainer';
 export { default as useSpreadsheet } from './useSpreadsheet';
 export { default as useSpreadsheetRender } from './useSpreadsheetRender';
 export { default as FixLines } from './FixLines';
-export { default as RowColumnNumber } from './RowColumnNumber';
 export { default as GroupLevelButton } from './GroupLevelButton';
 export { default as GroupLine } from './GroupLine';
 export { default } from './Spreadsheet';

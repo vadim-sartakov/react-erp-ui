@@ -10,7 +10,13 @@ const Spreadsheet = props => {
     ...spreadsheetProps
   });
 
-  const elements = useSpreadsheetRender({ ...props, ...spreadsheetProps, ...scrollerProps, scrollerTop: scrollerProps.pagesStyles.top, scrollerLeft: scrollerProps.pagesStyles.left });
+  const elements = useSpreadsheetRender({
+    ...props,
+    ...spreadsheetProps,
+    ...scrollerProps,
+    scrollerTop: scrollerProps.pagesStyles.top,
+    scrollerLeft: scrollerProps.pagesStyles.left
+  });
 
   return (
     <ScrollerContainer
