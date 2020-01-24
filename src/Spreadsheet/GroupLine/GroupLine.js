@@ -1,5 +1,4 @@
 import React, { useContext, useMemo } from 'react';
-import classNames from 'classnames';
 import { SpreadsheetContext, SpreadsheetCell } from '../';
 import classes from './GroupLine.module.css';
 

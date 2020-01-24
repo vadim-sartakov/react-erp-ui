@@ -152,11 +152,11 @@ const useScroller = ({
     let fixedSize = 0, hiddenSize = 0;
     if (displayFixed) {
       fixedSize = getItemsSize({ meta, count: fixCount, defaultSize });
-      hiddenSize = getItemsSize({ startIndex: fixCount, count: fixCount, meta, defaultSize });
+      hiddenSize = getItemsSize({ startIndex, count: fixCount, meta, defaultSize });
     }
     return {
       ...gaps,
-      start: (gaps.start + hiddenSize) - fixedSize,
+      start: (gaps.start - fixedSize) + hiddenSize,
       middle: (gaps.middle - hiddenSize) + fixedSize
     }
   }, []);
@@ -194,11 +194,13 @@ const useScroller = ({
     return gaps;
   }, [columns, columnsPage, columnsPerPage, defaultColumnWidth, totalColumns, fixColumns, columnsScrollPages, adjustGapsWithFixed, columnsStartIndex]);
 
-  const coverStyles = useMemo(() => ({
-    height: lazy ? lastRowsPageGaps.start + lastRowsPageGaps.middle : rowsGaps.start + rowsGaps.middle + rowsGaps.end,
-    width: columnsGaps && (columnsGaps.start + columnsGaps.middle + columnsGaps.end),
-    position: 'relative'
-  }), [lazy, rowsGaps, columnsGaps, lastRowsPageGaps]);
+  const coverStyles = useMemo(() => {
+    return {
+      height: lazy ? lastRowsPageGaps.start + lastRowsPageGaps.middle : rowsGaps.start + rowsGaps.middle + rowsGaps.end,
+      width: columnsGaps && (columnsGaps.start + columnsGaps.middle + columnsGaps.end),
+      position: 'relative'
+    }
+  }, [lazy, rowsGaps, columnsGaps, lastRowsPageGaps]);
   const pagesStyles = useMemo(() => {
     return {
       top: rowsGaps.start,
