@@ -8,8 +8,7 @@ export const visibleMergesFilter = ({
   visibleRows,
   visibleColumns
 }) => mergedRange => {
-  return (mergedRange.start.row < fixRows && mergedRange.start.column < visibleColumns[visibleColumns.length - 1]) ||
-      (mergedRange.start.column < fixColumns && mergedRange.start.row < visibleRows[visibleRows.length - 1]) ||
+  return mergedRange.start.row < visibleRows[fixRows] || mergedRange.start.column < visibleColumns[fixColumns] ||
       (mergedRange.start.row <= visibleRows[visibleRows.length - 1] &&
           mergedRange.start.column <= visibleColumns[visibleColumns.length - 1] &&
           mergedRange.end.row >= visibleRows[fixRows] &&
@@ -33,8 +32,8 @@ const MergedCells = ({
   componentProps
 }) => {
   const { defaultRowHeight, defaultColumnWidth } = useContext(SpreadsheetContext);
-
   const visibleMerges = mergedCells.filter(visibleMergesFilter({ fixRows, fixColumns, visibleRows, visibleColumns }));
+  
   const elements = visibleMerges.reduce((acc, mergedRange) => {
     const curResult = [];
 
