@@ -1,7 +1,8 @@
 import React, { useMemo, useCallback } from 'react';
 import GroupLevelButton from './GroupLevelButton';
-import { GroupLine, SpreadsheetCell } from './';
+import { SpreadsheetCell } from './';
 import { RowColumnNumber, RowColumnNumberIntersection } from './RowColumnNumber';
+import { GroupLine, GroupLineView } from './GroupLine';
 import FixLines from './FixLines';
 import MergedCells from './MergedCells';
 
@@ -45,15 +46,13 @@ const useSpreadsheetRender = ({
     return groupMergedRange ?
         <GroupLineComponent
             type="row"
-            row={row}
-            column={column}
             rows={rows}
             columns={columns}
-            mergedRange={groupMergedRange}
             rowIndex={rowIndex}
             collapsed={rowGroup.collapsed}
             overscrolled={overscrolled}
-            onClick={handleButtonClick}/> : !overscrolled && renderGroupEmptyArea({ row, column, rowIndex, columnIndex });
+            onClick={handleButtonClick}
+            GroupLineView={GroupLineView} /> : !overscrolled && renderGroupEmptyArea({ row, column, rowIndex, columnIndex });
   }, [rows, columns, renderGroupEmptyArea, rowsGroups, onRowGroupButtonClick, mergedCells]);
 
   const renderColumnGroupCallback = useCallback(({ rowIndex, columnIndex, row, column, overscrolled }) => {
@@ -84,13 +83,13 @@ const useSpreadsheetRender = ({
         const column = columns[columnIndex] || {};
         const columnsType = column.type;
 
-        let element;
+        let element, spreadsheetCellProps;
 
-        const isMerged = mergedCells.some(mergedRange =>
+        const isMerged = !rowType && !columnsType ? mergedCells.some(mergedRange =>
             rowIndex >= mergedRange.start.row &&
             columnIndex >= mergedRange.start.column &&
             rowIndex <= mergedRange.end.row &&
-            columnIndex <= mergedRange.end.column);
+            columnIndex <= mergedRange.end.column) : false;
 
         if (!isMerged) {
           
@@ -102,13 +101,8 @@ const useSpreadsheetRender = ({
                   element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
                   break;
                 case 'NUMBER':
-                  const groupLevelButtonProps = { row, column, index: rowIndex, onClick: onColumnGroupLevelButtonClick(rowIndex + 1) };
-                  element = (
-                    <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
-                      {renderColumnGroupCallback({ row, column, rowIndex, columnIndex, overscrolled: true })}
-                      <GroupLevelButtonComponent {...groupLevelButtonProps} />
-                    </React.Fragment>
-                  );
+                  spreadsheetCellProps = { style: { zIndex: 8 } };
+                  element = <GroupLevelButtonComponent index={rowIndex} onClick={onColumnGroupLevelButtonClick(rowIndex + 1)} />;
                   break;
                 default:
                   element = (
@@ -122,13 +116,8 @@ const useSpreadsheetRender = ({
 
               switch(columnsType) {
                 case 'GROUP':
-                  const groupLevelButtonProps = { row, column, index: columnIndex, onClick: onRowGroupLevelButtonClick(columnIndex + 1) };
-                  element = (
-                    <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
-                      {renderRowGroupCallback({ row, column, rowIndex, columnIndex, overscrolled: true })}
-                      <GroupLevelButtonComponent {...groupLevelButtonProps} />
-                    </React.Fragment>  
-                  );
+                  spreadsheetCellProps = { style: { zIndex: 8 } };
+                  element = <GroupLevelButtonComponent index={columnIndex} onClick={onRowGroupLevelButtonClick(columnIndex + 1)} />;
                   break;
                 case 'NUMBER':
                   element = <RowColumnNumberIntersection />;
@@ -181,7 +170,8 @@ const useSpreadsheetRender = ({
           <SpreadsheetCell
                 key={`${seqRowIndex}_${seqColumnIndex}`}
                 row={row}
-                column={column}>
+                column={column}
+                {...spreadsheetCellProps}>
             {element}
           </SpreadsheetCell>
         );

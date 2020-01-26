@@ -1,68 +1,71 @@
 import React, { useContext, useMemo } from 'react';
-import { SpreadsheetContext, SpreadsheetCell } from '../';
-import classes from './GroupLine.module.css';
+import { SpreadsheetContext } from '../';
 
 const GroupLine = ({
   type,
-  backgroundColor,
-  mergedRange,
-  row,
-  column,
   rows,
   columns,
+  rowsGroups,
+  columnsGroups,
   rowIndex,
   columnIndex,
   collapsed,
-  onClick,
-  overscrolled
+  onRowGroupButtonClick,
+  onColumnGroupButtonClick,
+  Component
 }) => {
   const { defaultRowHeight, defaultColumnWidth, groupSize } = useContext(SpreadsheetContext);
-  
-  const { lineProps, containerStyle } = useMemo(() => {
-    let lineProps, containerStyle;
+
+  const { lineStyle, containerStyle, onClick } = useMemo(() => {
+    let lineStyle, containerStyle, onClick;
     if (type === 'row') {
+      const currentRowLevelGroups = rowsGroups[columnIndex];
+      const rowGroup = currentRowLevelGroups && currentRowLevelGroups.find(group => (group.offsetStart - 1) === rowIndex);
+      onClick = onRowGroupButtonClick(rowGroup);
+
       const height = (rows[rowIndex] && rows[rowIndex].size) || defaultRowHeight;
       containerStyle = { height };
-      lineProps = {
-        className: classes.verticalLine,
-        style: {
-          height: `calc(100% - ${height / 2}px)`,
-          width: groupSize / 2,
-          top: height / 2
-        }
+      lineStyle = {
+        height: `calc(100% - ${height / 2}px)`,
+        width: groupSize / 2,
+        top: height / 2
       };
     } else {
+      const currentColumnLevelGroups = columnsGroups[rowIndex];
+      const columnGroup = currentColumnLevelGroups && currentColumnLevelGroups.find(group => (group.offsetStart - 1) === columnIndex);
+      onClick = onColumnGroupButtonClick(columnGroup);
+
       const width = (columns[columnIndex] && columns[columnIndex].size) || defaultColumnWidth;
       containerStyle = { width };
-      lineProps = {
-        className: classes.horizontalLine,
-        style: {
-          width: `calc(100% - ${width / 2}px)`,
-          left: width / 2,
-          height: groupSize / 2
-        }
+      lineStyle = {
+        width: `calc(100% - ${width / 2}px)`,
+        left: width / 2,
+        height: groupSize / 2
       }
     }
-    return { lineProps, containerStyle };
-  }, [columnIndex, columns, rows, type, defaultColumnWidth, defaultRowHeight, groupSize, rowIndex]);
+    return { lineStyle, containerStyle, onClick };
+  }, [
+    columnIndex,
+    columns,
+    rows,
+    type,
+    defaultColumnWidth,
+    defaultRowHeight,
+    groupSize,
+    rowIndex,
+    rowsGroups,
+    columnsGroups,
+    onRowGroupButtonClick,
+    onColumnGroupButtonClick
+  ]);
 
   return (
-    <SpreadsheetCell
-        row={row}
-        column={column}
-        rows={rows}
-        columns={columns}
-        mergedRange={mergedRange}
-        overscrolled={overscrolled}>
-      <div className={classes.root} style={{ backgroundColor }}>
-        <div className={classes.buttonContainer} style={{ ...containerStyle, backgroundColor }}>
-          <div className={classes.groupButton} style={{ backgroundColor }} onClick={onClick}>
-            {collapsed ? '+' : '-'}
-          </div>
-        </div>
-        {!collapsed && <div {...lineProps} />}
-      </div>
-    </SpreadsheetCell>
+    <Component
+        type={type}
+        containerStyle={containerStyle}
+        lineStyle={lineStyle}
+        collapsed={collapsed}
+        onClick={onClick} />
   )
 };
 
