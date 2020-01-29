@@ -1,5 +1,4 @@
-import { FunctionComponent, MouseEventHandler, Context, HTMLAttributes, CSSProperties } from 'react';
-import { ScrollerCellProps } from '../Scroller';
+import { HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties } from 'react';
 
 export interface Meta {
   type?: 'NUMBER' | 'GROUP';
@@ -45,78 +44,59 @@ export interface CellsRange {
   end: CellAddress;
 }
 
-export interface FixLinesProps extends HTMLAttributes<{}> {
+export interface FixLinesViewProps {
   type: 'rows' | 'columns';
   style: CSSProperties;
 }
-export const FixLines: FunctionComponent<FixLinesProps>
 
-export interface RowColumnNumberProps {
-  onRowsChange: Function;
-  onColumnsChange: Function;
+export interface RowColumnNumberViewProps {
   type: 'row' | 'column';
-  row: Meta;
-  column: Meta;
+  defaultSize: number;
+  onChange: Dispatch<SetStateAction<Meta[]>>;
+  meta: Meta;
   index: number;
-  intersection?: boolean
 }
-/** Row number column component. If no index specified, then intersection area is rendered */
-export const RowColumnNumber: FunctionComponent<RowColumnNumberProps>
 
-export interface GroupLevelButtonProps {
+export interface GroupLevelButtonViewProps {
   index: number;
-  row: Meta;
-  column: Meta;
   onClick: MouseEventHandler;
 }
 
-/** Row group level buttons which allows to manage expand/collapse state */
-export const GroupLevelButton: FunctionComponent<GroupLevelButtonProps>
-
-export interface GroupLineProps {
-  backgroundColor: string;
+export interface GroupLineViewProps {
   type: 'row' | 'column';
-  mergedRange: CellsRange;
-  row: Meta;
-  column: Meta;
-  rows: Meta[];
-  columns: Meta[];
-  rowIndex: number;
-  columnIndex: number;
-  groupSize: number;
+  backgroundColor: string;
+  containerStyle: CSSProperties;
+  lineStyle: CSSProperties;
   collapsed: boolean;
   onClick: MouseEventHandler;
-  overscrolled: boolean;
 }
 
-/** Group line which located along with grouped items */
-export const GroupLine: FunctionComponent<GroupLineProps>
+export interface CellComponentProps {
+  value: Value
+}
 
-export interface ComponentsOptions {
+export interface ViewComponentsOptions {
+  /** Value cell */
+  CellComponent: FunctionComponent<CellComponentProps>;
   /** Fixed rows and columns lines */
-  FixLinesComponent: FunctionComponent<FixLinesProps>;
-  /**
-   * Empty area of rows and columns groups.
-   * Would be rendered between groups of the same level and on intersection level
-   */
-  RowColumnNumberComponent?: FunctionComponent<RowColumnNumberProps>;
+  FixLinesComponent?: FunctionComponent<FixLinesViewProps>;
+  /** Rows and columns numbers */
+  RowColumnNumberComponent?: FunctionComponent<RowColumnNumberViewProps>;
+  RowColumnNumberIntersectionComponent?: FunctionComponent<HTMLAttributes<{}>>;
+  /** Empty area of special rows and columns  */
+  SpecialCellEmptyAreaComponent: FunctionComponent<HTMLAttributes<{}>>;
   /** Row group level buttons which allows to manage expand/collapse state */
-  renderGroupEmptyArea: Function;
-  GroupLevelButtonComponent?: FunctionComponent<GroupLevelButtonProps>;
-  GroupLineComponent?: FunctionComponent<GroupLineProps>;
-  renderCellValue: Function;
+  GroupLevelButtonComponent?: FunctionComponent<GroupLevelButtonViewProps>;
+  /** Group line which located along with grouped items */
+  GroupLineComponent?: FunctionComponent<GroupLineViewProps>;
 }
 
 export interface SpreadsheetContextProps {
-  defaultColumnWidth: number,
-  defaultRowHeight: number,
-  groupSize: number,
-  fixRows: number,
-  fixColumns: number,
-  specialRowsCount: number,
-  specialColumnsCount: number,
-  scrollerTop: number,
-  scrollerLeft: number
+  defaultColumnWidth: number;
+  defaultRowHeight: number;
+  groupSize: number;
+  fixRows: number;
+  fixColumns: number;
 }
 export const SpreadsheetContext: Context<SpreadsheetContextProps>
 
@@ -124,22 +104,20 @@ export interface SpreadsheetContainerProps {
   defaultColumnWidth: number;
   defaultRowHeight: number;
   groupSize: number;
-  fixRows?: number;
-  fixColumns?: number;
-  specialRowsCount?: number;
-  specialColumnsCount?: number;
-  scrollerTop: number;
-  scrollerLeft: number;
+  fixRows: number;
+  fixColumns: number;
+  specialRowsCount: number;
+  specialColumnsCount: number;
 }
 export const SpreadsheetContainer: FunctionComponent<SpreadsheetContainerProps>
 
 export interface UseSpreadsheetOptions {
   value?: Value[][];
-  onChange?: Function;
+  onChange?: Dispatch<SetStateAction<Value[][]>>;
   rows?: Meta[]; 
   columns?: Meta[];
-  onRowsChange?: Function;
-  onColumnsChange?: Function;
+  onRowsChange?: Dispatch<SetStateAction<Meta[]>>;
+  onColumnsChange?: Dispatch<SetStateAction<Meta[]>>;
   /** If set to 'true' than rows/columns numbers won't be rendered */
   hideRowColumnNumbers?: boolean;
   /** Height of special row with column numbers */
@@ -166,11 +144,11 @@ export type GroupButtonClickHandlerFactory = (group: Group) => MouseEventHandler
  */
 export interface UseSpreadsheetResult {
   value: Value[][];
-  onChange: Function;
+  onChange: Dispatch<SetStateAction<Value>>;
   rows: Meta[];
   columns: Meta[];
-  onColumnsChange: Function;
-  onRowsChange: Function;
+  onColumnsChange: Dispatch<SetStateAction<Meta[]>>;
+  onRowsChange: Dispatch<SetStateAction<Meta[]>>;
   totalRows: number;
   totalColumns: number;
   fixRows: number;
@@ -187,7 +165,7 @@ export interface UseSpreadsheetResult {
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
 
-export interface SpreadsheetProps extends UseSpreadsheetOptions, ComponentsOptions {}
+export interface SpreadsheetProps extends UseSpreadsheetOptions, ViewComponentsOptions {}
 /**
  * Data grid, Excel-like spreadsheet component.
  * Integrated with [Scroller]{@link Scroller} to be able to handle large sets of data.

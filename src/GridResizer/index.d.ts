@@ -1,15 +1,15 @@
-import { SetStateAction, FunctionComponent, HTMLAttributes } from 'react';
+import { Dispatch, SetStateAction, FunctionComponent } from 'react';
 
 export interface Meta {
   size: number;
 }
 
-export interface GridResizerProps extends HTMLAttributes<{}> {
+export interface GridResizerProps {
   type: 'row' | 'column';
   index: number;
   defaultSize: number;
   meta: Meta,
-  onChange: SetStateAction<Meta[]>;
+  onChange: Dispatch<SetStateAction<Meta[]>>;
   Component: FunctionComponent | string
 }
 

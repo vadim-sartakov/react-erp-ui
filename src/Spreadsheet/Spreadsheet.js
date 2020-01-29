@@ -21,6 +21,7 @@ export const visibleMergesFilter = ({
           mergedRange.end.column >= visibleColumns[fixColumns]);
 };
 
+/** @type {import('react').FunctionComponent<import('./').SpreadsheetProps>} */
 const Spreadsheet = inputProps => {
   const spreadsheetProps = useSpreadsheet(inputProps);
 
@@ -50,7 +51,9 @@ const Spreadsheet = inputProps => {
     columns,
     onRowsChange,
     onColumnsChange,
+    SpecialCellEmptyAreaComponent = SpecialCellEmptyArea,
     RowColumnNumberComponent = RowColumnNumber,
+    RowColumnNumberIntersectionComponent = RowColumnNumberIntersection,
     GroupLevelButtonComponent = GroupLevelButton,
     GroupLineComponent,
     FixLinesComponent,
@@ -93,7 +96,7 @@ const Spreadsheet = inputProps => {
                 element = <GroupLevelButtonComponent index={rowIndex} onClick={onColumnGroupLevelButtonClick(rowIndex + 1)} />;
                 break;
               default:
-                element = <SpecialCellEmptyArea />;
+                element = <SpecialCellEmptyAreaComponent />;
             }
             break;
           case 'NUMBER':
@@ -104,7 +107,7 @@ const Spreadsheet = inputProps => {
                 element = <GroupLevelButtonComponent index={columnIndex} onClick={onRowGroupLevelButtonClick(columnIndex + 1)} />;
                 break;
               case 'NUMBER':
-                element = <RowColumnNumberIntersection />;
+                element = <RowColumnNumberIntersectionComponent />;
                 break;
               default:
                 element = (
