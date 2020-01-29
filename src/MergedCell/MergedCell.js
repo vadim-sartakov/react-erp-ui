@@ -1,6 +1,5 @@
-import React, { useContext } from 'react';
-import { SpreadsheetContext } from '..';
-import { getMergedCellPosition, getCellsRangeSize } from '../utils';
+import React from 'react';
+import { getCellPosition, getCellsRangeSize } from '../utils/gridUtils';
 
 export const visibleMergesFilter = ({
   fixRows,
@@ -16,6 +15,8 @@ export const visibleMergesFilter = ({
 };
 
 const MergedCell = ({
+  defaultRowHeight,
+  defaultColumnWidth,
   mergedRange,
   rowIndex,
   columnIndex,
@@ -26,20 +27,18 @@ const MergedCell = ({
   scrollerTop,
   scrollerLeft,
   children
-}) => {
-  const { defaultRowHeight, defaultColumnWidth } = useContext(SpreadsheetContext);
-  
+}) => { 
   const elements = [];
 
   const isFixedColumnArea = columnIndex <= fixColumns;
   const isFixedRowArea = rowIndex <= fixRows;
   
-  const top = getMergedCellPosition({
+  const top = getCellPosition({
     meta: rows,
     index: rowIndex,
     defaultSize: defaultRowHeight
   });
-  const left = getMergedCellPosition({
+  const left = getCellPosition({
     meta: columns,
     index: columnIndex,
     defaultSize: defaultColumnWidth

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { SpreadsheetContext } from '..';
 import FixLinesView from './FixLinesView';
-import { getCellsRangeSize } from '../utils';
+import { getCellsRangeSize } from '../../utils/gridUtils';
 
 const FixLines = ({
   Component = FixLinesView,

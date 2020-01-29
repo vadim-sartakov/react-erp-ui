@@ -5,7 +5,7 @@ import GroupLevelButton from './GroupLevelButton';
 import { RowColumnNumber, RowColumnNumberIntersection } from './RowColumnNumber';
 import { GroupLine } from './GroupLine';
 import FixLines from './FixLines';
-import MergedCell from './MergedCell';
+import MergedCell from '../MergedCell';
 import SpecialCellEmptyArea from './SpecialCellEmptyArea';
 
 export const visibleMergesFilter = ({
@@ -42,6 +42,8 @@ const Spreadsheet = inputProps => {
     value,
     visibleRows,
     visibleColumns,
+    defaultRowHeight,
+    defaultColumnWidth,
     fixRows,
     fixColumns,
     rows,
@@ -180,7 +182,9 @@ const Spreadsheet = inputProps => {
       fixRows,
       fixColumns,
       scrollerTop,
-      scrollerLeft
+      scrollerLeft,
+      defaultRowHeight,
+      defaultColumnWidth
     };
 
     if (row.type === 'GROUP' || column.type === 'GROUP') {
