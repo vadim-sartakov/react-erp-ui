@@ -1,16 +1,8 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import Spreadsheet, { SpreadsheetCell } from './';
+import Spreadsheet from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import classes from './Spreadsheet-stories.module.sass';
-
-const renderGroupEmptyArea = ({ row, column }) => {
-  return (
-    <SpreadsheetCell row={row} column={column}>
-      <div className={classes.groupEmptyArea} />
-    </SpreadsheetCell>
-  )
-};
 
 const CellComponent = ({ value }) => (
   <div className={classes.cell}>
@@ -34,7 +26,6 @@ const SpreadsheetComponent = props => {
         columns={columns}
         onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
-        renderGroupEmptyArea={renderGroupEmptyArea}
         CellComponent={CellComponent} />
   );
 };

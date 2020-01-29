@@ -1,6 +1,6 @@
 import React from 'react';
-import { useScroller, ScrollerContainer } from '../Scroller';
-import { SpreadsheetContainer, SpreadsheetCell, useSpreadsheet } from './';
+import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
+import { SpreadsheetContainer, useSpreadsheet } from './';
 import GroupLevelButton from './GroupLevelButton';
 import { RowColumnNumber, RowColumnNumberIntersection } from './RowColumnNumber';
 import { GroupLine } from './GroupLine';
@@ -111,11 +111,10 @@ const Spreadsheet = inputProps => {
                   <RowColumnNumberComponent
                       key={`${seqRowIndex}_${seqColumnIndex}`}
                       type="column"
-                      row={row}
-                      column={column}
+                      meta={column}
+                      defaultSize={defaultColumnWidth}
                       index={columnIndex}
-                      onRowsChange={onRowsChange}
-                      onColumnsChange={onColumnsChange} />
+                      onChange={onColumnsChange} />
                 );
                 break;
             }
@@ -133,11 +132,10 @@ const Spreadsheet = inputProps => {
                   <RowColumnNumberComponent
                       key={`${seqRowIndex}_${seqColumnIndex}`}
                       type="row"
-                      row={row}
-                      column={column}
+                      meta={row}
                       index={rowIndex}
-                      onRowsChange={onRowsChange}
-                      onColumnsChange={onColumnsChange} />
+                      defaultSize={defaultRowHeight}
+                      onChange={onRowsChange} />
                 );
                 break;
               default:
@@ -147,13 +145,13 @@ const Spreadsheet = inputProps => {
       }
 
       return (
-        <SpreadsheetCell
+        <ScrollerCell
               key={`${seqRowIndex}_${seqColumnIndex}`}
               row={row}
               column={column}
               {...spreadsheetCellProps}>
           {element}
-        </SpreadsheetCell>
+        </ScrollerCell>
       );
 
     });

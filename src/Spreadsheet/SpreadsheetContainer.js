@@ -8,8 +8,6 @@ const SpreadsheetContainer = ({
   groupSize,
   fixRows,
   fixColumns,
-  scrollerTop,
-  scrollerLeft,
   className,
   style,
   children
@@ -19,17 +17,13 @@ const SpreadsheetContainer = ({
     defaultRowHeight,
     groupSize,
     fixRows,
-    fixColumns,
-    scrollerTop,
-    scrollerLeft
+    fixColumns
   }), [
     defaultColumnWidth,
     defaultRowHeight,
     groupSize,
     fixRows,
-    fixColumns,
-    scrollerTop,
-    scrollerLeft
+    fixColumns
   ]);
   return (
     <SpreadsheetContext.Provider value={contextValue}>

@@ -1,29 +1,24 @@
 import React from 'react';
 import classNames from 'classnames';
-import { SpreadsheetResizer } from '../';
+import GridResizer from '../../GridResizer';
 import classes from './RowColumnNumber.module.css';
 
 const RowColumnNumber = ({
-  onRowsChange,
-  onColumnsChange,
+  defaultSize,
+  onChange,
   type,
-  row,
-  column,
+  meta,
   index
 }) => {
-  let key, className, resizerClassName, onChange;
+  let className, resizerClassName;
   switch (type) {
     case 'column':
-      key = column.key;
       className = classNames(classes.cell, classes.columnNumber);
       resizerClassName = classNames(classes.resizer, classes.columnResizer);
-      onChange = onColumnsChange;
       break;
     case 'row':
-      key = row.key;
       className = classNames(classes.cell, classes.rowNumber);
       resizerClassName = classNames(classes.resizer, classes.rowResizer);
-      onChange = onRowsChange;
       break;
     default:
       className = classes.cell
@@ -31,8 +26,8 @@ const RowColumnNumber = ({
   return (
     <div className={className}>
       <>
-        {key + 1}
-        <SpreadsheetResizer mode={type} row={row} column={column} index={index} className={resizerClassName} onChange={onChange} />
+        {meta.key + 1}
+        <GridResizer type={type} meta={meta} defaultSize={defaultSize} onChange={onChange} index={index} className={resizerClassName} />
       </>
     </div>
   )

@@ -1,4 +1,5 @@
 import { FunctionComponent, MouseEventHandler, Context, HTMLAttributes, CSSProperties } from 'react';
+import { ScrollerCellProps } from '../Scroller';
 
 export interface Meta {
   type?: 'NUMBER' | 'GROUP';
@@ -185,45 +186,6 @@ export interface UseSpreadsheetResult {
   onColumnGroupButtonClick: GroupButtonClickHandlerFactory;
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
-
-export interface UseSpreadsheetRenderOptions extends ComponentsOptions {
-  value: Value[][];
-  visibleRows: number[];
-  visibleColumns: number[];
-  rows: Meta[];
-  columns: Meta[];
-  mergedCells: CellsRange[];
-  fixRows: number;
-  fixColumns: number;
-  specialRowsCount: number;
-  specialColumnsCount: number;
-  rowsGroups: Group[];
-  columnsGroups: Group[];
-  onRowGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
-  onColumnGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
-  onRowGroupButtonClick: GroupButtonClickHandlerFactory;
-  onColumnGroupButtonClick: GroupButtonClickHandlerFactory;
-}
-/** Renders spreadsheet elements by calling provided callbacks */
-export function useSpreadsheetRender(options: UseSpreadsheetRenderOptions): JSX.Element
-
-export interface SpreadsheetResizerProps {
-  onChange: Function;
-  mode: 'row' | 'column';
-  index: number;
-}
-export const SpreadsheetResizer: FunctionComponent<SpreadsheetResizerProps>
-
-export interface SpreadsheetCellProps {
-  mergedRange?: CellsRange;
-  rows: Meta[];
-  columns: Meta[];
-  /** Whether this cell is scrolled out or currently visible area */
-  overscrolled?: Boolean;
-  row: Meta;
-  column: Meta;
-}
-export const SpreadsheetCell: FunctionComponent<SpreadsheetCellProps>
 
 export interface SpreadsheetProps extends UseSpreadsheetOptions, ComponentsOptions {}
 /**
