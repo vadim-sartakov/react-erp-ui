@@ -5,7 +5,7 @@ import { defaultComponent, withMergedCells, withGroups } from './Spreadsheet.sto
 import { ScrollerContainer } from '../Scroller';
 import { act } from 'react-dom/test-utils';
 
-describe.skip('Spreadsheet', () => {
+describe('Spreadsheet', () => {
 
   const mapper = json => {
     if (json.type !== 'div') {
