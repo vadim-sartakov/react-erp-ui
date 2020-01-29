@@ -180,6 +180,44 @@ const useSpreadsheet = ({
   const onColumnGroupLevelButtonClick = useCallback(level => event => onColumnsChange(clickGroupLevelButton(columns, level)), [columns, onColumnsChange]);
   const onColumnGroupButtonClick = useCallback(group => event => onColumnsChange(clickGroupButton(columns, group, specialColumnsCount)), [columns, onColumnsChange, specialColumnsCount]);
 
+  const [valueState, setValueState] = useState([]);
+
+  const value = valueProp || valueState;
+  const onChange = onChangeProp || setValueState;
+
+  const convertExternalValueToInternalCallback = useCallback(value => {
+    return convertExternalValueToInternal({
+      value,
+      specialRowsCount,
+      specialColumnsCount,
+      hiddenRowsIndexes,
+      hiddenColumnsIndexes
+    });
+  }, [specialRowsCount, specialColumnsCount, hiddenColumnsIndexes, hiddenRowsIndexes]);
+
+  const nextValue = convertExternalValueToInternal({
+    value,
+    specialRowsCount,
+    specialColumnsCount,
+    hiddenRowsIndexes,
+    hiddenColumnsIndexes
+  });
+
+  const nextOnChange = useCallback(setValue => {
+    onChange(value => {
+      let nextValue;
+      if (typeof value === 'function') nextValue = setValue(convertExternalValueToInternalCallback(value));
+      else nextValue = setValue;
+      if (specialRowsCount) nextValue = nextValue.splice(0, specialRowsCount);
+      if (specialColumnsCount) nextValue = nextValue.map(row => {
+        const nextRow = [...row];
+        nextRow.splice(0, specialColumnsCount);
+        return nextRow;
+      });
+      return nextValue;
+    });
+  }, [convertExternalValueToInternalCallback, specialRowsCount, specialColumnsCount, onChange]);
+
   // Using mapper here because we calculated groups based on external (not filtered meta)
   // We can't calculate groups of internal meta because it does not have hidden items
   // Thus, we need to apply special meta offset
@@ -262,13 +300,9 @@ const useSpreadsheet = ({
     ];
   }, [mergedCellsProp, specialRowsCount, specialColumnsCount, rowsGroups, columnsGroups]);
 
-  const [valueState, setValueState] = useState([]);
-  const value = valueProp || valueState;
-  const onChange = onChangeProp || setValueState;
-
   return {
-    value,
-    onChange,
+    value: nextValue,
+    onChange: nextOnChange,
     rows: nextRows,
     columns: nextColumns,
     onColumnsChange: nextOnColumnsChange,

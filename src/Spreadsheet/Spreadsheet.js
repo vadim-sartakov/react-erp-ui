@@ -119,8 +119,8 @@ const Spreadsheet = inputProps => {
             }
             break;
           default:
-            const rowValue = value[rowIndex - specialRowsCount];
-            const curValue = rowValue && rowValue[columnIndex - specialColumnsCount];
+            const rowValue = value[rowIndex];
+            const curValue = rowValue && rowValue[columnIndex];
             
             switch(columnsType) {
               case 'GROUP':
@@ -167,8 +167,8 @@ const Spreadsheet = inputProps => {
 
     const row = rows[rowIndex] || {};
     const column = columns[columnIndex] || {};
-    const rowValue = value[rowIndex - specialRowsCount];
-    const curValue = rowValue && rowValue[columnIndex - specialColumnsCount];
+    const rowValue = value[rowIndex];
+    const curValue = rowValue && rowValue[columnIndex];
 
     const mergedCellProps = {
       key: `merged-cell-${rowIndex}-${columnIndex}`,
