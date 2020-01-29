@@ -1,5 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import { SpreadsheetContext } from '../';
+import GroupLineView from './GroupLineView';
 
 const GroupLine = ({
   type,
@@ -9,19 +10,18 @@ const GroupLine = ({
   columnsGroups,
   rowIndex,
   columnIndex,
-  collapsed,
   onRowGroupButtonClick,
   onColumnGroupButtonClick,
-  Component
+  Component = GroupLineView
 }) => {
   const { defaultRowHeight, defaultColumnWidth, groupSize } = useContext(SpreadsheetContext);
 
-  const { lineStyle, containerStyle, onClick } = useMemo(() => {
-    let lineStyle, containerStyle, onClick;
+  const { group, lineStyle, containerStyle, onClick } = useMemo(() => {
+    let group, lineStyle, containerStyle, onClick;
     if (type === 'row') {
       const currentRowLevelGroups = rowsGroups[columnIndex];
-      const rowGroup = currentRowLevelGroups && currentRowLevelGroups.find(group => (group.offsetStart - 1) === rowIndex);
-      onClick = onRowGroupButtonClick(rowGroup);
+      group = currentRowLevelGroups && currentRowLevelGroups.find(group => (group.offsetStart - 1) === rowIndex);
+      onClick = onRowGroupButtonClick(group);
 
       const height = (rows[rowIndex] && rows[rowIndex].size) || defaultRowHeight;
       containerStyle = { height };
@@ -32,8 +32,8 @@ const GroupLine = ({
       };
     } else {
       const currentColumnLevelGroups = columnsGroups[rowIndex];
-      const columnGroup = currentColumnLevelGroups && currentColumnLevelGroups.find(group => (group.offsetStart - 1) === columnIndex);
-      onClick = onColumnGroupButtonClick(columnGroup);
+      group = currentColumnLevelGroups && currentColumnLevelGroups.find(group => (group.offsetStart - 1) === columnIndex);
+      onClick = onColumnGroupButtonClick(group);
 
       const width = (columns[columnIndex] && columns[columnIndex].size) || defaultColumnWidth;
       containerStyle = { width };
@@ -43,7 +43,7 @@ const GroupLine = ({
         height: groupSize / 2
       }
     }
-    return { lineStyle, containerStyle, onClick };
+    return { group, lineStyle, containerStyle, onClick };
   }, [
     columnIndex,
     columns,
@@ -64,7 +64,7 @@ const GroupLine = ({
         type={type}
         containerStyle={containerStyle}
         lineStyle={lineStyle}
-        collapsed={collapsed}
+        collapsed={group.collapsed}
         onClick={onClick} />
   )
 };

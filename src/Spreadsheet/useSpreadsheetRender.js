@@ -1,10 +1,24 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import GroupLevelButton from './GroupLevelButton';
 import { SpreadsheetCell } from './';
 import { RowColumnNumber, RowColumnNumberIntersection } from './RowColumnNumber';
-import { GroupLine, GroupLineView } from './GroupLine';
+import { GroupLine } from './GroupLine';
 import FixLines from './FixLines';
-import MergedCells from './MergedCells';
+import MergedCell from './MergedCell';
+import SpecialCellEmptyArea from './SpecialCellEmptyArea';
+
+export const visibleMergesFilter = ({
+  fixRows,
+  fixColumns,
+  visibleRows,
+  visibleColumns
+}) => mergedRange => {
+  return mergedRange.start.row < visibleRows[fixRows] || mergedRange.start.column < visibleColumns[fixColumns] ||
+      (mergedRange.start.row <= visibleRows[visibleRows.length - 1] &&
+          mergedRange.start.column <= visibleColumns[visibleColumns.length - 1] &&
+          mergedRange.end.row >= visibleRows[fixRows] &&
+          mergedRange.end.column >= visibleColumns[fixColumns]);
+};
 
 /**
  * @param {import('.').UseSpreadsheetRenderOptions} options
@@ -22,9 +36,8 @@ const useSpreadsheetRender = ({
   onColumnsChange,
   RowColumnNumberComponent = RowColumnNumber,
   GroupLevelButtonComponent = GroupLevelButton,
-  GroupLineComponent = GroupLine,
+  GroupLineComponent,
   FixLinesComponent,
-  renderGroupEmptyArea,
   CellComponent,
   mergedCells,
   specialRowsCount,
@@ -38,42 +51,6 @@ const useSpreadsheetRender = ({
   onRowGroupButtonClick,
   onColumnGroupButtonClick
 }) => {
-  const renderRowGroupCallback = useCallback(({ rowIndex, columnIndex, row, column, overscrolled }) => {
-    const currentLevelGroups = rowsGroups[columnIndex];
-    const rowGroup = currentLevelGroups && currentLevelGroups.find(group => (group.offsetStart - 1) === rowIndex);
-    const groupMergedRange = rowGroup && mergedCells.find(range => range.start.row === rowIndex && range.start.column === columnIndex);
-    const handleButtonClick = onRowGroupButtonClick(rowGroup);
-    return groupMergedRange ?
-        <GroupLineComponent
-            type="row"
-            rows={rows}
-            columns={columns}
-            rowIndex={rowIndex}
-            collapsed={rowGroup.collapsed}
-            overscrolled={overscrolled}
-            onClick={handleButtonClick}
-            GroupLineView={GroupLineView} /> : !overscrolled && renderGroupEmptyArea({ row, column, rowIndex, columnIndex });
-  }, [rows, columns, renderGroupEmptyArea, rowsGroups, onRowGroupButtonClick, mergedCells]);
-
-  const renderColumnGroupCallback = useCallback(({ rowIndex, columnIndex, row, column, overscrolled }) => {
-    const currentLevelGroups = columnsGroups[rowIndex];
-    const columnGroup = currentLevelGroups && currentLevelGroups.find(group => (group.offsetStart - 1) === columnIndex);
-    const groupMergedRange = columnGroup && mergedCells.find(range => range.start.row === rowIndex && range.start.column === columnIndex);
-    const handleButtonClick = onColumnGroupButtonClick(columnGroup);
-    return groupMergedRange ?
-        <GroupLineComponent
-            type="column"
-            row={row}
-            column={column}
-            rows={rows}
-            columns={columns}
-            mergedRange={groupMergedRange}
-            columnIndex={columnIndex}
-            collapsed={columnGroup.collapsed}
-            overscrolled={overscrolled}
-            onClick={handleButtonClick} /> : !overscrolled && renderGroupEmptyArea({ row, column, rowIndex, columnIndex });
-  }, [rows, columns, renderGroupEmptyArea, columnsGroups, onColumnGroupButtonClick, mergedCells]);
-
   const cellsElements = useMemo(() => {
     return visibleRows.reduce((acc, rowIndex, seqRowIndex) => {
       const row = rows[rowIndex] || {};
@@ -97,19 +74,12 @@ const useSpreadsheetRender = ({
             case 'GROUP':
 
               switch(columnsType) {
-                case 'GROUP':
-                  element = <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>{renderGroupEmptyArea({ row, column, rowIndex, columnIndex })}</React.Fragment>;
-                  break;
                 case 'NUMBER':
                   spreadsheetCellProps = { style: { zIndex: 8 } };
                   element = <GroupLevelButtonComponent index={rowIndex} onClick={onColumnGroupLevelButtonClick(rowIndex + 1)} />;
                   break;
                 default:
-                  element = (
-                    <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
-                      {renderColumnGroupCallback({ row, column, rowIndex, columnIndex })}
-                    </React.Fragment>
-                  );
+                  element = <SpecialCellEmptyArea />;
               }
               break;
             case 'NUMBER':
@@ -142,11 +112,7 @@ const useSpreadsheetRender = ({
               
               switch(columnsType) {
                 case 'GROUP':
-                  element = (
-                    <React.Fragment key={`${seqRowIndex}_${seqColumnIndex}`}>
-                      {renderRowGroupCallback({ row, column, rowIndex, columnIndex })}
-                    </React.Fragment>
-                  );
+                  element = <SpecialCellEmptyArea />;
                   break
                 case 'NUMBER':
                   element = (
@@ -178,7 +144,7 @@ const useSpreadsheetRender = ({
 
       });
 
-      return [acc, ...columnsElements];   
+      return [...acc, ...columnsElements];   
     }, [])
   }, [
     rows,
@@ -186,9 +152,6 @@ const useSpreadsheetRender = ({
     visibleRows,
     visibleColumns,
     value,
-    renderGroupEmptyArea,
-    renderRowGroupCallback,
-    renderColumnGroupCallback,
     onRowGroupLevelButtonClick,
     onColumnGroupLevelButtonClick,
     onRowsChange,
@@ -198,56 +161,54 @@ const useSpreadsheetRender = ({
     specialColumnsCount
   ]);
 
-  const valueMergedCells = useMemo(() => {
-    return mergedCells.filter(mergedRange => {
-      return mergedRange.start.row >= specialRowsCount && mergedRange.start.column >= specialColumnsCount
-    })
-  }, [mergedCells, specialRowsCount, specialColumnsCount]);
+  const visibleMerges = mergedCells.filter(visibleMergesFilter({ fixRows, fixColumns, visibleRows, visibleColumns }));
 
-  const mergedValueCells = (
-    <MergedCells
-        key="value-merged-cells"
-        rows={rows}
-        columns={columns}
-        value={value}
-        fixRows={fixRows}
-        fixColumns={fixColumns}
-        specialRowsCount={specialRowsCount}
-        specialColumnsCount={specialColumnsCount}
-        mergedCells={valueMergedCells}
-        scrollerTop={scrollerTop}
-        scrollerLeft={scrollerLeft}
-        visibleRows={visibleRows}
-        visibleColumns={visibleColumns}
-        CellComponent={CellComponent} />
-  );
+  const mergedCellsElements = visibleMerges.map(mergedRange => {
+    const columnIndex = mergedRange.start.column;
+    const rowIndex = mergedRange.start.row;
 
-  const specialMergedCells = useMemo(() => {
-    return mergedCells.filter(mergedRange => {
-      return mergedRange.start.row < specialRowsCount || mergedRange.start.column < specialColumnsCount
-    })
-  }, [mergedCells, specialRowsCount, specialColumnsCount]);
+    const row = rows[rowIndex] || {};
+    const column = columns[columnIndex] || {};
+    const rowValue = value[rowIndex - specialRowsCount];
+    const curValue = rowValue && rowValue[columnIndex - specialColumnsCount];
 
-  const mergedSpecialCells = (
-    <MergedCells
-        key="special-merged-cells"
-        rows={rows}
-        columns={columns}
-        value={value}
-        fixRows={fixRows}
-        fixColumns={fixColumns}
-        specialRowsCount={specialRowsCount}
-        specialColumnsCount={specialColumnsCount}
-        mergedCells={specialMergedCells}
-        scrollerTop={scrollerTop}
-        scrollerLeft={scrollerLeft}
-        visibleRows={visibleRows}
-        visibleColumns={visibleColumns}
-        CellComponent="div"
-        componentProps={{
-          style: { backgroundColor: 'red', height: '100%' }
-        }} />
-  );
+    const mergedCellProps = {
+      key: `merged-cell-${rowIndex}-${columnIndex}`,
+      mergedRange,
+      rows,
+      columns,
+      rowIndex,
+      columnIndex,
+      fixRows,
+      fixColumns,
+      scrollerTop,
+      scrollerLeft
+    };
+
+    if (row.type === 'GROUP' || column.type === 'GROUP') {
+      return (
+        <MergedCell {...mergedCellProps}>
+          <GroupLine
+              type={row.type === 'GROUP' ? 'column' : 'row'}
+              rows={rows}
+              columns={columns}
+              rowIndex={rowIndex}
+              columnIndex={columnIndex}
+              rowsGroups={rowsGroups}
+              columnsGroups={columnsGroups}
+              onRowGroupButtonClick={onRowGroupButtonClick}
+              onColumnGroupButtonClick={onColumnGroupButtonClick}
+              Component={GroupLineComponent} />
+        </MergedCell>
+      )
+    } else {
+      return (
+        <MergedCell {...mergedCellProps}>
+          <CellComponent value={curValue} />
+        </MergedCell>
+      )
+    }
+  });
 
   const fixedAreasElement = (
     <FixLines
@@ -261,8 +222,7 @@ const useSpreadsheetRender = ({
 
   return [
     ...cellsElements,
-    mergedValueCells,
-    mergedSpecialCells,
+    ...mergedCellsElements,
     fixedAreasElement
   ];
 };
