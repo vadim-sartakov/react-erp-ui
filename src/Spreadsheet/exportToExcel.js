@@ -74,11 +74,17 @@ export async function convertToWorkbook({
     }
   });
   
+  fillHeadings(sheet, { type: 'row', internalHeadings: rows, totalCount: totalRows, sizeProp: 'height', getter: 'getRow', defaultSize: defaultRowHeight });
+  fillHeadings(sheet, { type: 'column', internalHeadings: columns, totalCount: totalColumns, sizeProp: 'width', getter: 'getColumn', defaultSize: defaultColumnWidth });
+
   for (let rowIndex = 0; rowIndex < totalRows; rowIndex++) {
     await writeRow(sheet, value, rowIndex, totalColumns);
   }
-  fillHeadings(sheet, { type: 'row', internalHeadings: rows, totalCount: totalRows, sizeProp: 'height', getter: 'getRow', defaultSize: defaultRowHeight });
-  fillHeadings(sheet, { type: 'column', internalHeadings: columns, totalCount: totalColumns, sizeProp: 'width', getter: 'getColumn', defaultSize: defaultColumnWidth });
+
+  mergedCells && mergedCells.forEach(mergedRange => {
+    sheet.mergeCells(mergedRange.start.row + 1, mergedRange.start.column + 1, mergedRange.end.row + 1, mergedRange.end.column + 1)
+  });
+
   return workbook;
 };
 
