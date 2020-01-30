@@ -72,6 +72,7 @@ const clickGroupButton = (meta, group, specialMetaCount) => {
   const nextMeta = [...meta];
   for (let index = group.start - specialMetaCount; index <= group.end - specialMetaCount; index++) {
     const metaItem = meta[index] || {};
+    if (group.collapsed && metaItem.level > group.level) continue;
     nextMeta[index] = { ...metaItem, hidden: !group.collapsed };
   }
   return nextMeta;
