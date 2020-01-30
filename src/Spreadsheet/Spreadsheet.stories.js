@@ -16,8 +16,8 @@ const gridValuesMapper = valueRow => {
 
 const spreadsheetValues = generateGridValues(1000, 50).map(gridValuesMapper);
 
-const CellComponent = ({ value }) => (
-  <div className={classes.cell}>
+const CellComponent = ({ value, style }) => (
+  <div className={classes.cell} style={style}>
     {value ? value.value : ''}
   </div>
 );

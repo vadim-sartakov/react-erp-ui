@@ -10,6 +10,19 @@ export interface Meta {
   level?: number
 }
 
+export interface Font {
+  name?: string;
+  size?: number;
+  bold: boolean;
+  italic: boolean;
+}
+
+export interface Style {
+  verticalAlign: 'top' | 'middle' | 'bottom';
+  horizontalAlign: 'left' | 'center' | 'right';
+  font: Font;
+}
+
 export interface Value {
   /** Value itself */
   value: any;
@@ -19,7 +32,8 @@ export interface Value {
    */
   format?: (value: any) => JSX.Element;
   /** Excel like formula */
-  formula?: string
+  formula?: string;
+  style?: Style
 }
 
 /** Group object describing grouped items range */
