@@ -1,34 +1,35 @@
-import ExcelJS from 'exceljs';
+import { Workbook } from 'exceljs';
 import triggerDownload from '../utils/triggerDownload';
 
-function pixelsToHeightPoints(pixels) {
+function pixelsToPoints(pixels) {
   return pixels * 72 / 96;
 }
 
 // Conversion factor http://www.vbaexpress.com/forum/showthread.php?28488-Solved-Set-column-width-in-pixels
 const POINTS_PER_CHARACTER = 5.25;
 
-function pixelsToWidthPoints(pixels) {
-  const points = pixelsToHeightPoints(pixels);
+function columnHeadingPixelsToPoints(pixels) {
+  const points = pixelsToPoints(pixels);
   return points / POINTS_PER_CHARACTER;
 }
 
-function pixelsToPoints(type, pixels) {
-  return type === 'column' ? pixelsToWidthPoints(pixels) : pixelsToHeightPoints(pixels);
+function headingPixelsToPoints(type, pixels) {
+  return type === 'column' ? columnHeadingPixelsToPoints(pixels) : pixelsToPoints(pixels);
 }
 
-function fillHeadings(sheet, { internalHeadings, totalCount, sizeProp, type, getter, defaultSize }) {
-  if (!internalHeadings) return [];
+function fillHeadings(sheet, { internalHeadings = [], totalCount, sizeProp, type, getter, defaultSize }) {
   for (let i = 0; i < totalCount; i++) {
     const curHeading = internalHeadings[i];
     const heading = sheet[getter](i + 1);
+    heading.font = { name: 'Arial', size: pixelsToPoints(14) };
 
     const sizeInPixels = (curHeading && curHeading.size) || defaultSize;
-    heading[sizeProp] = pixelsToPoints(type, sizeInPixels);
+    heading[sizeProp] = headingPixelsToPoints(type, sizeInPixels);
     if (curHeading) {
       if (curHeading.level !== undefined) heading.outlineLevel = curHeading.level;
       if (curHeading.hidden !== undefined) heading.hidden = curHeading.hidden;
     }
+
   }
 };
 
@@ -55,7 +56,7 @@ export async function convertToWorkbook({
   defaultRowHeight,
   defaultColumnWidth
 }) {
-  const workbook = new ExcelJS.Workbook();
+  const workbook = new Workbook();
   const sheet = workbook.addWorksheet('My Sheet', {
     views: (fixColumns || fixRows) && [
       {
@@ -65,11 +66,11 @@ export async function convertToWorkbook({
       }
     ],
     properties: {
-      defaultRowHeight: pixelsToHeightPoints(defaultRowHeight),
-      defaultColWidth: pixelsToWidthPoints(defaultColumnWidth),
+      defaultRowHeight: pixelsToPoints(defaultRowHeight),
+      defaultColWidth: columnHeadingPixelsToPoints(defaultColumnWidth),
       outlineProperties: {
         summaryBelow: false,
-        summaryRight: false,
+        summaryRight: false
       }
     }
   });
@@ -84,6 +85,8 @@ export async function convertToWorkbook({
   mergedCells && mergedCells.forEach(mergedRange => {
     sheet.mergeCells(mergedRange.start.row + 1, mergedRange.start.column + 1, mergedRange.end.row + 1, mergedRange.end.column + 1)
   });
+
+  console.log(sheet);
 
   return workbook;
 };

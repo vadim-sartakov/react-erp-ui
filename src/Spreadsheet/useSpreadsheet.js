@@ -1,11 +1,11 @@
 import { useState, useMemo, useCallback } from 'react';
 import { getGroups } from './utils';
 
-export const convertExternalMetaToInternal = ({ meta = [], groups, groupSize, numberMetaSize, hideRowColumnNumbers }) => {
+export const convertExternalMetaToInternal = ({ meta = [], groups, groupSize, numberMetaSize, hideHeadings }) => {
   const result = [];
   
   groups.length && [...new Array(groups.length + 1).keys()].forEach(group => result.push({ size: groupSize, type: 'GROUP' }));
-  if (!hideRowColumnNumbers) result.push({ size: numberMetaSize, type: 'NUMBER' });
+  if (!hideHeadings) result.push({ size: numberMetaSize, type: 'NUMBER' });
   
   // Not using filter here because meta may contain empty items
   // And it's not processing by filter function
@@ -95,7 +95,7 @@ const useSpreadsheet = ({
   totalColumns,
   fixRows = 0,
   fixColumns = 0,
-  hideRowColumnNumbers,
+  hideHeadings,
   groupSize,
   mergedCells: mergedCellsProp
 }) => {
@@ -120,9 +120,9 @@ const useSpreadsheet = ({
       numberMetaSize: columnNumbersRowHeight,
       groups,
       groupSize,
-      hideRowColumnNumbers
+      hideHeadings
     });
-  }, [columnNumbersRowHeight, columns, groupSize, hideRowColumnNumbers]);
+  }, [columnNumbersRowHeight, columns, groupSize, hideHeadings]);
 
   const convertExternalColumnsToInternal = useCallback(columns => {
     const groups = getGroups(rows);
@@ -131,9 +131,9 @@ const useSpreadsheet = ({
       numberMetaSize: rowNumberColumnWidth,
       groups,
       groupSize,
-      hideRowColumnNumbers
+      hideHeadings
     });
-  }, [rowNumberColumnWidth, rows, groupSize, hideRowColumnNumbers]);
+  }, [rowNumberColumnWidth, rows, groupSize, hideHeadings]);
 
   const nextRows = useMemo(() => {
     const result = [...new Array(totalRows).keys()].map(key => {

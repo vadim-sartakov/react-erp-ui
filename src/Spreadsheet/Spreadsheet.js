@@ -2,7 +2,7 @@ import React from 'react';
 import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
 import { SpreadsheetContainer, useSpreadsheet } from './';
 import GroupLevelButton from './GroupLevelButton';
-import { RowColumnNumber, RowColumnNumberIntersection } from './RowColumnNumber';
+import { Heading, HeadingsIntersection } from './Heading';
 import { GroupLine } from './GroupLine';
 import FixLines from './FixLines';
 import MergedCell from '../MergedCell';
@@ -52,8 +52,8 @@ const Spreadsheet = inputProps => {
     onRowsChange,
     onColumnsChange,
     SpecialCellEmptyAreaComponent = SpecialCellEmptyArea,
-    RowColumnNumberComponent = RowColumnNumber,
-    RowColumnNumberIntersectionComponent = RowColumnNumberIntersection,
+    HeadingComponent = Heading,
+    HeadingsIntersectionComponent = HeadingsIntersection,
     GroupLevelButtonComponent = GroupLevelButton,
     GroupLineComponent,
     FixLinesComponent,
@@ -107,11 +107,11 @@ const Spreadsheet = inputProps => {
                 element = <GroupLevelButtonComponent index={columnIndex} onClick={onRowGroupLevelButtonClick(columnIndex + 1)} />;
                 break;
               case 'NUMBER':
-                element = <RowColumnNumberIntersectionComponent />;
+                element = <HeadingsIntersectionComponent />;
                 break;
               default:
                 element = (
-                  <RowColumnNumberComponent
+                  <HeadingComponent
                       key={`${seqRowIndex}_${seqColumnIndex}`}
                       type="column"
                       meta={column}
@@ -132,7 +132,7 @@ const Spreadsheet = inputProps => {
                 break
               case 'NUMBER':
                 element = (
-                  <RowColumnNumberComponent
+                  <Heading
                       key={`${seqRowIndex}_${seqColumnIndex}`}
                       type="row"
                       meta={row}

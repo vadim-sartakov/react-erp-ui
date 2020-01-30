@@ -49,7 +49,7 @@ export interface FixLinesViewProps {
   style: CSSProperties;
 }
 
-export interface RowColumnNumberViewProps {
+export interface HeadingViewProps {
   type: 'row' | 'column';
   defaultSize: number;
   onChange: Dispatch<SetStateAction<Meta[]>>;
@@ -81,8 +81,8 @@ export interface ViewComponentsOptions {
   /** Fixed rows and columns lines */
   FixLinesComponent?: FunctionComponent<FixLinesViewProps>;
   /** Rows and columns numbers */
-  RowColumnNumberComponent?: FunctionComponent<RowColumnNumberViewProps>;
-  RowColumnNumberIntersectionComponent?: FunctionComponent<HTMLAttributes<{}>>;
+  HeadingComponent?: FunctionComponent<HeadingViewProps>;
+  HeadingsIntersectionComponent?: FunctionComponent<HTMLAttributes<{}>>;
   /** Empty area of special rows and columns  */
   SpecialCellEmptyAreaComponent: FunctionComponent<HTMLAttributes<{}>>;
   /** Row group level buttons which allows to manage expand/collapse state */
@@ -119,7 +119,7 @@ export interface UseSpreadsheetOptions {
   onRowsChange?: Dispatch<SetStateAction<Meta[]>>;
   onColumnsChange?: Dispatch<SetStateAction<Meta[]>>;
   /** If set to 'true' than rows/columns numbers won't be rendered */
-  hideRowColumnNumbers?: boolean;
+  hideHeadings?: boolean;
   /** Height of special row with column numbers */
   columnNumbersRowHeight?: number;
   /** Width of special column with row numbers */
