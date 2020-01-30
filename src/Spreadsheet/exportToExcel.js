@@ -65,7 +65,11 @@ export async function convertToWorkbook({
     ],
     properties: {
       defaultRowHeight: pixelsToHeightPoints(defaultRowHeight),
-      defaultColWidth: pixelsToWidthPoints(defaultColumnWidth)
+      defaultColWidth: pixelsToWidthPoints(defaultColumnWidth),
+      outlineProperties: {
+        summaryBelow: false,
+        summaryRight: false,
+      }
     }
   });
   
