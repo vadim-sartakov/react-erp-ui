@@ -5,27 +5,28 @@ function pixelsToHeightPoints(pixels) {
   return pixels * 72 / 96;
 }
 
+// Conversion factor http://www.vbaexpress.com/forum/showthread.php?28488-Solved-Set-column-width-in-pixels
+const POINTS_PER_CHARACTER = 5.25;
+
 function pixelsToWidthPoints(pixels) {
   const points = pixelsToHeightPoints(pixels);
-  const charToPointRatio = 8.43 / 48;  
-  return points * charToPointRatio;
+  return points / POINTS_PER_CHARACTER;
 }
 
-const convertHeadings = (internalHeadings, sizeProp, type) => {
+function fillHeadings(sheet, { internalHeadings, totalCount, sizeProp, type, getter, defaultSize }) {
   if (!internalHeadings) return [];
-  const resultHeadings = [];
-  for (let i = 0; i < internalHeadings.length; i++) {
+  for (let i = 0; i < totalCount; i++) {
     const curHeading = internalHeadings[i];
-    if (curHeading && curHeading.size) {
-      const size = type === 'column' ? pixelsToWidthPoints(curHeading.size) : pixelsToHeightPoints(curHeading.size);
-      resultHeadings[i] = {
-        [sizeProp]: size,
-        outlineLevel: curHeading.level,
-        hidden: curHeading.hidden
-      };
+    const heading = sheet[getter](i + 1);
+    if (curHeading) {
+      const size = curHeading.size && type === 'column' ? pixelsToWidthPoints(curHeading.size) : pixelsToHeightPoints(curHeading.size);
+      if (size !== undefined) heading[sizeProp] = size || defaultSize;
+      if (curHeading.level !== undefined) heading.outlineLevel = curHeading.level;
+      if (curHeading.hidden !== undefined) heading.hidden = curHeading.hidden;
+    } else {
+      heading[sizeProp] = type === 'column' ? pixelsToWidthPoints(defaultSize) : pixelsToHeightPoints(defaultSize);
     }
   }
-  return resultHeadings;
 };
 
 async function writeRow(sheet, value, rowIndex) {
@@ -43,10 +44,10 @@ export async function convertToWorkbook({
   mergedCells,
   rows,
   columns,
-  totalRows,
-  totalColumns,
   fixRows,
   fixColumns,
+  totalRows,
+  totalColumns,
   defaultRowHeight,
   defaultColumnWidth
 }) {
@@ -64,12 +65,12 @@ export async function convertToWorkbook({
       defaultColWidth: pixelsToWidthPoints(defaultColumnWidth)
     }
   });
-  sheet.rows = convertHeadings(rows, 'height');
-  sheet.columns = convertHeadings(columns, 'width', 'column');
-
+  
   for (let rowIndex = 0; rowIndex < value.length; rowIndex++) {
     await writeRow(sheet, value, rowIndex);
   }
+  fillHeadings(sheet, { type: 'row', internalHeadings: rows, totalCount: totalRows, sizeProp: 'height', getter: 'getRow', defaultSize: defaultRowHeight });
+  fillHeadings(sheet, { type: 'column', internalHeadings: columns, totalCount: totalColumns, sizeProp: 'width', getter: 'getColumn', defaultSize: defaultColumnWidth });
   return workbook;
 };
 
