@@ -32,13 +32,14 @@ function fillHeadings(sheet, { internalHeadings, totalCount, sizeProp, type, get
   }
 };
 
-async function writeRow(sheet, value, rowIndex) {
+async function writeRow(sheet, value, rowIndex, totalColumns) {
   const rowValue = value[rowIndex];
   if (!rowValue) return;
-  for (let columnIndex = 0; columnIndex < rowValue.length; columnIndex++) {
+  for (let columnIndex = 0; columnIndex <totalColumns; columnIndex++) {
     const value = rowValue[columnIndex];
+    if (!value) continue;
     const cell = sheet.getCell(rowIndex + 1, columnIndex + 1);
-    cell.value = value;
+    cell.value = value.value;
   }
 }
 
@@ -73,8 +74,8 @@ export async function convertToWorkbook({
     }
   });
   
-  for (let rowIndex = 0; rowIndex < value.length; rowIndex++) {
-    await writeRow(sheet, value, rowIndex);
+  for (let rowIndex = 0; rowIndex < totalRows; rowIndex++) {
+    await writeRow(sheet, value, rowIndex, totalColumns);
   }
   fillHeadings(sheet, { type: 'row', internalHeadings: rows, totalCount: totalRows, sizeProp: 'height', getter: 'getRow', defaultSize: defaultRowHeight });
   fillHeadings(sheet, { type: 'column', internalHeadings: columns, totalCount: totalColumns, sizeProp: 'width', getter: 'getColumn', defaultSize: defaultColumnWidth });
