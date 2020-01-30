@@ -5,9 +5,20 @@ import { generateGridValues } from '../test-utils/generateValues';
 import exportToExcel from './exportToExcel';
 import classes from './Spreadsheet-stories.module.sass';
 
+const gridValuesMapper = valueRow => {
+  if (!valueRow) return;
+  return valueRow.map(cellValue => {
+    return {
+      value: cellValue
+    };
+  });
+};
+
+const spreadsheetValues = generateGridValues(1000, 50).map(gridValuesMapper);
+
 const CellComponent = ({ value }) => (
   <div className={classes.cell}>
-    {value ? `Value ${value.row} - ${value.column}` : ''}
+    {value ? value.value : ''}
   </div>
 );
 
@@ -72,7 +83,7 @@ export const defaultComponent = props => (
       columnsPerPage={15}
       totalColumns={50}
       totalRows={1000}
-      value={generateGridValues(1000, 50)}
+      value={spreadsheetValues}
       width={800}
       height={600}
       fixRows={2}
@@ -131,7 +142,7 @@ export const withMergedCells = props => {
         totalColumns={50}
         totalRows={1000}
         mergedCells={mergedCells}
-        value={generateGridValues(1000, 50)}
+        value={spreadsheetValues}
         width={800}
         height={600}
         fixRows={2}
@@ -193,7 +204,7 @@ export const withGroups = props => {
         columnsPerPage={15}
         totalColumns={50}
         totalRows={1000}
-        value={generateGridValues(1000, 50)}
+        value={spreadsheetValues}
         width={800}
         height={600}
         fixRows={2}
