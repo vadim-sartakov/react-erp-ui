@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { storiesOf } from '@storybook/react';
 import Spreadsheet from './';
 import { generateGridValues } from '../test-utils/generateValues';
+import exportToExcel from './exportToExcel';
 import classes from './Spreadsheet-stories.module.sass';
 
 const CellComponent = ({ value }) => (
@@ -18,8 +19,35 @@ const SpreadsheetComponent = props => {
   const [rows, onRowsChange] = useState(props.rows);
   const [columns, onColumnsChange] = useState(props.columns);
 
+  const handleExportToExcel = useCallback(() => {
+    exportToExcel({
+      value: props.value,
+      rows: rows,
+      columns: columns,
+      totalRows: props.totalRows,
+      totalColumns: props.totalColumns,
+      mergedCells: props.mergedCells,
+      fixRows: props.fixRows,
+      fixColumns: props.fixColumns,
+      defaultRowHeight: props.defaultRowHeight,
+      defaultColumnWidth: props.defaultColumnWidth
+    }, 'export.xlsx');
+  }, [
+    props.value,
+    columns,
+    rows,
+    props.mergedCells,
+    props.totalRows,
+    props.totalColumns,
+    props.fixRows,
+    props.fixColumns,
+    props.defaultRowHeight,
+    props.defaultColumnWidth
+  ]);
+
   return (
-    <Spreadsheet
+    <div>
+      <Spreadsheet
         {...props}
         rows={rows}
         onRowsChange={onRowsChange}
@@ -27,6 +55,10 @@ const SpreadsheetComponent = props => {
         onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
         CellComponent={CellComponent} />
+      <button className={classes.exportButton} onClick={handleExportToExcel}>
+        Export to Excel
+      </button>
+    </div>
   );
 };
 

@@ -5,12 +5,12 @@
   "types": "lib/index.d.ts",
   "dependencies": {
     "classnames": "^2.2.6",
+    "exceljs": "^3.7.0",
     "lodash": "^4.17.15",
     "prop-types": "^15.7.2",
     "react": "^16.10.1",
     "react-dom": "^16.10.1",
-    "react-jss": "^8.6.1",
-    "xlsx": "^0.15.1"
+    "react-jss": "^8.6.1"
   },
   "scripts": {
     "start": "react-scripts start",
