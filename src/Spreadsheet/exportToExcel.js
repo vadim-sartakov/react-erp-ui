@@ -1,17 +1,23 @@
 import ExcelJS from 'exceljs';
 import triggerDownload from '../utils/triggerDownload';
 
-function pixelsToPoints(pixels) {
+function pixelsToHeightPoints(pixels) {
   return pixels * 72 / 96;
 }
 
-const convertHeadings = (internalHeadings, sizeProp) => {
+function pixelsToWidthPoints(pixels) {
+  const points = pixelsToHeightPoints(pixels);
+  const charToPointRatio = 8.43 / 48;  
+  return points * charToPointRatio;
+}
+
+const convertHeadings = (internalHeadings, sizeProp, type) => {
   if (!internalHeadings) return [];
   const resultHeadings = [];
   for (let i = 0; i < internalHeadings.length; i++) {
     const curHeading = internalHeadings[i];
     if (curHeading && curHeading.size) {
-      const size = pixelsToPoints(curHeading.size);
+      const size = type === 'column' ? pixelsToWidthPoints(curHeading.size) : pixelsToHeightPoints(curHeading.size);
       resultHeadings[i] = {
         [sizeProp]: size,
         outlineLevel: curHeading.level,
@@ -46,14 +52,20 @@ export async function convertToWorkbook({
 }) {
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet('My Sheet', {
-    views: (fixColumns || fixRows) && [{ state: 'frozen', xSplit: fixColumns, ySplit: fixRows }],
+    views: (fixColumns || fixRows) && [
+      {
+        state: 'frozen',
+        xSplit: fixColumns,
+        ySplit: fixRows
+      }
+    ],
     properties: {
-      defaultRowHeight: pixelsToPoints(defaultRowHeight),
-      defaultColWidth: pixelsToPoints(defaultColumnWidth)
+      defaultRowHeight: pixelsToHeightPoints(defaultRowHeight),
+      defaultColWidth: pixelsToWidthPoints(defaultColumnWidth)
     }
   });
   sheet.rows = convertHeadings(rows, 'height');
-  sheet.columns = convertHeadings(columns, 'width');
+  sheet.columns = convertHeadings(columns, 'width', 'column');
 
   for (let rowIndex = 0; rowIndex < value.length; rowIndex++) {
     await writeRow(sheet, value, rowIndex);
