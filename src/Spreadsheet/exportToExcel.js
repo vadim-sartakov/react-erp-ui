@@ -13,18 +13,21 @@ function pixelsToWidthPoints(pixels) {
   return points / POINTS_PER_CHARACTER;
 }
 
+function pixelsToPoints(type, pixels) {
+  return type === 'column' ? pixelsToWidthPoints(pixels) : pixelsToHeightPoints(pixels);
+}
+
 function fillHeadings(sheet, { internalHeadings, totalCount, sizeProp, type, getter, defaultSize }) {
   if (!internalHeadings) return [];
   for (let i = 0; i < totalCount; i++) {
     const curHeading = internalHeadings[i];
     const heading = sheet[getter](i + 1);
+
+    const sizeInPixels = (curHeading && curHeading.size) || defaultSize;
+    heading[sizeProp] = pixelsToPoints(type, sizeInPixels);
     if (curHeading) {
-      const size = curHeading.size && type === 'column' ? pixelsToWidthPoints(curHeading.size) : pixelsToHeightPoints(curHeading.size);
-      if (size !== undefined) heading[sizeProp] = size || defaultSize;
       if (curHeading.level !== undefined) heading.outlineLevel = curHeading.level;
       if (curHeading.hidden !== undefined) heading.hidden = curHeading.hidden;
-    } else {
-      heading[sizeProp] = type === 'column' ? pixelsToWidthPoints(defaultSize) : pixelsToHeightPoints(defaultSize);
     }
   }
 };
