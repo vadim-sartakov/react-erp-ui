@@ -29,15 +29,15 @@ const Cell = ({
     display: 'flex'
   };
   componentStyle.alignItems = (resultStyle.verticalAlign && flexAlignValuesMap[resultStyle.verticalAlign]) || 'flex-end';
-  componentStyle.justifyContent = flexAlignValuesMap[resultStyle.horizontalAlign];
-  componentStyle.whiteSpace = resultStyle.wrapText ? undefined : 'nowrap';
-  componentStyle.backgroundColor = resultStyle.fill;
+  if (resultStyle.horizontalAlign) componentStyle.justifyContent = flexAlignValuesMap[resultStyle.horizontalAlign];
+  if (resultStyle.wrapText) componentStyle.whiteSpace = 'nowrap';
+  if (resultStyle.fill) componentStyle.backgroundColor = resultStyle.fill;
   if (resultStyle.font) {
-    componentStyle.color = resultStyle.font.color;
-    componentStyle.fontFamily = resultStyle.font.name;
-    componentStyle.fontSize = resultStyle.font.size;
-    componentStyle.fontWeight = resultStyle.font.bold ? 'bold' : undefined;
-    componentStyle.fontStyle = resultStyle.font.italic ? 'italic' : undefined;
+    if (resultStyle.font.color) componentStyle.color = resultStyle.font.color;
+    if (resultStyle.font.name) componentStyle.fontFamily = resultStyle.font.name;
+    if (resultStyle.font.size) componentStyle.fontSize = resultStyle.font.size;
+    if (resultStyle.font.bold) componentStyle.fontWeight = 'bold';
+    if (resultStyle.font.italic) componentStyle.fontStyle = 'italic';
   }
 
   return <Component style={componentStyle} cell={cell} />

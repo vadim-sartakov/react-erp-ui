@@ -221,7 +221,7 @@ export const withGroups = props => {
   )
 };
 
-const withStyles = props => {
+export const withStyles = props => {
   /** @type {import('./').Cell[][]} */
   const value = generateGridValues(100, 20).map(gridValuesMapper);
   for(let i = 0; i < 20; i++) {
