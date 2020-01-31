@@ -18,8 +18,17 @@ function headingPixelsToPoints(type, pixels) {
 }
 
 function convertColor(color) {
+  if (!color) return;
   return {
     argb: color.replace('#', '')
+  }
+}
+
+function convertBorder(border) {
+  if (!border) return;
+  return {
+    style: border.style,
+    color: convertColor(border.color)
   }
 }
 
@@ -39,8 +48,14 @@ function convertStyles(object, style) {
   if (Object.keys(alignment).length) object.alignment = alignment;
 
   if (style.font) {
-    if (style.font.name) object.font.name = style.font.name;
-    if (style.font.color) object.font.color = convertColor(style.font.color);
+    const font = { ...object.font };
+    if (style.font.name) font.name = style.font.name;
+    if (style.font.size) font.size = pixelsToPoints(style.font.size);
+    if (style.font.bold) font.bold = style.font.bold;
+    if (style.font.italic) font.italic = style.font.italic;
+    if (style.font.color) font.color = convertColor(style.font.color);
+
+    if (Object.keys(font).length) object.font = font;
   }
 
   if (style.fill) {
@@ -49,6 +64,14 @@ function convertStyles(object, style) {
       pattern: 'solid',
       fgColor: convertColor(style.fill)
     };
+  }
+
+  if (style.border) {
+    object.border = {};
+    if (style.border.top) object.border.top = convertBorder(style.border.top);
+    if (style.border.left) object.border.left = convertBorder(style.border.left);
+    if (style.border.bottom) object.border.bottom = convertBorder(style.border.bottom);
+    if (style.border.right) object.border.right = convertBorder(style.border.right);
   }
 
 }
@@ -113,14 +136,14 @@ export async function convertToWorkbook({
       }
     }
   });
-  
+
   fillHeadings(sheet, { type: 'row', internalHeadings: rows, totalCount: totalRows, sizeProp: 'height', getter: 'getRow', defaultSize: defaultRowHeight });
   fillHeadings(sheet, { type: 'column', internalHeadings: columns, totalCount: totalColumns, sizeProp: 'width', getter: 'getColumn', defaultSize: defaultColumnWidth });
 
   for (let rowIndex = 0; rowIndex < totalRows; rowIndex++) {
     await writeRow(sheet, cells, rowIndex, totalColumns);
   }
-
+  
   mergedCells && mergedCells.forEach(mergedRange => {
     sheet.mergeCells(mergedRange.start.row + 1, mergedRange.start.column + 1, mergedRange.end.row + 1, mergedRange.end.column + 1)
   });

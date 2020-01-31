@@ -264,6 +264,9 @@ const withStyles = props => {
       left: { style: 'medium', color: '#008222' },
       bottom: { style: 'medium', color: '#008222' },
       right: { style: 'medium', color: '#008222' }
+    },
+    font: {
+      color: '#008222'
     }
   };
 
@@ -274,7 +277,7 @@ const withStyles = props => {
       font: {
         size: 16,
         bold: true,
-        color: '#fff'
+        color: '#ffffff'
       },
       horizontalAlign: 'center',
       verticalAlign: 'middle'
