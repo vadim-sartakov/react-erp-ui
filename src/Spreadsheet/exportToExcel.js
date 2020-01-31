@@ -17,10 +17,38 @@ function headingPixelsToPoints(type, pixels) {
   return type === 'column' ? columnHeadingPixelsToPoints(pixels) : pixelsToPoints(pixels);
 }
 
+/**
+ * 
+ * @param {import('exceljs').Row | import('exceljs').Column | import('exceljs').Cell} object 
+ * @param {import('./').Style} style 
+ */
+function convertStyles(object, style) {
+  if (!style) return;
+
+  const alignment = {};
+  if (style.horizontalAlign) alignment.horizontal = style.horizontalAlign;
+  if (style.verticalAlign) alignment.vertical = style.verticalAlign;
+  if (style.wrapText) alignment.wrapText = style.wrapText;
+
+  if (Object.keys(alignment).length) object.alignment = alignment;
+
+  if (style.fill) {
+    object.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: {
+        argb: style.fill.replace('#', '')
+      }
+    };
+  }
+
+}
+
 function fillHeadings(sheet, { internalHeadings = [], totalCount, sizeProp, type, getter, defaultSize }) {
   for (let i = 0; i < totalCount; i++) {
     const curHeading = internalHeadings[i];
     const heading = sheet[getter](i + 1);
+
     heading.font = { name: 'Arial', size: pixelsToPoints(14) };
 
     const sizeInPixels = (curHeading && curHeading.size) || defaultSize;
@@ -28,24 +56,26 @@ function fillHeadings(sheet, { internalHeadings = [], totalCount, sizeProp, type
     if (curHeading) {
       if (curHeading.level !== undefined) heading.outlineLevel = curHeading.level;
       if (curHeading.hidden !== undefined) heading.hidden = curHeading.hidden;
+      convertStyles(heading, curHeading.style);
     }
 
   }
 };
 
-async function writeRow(sheet, value, rowIndex, totalColumns) {
-  const rowValue = value[rowIndex];
-  if (!rowValue) return;
+async function writeRow(sheet, cells, rowIndex, totalColumns) {
+  const rowCells = cells[rowIndex];
+  if (!rowCells) return;
   for (let columnIndex = 0; columnIndex <totalColumns; columnIndex++) {
-    const value = rowValue[columnIndex];
-    if (!value) continue;
+    const curCell = rowCells[columnIndex];
+    if (!curCell) continue;
     const cell = sheet.getCell(rowIndex + 1, columnIndex + 1);
-    cell.value = value.value;
+    convertStyles(cell, curCell.style);
+    cell.value = curCell.value;
   }
 }
 
 export async function convertToWorkbook({
-  value,
+  cells,
   mergedCells,
   rows,
   columns,
@@ -79,7 +109,7 @@ export async function convertToWorkbook({
   fillHeadings(sheet, { type: 'column', internalHeadings: columns, totalCount: totalColumns, sizeProp: 'width', getter: 'getColumn', defaultSize: defaultColumnWidth });
 
   for (let rowIndex = 0; rowIndex < totalRows; rowIndex++) {
-    await writeRow(sheet, value, rowIndex, totalColumns);
+    await writeRow(sheet, cells, rowIndex, totalColumns);
   }
 
   mergedCells && mergedCells.forEach(mergedRange => {

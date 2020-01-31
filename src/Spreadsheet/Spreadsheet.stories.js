@@ -30,7 +30,7 @@ const SpreadsheetComponent = props => {
 
   const handleExportToExcel = useCallback(() => {
     exportToExcel({
-      value: props.cells,
+      cells: props.cells,
       rows: rows,
       columns: columns,
       mergedCells: props.mergedCells,
