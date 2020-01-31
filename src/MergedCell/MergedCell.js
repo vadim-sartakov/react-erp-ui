@@ -15,6 +15,7 @@ export const visibleMergesFilter = ({
 };
 
 const MergedCell = ({
+  style,
   defaultRowHeight,
   defaultColumnWidth,
   mergedRange,
@@ -75,7 +76,8 @@ const MergedCell = ({
     position: 'absolute',
     top: top - scrollerTop,
     left: left - scrollerLeft,
-    pointerEvents: 'none'
+    pointerEvents: 'none',
+    ...style
   };
 
   const baseWrapperStyle = {
@@ -104,7 +106,7 @@ const MergedCell = ({
       height: Math.min(fixHeight, height)
     };
     elements.push(
-      <div key={`fix-row-column-${rowIndex}-${columnIndex}`} style={rootStyle}>
+      <div key="fix-row-column-0" style={rootStyle}>
         <div style={wrapperStyle}>
           <div style={valueStyle}>
             {children}
@@ -126,7 +128,7 @@ const MergedCell = ({
       height
     };
     elements.push(
-      <div key={`fix-column-${rowIndex}-${columnIndex}`} style={rootStyle}>
+      <div key="fix-column-1" style={rootStyle}>
         <div style={wrapperStyle}>
           <div style={valueStyle}>
             {children}
@@ -148,7 +150,7 @@ const MergedCell = ({
       height: Math.min(fixHeight, height)
     };
     elements.push(
-      <div key={`fix-row-${rowIndex}-${columnIndex}`} style={rootStyle}>
+      <div key="fix-row-2" style={rootStyle}>
         <div style={wrapperStyle}>
           <div style={valueStyle}>
             {children}
@@ -161,14 +163,15 @@ const MergedCell = ({
   // Not fixed area
   elements.push((
     <div
-        key={`fix-cell-${rowIndex}-${columnIndex}`}
+        key="fix-cell-3"
         style={{
           position: 'absolute',
           top: top - scrollerTop,
           left: left - scrollerLeft,
           width,
           height,
-          zIndex: 1
+          zIndex: 1,
+          ...style
         }}>
       {children}
     </div>

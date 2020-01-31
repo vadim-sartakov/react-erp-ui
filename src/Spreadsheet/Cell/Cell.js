@@ -33,7 +33,7 @@ const Cell = ({
   };
   componentStyle.alignItems = (resultStyle.verticalAlign && flexAlignValuesMap[resultStyle.verticalAlign]) || 'flex-end';
   if (resultStyle.horizontalAlign) componentStyle.justifyContent = flexAlignValuesMap[resultStyle.horizontalAlign];
-  if (resultStyle.wrapText) componentStyle.whiteSpace = 'nowrap';
+  if (!resultStyle.wrapText) componentStyle.whiteSpace = 'nowrap';
   if (resultStyle.fill) componentStyle.backgroundColor = resultStyle.fill;
   if (resultStyle.font) {
     if (resultStyle.font.color) componentStyle.color = resultStyle.font.color;
@@ -43,16 +43,30 @@ const Cell = ({
     if (resultStyle.font.italic) componentStyle.fontStyle = 'italic';
   }
 
-  const onMouseDown = useCallback(() => {
+  const onMouseDown = useCallback(event => {
+    event.persist();
     onSelectedCellsChange(selectedCells => {
-      if (selectedCells.some(selectedRange => selectedRange.row === rowIndex && selectedRange.column === columnIndex)) return selectedCells;
-      return [
-        { row: rowIndex, column: columnIndex }
-      ]
+      const curRange = { row: rowIndex, column: columnIndex };
+      if (event.ctrlKey) {
+        if (selectedCells.some(selectedRange => selectedRange.row === rowIndex && selectedRange.column === columnIndex)) return selectedCells;
+        return [...selectedCells, curRange]
+      } else {
+        return [curRange];
+      }
     });
   }, [onSelectedCellsChange, rowIndex, columnIndex]);
 
-  return <Component style={componentStyle} cell={cell} onMouseDown={onMouseDown} />
+  const onMouseMove = useCallback(event => {
+    //console.log(event.button)
+  }, []);
+
+  return (
+    <Component
+        style={componentStyle}
+        cell={cell}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove} />
+  )
 };
 
 export default Cell;

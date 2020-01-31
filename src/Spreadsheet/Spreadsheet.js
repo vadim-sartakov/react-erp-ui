@@ -256,13 +256,15 @@ const Spreadsheet = inputProps => {
   });
 
   const visibleSelections = selectedCells.map(mapSelectedRange).filter(visibleRangesFilter);
-  const visibleSelectionElements = visibleSelections.map(selectedRange => {
+  const visibleSelectionElements = visibleSelections.map((selectedRange, seqIndex) => {
     const columnIndex = selectedRange.start.column;
     const rowIndex = selectedRange.start.row;
     
+    const mergedRange = mergedCells.find(mergedRange => mergedRange.start.row === rowIndex && mergedRange.start.column === columnIndex) || selectedRange;
+
     const mergedCellProps = {
-      key: `selected-cell-${rowIndex}-${columnIndex}`,
-      mergedRange: selectedRange,
+      key: `selected-cell-${seqIndex}`,
+      mergedRange,
       rows,
       columns,
       rowIndex,
@@ -272,7 +274,10 @@ const Spreadsheet = inputProps => {
       scrollerTop,
       scrollerLeft,
       defaultRowHeight,
-      defaultColumnWidth
+      defaultColumnWidth,
+      style: {
+        transition: '200ms ease-in-out'
+      }
     };
 
     return (
