@@ -26,6 +26,7 @@ export interface Style {
   font: Font;
   border?: Borders;
   fill?: string;
+  wrapText?: boolean;
 }
 
 export interface Meta {

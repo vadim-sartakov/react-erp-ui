@@ -246,10 +246,10 @@ const withStyles = props => {
   value[5][2].style = {
     fill: '#f1f1f1',
     border: {
-      top: { style: 'thin' },
-      left: { style: 'thin' },
-      bottom: { style: 'thin' },
-      right: { style: 'thin' }
+      top: { style: 'thick', color: '#008222' },
+      left: { style: 'thick', color: '#008222' },
+      bottom: { style: 'thick', color: '#008222' },
+      right: { style: 'thick', color: '#008222' }
     },
     font: {
       color: '#008222',
@@ -260,10 +260,10 @@ const withStyles = props => {
   value[15][2].style = {
     fill: '#f1f1f1',
     border: {
-      top: { style: 'thin' },
-      left: { style: 'thin' },
-      bottom: { style: 'thin' },
-      right: { style: 'thin' }
+      top: { style: 'medium', color: '#008222' },
+      left: { style: 'medium', color: '#008222' },
+      bottom: { style: 'medium', color: '#008222' },
+      right: { style: 'medium', color: '#008222' }
     }
   };
 
@@ -287,8 +287,15 @@ const withStyles = props => {
   columns[0] = {
     style: {
       horizontalAlign: 'right'
-    }
+    },
+    size: 50
   };
+  columns[1] = {
+    size: 50,
+    style: {
+      wrapText: true
+    }
+  }
   return (
     <SpreadsheetComponent
         columnHeadingHeight={20}

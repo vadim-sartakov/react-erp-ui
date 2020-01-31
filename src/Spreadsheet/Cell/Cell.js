@@ -30,6 +30,7 @@ const Cell = ({
   };
   componentStyle.alignItems = (resultStyle.verticalAlign && flexAlignValuesMap[resultStyle.verticalAlign]) || 'flex-end';
   componentStyle.justifyContent = flexAlignValuesMap[resultStyle.horizontalAlign];
+  componentStyle.whiteSpace = resultStyle.wrapText ? undefined : 'nowrap';
   componentStyle.backgroundColor = resultStyle.fill;
   if (resultStyle.font) {
     componentStyle.color = resultStyle.font.color;
