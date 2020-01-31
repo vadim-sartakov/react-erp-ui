@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import useResize from '../useResize';
 
-const GridResizer = ({ type, index, defaultSize, meta, onChange, Component = 'div', ...props }) => {
+const GridResizer = ({ type, index, defaultSize, meta, onChange, Component = 'div', minSize = 10, ...props }) => {
   let resizeProperty, otherResizeProperty;
   if (type === 'row') {
     resizeProperty = 'height';
@@ -13,13 +13,13 @@ const GridResizer = ({ type, index, defaultSize, meta, onChange, Component = 'di
 
   const sizes = { [resizeProperty] : (meta && meta.size) || defaultSize, [otherResizeProperty]: 0 };
   const handleSizesChange = useCallback(newSize => {
-    const curSize = newSize[resizeProperty];
+    const curSize = Math.max(newSize[resizeProperty], minSize);
     onChange(sizes => {
       const nextSizes = [...(sizes || [])];
       nextSizes[index] = { ...nextSizes[index], size: curSize };
       return nextSizes;
     });
-  }, [index, onChange, resizeProperty]);
+  }, [index, onChange, resizeProperty, minSize]);
   const onStartResize = useResize({ sizes, onSizesChange: handleSizesChange });
   return <Component {...props} onMouseDown={onStartResize} />;
 };
