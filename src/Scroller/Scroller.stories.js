@@ -14,7 +14,7 @@ const listRows = generateCustomMeta(listValue.length, 80);
 const ListCellComponent = ({ value }) => {
   return (
     <div className="row">
-      {value ? `Value ${value.row}` : 'Loading...'}
+      {value || 'Loading...'}
     </div>
   )
 };
@@ -32,7 +32,7 @@ const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 const GridCellComponent = ({ value }) => {
   return (
     <div className={classes.cell}>
-      {value ? `Value ${value.row} - ${value.column}` : 'Loading...'}
+      {value || 'Loading...'}
     </div>
   )
 };

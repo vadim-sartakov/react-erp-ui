@@ -1,5 +1,34 @@
 import { HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties } from 'react';
 
+export interface Font {
+  name?: string;
+  size?: number;
+  bold: boolean;
+  italic: boolean;
+  color: string;
+}
+
+export interface BorderStyle {
+  style: 'thin' | 'medium' | 'thick' ;
+  color: string;
+}
+
+export interface Borders {
+  top?: BorderStyle;
+  left?: BorderStyle;
+  bottom?: BorderStyle;
+  right?: BorderStyle;
+}
+
+export interface Style {
+  verticalAlign: 'top' | 'middle' | 'bottom';
+  horizontalAlign: 'left' | 'center' | 'right';
+  font: Font;
+  border?: Borders;
+  fill?: string;
+  wrapText?: boolean;
+}
+
 export interface Meta {
   type?: 'NUMBER' | 'GROUP';
   /** Width or height */
@@ -7,10 +36,10 @@ export interface Meta {
   /** Whether current element expanded or collapsed */
   hidden?: number;
   /** Group level */
-  level?: number
+  level?: number,
+  style?: Style
 }
-
-export interface Value {
+export interface Cell {
   /** Value itself */
   value: any;
   /** 
@@ -19,7 +48,8 @@ export interface Value {
    */
   format?: (value: any) => JSX.Element;
   /** Excel like formula */
-  formula?: string
+  formula?: string;
+  style?: Style;
 }
 
 /** Group object describing grouped items range */
@@ -49,7 +79,7 @@ export interface FixLinesViewProps {
   style: CSSProperties;
 }
 
-export interface RowColumnNumberViewProps {
+export interface HeadingViewProps {
   type: 'row' | 'column';
   defaultSize: number;
   onChange: Dispatch<SetStateAction<Meta[]>>;
@@ -72,7 +102,7 @@ export interface GroupLineViewProps {
 }
 
 export interface CellComponentProps {
-  value: Value
+  value: Cell
 }
 
 export interface ViewComponentsOptions {
@@ -81,8 +111,8 @@ export interface ViewComponentsOptions {
   /** Fixed rows and columns lines */
   FixLinesComponent?: FunctionComponent<FixLinesViewProps>;
   /** Rows and columns numbers */
-  RowColumnNumberComponent?: FunctionComponent<RowColumnNumberViewProps>;
-  RowColumnNumberIntersectionComponent?: FunctionComponent<HTMLAttributes<{}>>;
+  HeadingComponent?: FunctionComponent<HeadingViewProps>;
+  HeadingsIntersectionComponent?: FunctionComponent<HTMLAttributes<{}>>;
   /** Empty area of special rows and columns  */
   SpecialCellEmptyAreaComponent: FunctionComponent<HTMLAttributes<{}>>;
   /** Row group level buttons which allows to manage expand/collapse state */
@@ -112,18 +142,18 @@ export interface SpreadsheetContainerProps {
 export const SpreadsheetContainer: FunctionComponent<SpreadsheetContainerProps>
 
 export interface UseSpreadsheetOptions {
-  value?: Value[][];
-  onChange?: Dispatch<SetStateAction<Value[][]>>;
+  cells?: Cell[][];
+  onCellsChange?: Dispatch<SetStateAction<Cell[][]>>;
   rows?: Meta[]; 
   columns?: Meta[];
   onRowsChange?: Dispatch<SetStateAction<Meta[]>>;
   onColumnsChange?: Dispatch<SetStateAction<Meta[]>>;
   /** If set to 'true' than rows/columns numbers won't be rendered */
-  hideRowColumnNumbers?: boolean;
+  hideHeadings?: boolean;
   /** Height of special row with column numbers */
-  columnNumbersRowHeight?: number;
+  columnHeadingHeight?: number;
   /** Width of special column with row numbers */
-  rowNumberColumnWidth?: number;
+  rowHeadingWidth?: number;
   /** 
    * Width and height of groups special rows and columns.
    * These areas serve for group buttons rendering and group lines.
@@ -143,8 +173,8 @@ export type GroupButtonClickHandlerFactory = (group: Group) => MouseEventHandler
  * special rows/columns (rows, columns numbers, groups) appeared
  */
 export interface UseSpreadsheetResult {
-  value: Value[][];
-  onChange: Dispatch<SetStateAction<Value>>;
+  cells: Cell[][];
+  onCellsChange: Dispatch<SetStateAction<Cell>>;
   rows: Meta[];
   columns: Meta[];
   onColumnsChange: Dispatch<SetStateAction<Meta[]>>;

@@ -2,11 +2,12 @@ import React from 'react';
 import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
 import { SpreadsheetContainer, useSpreadsheet } from './';
 import GroupLevelButton from './GroupLevelButton';
-import { RowColumnNumber, RowColumnNumberIntersection } from './RowColumnNumber';
+import { Heading, HeadingsIntersection } from './Heading';
 import { GroupLine } from './GroupLine';
 import FixLines from './FixLines';
 import MergedCell from '../MergedCell';
 import SpecialCellEmptyArea from './SpecialCellEmptyArea';
+import Cell, { Borders } from './Cell';
 
 export const visibleMergesFilter = ({
   fixRows,
@@ -40,7 +41,7 @@ const Spreadsheet = inputProps => {
   const scrollerLeft = scrollerProps.pagesStyles.left;
 
   const {
-    value,
+    cells,
     visibleRows,
     visibleColumns,
     defaultRowHeight,
@@ -52,8 +53,8 @@ const Spreadsheet = inputProps => {
     onRowsChange,
     onColumnsChange,
     SpecialCellEmptyAreaComponent = SpecialCellEmptyArea,
-    RowColumnNumberComponent = RowColumnNumber,
-    RowColumnNumberIntersectionComponent = RowColumnNumberIntersection,
+    HeadingComponent = Heading,
+    HeadingsIntersectionComponent = HeadingsIntersection,
     GroupLevelButtonComponent = GroupLevelButton,
     GroupLineComponent,
     FixLinesComponent,
@@ -107,11 +108,11 @@ const Spreadsheet = inputProps => {
                 element = <GroupLevelButtonComponent index={columnIndex} onClick={onRowGroupLevelButtonClick(columnIndex + 1)} />;
                 break;
               case 'NUMBER':
-                element = <RowColumnNumberIntersectionComponent />;
+                element = <HeadingsIntersectionComponent />;
                 break;
               default:
                 element = (
-                  <RowColumnNumberComponent
+                  <HeadingComponent
                       key={`${seqRowIndex}_${seqColumnIndex}`}
                       type="column"
                       meta={column}
@@ -123,8 +124,8 @@ const Spreadsheet = inputProps => {
             }
             break;
           default:
-            const rowValue = value[rowIndex];
-            const curValue = rowValue && rowValue[columnIndex];
+            const rowCells = cells[rowIndex];
+            const curCell = rowCells && rowCells[columnIndex];
             
             switch(columnsType) {
               case 'GROUP':
@@ -132,7 +133,7 @@ const Spreadsheet = inputProps => {
                 break
               case 'NUMBER':
                 element = (
-                  <RowColumnNumberComponent
+                  <Heading
                       key={`${seqRowIndex}_${seqColumnIndex}`}
                       type="row"
                       meta={row}
@@ -142,7 +143,13 @@ const Spreadsheet = inputProps => {
                 );
                 break;
               default:
-                element = <CellComponent value={curValue} />;
+                spreadsheetCellProps = rowIndex >= fixRows && columnIndex >= fixColumns && { style: { position: 'relative' } };
+                element = (
+                  <>
+                    <Cell row={row} column={column} cell={curCell} Component={CellComponent} />
+                    <Borders cell={curCell} />
+                  </>
+                );
             }
         }
       }
@@ -170,8 +177,8 @@ const Spreadsheet = inputProps => {
 
     const row = rows[rowIndex] || {};
     const column = columns[columnIndex] || {};
-    const rowValue = value[rowIndex];
-    const curValue = rowValue && rowValue[columnIndex];
+    const rowCells = cells[rowIndex];
+    const curCell = rowCells && rowCells[columnIndex];
 
     const mergedCellProps = {
       key: `merged-cell-${rowIndex}-${columnIndex}`,
@@ -207,7 +214,8 @@ const Spreadsheet = inputProps => {
     } else {
       return (
         <MergedCell {...mergedCellProps}>
-          <CellComponent value={curValue} />
+          <Cell row={row} column={column} cell={curCell} Component={CellComponent} />
+          <Borders cell={curCell} />
         </MergedCell>
       )
     }

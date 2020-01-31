@@ -1,7 +1,7 @@
 import { mount } from 'enzyme';
 import toJSON from 'enzyme-to-json';
 import Spreadsheet from './Spreadsheet';
-import { defaultComponent, withMergedCells, withGroups } from './Spreadsheet.stories';
+import { defaultComponent, withMergedCells, withGroups, withStyles } from './Spreadsheet.stories';
 import { ScrollerContainer } from '../Scroller';
 import { act } from 'react-dom/test-utils';
 
@@ -48,13 +48,17 @@ describe('Spreadsheet', () => {
   });
 
   describe('groups', () => {
-
     const wrapper = mount(withGroups({ rowsPerPage: 50, columnsPerPage: 10 }));
-
     it('initial - all expanded', () => {
       expect(toJSON(wrapper.find(Spreadsheet), { map: mapper })).toMatchSnapshot();
     });
+  });
 
+  describe('styles', () => {
+    const wrapper = mount(withStyles({ rowsPerPage: 50, columnsPerPage: 10 }));
+    it('styled spreadsheet', () => {
+      expect(toJSON(wrapper.find(Spreadsheet), { map: mapper })).toMatchSnapshot();
+    });
   });
 
   describe('resize', () => {
