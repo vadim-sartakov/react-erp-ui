@@ -102,7 +102,7 @@ export interface GroupLineViewProps {
 }
 
 export interface CellComponentProps {
-  value: Cell
+  cell: Cell
 }
 
 export interface ViewComponentsOptions {
@@ -119,6 +119,7 @@ export interface ViewComponentsOptions {
   GroupLevelButtonComponent?: FunctionComponent<GroupLevelButtonViewProps>;
   /** Group line which located along with grouped items */
   GroupLineComponent?: FunctionComponent<GroupLineViewProps>;
+  SelectedRangeComponent?: FunctionComponent<{}>;
 }
 
 export interface SpreadsheetContextProps {
@@ -141,6 +142,8 @@ export interface SpreadsheetContainerProps {
 }
 export const SpreadsheetContainer: FunctionComponent<SpreadsheetContainerProps>
 
+export type SelectedCells = Array<CellsRange | CellAddress>;
+
 export interface UseSpreadsheetOptions {
   cells?: Cell[][];
   onCellsChange?: Dispatch<SetStateAction<Cell[][]>>;
@@ -148,6 +151,8 @@ export interface UseSpreadsheetOptions {
   columns?: Meta[];
   onRowsChange?: Dispatch<SetStateAction<Meta[]>>;
   onColumnsChange?: Dispatch<SetStateAction<Meta[]>>;
+  selectedCells?: SelectedCells;
+  onSelectedCellsChange?: Dispatch<SetStateAction<SelectedCells>>;
   /** If set to 'true' than rows/columns numbers won't be rendered */
   hideHeadings?: boolean;
   /** Height of special row with column numbers */
@@ -179,6 +184,8 @@ export interface UseSpreadsheetResult {
   columns: Meta[];
   onColumnsChange: Dispatch<SetStateAction<Meta[]>>;
   onRowsChange: Dispatch<SetStateAction<Meta[]>>;
+  selectedCells?: SelectedCells;
+  onSelectedCellsChange?: Dispatch<SetStateAction<SelectedCells>>;
   totalRows: number;
   totalColumns: number;
   fixRows: number;

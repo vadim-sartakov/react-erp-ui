@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 const flexAlignValuesMap = {
   top: 'flex-start',
@@ -12,8 +12,11 @@ const flexAlignValuesMap = {
 const Cell = ({
   row,
   column,
+  rowIndex,
+  columnIndex,
   cell,
-  Component
+  Component,
+  onSelectedCellsChange
 }) => {
   const rowStyle = (row && row.style) || {};
   const columnStyle = (column && column.style) || {};
@@ -40,7 +43,16 @@ const Cell = ({
     if (resultStyle.font.italic) componentStyle.fontStyle = 'italic';
   }
 
-  return <Component style={componentStyle} cell={cell} />
+  const onMouseDown = useCallback(() => {
+    onSelectedCellsChange(selectedCells => {
+      if (selectedCells.some(selectedRange => selectedRange.row === rowIndex && selectedRange.column === columnIndex)) return selectedCells;
+      return [
+        { row: rowIndex, column: columnIndex }
+      ]
+    });
+  }, [onSelectedCellsChange, rowIndex, columnIndex]);
+
+  return <Component style={componentStyle} cell={cell} onMouseDown={onMouseDown} />
 };
 
 export default Cell;

@@ -14,8 +14,8 @@ const gridValuesMapper = valueRow => {
   });
 };
 
-const CellComponent = ({ cell, style }) => (
-  <div className={classes.cell} style={style}>
+const CellComponent = ({ cell, ...props }) => (
+  <div className={classes.cell} {...props}>
     {cell ? cell.value : ''}
   </div>
 );

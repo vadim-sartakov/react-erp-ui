@@ -89,6 +89,8 @@ const useSpreadsheet = ({
   onRowsChange: onRowsChangeProp,
   columns: columnsProp,
   onColumnsChange: onColumnsChangeProp,
+  selectedCells: selectedCellsProp,
+  onSelectedCellsChange: onSelectedCellsChangeProp,
   columnHeadingHeight,
   rowHeadingWidth,
   totalRows,
@@ -99,6 +101,10 @@ const useSpreadsheet = ({
   groupSize,
   mergedCells: mergedCellsProp
 }) => {
+
+  const [selectedCellsState, setSelectedCellsState] = useState([]);
+  const selectedCells = selectedCellsProp || selectedCellsState;
+  const onSelectedCellsChange = onSelectedCellsChangeProp || setSelectedCellsState;
 
   const [rowsState, setRowsState] = useState([]);
   const [columnsState, setColumnsState] = useState([]);
@@ -308,6 +314,8 @@ const useSpreadsheet = ({
     columns: nextColumns,
     onColumnsChange: nextOnColumnsChange,
     onRowsChange: nextOnRowsChange,
+    selectedCells,
+    onSelectedCellsChange,
     totalRows: (totalRows + specialRowsCount) - hiddenRowsIndexes.length,
     totalColumns: (totalColumns + specialColumnsCount) - hiddenColumnsIndexes.length,
     fixRows: fixRows + specialRowsCount,

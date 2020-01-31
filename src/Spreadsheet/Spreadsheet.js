@@ -7,9 +7,10 @@ import { GroupLine } from './GroupLine';
 import FixLines from './FixLines';
 import MergedCell from '../MergedCell';
 import SpecialCellEmptyArea from './SpecialCellEmptyArea';
+import SelectedRange from './SelectedRange';
 import Cell, { Borders } from './Cell';
 
-export const visibleMergesFilter = ({
+export const visibleRangesFilter = ({
   fixRows,
   fixColumns,
   visibleRows,
@@ -20,6 +21,22 @@ export const visibleMergesFilter = ({
           mergedRange.start.column <= visibleColumns[visibleColumns.length - 1] &&
           mergedRange.end.row >= visibleRows[fixRows] &&
           mergedRange.end.column >= visibleColumns[fixColumns]);
+};
+
+/**
+ * Makes all selected cells as cells ranges with start and end values
+ */
+const mapSelectedRange = selectedRange => {
+  return selectedRange.row && selectedRange.column ? {
+    start: {
+      row: selectedRange.row,
+      column: selectedRange.column
+    },
+    end: {
+      row: selectedRange.row,
+      column: selectedRange.column
+    }
+  } : selectedRange;
 };
 
 /** @type {import('react').FunctionComponent<import('./').SpreadsheetProps>} */
@@ -42,6 +59,8 @@ const Spreadsheet = inputProps => {
 
   const {
     cells,
+    onSelectedCellsChange,
+    selectedCells,
     visibleRows,
     visibleColumns,
     defaultRowHeight,
@@ -58,6 +77,7 @@ const Spreadsheet = inputProps => {
     GroupLevelButtonComponent = GroupLevelButton,
     GroupLineComponent,
     FixLinesComponent,
+    SelectedRangeComponent = SelectedRange,
     CellComponent,
     mergedCells,
     specialRowsCount,
@@ -146,7 +166,14 @@ const Spreadsheet = inputProps => {
                 spreadsheetCellProps = rowIndex >= fixRows && columnIndex >= fixColumns && { style: { position: 'relative' } };
                 element = (
                   <>
-                    <Cell row={row} column={column} cell={curCell} Component={CellComponent} />
+                    <Cell
+                        row={row}
+                        column={column}
+                        rowIndex={rowIndex}
+                        columnIndex={columnIndex}
+                        cell={curCell}
+                        Component={CellComponent}
+                        onSelectedCellsChange={onSelectedCellsChange} />
                     <Borders cell={curCell} />
                   </>
                 );
@@ -169,7 +196,7 @@ const Spreadsheet = inputProps => {
     return [...acc, ...columnsElements];   
   }, []);
 
-  const visibleMerges = mergedCells.filter(visibleMergesFilter({ fixRows, fixColumns, visibleRows, visibleColumns }));
+  const visibleMerges = mergedCells.filter(visibleRangesFilter({ fixRows, fixColumns, visibleRows, visibleColumns }));
 
   const mergedCellsElements = visibleMerges.map(mergedRange => {
     const columnIndex = mergedRange.start.column;
@@ -214,11 +241,45 @@ const Spreadsheet = inputProps => {
     } else {
       return (
         <MergedCell {...mergedCellProps}>
-          <Cell row={row} column={column} cell={curCell} Component={CellComponent} />
+          <Cell
+              row={row}
+              column={column}
+              rowIndex={rowIndex}
+              columnIndex={columnIndex}
+              cell={curCell}
+              Component={CellComponent}
+              onSelectedCellsChange={onSelectedCellsChange} />
           <Borders cell={curCell} />
         </MergedCell>
       )
     }
+  });
+
+  const visibleSelections = selectedCells.map(mapSelectedRange).filter(visibleRangesFilter);
+  const visibleSelectionElements = visibleSelections.map(selectedRange => {
+    const columnIndex = selectedRange.start.column;
+    const rowIndex = selectedRange.start.row;
+    
+    const mergedCellProps = {
+      key: `selected-cell-${rowIndex}-${columnIndex}`,
+      mergedRange: selectedRange,
+      rows,
+      columns,
+      rowIndex,
+      columnIndex,
+      fixRows,
+      fixColumns,
+      scrollerTop,
+      scrollerLeft,
+      defaultRowHeight,
+      defaultColumnWidth
+    };
+
+    return (
+      <MergedCell {...mergedCellProps}>
+        <SelectedRangeComponent />
+      </MergedCell>
+    )
   });
 
   const fixedAreasElement = (
@@ -234,6 +295,7 @@ const Spreadsheet = inputProps => {
   const elements = [
     ...cellsElements,
     ...mergedCellsElements,
+    ...visibleSelectionElements,
     fixedAreasElement
   ];
 
