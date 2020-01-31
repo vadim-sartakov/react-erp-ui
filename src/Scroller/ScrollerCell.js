@@ -28,7 +28,7 @@ const ScrollerCell = ({
   if (columnOffset !== undefined && rowOffset !== undefined) {
     nextStyle.zIndex = 6;
   }
-  nextStyle = { ...nextStyle, ...style, position: nextStyle.position || (style && style.position) };
+  nextStyle = { ...nextStyle, ...style };
   return (
     <div style={nextStyle}>
       {children}

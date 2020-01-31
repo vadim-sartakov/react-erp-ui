@@ -8,12 +8,6 @@ export interface Font {
   color: string;
 }
 
-export interface Style {
-  verticalAlign: 'top' | 'middle' | 'bottom';
-  horizontalAlign: 'left' | 'center' | 'right';
-  font: Font;
-}
-
 export interface BorderStyle {
   style: 'thin' | 'medium' | 'thick' ;
   color: string;
@@ -26,6 +20,14 @@ export interface Borders {
   right?: BorderStyle;
 }
 
+export interface Style {
+  verticalAlign: 'top' | 'middle' | 'bottom';
+  horizontalAlign: 'left' | 'center' | 'right';
+  font: Font;
+  border?: Borders;
+  fill?: string;
+}
+
 export interface Meta {
   type?: 'NUMBER' | 'GROUP';
   /** Width or height */
@@ -36,7 +38,7 @@ export interface Meta {
   level?: number,
   style?: Style
 }
-export interface Value {
+export interface Cell {
   /** Value itself */
   value: any;
   /** 
@@ -47,8 +49,6 @@ export interface Value {
   /** Excel like formula */
   formula?: string;
   style?: Style;
-  border?: Borders;
-  fill?: string;
 }
 
 /** Group object describing grouped items range */
@@ -101,7 +101,7 @@ export interface GroupLineViewProps {
 }
 
 export interface CellComponentProps {
-  value: Value
+  value: Cell
 }
 
 export interface ViewComponentsOptions {
@@ -141,8 +141,8 @@ export interface SpreadsheetContainerProps {
 export const SpreadsheetContainer: FunctionComponent<SpreadsheetContainerProps>
 
 export interface UseSpreadsheetOptions {
-  value?: Value[][];
-  onChange?: Dispatch<SetStateAction<Value[][]>>;
+  cells?: Cell[][];
+  onCellsChange?: Dispatch<SetStateAction<Cell[][]>>;
   rows?: Meta[]; 
   columns?: Meta[];
   onRowsChange?: Dispatch<SetStateAction<Meta[]>>;
@@ -172,8 +172,8 @@ export type GroupButtonClickHandlerFactory = (group: Group) => MouseEventHandler
  * special rows/columns (rows, columns numbers, groups) appeared
  */
 export interface UseSpreadsheetResult {
-  value: Value[][];
-  onChange: Dispatch<SetStateAction<Value>>;
+  cells: Cell[][];
+  onCellsChange: Dispatch<SetStateAction<Cell>>;
   rows: Meta[];
   columns: Meta[];
   onColumnsChange: Dispatch<SetStateAction<Meta[]>>;

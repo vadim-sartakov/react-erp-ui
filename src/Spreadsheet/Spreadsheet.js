@@ -41,7 +41,7 @@ const Spreadsheet = inputProps => {
   const scrollerLeft = scrollerProps.pagesStyles.left;
 
   const {
-    value,
+    cells,
     visibleRows,
     visibleColumns,
     defaultRowHeight,
@@ -124,8 +124,8 @@ const Spreadsheet = inputProps => {
             }
             break;
           default:
-            const rowValue = value[rowIndex];
-            const curValue = rowValue && rowValue[columnIndex];
+            const rowCells = cells[rowIndex];
+            const curCell = rowCells && rowCells[columnIndex];
             
             switch(columnsType) {
               case 'GROUP':
@@ -143,11 +143,11 @@ const Spreadsheet = inputProps => {
                 );
                 break;
               default:
-                spreadsheetCellProps =  { style: { position: 'relative' } };
+                spreadsheetCellProps = rowIndex >= fixRows && columnIndex >= fixColumns && { style: { position: 'relative' } };
                 element = (
                   <>
-                    <Cell row={row} column={column} value={curValue} Component={CellComponent} />
-                    <Borders value={curValue} />
+                    <Cell row={row} column={column} cell={curCell} Component={CellComponent} />
+                    <Borders cell={curCell} />
                   </>
                 );
             }
@@ -177,8 +177,8 @@ const Spreadsheet = inputProps => {
 
     const row = rows[rowIndex] || {};
     const column = columns[columnIndex] || {};
-    const rowValue = value[rowIndex];
-    const curValue = rowValue && rowValue[columnIndex];
+    const rowCells = cells[rowIndex];
+    const curCell = rowCells && rowCells[columnIndex];
 
     const mergedCellProps = {
       key: `merged-cell-${rowIndex}-${columnIndex}`,
@@ -214,8 +214,8 @@ const Spreadsheet = inputProps => {
     } else {
       return (
         <MergedCell {...mergedCellProps}>
-          <Cell row={row} column={column} value={curValue} Component={CellComponent} />
-          <Borders value={curValue} />
+          <Cell row={row} column={column} cell={curCell} Component={CellComponent} />
+          <Borders cell={curCell} />
         </MergedCell>
       )
     }

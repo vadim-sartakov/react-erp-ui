@@ -10,8 +10,8 @@ function getBorderStyle(borderStyle) {
   return borderStyle && `solid ${borderSizeMap[borderStyle.style || 'thin']}px ${borderStyle.color || '#000000'}`;
 };
 
-const Borders = ({ value }) => {
-  if (!value || !value.border) return null;
+const Borders = ({ cell }) => {
+  if (!cell || !cell.style || !cell.style.border) return null;
   const style = {
     position: 'absolute',
     top: 0,
@@ -20,12 +20,11 @@ const Borders = ({ value }) => {
     left: 0,
     pointerEvents: 'none'
   };
-  if (value.border) {
-    style.borderTop = getBorderStyle(value.border.top);
-    style.borderLeft = getBorderStyle(value.border.left);
-    style.borderBottom = getBorderStyle(value.border.bottom);
-    style.borderRight = getBorderStyle(value.border.right);
-  }
+  const border = cell.style.border;
+  style.borderTop = getBorderStyle(border.top);
+  style.borderLeft = getBorderStyle(border.left);
+  style.borderBottom = getBorderStyle(border.bottom);
+  style.borderRight = getBorderStyle(border.right);
   return <div style={style} />;
 };
 

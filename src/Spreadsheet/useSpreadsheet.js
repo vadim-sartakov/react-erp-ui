@@ -83,8 +83,8 @@ const clickGroupButton = (meta, group, specialMetaCount) => {
  * @returns {import('.').UseSpreadsheetResult}
  */
 const useSpreadsheet = ({
-  value: valueProp,
-  onChange: onChangeProp,
+  cells: cellsProp,
+  onCellsChange: onCellsChangeProp,
   rows: rowsProp,
   onRowsChange: onRowsChangeProp,
   columns: columnsProp,
@@ -181,10 +181,10 @@ const useSpreadsheet = ({
   const onColumnGroupLevelButtonClick = useCallback(level => event => onColumnsChange(clickGroupLevelButton(columns, level)), [columns, onColumnsChange]);
   const onColumnGroupButtonClick = useCallback(group => event => onColumnsChange(clickGroupButton(columns, group, specialColumnsCount)), [columns, onColumnsChange, specialColumnsCount]);
 
-  const [valueState, setValueState] = useState([]);
+  const [cellsState, setCellsState] = useState([]);
 
-  const value = valueProp || valueState;
-  const onChange = onChangeProp || setValueState;
+  const cells = cellsProp || cellsState;
+  const onCellsChange = onCellsChangeProp || setCellsState;
 
   const convertExternalValueToInternalCallback = useCallback(value => {
     return convertExternalValueToInternal({
@@ -197,7 +197,7 @@ const useSpreadsheet = ({
   }, [specialRowsCount, specialColumnsCount, hiddenColumnsIndexes, hiddenRowsIndexes]);
 
   const nextValue = convertExternalValueToInternal({
-    value,
+    value: cells,
     specialRowsCount,
     specialColumnsCount,
     hiddenRowsIndexes,
@@ -205,7 +205,7 @@ const useSpreadsheet = ({
   });
 
   const nextOnChange = useCallback(setValue => {
-    onChange(value => {
+    onCellsChange(value => {
       let nextValue;
       if (typeof value === 'function') nextValue = setValue(convertExternalValueToInternalCallback(value));
       else nextValue = setValue;
@@ -217,7 +217,7 @@ const useSpreadsheet = ({
       });
       return nextValue;
     });
-  }, [convertExternalValueToInternalCallback, specialRowsCount, specialColumnsCount, onChange]);
+  }, [convertExternalValueToInternalCallback, specialRowsCount, specialColumnsCount, onCellsChange]);
 
   // Using mapper here because we calculated groups based on external (not filtered meta)
   // We can't calculate groups of internal meta because it does not have hidden items
@@ -302,8 +302,8 @@ const useSpreadsheet = ({
   }, [mergedCellsProp, specialRowsCount, specialColumnsCount, rowsGroups, columnsGroups]);
 
   return {
-    value: nextValue,
-    onChange: nextOnChange,
+    cells: nextValue,
+    onCellsChange: nextOnChange,
     rows: nextRows,
     columns: nextColumns,
     onColumnsChange: nextOnColumnsChange,

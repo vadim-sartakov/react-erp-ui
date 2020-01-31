@@ -12,12 +12,12 @@ const flexAlignValuesMap = {
 const Cell = ({
   row,
   column,
-  value,
+  cell,
   Component
 }) => {
   const rowStyle = (row && row.style) || {};
   const columnStyle = (column && column.style) || {};
-  const valueStyle = (value && value.style) || {};
+  const valueStyle = (cell && cell.style) || {};
 
   const resultStyle = {
     ...columnStyle,
@@ -39,7 +39,7 @@ const Cell = ({
     componentStyle.fontStyle = resultStyle.font.italic ? 'italic' : undefined;
   }
 
-  return <Component style={componentStyle} value={value} />
+  return <Component style={componentStyle} cell={cell} />
 };
 
 export default Cell;

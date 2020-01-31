@@ -14,9 +14,9 @@ const gridValuesMapper = valueRow => {
   });
 };
 
-const CellComponent = ({ value, style }) => (
+const CellComponent = ({ cell, style }) => (
   <div className={classes.cell} style={style}>
-    {value ? value.value : ''}
+    {cell ? cell.value : ''}
   </div>
 );
 
@@ -30,7 +30,7 @@ const SpreadsheetComponent = props => {
 
   const handleExportToExcel = useCallback(() => {
     exportToExcel({
-      value: props.value,
+      value: props.cells,
       rows: rows,
       columns: columns,
       mergedCells: props.mergedCells,
@@ -42,7 +42,7 @@ const SpreadsheetComponent = props => {
       defaultColumnWidth: props.defaultColumnWidth
     }, 'export.xlsx');
   }, [
-    props.value,
+    props.cells,
     columns,
     rows,
     props.mergedCells,
@@ -83,7 +83,7 @@ export const defaultComponent = props => {
         columnsPerPage={15}
         totalColumns={50}
         totalRows={1000}
-        value={value}
+        cells={value}
         width={800}
         height={600}
         fixRows={2}
@@ -145,7 +145,7 @@ export const withMergedCells = props => {
         totalColumns={50}
         totalRows={1000}
         mergedCells={mergedCells}
-        value={value}
+        cells={value}
         width={800}
         height={600}
         fixRows={2}
@@ -209,7 +209,7 @@ export const withGroups = props => {
         columnsPerPage={15}
         totalColumns={50}
         totalRows={1000}
-        value={value}
+        cells={value}
         width={800}
         height={600}
         fixRows={2}
@@ -222,18 +222,18 @@ export const withGroups = props => {
 };
 
 const withStyles = props => {
-  /** @type {import('./').Value[][]} */
+  /** @type {import('./').Cell[][]} */
   const value = generateGridValues(100, 20).map(gridValuesMapper);
   for(let i = 0; i < 20; i++) {
-    const cell = value[0][i];
-    cell.border = {
-      top: { style: 'medium' },
-      bottom: { style: 'medium' },
-      right: { style: 'thin' }
-    };
-    cell.style = {
+    value[0][i].style = {
+      border: {
+        top: { style: 'medium' },
+        bottom: { style: 'medium' },
+        right: { style: 'thin' }
+      },
       fill: '#2a7b29'
     };
+    
   }
 
   const mergedCells = [
@@ -243,19 +243,27 @@ const withStyles = props => {
     }
   ];
 
-  const mergedCell = value[5][2];
-  mergedCell.fill = '#bbb';
-  mergedCell.border = {
-    top: { style: 'thin' },
-    left: { style: 'thin' },
-    bottom: { style: 'thin' },
-    right: { style: 'thin' }
-  };
-
   value[5][2].style = {
+    fill: '#f1f1f1',
+    border: {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    },
     font: {
       color: '#008222',
       italic: true
+    }
+  };
+
+  value[15][2].style = {
+    fill: '#f1f1f1',
+    border: {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
     }
   };
 
@@ -291,12 +299,13 @@ const withStyles = props => {
         columnsPerPage={15}
         totalColumns={50}
         totalRows={1000}
-        value={value}
+        cells={value}
         rows={rows}
         columns={columns}
         width={800}
         height={600}
-        fixRows={0}
+        fixRows={1}
+        fixColumns={0}
         mergedCells={mergedCells}
         {...props} />
   )
