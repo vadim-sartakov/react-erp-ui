@@ -86,8 +86,6 @@ export async function convertToWorkbook({
     sheet.mergeCells(mergedRange.start.row + 1, mergedRange.start.column + 1, mergedRange.end.row + 1, mergedRange.end.column + 1)
   });
 
-  console.log(sheet);
-
   return workbook;
 };
 

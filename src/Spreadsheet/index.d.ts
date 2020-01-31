@@ -1,20 +1,11 @@
 import { HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties } from 'react';
 
-export interface Meta {
-  type?: 'NUMBER' | 'GROUP';
-  /** Width or height */
-  size?: number;
-  /** Whether current element expanded or collapsed */
-  hidden?: number;
-  /** Group level */
-  level?: number
-}
-
 export interface Font {
   name?: string;
   size?: number;
   bold: boolean;
   italic: boolean;
+  color: string;
 }
 
 export interface Style {
@@ -23,6 +14,28 @@ export interface Style {
   font: Font;
 }
 
+export interface BorderStyle {
+  style: 'thin' | 'medium' | 'thick' ;
+  color: string;
+}
+
+export interface Borders {
+  top?: BorderStyle;
+  left?: BorderStyle;
+  bottom?: BorderStyle;
+  right?: BorderStyle;
+}
+
+export interface Meta {
+  type?: 'NUMBER' | 'GROUP';
+  /** Width or height */
+  size?: number;
+  /** Whether current element expanded or collapsed */
+  hidden?: number;
+  /** Group level */
+  level?: number,
+  style?: Style
+}
 export interface Value {
   /** Value itself */
   value: any;
@@ -33,7 +46,9 @@ export interface Value {
   format?: (value: any) => JSX.Element;
   /** Excel like formula */
   formula?: string;
-  style?: Style
+  style?: Style;
+  border?: Borders;
+  fill?: string;
 }
 
 /** Group object describing grouped items range */
@@ -135,9 +150,9 @@ export interface UseSpreadsheetOptions {
   /** If set to 'true' than rows/columns numbers won't be rendered */
   hideHeadings?: boolean;
   /** Height of special row with column numbers */
-  columnNumbersRowHeight?: number;
+  columnHeadingHeight?: number;
   /** Width of special column with row numbers */
-  rowNumberColumnWidth?: number;
+  rowHeadingWidth?: number;
   /** 
    * Width and height of groups special rows and columns.
    * These areas serve for group buttons rendering and group lines.

@@ -10,17 +10,36 @@ const flexAlignValuesMap = {
 };
 
 const Cell = ({
+  row,
+  column,
   value,
   Component
 }) => {
-  const style = {
+  const rowStyle = (row && row.style) || {};
+  const columnStyle = (column && column.style) || {};
+  const valueStyle = (value && value.style) || {};
+
+  const resultStyle = {
+    ...columnStyle,
+    ...rowStyle,
+    ...valueStyle
+  };
+
+  const componentStyle = {
     display: 'flex'
   };
-  const valueStyle = value.style;
-  style.alignItems = (valueStyle && valueStyle.verticalAlign && flexAlignValuesMap[valueStyle.verticalAlign]) || 'flex-end';
-  if (valueStyle && valueStyle.horizontalAlign) style.justifyContent = flexAlignValuesMap[valueStyle.horizontalAlign];
+  componentStyle.alignItems = (resultStyle.verticalAlign && flexAlignValuesMap[resultStyle.verticalAlign]) || 'flex-end';
+  componentStyle.justifyContent = flexAlignValuesMap[resultStyle.horizontalAlign];
+  componentStyle.backgroundColor = resultStyle.fill;
+  if (resultStyle.font) {
+    componentStyle.color = resultStyle.font.color;
+    componentStyle.fontFamily = resultStyle.font.name;
+    componentStyle.size = resultStyle.font.size;
+    componentStyle.fontWeight = resultStyle.font.bold ? 'bold' : undefined;
+    componentStyle.fontStyle = resultStyle.font.italic ? 'italic' : undefined;
+  }
 
-  return <Component style={style} value={value} />
+  return <Component style={componentStyle} value={value} />
 };
 
 export default Cell;

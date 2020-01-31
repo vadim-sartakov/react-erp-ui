@@ -7,7 +7,7 @@ import { GroupLine } from './GroupLine';
 import FixLines from './FixLines';
 import MergedCell from '../MergedCell';
 import SpecialCellEmptyArea from './SpecialCellEmptyArea';
-import Cell from './Cell';
+import Cell, { Borders } from './Cell';
 
 export const visibleMergesFilter = ({
   fixRows,
@@ -143,7 +143,13 @@ const Spreadsheet = inputProps => {
                 );
                 break;
               default:
-                element = <Cell value={curValue} Component={CellComponent} />;
+                spreadsheetCellProps =  { style: { position: 'relative' } };
+                element = (
+                  <>
+                    <Cell row={row} column={column} value={curValue} Component={CellComponent} />
+                    <Borders value={curValue} />
+                  </>
+                );
             }
         }
       }
@@ -208,7 +214,8 @@ const Spreadsheet = inputProps => {
     } else {
       return (
         <MergedCell {...mergedCellProps}>
-          <Cell value={curValue} Component={CellComponent} />
+          <Cell row={row} column={column} value={curValue} Component={CellComponent} />
+          <Borders value={curValue} />
         </MergedCell>
       )
     }

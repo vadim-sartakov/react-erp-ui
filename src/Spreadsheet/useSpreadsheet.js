@@ -89,8 +89,8 @@ const useSpreadsheet = ({
   onRowsChange: onRowsChangeProp,
   columns: columnsProp,
   onColumnsChange: onColumnsChangeProp,
-  columnNumbersRowHeight,
-  rowNumberColumnWidth,
+  columnHeadingHeight,
+  rowHeadingWidth,
   totalRows,
   totalColumns,
   fixRows = 0,
@@ -117,23 +117,23 @@ const useSpreadsheet = ({
     const groups = getGroups(columns);
     return convertExternalMetaToInternal({
       meta: rows,
-      numberMetaSize: columnNumbersRowHeight,
+      numberMetaSize: columnHeadingHeight,
       groups,
       groupSize,
       hideHeadings
     });
-  }, [columnNumbersRowHeight, columns, groupSize, hideHeadings]);
+  }, [columnHeadingHeight, columns, groupSize, hideHeadings]);
 
   const convertExternalColumnsToInternal = useCallback(columns => {
     const groups = getGroups(rows);
     return convertExternalMetaToInternal({
       meta: columns,
-      numberMetaSize: rowNumberColumnWidth,
+      numberMetaSize: rowHeadingWidth,
       groups,
       groupSize,
       hideHeadings
     });
-  }, [rowNumberColumnWidth, rows, groupSize, hideHeadings]);
+  }, [rowHeadingWidth, rows, groupSize, hideHeadings]);
 
   const nextRows = useMemo(() => {
     const result = [...new Array(totalRows).keys()].map(key => {

@@ -14,8 +14,6 @@ const gridValuesMapper = valueRow => {
   });
 };
 
-const spreadsheetValues = generateGridValues(1000, 50).map(gridValuesMapper);
-
 const CellComponent = ({ value, style }) => (
   <div className={classes.cell} style={style}>
     {value ? value.value : ''}
@@ -73,25 +71,30 @@ const SpreadsheetComponent = props => {
   );
 };
 
-export const defaultComponent = props => (
-  <SpreadsheetComponent
-      columnNumbersRowHeight={20}
-      rowNumberColumnWidth={40}
-      defaultRowHeight={25}
-      defaultColumnWidth={120}
-      rowsPerPage={60}
-      columnsPerPage={15}
-      totalColumns={50}
-      totalRows={1000}
-      value={spreadsheetValues}
-      width={800}
-      height={600}
-      fixRows={2}
-      fixColumns={2}
-      {...props} />
-);
+export const defaultComponent = props => {
+  const value = generateGridValues(1000, 50).map(gridValuesMapper);
+  return (
+    <SpreadsheetComponent
+        columnHeadingHeight={20}
+        rowHeadingWidth={40}
+        defaultRowHeight={25}
+        defaultColumnWidth={120}
+        rowsPerPage={60}
+        columnsPerPage={15}
+        totalColumns={50}
+        totalRows={1000}
+        value={value}
+        width={800}
+        height={600}
+        fixRows={2}
+        fixColumns={2}
+        {...props} />
+  )
+};
 
 export const withMergedCells = props => {
+  const value = generateGridValues(1000, 50).map(gridValuesMapper);
+
   /** @type {import('./').CellsRange[]} */
   const mergedCells = [
     // Overlapping with all fixed areas
@@ -133,8 +136,8 @@ export const withMergedCells = props => {
   ];
   return (
     <SpreadsheetComponent
-        columnNumbersRowHeight={20}
-        rowNumberColumnWidth={40}
+        columnHeadingHeight={20}
+        rowHeadingWidth={40}
         defaultRowHeight={25}
         defaultColumnWidth={120}
         rowsPerPage={60}
@@ -142,7 +145,7 @@ export const withMergedCells = props => {
         totalColumns={50}
         totalRows={1000}
         mergedCells={mergedCells}
-        value={spreadsheetValues}
+        value={value}
         width={800}
         height={600}
         fixRows={2}
@@ -152,6 +155,8 @@ export const withMergedCells = props => {
 };
 
 export const withGroups = props => {
+  const value = generateGridValues(1000, 50).map(gridValuesMapper);
+
   const rows = [];
   for (let i = 0; i < 20; i++) {
     rows[i] = { level: 1 };
@@ -196,15 +201,15 @@ export const withGroups = props => {
 
   return (
     <SpreadsheetComponent
-        columnNumbersRowHeight={20}
-        rowNumberColumnWidth={40}
+        columnHeadingHeight={20}
+        rowHeadingWidth={40}
         defaultRowHeight={25}
         defaultColumnWidth={120}
         rowsPerPage={60}
         columnsPerPage={15}
         totalColumns={50}
         totalRows={1000}
-        value={spreadsheetValues}
+        value={value}
         width={800}
         height={600}
         fixRows={2}
@@ -216,7 +221,89 @@ export const withGroups = props => {
   )
 };
 
+const withStyles = props => {
+  /** @type {import('./').Value[][]} */
+  const value = generateGridValues(100, 20).map(gridValuesMapper);
+  for(let i = 0; i < 20; i++) {
+    const cell = value[0][i];
+    cell.border = {
+      top: { style: 'medium' },
+      bottom: { style: 'medium' },
+      right: { style: 'thin' }
+    };
+    cell.style = {
+      fill: '#2a7b29'
+    };
+  }
+
+  const mergedCells = [
+    {
+      start: { row: 5, column: 2 },
+      end: { row: 10, column: 5 }
+    }
+  ];
+
+  const mergedCell = value[5][2];
+  mergedCell.fill = '#bbb';
+  mergedCell.border = {
+    top: { style: 'thin' },
+    left: { style: 'thin' },
+    bottom: { style: 'thin' },
+    right: { style: 'thin' }
+  };
+
+  value[5][2].style = {
+    font: {
+      color: '#008222',
+      italic: true
+    }
+  };
+
+  /** @type {import('./').Meta[]} */
+  const rows = [];
+  rows[0] = {
+    style: {
+      font: {
+        size: 18,
+        bold: true,
+        color: '#fff'
+      },
+      horizontalAlign: 'center',
+      verticalAlign: 'middle'
+    },
+    size: 30
+  };
+
+  /** @type {import('./').Meta[]} */
+  const columns = [];
+  columns[0] = {
+    style: {
+      horizontalAlign: 'right'
+    }
+  };
+  return (
+    <SpreadsheetComponent
+        columnHeadingHeight={20}
+        rowHeadingWidth={40}
+        defaultRowHeight={25}
+        defaultColumnWidth={120}
+        rowsPerPage={60}
+        columnsPerPage={15}
+        totalColumns={50}
+        totalRows={1000}
+        value={value}
+        rows={rows}
+        columns={columns}
+        width={800}
+        height={600}
+        fixRows={0}
+        mergedCells={mergedCells}
+        {...props} />
+  )
+};
+
 storiesOf('Spreadsheet', module)
   .add('default', defaultComponent)
   .add('merged cells', withMergedCells)
-  .add('groups', withGroups);
+  .add('groups', withGroups)
+  .add('withStyles', withStyles);
