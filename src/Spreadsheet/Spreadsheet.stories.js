@@ -272,7 +272,7 @@ const withStyles = props => {
   rows[0] = {
     style: {
       font: {
-        size: 18,
+        size: 16,
         bold: true,
         color: '#fff'
       },

@@ -17,6 +17,12 @@ function headingPixelsToPoints(type, pixels) {
   return type === 'column' ? columnHeadingPixelsToPoints(pixels) : pixelsToPoints(pixels);
 }
 
+function convertColor(color) {
+  return {
+    argb: color.replace('#', '')
+  }
+}
+
 /**
  * 
  * @param {import('exceljs').Row | import('exceljs').Column | import('exceljs').Cell} object 
@@ -32,13 +38,16 @@ function convertStyles(object, style) {
 
   if (Object.keys(alignment).length) object.alignment = alignment;
 
+  if (style.font) {
+    if (style.font.name) object.font.name = style.font.name;
+    if (style.font.color) object.font.color = convertColor(style.font.color);
+  }
+
   if (style.fill) {
     object.fill = {
       type: 'pattern',
       pattern: 'solid',
-      fgColor: {
-        argb: style.fill.replace('#', '')
-      }
+      fgColor: convertColor(style.fill)
     };
   }
 

@@ -35,7 +35,7 @@ const Cell = ({
   if (resultStyle.font) {
     componentStyle.color = resultStyle.font.color;
     componentStyle.fontFamily = resultStyle.font.name;
-    componentStyle.size = resultStyle.font.size;
+    componentStyle.fontSize = resultStyle.font.size;
     componentStyle.fontWeight = resultStyle.font.bold ? 'bold' : undefined;
     componentStyle.fontStyle = resultStyle.font.italic ? 'italic' : undefined;
   }
