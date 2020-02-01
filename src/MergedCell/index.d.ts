@@ -18,8 +18,6 @@ export interface MergedCellProps {
   defaultRowHeight: number;
   defaultColumnWidth: number;
   mergedRange: CellsRange;
-  rowIndex: number;
-  columnIndex: number;
   rows: Meta[];
   columns: Meta[];
   fixRows;

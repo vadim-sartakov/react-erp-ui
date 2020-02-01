@@ -1,26 +1,11 @@
 import React from 'react';
 import { getCellPosition, getCellsRangeSize } from '../utils/gridUtils';
 
-export const visibleMergesFilter = ({
-  fixRows,
-  fixColumns,
-  visibleRows,
-  visibleColumns
-}) => mergedRange => {
-  return mergedRange.start.row < visibleRows[fixRows] || mergedRange.start.column < visibleColumns[fixColumns] ||
-      (mergedRange.start.row <= visibleRows[visibleRows.length - 1] &&
-          mergedRange.start.column <= visibleColumns[visibleColumns.length - 1] &&
-          mergedRange.end.row >= visibleRows[fixRows] &&
-          mergedRange.end.column >= visibleColumns[fixColumns]);
-};
-
 const MergedCell = ({
   style,
   defaultRowHeight,
   defaultColumnWidth,
   mergedRange,
-  rowIndex,
-  columnIndex,
   rows,
   columns,
   fixRows,
@@ -31,44 +16,50 @@ const MergedCell = ({
 }) => { 
   const elements = [];
 
-  const isFixedColumnArea = columnIndex <= fixColumns;
-  const isFixedRowArea = rowIndex <= fixRows;
+  const rowStartIndex = Math.min(mergedRange.start.row, mergedRange.end.row);
+  const columnStartIndex = Math.min(mergedRange.start.column, mergedRange.end.column);
+
+  const rowEndIndex = Math.max(mergedRange.start.row, mergedRange.end.row);
+  const columnEndIndex = Math.max(mergedRange.start.column, mergedRange.end.column);
+
+  const isFixedColumnArea = columnStartIndex <= fixColumns;
+  const isFixedRowArea = rowStartIndex <= fixRows;
   
   const top = getCellPosition({
     meta: rows,
-    index: rowIndex,
+    index: rowStartIndex,
     defaultSize: defaultRowHeight
   });
   const left = getCellPosition({
     meta: columns,
-    index: columnIndex,
+    index: columnStartIndex,
     defaultSize: defaultColumnWidth
   });
 
   const width = getCellsRangeSize({
-    count: (mergedRange.end.column - mergedRange.start.column) + 1,
+    count: (columnEndIndex - columnStartIndex) + 1,
     meta: columns,
-    startIndex: columnIndex,
+    startIndex: columnStartIndex,
     defaultSize: defaultColumnWidth
   });
   const height = getCellsRangeSize({
-    count: (mergedRange.end.row - mergedRange.start.row) + 1,
+    count: (rowEndIndex - rowStartIndex) + 1,
     meta: rows,
-    startIndex: rowIndex,
+    startIndex: rowStartIndex,
     defaultSize: defaultRowHeight
   });
 
-  const fixWidth = fixColumns && columnIndex <= fixColumns && getCellsRangeSize({
-    count: fixColumns - mergedRange.start.column,
+  const fixWidth = fixColumns && columnStartIndex <= fixColumns && getCellsRangeSize({
+    count: fixColumns - columnStartIndex,
     meta: columns,
-    startIndex: columnIndex,
+    startIndex: columnStartIndex,
     defaultSize: defaultColumnWidth
   });
 
-  const fixHeight = fixRows && rowIndex <= fixRows && getCellsRangeSize({
-    count: fixRows - mergedRange.start.row,
+  const fixHeight = fixRows && rowStartIndex <= fixRows && getCellsRangeSize({
+    count: fixRows - rowStartIndex,
     meta: rows,
-    startIndex: rowIndex,
+    startIndex: rowStartIndex,
     defaultSize: defaultRowHeight
   });
 
@@ -84,8 +75,7 @@ const MergedCell = ({
     position: 'sticky',
     overflow: 'hidden',
     top,
-    left,
-    pointerEvents: 'auto'
+    left
   };
 
   const valueStyle = {

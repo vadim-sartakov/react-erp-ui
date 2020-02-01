@@ -16,7 +16,8 @@ const Cell = ({
   columnIndex,
   cell,
   Component,
-  onSelectedCellsChange
+  onSelectedCellsChange,
+  mousePressed
 }) => {
   const rowStyle = (row && row.style) || {};
   const columnStyle = (column && column.style) || {};
@@ -46,19 +47,30 @@ const Cell = ({
   const onMouseDown = useCallback(event => {
     event.persist();
     onSelectedCellsChange(selectedCells => {
-      const curRange = { row: rowIndex, column: columnIndex };
-      if (event.ctrlKey) {
+      const curRange = {
+        start: { row: rowIndex, column: columnIndex },
+        end: { row: rowIndex, column: columnIndex }
+      };
+      /*if (event.ctrlKey) {
         if (selectedCells.some(selectedRange => selectedRange.row === rowIndex && selectedRange.column === columnIndex)) return selectedCells;
         return [...selectedCells, curRange]
-      } else {
+      } else {*/
         return [curRange];
-      }
+      //}
     });
   }, [onSelectedCellsChange, rowIndex, columnIndex]);
 
   const onMouseMove = useCallback(event => {
-    //console.log(event.button)
-  }, []);
+    if (mousePressed.current) {
+      onSelectedCellsChange(selectedCells => {
+        const nextSelectedCells = [...selectedCells];
+        const lastSelection = nextSelectedCells[nextSelectedCells.length - 1];
+        const nextLastSelection = { ...lastSelection, end: { row: rowIndex, column: columnIndex } };
+        nextSelectedCells[nextSelectedCells.length - 1] = nextLastSelection;
+        return nextSelectedCells;
+      });
+    }
+  }, [rowIndex, columnIndex, mousePressed, onSelectedCellsChange]);
 
   return (
     <Component

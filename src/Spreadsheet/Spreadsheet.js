@@ -23,22 +23,6 @@ export const visibleRangesFilter = ({
           mergedRange.end.column >= visibleColumns[fixColumns]);
 };
 
-/**
- * Makes all selected cells as cells ranges with start and end values
- */
-const mapSelectedRange = selectedRange => {
-  return selectedRange.row && selectedRange.column ? {
-    start: {
-      row: selectedRange.row,
-      column: selectedRange.column
-    },
-    end: {
-      row: selectedRange.row,
-      column: selectedRange.column
-    }
-  } : selectedRange;
-};
-
 /** @type {import('react').FunctionComponent<import('./').SpreadsheetProps>} */
 const Spreadsheet = inputProps => {
   const spreadsheetProps = useSpreadsheet(inputProps);
@@ -87,7 +71,8 @@ const Spreadsheet = inputProps => {
     onRowGroupLevelButtonClick,
     onColumnGroupLevelButtonClick,
     onRowGroupButtonClick,
-    onColumnGroupButtonClick
+    onColumnGroupButtonClick,
+    mousePressed
   } = props;
 
   const cellsElements = visibleRows.reduce((acc, rowIndex, seqRowIndex) => {
@@ -173,7 +158,8 @@ const Spreadsheet = inputProps => {
                         columnIndex={columnIndex}
                         cell={curCell}
                         Component={CellComponent}
-                        onSelectedCellsChange={onSelectedCellsChange} />
+                        onSelectedCellsChange={onSelectedCellsChange}
+                        mousePressed={mousePressed} />
                     <Borders cell={curCell} />
                   </>
                 );
@@ -212,8 +198,6 @@ const Spreadsheet = inputProps => {
       mergedRange,
       rows,
       columns,
-      rowIndex,
-      columnIndex,
       fixRows,
       fixColumns,
       scrollerTop,
@@ -248,14 +232,15 @@ const Spreadsheet = inputProps => {
               columnIndex={columnIndex}
               cell={curCell}
               Component={CellComponent}
-              onSelectedCellsChange={onSelectedCellsChange} />
+              onSelectedCellsChange={onSelectedCellsChange}
+              mousePressed={mousePressed} />
           <Borders cell={curCell} />
         </MergedCell>
       )
     }
   });
 
-  const visibleSelections = selectedCells.map(mapSelectedRange).filter(visibleRangesFilter);
+  const visibleSelections = selectedCells/*.map(mapSelectedRange)*/.filter(visibleRangesFilter);
   const visibleSelectionElements = visibleSelections.map((selectedRange, seqIndex) => {
     const columnIndex = selectedRange.start.column;
     const rowIndex = selectedRange.start.row;
@@ -267,8 +252,6 @@ const Spreadsheet = inputProps => {
       mergedRange,
       rows,
       columns,
-      rowIndex,
-      columnIndex,
       fixRows,
       fixColumns,
       scrollerTop,
@@ -276,6 +259,7 @@ const Spreadsheet = inputProps => {
       defaultRowHeight,
       defaultColumnWidth,
       style: {
+        pointerEvents: 'none',
         transition: '200ms ease-in-out'
       }
     };

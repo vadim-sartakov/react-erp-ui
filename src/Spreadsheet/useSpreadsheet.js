@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { getGroups } from './utils';
 
 export const convertExternalMetaToInternal = ({ meta = [], groups, groupSize, numberMetaSize, hideHeadings }) => {
@@ -307,6 +307,18 @@ const useSpreadsheet = ({
     ];
   }, [mergedCellsProp, specialRowsCount, specialColumnsCount, rowsGroups, columnsGroups]);
 
+  const mousePressed = useRef();
+  useEffect(() => {
+    const onMouseDown = () => mousePressed.current = true;
+    const onMouseUp = () => mousePressed.current = false;
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+    return () => {
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+  }, []);
+
   return {
     cells: nextValue,
     onCellsChange: nextOnChange,
@@ -328,7 +340,8 @@ const useSpreadsheet = ({
     onRowGroupLevelButtonClick,
     onColumnGroupLevelButtonClick,
     onRowGroupButtonClick,
-    onColumnGroupButtonClick
+    onColumnGroupButtonClick,
+    mousePressed
   };
 };
 

@@ -27,7 +27,7 @@ const SpreadsheetContainer = ({
   ]);
   return (
     <SpreadsheetContext.Provider value={contextValue}>
-      <div className={className} style={style}>
+      <div className={className} style={{ ...style, userSelect: 'none' }}>
         {children}
       </div>
     </SpreadsheetContext.Provider>

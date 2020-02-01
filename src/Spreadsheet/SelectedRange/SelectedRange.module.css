@@ -1,6 +1,7 @@
 .root {
   height: 100%;
   border: solid 2px #008222;
+  cursor: cell;
 }
 
 .range {

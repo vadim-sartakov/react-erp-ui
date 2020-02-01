@@ -1,4 +1,4 @@
-import { HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties } from 'react';
+import { MutableRefObject, HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties } from 'react';
 
 export interface Font {
   name?: string;
@@ -142,8 +142,6 @@ export interface SpreadsheetContainerProps {
 }
 export const SpreadsheetContainer: FunctionComponent<SpreadsheetContainerProps>
 
-export type SelectedCells = Array<CellsRange | CellAddress>;
-
 export interface UseSpreadsheetOptions {
   cells?: Cell[][];
   onCellsChange?: Dispatch<SetStateAction<Cell[][]>>;
@@ -151,8 +149,8 @@ export interface UseSpreadsheetOptions {
   columns?: Meta[];
   onRowsChange?: Dispatch<SetStateAction<Meta[]>>;
   onColumnsChange?: Dispatch<SetStateAction<Meta[]>>;
-  selectedCells?: SelectedCells;
-  onSelectedCellsChange?: Dispatch<SetStateAction<SelectedCells>>;
+  selectedCells?: CellsRange[];
+  onSelectedCellsChange?: Dispatch<SetStateAction<CellsRange[]>>;
   /** If set to 'true' than rows/columns numbers won't be rendered */
   hideHeadings?: boolean;
   /** Height of special row with column numbers */
@@ -184,8 +182,8 @@ export interface UseSpreadsheetResult {
   columns: Meta[];
   onColumnsChange: Dispatch<SetStateAction<Meta[]>>;
   onRowsChange: Dispatch<SetStateAction<Meta[]>>;
-  selectedCells?: SelectedCells;
-  onSelectedCellsChange?: Dispatch<SetStateAction<SelectedCells>>;
+  selectedCells?: CellsRange[];
+  onSelectedCellsChange?: Dispatch<SetStateAction<CellsRange[]>>;
   totalRows: number;
   totalColumns: number;
   fixRows: number;
@@ -199,6 +197,7 @@ export interface UseSpreadsheetResult {
   onColumnGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
   onRowGroupButtonClick: GroupButtonClickHandlerFactory;
   onColumnGroupButtonClick: GroupButtonClickHandlerFactory;
+  mousePressed: MutableRefObject<boolean>;
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
 
