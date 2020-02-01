@@ -152,6 +152,7 @@ const Spreadsheet = inputProps => {
                 element = (
                   <>
                     <Cell
+                        mergedCells={mergedCells}
                         row={row}
                         column={column}
                         rowIndex={rowIndex}
@@ -226,6 +227,7 @@ const Spreadsheet = inputProps => {
       return (
         <MergedCell {...mergedCellProps}>
           <Cell
+              mergedCells={mergedCells}
               row={row}
               column={column}
               rowIndex={rowIndex}
@@ -258,6 +260,7 @@ const Spreadsheet = inputProps => {
       scrollerLeft,
       defaultRowHeight,
       defaultColumnWidth,
+      noPointerEvents: true,
       style: {
         pointerEvents: 'none',
         transition: '200ms ease-in-out'

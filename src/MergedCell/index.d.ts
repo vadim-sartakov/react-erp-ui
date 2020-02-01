@@ -20,11 +20,15 @@ export interface MergedCellProps {
   mergedRange: CellsRange;
   rows: Meta[];
   columns: Meta[];
-  fixRows;
-  fixColumns;
-  scrollerTop;
-  scrollerLeft;
+  fixRows: number;
+  fixColumns: number;
+  scrollerTop: number;
+  scrollerLeft: number;
+  /** Leave nodes with pointer events: 'none' value */
+  noPointerEvents: boolean;
 }
+
+export function normalizeMergedRange(mergedRange: CellsRange);
 
 /**
  * Helps to render merged cells range in grid components.

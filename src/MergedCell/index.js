@@ -1,1 +1,1 @@
-export { default } from './MergedCell';
+export { default, normalizeMergedRange } from './MergedCell';

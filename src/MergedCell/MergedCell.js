@@ -1,6 +1,19 @@
 import React from 'react';
 import { getCellPosition, getCellsRangeSize } from '../utils/gridUtils';
 
+export function normalizeMergedRange(mergedRange) {
+  return {
+    start: {
+      row: Math.min(mergedRange.start.row, mergedRange.end.row),
+      column: Math.min(mergedRange.start.column, mergedRange.end.column)
+    },
+    end: {
+      row: Math.max(mergedRange.start.row, mergedRange.end.row),
+      column: Math.max(mergedRange.start.column, mergedRange.end.column)
+    }
+  }
+};
+
 const MergedCell = ({
   style,
   defaultRowHeight,
@@ -10,17 +23,20 @@ const MergedCell = ({
   columns,
   fixRows,
   fixColumns,
+  noPointerEvents,
   scrollerTop,
   scrollerLeft,
   children
 }) => { 
   const elements = [];
 
-  const rowStartIndex = Math.min(mergedRange.start.row, mergedRange.end.row);
-  const columnStartIndex = Math.min(mergedRange.start.column, mergedRange.end.column);
+  const normalizedMergedRange = normalizeMergedRange(mergedRange);
 
-  const rowEndIndex = Math.max(mergedRange.start.row, mergedRange.end.row);
-  const columnEndIndex = Math.max(mergedRange.start.column, mergedRange.end.column);
+  const rowStartIndex = normalizedMergedRange.start.row;
+  const columnStartIndex = normalizedMergedRange.start.column;
+
+  const rowEndIndex = normalizedMergedRange.end.row;
+  const columnEndIndex = normalizedMergedRange.end.column;
 
   const isFixedColumnArea = columnStartIndex <= fixColumns;
   const isFixedRowArea = rowStartIndex <= fixRows;
@@ -75,7 +91,8 @@ const MergedCell = ({
     position: 'sticky',
     overflow: 'hidden',
     top,
-    left
+    left,
+    pointerEvents: noPointerEvents ? undefined : 'auto'
   };
 
   const valueStyle = {

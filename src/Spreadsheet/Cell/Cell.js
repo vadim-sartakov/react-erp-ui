@@ -1,4 +1,6 @@
 import React, { useCallback } from 'react';
+import { normalizeMergedRange } from '../../MergedCell';
+import intersectRect from '../../utils/intersectRect';
 
 const flexAlignValuesMap = {
   top: 'flex-start',
@@ -9,7 +11,23 @@ const flexAlignValuesMap = {
   right: 'flex-end'
 };
 
+function convertRangeToRect(mergedRange) {
+  return {
+    top: mergedRange.start.row,
+    left: mergedRange.start.column,
+    bottom: mergedRange.end.row,
+    right: mergedRange.end.column
+  }
+}
+
+function rangesIntersect(rangeA, rangeB) {
+  const normalizedA = normalizeMergedRange(rangeA);
+  const normalizedB = normalizeMergedRange(rangeB);
+  return intersectRect(convertRangeToRect(normalizedA), convertRangeToRect(normalizedB));
+};
+
 const Cell = ({
+  mergedCells,
   row,
   column,
   rowIndex,
@@ -65,12 +83,31 @@ const Cell = ({
       onSelectedCellsChange(selectedCells => {
         const nextSelectedCells = [...selectedCells];
         const lastSelection = nextSelectedCells[nextSelectedCells.length - 1];
-        const nextLastSelection = { ...lastSelection, end: { row: rowIndex, column: columnIndex } };
+
+        const nextLastSelection = {
+          ...lastSelection,
+          end: { row: rowIndex, column: columnIndex }
+        };
+        
+        mergedCells.forEach(mergedRange => {
+          if (rangesIntersect(nextLastSelection, mergedRange)) {
+            const normalizedMergedRange = normalizeMergedRange(mergedRange);
+            const normalizedNextSelection = normalizeMergedRange(nextLastSelection);
+            console.log(normalizedMergedRange);
+            console.log(normalizedNextSelection);
+            nextLastSelection.start.row = Math.min(normalizedMergedRange.start.row, normalizedNextSelection.start.row);
+            nextLastSelection.start.column = Math.min(normalizedMergedRange.start.column, normalizedNextSelection.start.column);
+            nextLastSelection.end.row = Math.max(normalizedMergedRange.end.row, normalizedNextSelection.end.row);
+            nextLastSelection.end.column = Math.max(normalizedMergedRange.end.column, normalizedNextSelection.end.column);
+            console.log(nextLastSelection)
+          }
+        });
+
         nextSelectedCells[nextSelectedCells.length - 1] = nextLastSelection;
         return nextSelectedCells;
       });
     }
-  }, [rowIndex, columnIndex, mousePressed, onSelectedCellsChange]);
+  }, [rowIndex, columnIndex, mousePressed, onSelectedCellsChange, mergedCells]);
 
   return (
     <Component
