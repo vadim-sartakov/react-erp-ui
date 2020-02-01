@@ -93,13 +93,10 @@ const Cell = ({
           if (rangesIntersect(nextLastSelection, mergedRange)) {
             const normalizedMergedRange = normalizeMergedRange(mergedRange);
             const normalizedNextSelection = normalizeMergedRange(nextLastSelection);
-            console.log(normalizedMergedRange);
-            console.log(normalizedNextSelection);
             nextLastSelection.start.row = Math.min(normalizedMergedRange.start.row, normalizedNextSelection.start.row);
             nextLastSelection.start.column = Math.min(normalizedMergedRange.start.column, normalizedNextSelection.start.column);
             nextLastSelection.end.row = Math.max(normalizedMergedRange.end.row, normalizedNextSelection.end.row);
             nextLastSelection.end.column = Math.max(normalizedMergedRange.end.column, normalizedNextSelection.end.column);
-            console.log(nextLastSelection)
           }
         });
 
