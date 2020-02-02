@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
-import { normalizeMergedRange } from '../../MergedCell';
-import intersectRect from '../../utils/intersectRect';
+import { expandSelection } from '../utils';
 
 const flexAlignValuesMap = {
   top: 'flex-start',
@@ -9,21 +8,6 @@ const flexAlignValuesMap = {
   center: 'center',
   bottom: 'flex-end',
   right: 'flex-end'
-};
-
-function convertRangeToRect(mergedRange) {
-  return {
-    top: mergedRange.start.row,
-    left: mergedRange.start.column,
-    bottom: mergedRange.end.row,
-    right: mergedRange.end.column
-  }
-}
-
-function rangesIntersect(rangeA, rangeB) {
-  const normalizedA = normalizeMergedRange(rangeA);
-  const normalizedB = normalizeMergedRange(rangeB);
-  return intersectRect(convertRangeToRect(normalizedA), convertRangeToRect(normalizedB));
 };
 
 function rangesAreEqual(rangeA, rangeB) {
@@ -92,45 +76,9 @@ const Cell = ({
     if (mousePressed.current) {
       onSelectedCellsChange(selectedCells => {
         const lastSelection = selectedCells[selectedCells.length - 1];
-
-        const mergedRange = mergedCells.find(mergedRangeFind(rowIndex, columnIndex));
-        const normalizedMergedRange = mergedRange && normalizeMergedRange(mergedRange);
-        const normalizedLastSelection = normalizeMergedRange(lastSelection);
-
-        const nextLastSelection = mergedRange ? {
-          start: {
-            row: Math.min(normalizedLastSelection.start.row, normalizedMergedRange.start.row),
-            column: Math.min(normalizedLastSelection.start.column, normalizedMergedRange.start.column)
-          },
-          end: {
-            row: Math.max(normalizedLastSelection.end.row, normalizedMergedRange.end.row),
-            column: Math.max(normalizedLastSelection.end.column, normalizedMergedRange.end.column)
-          }
-        } : {
-          start: {
-            row: lastSelection.start.row,
-            column: lastSelection.start.column
-          },
-          end: {
-            row: rowIndex,
-            column: columnIndex
-          }
-        };
-
-        // TODO: interate all merged ranges and extend selection
-        mergedCells.forEach(mergedRange => {
-          const normalizedNextLastSelection = normalizeMergedRange(nextLastSelection);
-          if (rangesIntersect(mergedRange, normalizedNextLastSelection)) {
-            nextLastSelection.start.row = Math.min(normalizedNextLastSelection.start.row, mergedRange.start.row);
-            nextLastSelection.start.column = Math.min(normalizedNextLastSelection.start.column, mergedRange.start.column);
-            nextLastSelection.end.row = Math.max(normalizedNextLastSelection.end.row, mergedRange.end.row);
-            nextLastSelection.end.column = Math.max(normalizedNextLastSelection.end.column, mergedRange.end.column);
-          }
-        });
-
+        const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex })
         // Preventing excessive updates
         if (rangesAreEqual(lastSelection, nextLastSelection)) return selectedCells;
-
         const nextSelectedCells = [...selectedCells];
         nextSelectedCells[nextSelectedCells.length - 1] = nextLastSelection;
         return nextSelectedCells;
