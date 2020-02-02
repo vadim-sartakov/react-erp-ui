@@ -42,6 +42,8 @@ const Spreadsheet = inputProps => {
   const scrollerLeft = scrollerProps.pagesStyles.left;
 
   const {
+    rowsPage,
+    columnsPage,
     cells,
     onSelectedCellsChange,
     selectedCells,
@@ -251,7 +253,7 @@ const Spreadsheet = inputProps => {
     const mergedRange = oneCellSelect ? mergedCells.find(mergedRange => mergedRange.start.row === rowIndex && mergedRange.start.column === columnIndex) || selectedRange : selectedRange;
 
     const mergedCellProps = {
-      key: `selected-cell-${seqIndex}`,
+      key: `selected-cell-${rowsPage}-${columnsPage}-${seqIndex}`,
       mergedRange,
       rows,
       columns,
@@ -264,7 +266,7 @@ const Spreadsheet = inputProps => {
       noPointerEvents: true,
       style: {
         pointerEvents: 'none',
-        transition: '200ms ease-in-out'
+        transition: '100ms ease-in-out'
       }
     };
 

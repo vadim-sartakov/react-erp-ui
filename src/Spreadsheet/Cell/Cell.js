@@ -26,6 +26,13 @@ function rangesIntersect(rangeA, rangeB) {
   return intersectRect(convertRangeToRect(normalizedA), convertRangeToRect(normalizedB));
 };
 
+function rangesAreEqual(rangeA, rangeB) {
+  return rangeA.start.row === rangeB.start.row &&
+      rangeA.start.column === rangeB.start.column &&
+      rangeA.end.row === rangeB.end.row &&
+      rangeA.start.column === rangeB.end.column
+};
+
 const Cell = ({
   mergedCells,
   row,
@@ -81,11 +88,10 @@ const Cell = ({
   const onMouseMove = useCallback(event => {
     if (mousePressed.current) {
       onSelectedCellsChange(selectedCells => {
-        const nextSelectedCells = [...selectedCells];
-        const lastSelection = nextSelectedCells[nextSelectedCells.length - 1];
+        const lastSelection = selectedCells[selectedCells.length - 1];
 
         const nextLastSelection = {
-          ...lastSelection,
+          start: { row: lastSelection.start.row, column: lastSelection.start.column },
           end: { row: rowIndex, column: columnIndex }
         };
         
@@ -100,6 +106,10 @@ const Cell = ({
           }
         });
 
+        // Preventing excessive updates
+        if (rangesAreEqual(lastSelection, nextLastSelection)) return selectedCells;
+
+        const nextSelectedCells = [...selectedCells];
         nextSelectedCells[nextSelectedCells.length - 1] = nextLastSelection;
         return nextSelectedCells;
       });

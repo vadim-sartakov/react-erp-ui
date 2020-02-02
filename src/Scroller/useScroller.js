@@ -234,6 +234,8 @@ const useScroller = ({
   }, [columns, columnsOffsets]);
 
   return {
+    rowsPage,
+    columnsPage,
     rows: nextRows,
     columns: nextColumns,
     visibleRows,

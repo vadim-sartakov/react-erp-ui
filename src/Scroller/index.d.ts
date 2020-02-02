@@ -47,6 +47,8 @@ export interface UseScrollerOptions extends ScrollerOptionsBase {
 }
 
 export interface UseScrollerResult {
+  rowsPage: number;
+  columnsPage: number;
   /** Rows indexes */
   visibleRows: number[],
   /** Columns indexes */
