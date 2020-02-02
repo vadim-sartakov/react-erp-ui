@@ -245,12 +245,8 @@ const Spreadsheet = inputProps => {
   });
 
   const visibleSelections = selectedCells.filter(visibleRangesFilter);
-  const visibleSelectionElements = visibleSelections.map((selectedRange, seqIndex) => {
-    const columnIndex = selectedRange.start.column;
-    const rowIndex = selectedRange.start.row;
-    
-    const oneCellSelect = selectedRange.start.row === rowIndex && selectedRange.end.row === rowIndex && selectedRange.start.column === columnIndex && selectedRange.end.column === columnIndex;
-    const mergedRange = oneCellSelect ? mergedCells.find(mergedRange => mergedRange.start.row === rowIndex && mergedRange.start.column === columnIndex) || selectedRange : selectedRange;
+  const visibleSelectionElements = visibleSelections.map((selectedRange, seqIndex) => {   
+    const mergedRange = selectedRange;
 
     const mergedCellProps = {
       key: `selected-cell-${rowsPage}-${columnsPage}-${seqIndex}`,

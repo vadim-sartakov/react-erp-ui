@@ -30,8 +30,10 @@ function rangesAreEqual(rangeA, rangeB) {
   return rangeA.start.row === rangeB.start.row &&
       rangeA.start.column === rangeB.start.column &&
       rangeA.end.row === rangeB.end.row &&
-      rangeA.start.column === rangeB.end.column
+      rangeA.end.column === rangeB.end.column
 };
+
+const mergedRangeFind = (rowIndex, columnIndex) => mergedRange => mergedRange.start.row === rowIndex && mergedRange.start.column === columnIndex;
 
 const Cell = ({
   mergedCells,
@@ -72,7 +74,8 @@ const Cell = ({
   const onMouseDown = useCallback(event => {
     event.persist();
     onSelectedCellsChange(selectedCells => {
-      const curRange = {
+      const mergedRange = mergedCells.find(mergedRangeFind(rowIndex, columnIndex));
+      const curRange = mergedRange || {
         start: { row: rowIndex, column: columnIndex },
         end: { row: rowIndex, column: columnIndex }
       };
@@ -83,26 +86,45 @@ const Cell = ({
         return [curRange];
       //}
     });
-  }, [onSelectedCellsChange, rowIndex, columnIndex]);
+  }, [onSelectedCellsChange, rowIndex, columnIndex, mergedCells]);
 
   const onMouseMove = useCallback(event => {
     if (mousePressed.current) {
       onSelectedCellsChange(selectedCells => {
         const lastSelection = selectedCells[selectedCells.length - 1];
 
-        const nextLastSelection = {
-          start: { row: lastSelection.start.row, column: lastSelection.start.column },
-          end: { row: rowIndex, column: columnIndex }
+        const mergedRange = mergedCells.find(mergedRangeFind(rowIndex, columnIndex));
+        const normalizedMergedRange = mergedRange && normalizeMergedRange(mergedRange);
+        const normalizedLastSelection = normalizeMergedRange(lastSelection);
+
+        const nextLastSelection = mergedRange ? {
+          start: {
+            row: Math.min(normalizedLastSelection.start.row, normalizedMergedRange.start.row),
+            column: Math.min(normalizedLastSelection.start.column, normalizedMergedRange.start.column)
+          },
+          end: {
+            row: Math.max(normalizedLastSelection.end.row, normalizedMergedRange.end.row),
+            column: Math.max(normalizedLastSelection.end.column, normalizedMergedRange.end.column)
+          }
+        } : {
+          start: {
+            row: lastSelection.start.row,
+            column: lastSelection.start.column
+          },
+          end: {
+            row: rowIndex,
+            column: columnIndex
+          }
         };
-        
+
+        // TODO: interate all merged ranges and extend selection
         mergedCells.forEach(mergedRange => {
-          if (rangesIntersect(nextLastSelection, mergedRange)) {
-            const normalizedMergedRange = normalizeMergedRange(mergedRange);
-            const normalizedNextSelection = normalizeMergedRange(nextLastSelection);
-            nextLastSelection.start.row = Math.min(normalizedMergedRange.start.row, normalizedNextSelection.start.row);
-            nextLastSelection.start.column = Math.min(normalizedMergedRange.start.column, normalizedNextSelection.start.column);
-            nextLastSelection.end.row = Math.max(normalizedMergedRange.end.row, normalizedNextSelection.end.row);
-            nextLastSelection.end.column = Math.max(normalizedMergedRange.end.column, normalizedNextSelection.end.column);
+          const normalizedNextLastSelection = normalizeMergedRange(nextLastSelection);
+          if (rangesIntersect(mergedRange, normalizedNextLastSelection)) {
+            nextLastSelection.start.row = Math.min(normalizedNextLastSelection.start.row, mergedRange.start.row);
+            nextLastSelection.start.column = Math.min(normalizedNextLastSelection.start.column, mergedRange.start.column);
+            nextLastSelection.end.row = Math.max(normalizedNextLastSelection.end.row, mergedRange.end.row);
+            nextLastSelection.end.column = Math.max(normalizedNextLastSelection.end.column, mergedRange.end.column);
           }
         });
 
