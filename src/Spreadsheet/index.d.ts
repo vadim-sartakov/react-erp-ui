@@ -203,6 +203,7 @@ export interface UseSpreadsheetResult {
   onColumnGroupButtonClick: GroupButtonClickHandlerFactory;
   scrollerContainerRef: MutableRefObject<DOMElement>;
   spreadsheetContainerRef: MutableRefObject<DOMElement>;
+  scroll: { top: number, left: number };
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
 

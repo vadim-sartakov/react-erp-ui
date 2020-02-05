@@ -14,6 +14,8 @@ import {
  * @returns {import('.').UseScrollerResult}
  */
 const useScroller = ({
+  scrollerContainerRef,
+  scroll,
   defaultRowHeight,
   defaultColumnWidth,
   totalRows,
@@ -27,6 +29,13 @@ const useScroller = ({
   fixRows = 0,
   fixColumns = 0
 }) => {
+
+  useEffect(() => {
+    if (scroll) {
+      if (scroll.top !== undefined) scrollerContainerRef.current.scrollTop = scroll.top;
+      if (scroll.left !== undefined) scrollerContainerRef.current.scrollLeft = scroll.left;
+    }
+  }, [scrollerContainerRef, scroll]);
 
   const [lastRowsPage, setLastRowsPage] = useState(1);
   const [rowsPage, setRowsPage] = useState(0);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
 import { SpreadsheetContainer, useSpreadsheet } from './';
 import GroupLevelButton from './GroupLevelButton';
@@ -24,11 +24,13 @@ export const visibleRangesFilter = ({
 
 /** @type {import('react').FunctionComponent<import('./').SpreadsheetProps>} */
 const Spreadsheet = inputProps => {
+  const scrollerContainerRef = useRef();
   const spreadsheetProps = useSpreadsheet(inputProps);
 
   const { gridStyles, ...scrollerProps } = useScroller({
     ...inputProps,
-    ...spreadsheetProps
+    ...spreadsheetProps,
+    scrollerContainerRef
   });
 
   const props = {
@@ -264,6 +266,7 @@ const Spreadsheet = inputProps => {
 
   return (
     <ScrollerContainer
+          ref={scrollerContainerRef}
           coverRef={props.scrollerContainerRef}
           {...props}
           {...scrollerProps}>

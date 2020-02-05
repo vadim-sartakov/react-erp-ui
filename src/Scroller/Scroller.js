@@ -1,9 +1,11 @@
-import React from 'react';
-import { useScroller, ScrollerContainer, ScrollerCell } from './';
+import React, { useRef } from 'react';
+import { useScroller, ScrollerContainer } from './';
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerProps>} */
 const Scroller = inputProps => {
-  const scrollerProps = useScroller(inputProps);
+  const scrollerContainerRef = useRef();
+
+  const scrollerProps = useScroller({ ...inputProps, scrollerContainerRef });
 
   const props = {
     ...inputProps,
@@ -41,7 +43,7 @@ const Scroller = inputProps => {
   }, []);
 
   return (
-    <ScrollerContainer {...props}>
+    <ScrollerContainer {...props} ref={scrollerContainerRef}>
       {elements}
     </ScrollerContainer>
   )

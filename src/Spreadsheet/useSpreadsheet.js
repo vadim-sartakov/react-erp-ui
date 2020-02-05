@@ -327,6 +327,8 @@ const useSpreadsheet = ({
   const scrollerContainerRef = useRef();
   const spreadsheetContainerRef = useRef();
 
+  const [scroll, setScroll] = useState();
+
   // Select interaction
   useEffect(() => {
     const onMouseDown = event => {
@@ -376,6 +378,8 @@ const useSpreadsheet = ({
         const left = event.clientX - rect.left;
         const rowIndex = getIndexFromCoordinate({ coordinate: top, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextTotalRows });
         const columnIndex = getIndexFromCoordinate({ coordinate: left, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextTotalColumns });
+
+        if (rowIndex < specialRowsCount || columnIndex < specialColumnsCount) return;
         
         onSelectedCellsChange(selectedCells => {
           const lastSelection = selectedCells[selectedCells.length - 1];
@@ -433,6 +437,7 @@ const useSpreadsheet = ({
     onColumnGroupLevelButtonClick,
     onRowGroupButtonClick,
     onColumnGroupButtonClick,
+    scroll,
     scrollerContainerRef,
     spreadsheetContainerRef
   };
