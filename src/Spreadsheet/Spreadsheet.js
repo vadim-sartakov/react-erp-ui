@@ -57,7 +57,7 @@ const Spreadsheet = inputProps => {
     onRowsChange,
     onColumnsChange,
     SpecialCellEmptyAreaComponent = SpecialCellEmptyArea,
-    HeadingComponent = Heading,
+    HeadingComponent,
     HeadingsIntersectionComponent = HeadingsIntersection,
     GroupLevelButtonComponent = GroupLevelButton,
     GroupLineComponent,
@@ -116,8 +116,10 @@ const Spreadsheet = inputProps => {
                 return <HeadingsIntersectionComponent key={key} row={row} column={column} />;
               default:
                 return (
-                  <HeadingComponent
+                  <Heading
                       key={key}
+                      Component={HeadingComponent}
+                      selectedCells={selectedCells}
                       row={row}
                       column={column}
                       type="column"
@@ -138,6 +140,8 @@ const Spreadsheet = inputProps => {
                 return (
                   <Heading
                       key={key}
+                      Component={HeadingComponent}
+                      selectedCells={selectedCells}
                       row={row}
                       column={column}
                       type="row"
