@@ -323,24 +323,28 @@ const useSpreadsheet = ({
   const nextFixColumns = fixColumns + specialColumnsCount;
 
   const mousePressed = useRef();
-  const scrollerContainerRect = useRef();
-  const scrollerContainerRef = useRef();
-  const spreadsheetContainerRef = useRef();
 
-  const [scroll, setScroll] = useState();
+  const scrollerContainerRef = useRef();
+  const scrollerContainerRectRef = useRef();
+  const scrollerCoverRef = useRef();
+  const scrollerCoverRectRef = useRef();
+  const spreadsheetContainerRef = useRef();
 
   // Select interaction
   useEffect(() => {
     const onMouseDown = event => {
-      if (!scrollerContainerRef.current.contains(event.target)) return;
+      if (!scrollerCoverRef.current || !scrollerCoverRef.current.contains(event.target)) return;
 
       mousePressed.current = true;
 
-      const rect = scrollerContainerRef.current.getBoundingClientRect();
-      scrollerContainerRect.current = { top: rect.top, left: rect.left };
+      const scrollerContainerRect = scrollerContainerRef.current.getBoundingClientRect();
+      scrollerContainerRectRef.current = { top: scrollerContainerRect.top, left: scrollerContainerRect.left, width: scrollerContainerRect.width, height: scrollerContainerRect.height };
 
-      const top = event.clientY - rect.top;
-      const left = event.clientX - rect.left;
+      const scrollerCoverRect = scrollerCoverRef.current.getBoundingClientRect();      
+      scrollerCoverRectRef.current = { top: scrollerCoverRect.top, left: scrollerCoverRect.left };
+
+      const top = event.clientY - scrollerCoverRect.top;
+      const left = event.clientX - scrollerCoverRect.left;
       const rowIndex = getIndexFromCoordinate({ coordinate: top, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextTotalRows });
       const columnIndex = getIndexFromCoordinate({ coordinate: left, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextTotalColumns });
 
@@ -373,7 +377,7 @@ const useSpreadsheet = ({
 
     const onMouseMove = event => {
       if (mousePressed.current) {
-        const rect = scrollerContainerRect.current;
+        const rect = scrollerCoverRectRef.current;
         const top = event.clientY - rect.top;
         const left = event.clientX - rect.left;
         const rowIndex = getIndexFromCoordinate({ coordinate: top, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextTotalRows });
@@ -386,6 +390,21 @@ const useSpreadsheet = ({
           const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex });
           // Preventing excessive updates
           if (rangesAreEqual(lastSelection, nextLastSelection)) return selectedCells;
+
+          // Scrolling if selection goes out of container
+          const scrollerLeftMouse = event.clientX - scrollerContainerRectRef.current.left;
+          const scrollerTopMouse = event.clientY - scrollerContainerRectRef.current.top;
+          const leftOverscroll = scrollerLeftMouse - scrollerContainerRectRef.current.width;
+          const topOverscroll = scrollerTopMouse - scrollerContainerRectRef.current.height;
+          if (scrollerLeftMouse < 0 || leftOverscroll > 0) {
+            scrollerCoverRectRef.current.left = scrollerCoverRectRef.current.left - leftOverscroll;
+            scrollerContainerRef.current.scrollLeft = scrollerContainerRef.current.scrollLeft + leftOverscroll;
+          }
+          if (scrollerTopMouse < 0 || topOverscroll > 0) {
+            scrollerCoverRectRef.current.top = scrollerCoverRectRef.current.top - topOverscroll;
+            scrollerContainerRef.current.scrollTop = scrollerContainerRef.current.scrollTop + topOverscroll;
+          }
+
           const nextSelectedCells = [...selectedCells];
           nextSelectedCells[nextSelectedCells.length - 1] = nextLastSelection;
           return nextSelectedCells;
@@ -437,8 +456,8 @@ const useSpreadsheet = ({
     onColumnGroupLevelButtonClick,
     onRowGroupButtonClick,
     onColumnGroupButtonClick,
-    scroll,
     scrollerContainerRef,
+    scrollerCoverRef,
     spreadsheetContainerRef
   };
 };

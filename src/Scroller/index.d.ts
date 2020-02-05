@@ -1,4 +1,4 @@
-import { DOMElement, CSSProperties, UIEventHandler, HTMLAttributes, FunctionComponent, Context, MutableRefObject } from 'react';
+import { Element, CSSProperties, UIEventHandler, HTMLAttributes, FunctionComponent, Context, MutableRefObject } from 'react';
 
 export interface Meta {
   size: number;
@@ -38,7 +38,7 @@ export interface ScrollerOptionsBase {
 }
 
 export interface UseScrollerOptions extends ScrollerOptionsBase {
-  scrollerContainerRef: MutableRefObject<DOMElement>;
+  scrollerContainerRef: MutableRefObject<Element>;
   /** When set to true whe height of scroller will expand on demand */
   lazy?: boolean;
   /** Load async page callback */

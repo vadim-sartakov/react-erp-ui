@@ -201,9 +201,9 @@ export interface UseSpreadsheetResult {
   onColumnGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
   onRowGroupButtonClick: GroupButtonClickHandlerFactory;
   onColumnGroupButtonClick: GroupButtonClickHandlerFactory;
-  scrollerContainerRef: MutableRefObject<DOMElement>;
-  spreadsheetContainerRef: MutableRefObject<DOMElement>;
-  scroll: { top: number, left: number };
+  scrollerContainerRef: MutableRefObject<Element>;
+  scrollerCoverRef: MutableRefObject<Element>;
+  spreadsheetContainerRef: MutableRefObject<Element>;
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
 
