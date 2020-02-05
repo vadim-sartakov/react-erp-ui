@@ -96,6 +96,21 @@ const rangesIntersect = (rangeA, rangeB) => {
   return intersectRect(convertRangeToRect(normalizedA), convertRangeToRect(normalizedB));
 };
 
+export const getIndexFromCoordinate = ({ coordinate, meta, defaultSize, totalCount }) => {
+  let index;
+  let curCoordinate = 0;
+  for (let i = 0; i < totalCount; i++) {
+    const curMeta = meta[i] || {};
+    const size = curMeta.size || defaultSize;
+    curCoordinate += size;
+    if (coordinate <= curCoordinate) {
+      index = i;
+      break;
+    }
+  }
+  return index;
+};
+
 export const expandSelection = ({ selection, mergedCells = [], rowIndex, columnIndex }) => {
   const nextSelection = {
     start: {

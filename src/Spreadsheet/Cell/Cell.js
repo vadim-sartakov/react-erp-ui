@@ -23,7 +23,6 @@ const mergedRangeFind = (rowIndex, columnIndex) => mergedRange => mergedRange.st
 const Cell = props => {
 
   const {
-    mergedCells,
     fixRows,
     fixColumns,
     row,
@@ -32,8 +31,6 @@ const Cell = props => {
     columnIndex,
     cell,
     Component,
-    onSelectedCellsChange,
-    mousePressed,
     children
   } = props;
 
@@ -62,28 +59,11 @@ const Cell = props => {
     if (resultStyle.font.italic) componentStyle.fontStyle = 'italic';
   }
 
-  const onMouseDown = useCallback(event => {
-    event.persist();
-    onSelectedCellsChange(selectedCells => {
-      const mergedRange = mergedCells.find(mergedRangeFind(rowIndex, columnIndex));
-      const curRange = mergedRange || {
-        start: { row: rowIndex, column: columnIndex },
-        end: { row: rowIndex, column: columnIndex }
-      };
-      /*if (event.ctrlKey) {
-        if (selectedCells.some(selectedRange => selectedRange.row === rowIndex && selectedRange.column === columnIndex)) return selectedCells;
-        return [...selectedCells, curRange]
-      } else {*/
-        return [curRange];
-      //}
-    });
-  }, [onSelectedCellsChange, rowIndex, columnIndex, mergedCells]);
-
-  const onMouseMove = useCallback(event => {
+  /*const onMouseMove = useCallback(event => {
     if (mousePressed.current) {
       onSelectedCellsChange(selectedCells => {
         const lastSelection = selectedCells[selectedCells.length - 1];
-        const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex })
+        const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex });
         // Preventing excessive updates
         if (rangesAreEqual(lastSelection, nextLastSelection)) return selectedCells;
         const nextSelectedCells = [...selectedCells];
@@ -91,7 +71,7 @@ const Cell = props => {
         return nextSelectedCells;
       });
     }
-  }, [rowIndex, columnIndex, mousePressed, onSelectedCellsChange, mergedCells]);
+  }, [rowIndex, columnIndex, mousePressed, onSelectedCellsChange, mergedCells]);*/
 
   if (rowIndex >= fixRows && columnIndex >= fixColumns) componentStyle.position = 'relative';
 
@@ -99,9 +79,7 @@ const Cell = props => {
     <Component
         {...props}
         style={componentStyle}
-        cell={cell}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}>
+        cell={cell}>
       {children}
       <Borders cell={cell} />
     </Component>

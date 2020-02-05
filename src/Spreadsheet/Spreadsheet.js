@@ -72,8 +72,7 @@ const Spreadsheet = inputProps => {
     onRowGroupLevelButtonClick,
     onColumnGroupLevelButtonClick,
     onRowGroupButtonClick,
-    onColumnGroupButtonClick,
-    mousePressed
+    onColumnGroupButtonClick
   } = props;
 
   const cellsElements = visibleRows.reduce((acc, rowIndex, seqRowIndex) => {
@@ -160,8 +159,7 @@ const Spreadsheet = inputProps => {
                       columnIndex={columnIndex}
                       cell={curCell}
                       Component={CellComponent}
-                      onSelectedCellsChange={onSelectedCellsChange}
-                      mousePressed={mousePressed} />
+                      onSelectedCellsChange={onSelectedCellsChange} />
                 );
             }
         }
@@ -222,8 +220,7 @@ const Spreadsheet = inputProps => {
             row={row}
             column={column}
             cell={curCell}
-            onSelectedCellsChange={onSelectedCellsChange}
-            mousePressed={mousePressed} />
+            onSelectedCellsChange={onSelectedCellsChange} />
       )
     }
   });
@@ -267,6 +264,7 @@ const Spreadsheet = inputProps => {
 
   return (
     <ScrollerContainer
+          coverRef={props.containerRef}
           {...props}
           {...scrollerProps}>
       <SpreadsheetContainer

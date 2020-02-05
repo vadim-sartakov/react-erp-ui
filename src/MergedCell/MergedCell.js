@@ -200,6 +200,7 @@ const MergedCell = ({
         style={{
           ...rootStyle,
           ...style,
+          pointerEvents: noPointerEvents ? 'none' : undefined,
           position: 'absolute',
           top: top - scrollerTop,
           left: left - scrollerLeft,

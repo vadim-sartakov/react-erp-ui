@@ -147,6 +147,8 @@ export const SpreadsheetContainer: FunctionComponent<SpreadsheetContainerProps>
 export interface UseSpreadsheetOptions {
   cells?: Cell[][];
   onCellsChange?: Dispatch<SetStateAction<Cell[][]>>;
+  defaultRowHeight: number;
+  defaultColumnWidth: number;
   rows?: Meta[]; 
   columns?: Meta[];
   onRowsChange?: Dispatch<SetStateAction<Meta[]>>;
@@ -199,7 +201,6 @@ export interface UseSpreadsheetResult {
   onColumnGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
   onRowGroupButtonClick: GroupButtonClickHandlerFactory;
   onColumnGroupButtonClick: GroupButtonClickHandlerFactory;
-  mousePressed: MutableRefObject<boolean>;
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
 

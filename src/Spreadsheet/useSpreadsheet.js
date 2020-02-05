@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
-import { getGroups } from './utils';
+import { getGroups, getIndexFromCoordinate, expandSelection } from './utils';
 
 export const convertExternalMetaToInternal = ({ meta = [], groups, groupSize, numberMetaSize, hideHeadings }) => {
   const result = [];
@@ -85,6 +85,8 @@ const clickGroupButton = (meta, group, specialMetaCount) => {
 const useSpreadsheet = ({
   cells: cellsProp,
   onCellsChange: onCellsChangeProp,
+  defaultRowHeight,
+  defaultColumnWidth,
   rows: rowsProp,
   onRowsChange: onRowsChangeProp,
   columns: columnsProp,
@@ -307,17 +309,49 @@ const useSpreadsheet = ({
     ];
   }, [mergedCellsProp, specialRowsCount, specialColumnsCount, rowsGroups, columnsGroups]);
 
-  const mousePressed = useRef();
+  const nextTotalRows = (totalRows + specialRowsCount) - hiddenRowsIndexes.length;
+  const nextTotalColumns = (totalColumns + specialColumnsCount) - hiddenColumnsIndexes.length;
+
+  const nextFixRows = fixRows + specialRowsCount;
+  const nextFixColumns = fixColumns + specialColumnsCount;
+
+  const containerRef = useRef();
+
   useEffect(() => {
-    const onMouseDown = () => mousePressed.current = true;
-    const onMouseUp = () => mousePressed.current = false;
+    const onMouseDown = event => {
+      const rect = containerRef.current.getBoundingClientRect();
+      const top = event.clientY - rect.top;
+      const left = event.clientX - rect.left;
+      const rowIndex = getIndexFromCoordinate({ coordinate: top, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextTotalRows });
+      const columnIndex = getIndexFromCoordinate({ coordinate: left, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextTotalColumns });
+      
+      onSelectedCellsChange(selectedCells => {
+        const mergedRange = mergedCells.find(mergedRange => {
+          return rowIndex >= mergedRange.start.row && rowIndex <= mergedRange.end.row &&
+              columnIndex >= mergedRange.start.column && columnIndex <= mergedRange.end.column;
+        });
+        const curRange = mergedRange || {
+          start: { row: rowIndex, column: columnIndex },
+          end: { row: rowIndex, column: columnIndex }
+        };
+        if (event.shiftKey) {
+          const lastSelection = selectedCells[selectedCells.length - 1];
+          const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex });
+          return [nextLastSelection];
+        }
+        /*if (event.ctrlKey) {
+          if (selectedCells.some(selectedRange => selectedRange.row === rowIndex && selectedRange.column === columnIndex)) return selectedCells;
+          return [...selectedCells, curRange]
+        } else {*/
+          return [curRange];
+        //}
+      });
+    };
     document.addEventListener('mousedown', onMouseDown);
-    document.addEventListener('mouseup', onMouseUp);
     return () => {
       document.removeEventListener('mousedown', onMouseDown);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
-  }, []);
+    }
+  }, [nextRows, nextColumns, defaultRowHeight, defaultColumnWidth, nextTotalRows, nextTotalColumns, mergedCells, onSelectedCellsChange]);
 
   return {
     cells: nextValue,
@@ -328,10 +362,10 @@ const useSpreadsheet = ({
     onRowsChange: nextOnRowsChange,
     selectedCells,
     onSelectedCellsChange,
-    totalRows: (totalRows + specialRowsCount) - hiddenRowsIndexes.length,
-    totalColumns: (totalColumns + specialColumnsCount) - hiddenColumnsIndexes.length,
-    fixRows: fixRows + specialRowsCount,
-    fixColumns: fixColumns + specialColumnsCount,
+    totalRows: nextTotalRows,
+    totalColumns: nextTotalColumns,
+    fixRows: nextFixRows,
+    fixColumns: nextFixColumns,
     mergedCells,
     specialRowsCount,
     specialColumnsCount,
@@ -341,7 +375,7 @@ const useSpreadsheet = ({
     onColumnGroupLevelButtonClick,
     onRowGroupButtonClick,
     onColumnGroupButtonClick,
-    mousePressed
+    containerRef
   };
 };
 
