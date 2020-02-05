@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, CSSProperties } from 'react';
 
 export interface Meta {
   size: number;
@@ -26,6 +26,8 @@ export interface MergedCellProps {
   scrollerLeft: number;
   /** Leave nodes with pointer events: 'none' value */
   noPointerEvents: boolean;
+  /** Styles which will be applied to resulted root component */
+  rootStyle: CSSProperties;
 }
 
 export function normalizeMergedRange(mergedRange: CellsRange);

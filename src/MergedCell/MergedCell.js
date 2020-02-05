@@ -198,6 +198,7 @@ const MergedCell = ({
         key="fix-cell-3"
         className={className}
         style={{
+          ...rootStyle,
           ...style,
           position: 'absolute',
           top: top - scrollerTop,
