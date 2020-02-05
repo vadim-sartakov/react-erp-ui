@@ -1,8 +1,10 @@
 import React from 'react';
+import SpreadsheetCell from '../SpreadsheetCell';
 import classes from './SelectedRange.module.css';
 
-const SelectedRange = () => {
-  return <div className={classes.root} />;
+const SelectedRange = props => {
+  const rootStyle = { transition: '100ms ease-in-out' };
+  return <SpreadsheetCell className={classes.root} rootStyle={rootStyle} noPointerEvents {...props} />;
 };
 
 export default SelectedRange;

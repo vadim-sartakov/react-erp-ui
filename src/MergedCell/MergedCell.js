@@ -15,7 +15,9 @@ export function normalizeMergedRange(mergedRange) {
 };
 
 const MergedCell = ({
+  className,
   style,
+  rootStyle,
   defaultRowHeight,
   defaultColumnWidth,
   mergedRange,
@@ -26,7 +28,11 @@ const MergedCell = ({
   noPointerEvents,
   scrollerTop,
   scrollerLeft,
-  children
+  children,
+  onMouseDown,
+  onMouseUp,
+  onMouseMove,
+  onClick
 }) => { 
   const elements = [];
 
@@ -80,11 +86,11 @@ const MergedCell = ({
   });
 
   const baseRootStyle = {
+    ...rootStyle,
     position: 'absolute',
     top: top - scrollerTop,
     left: left - scrollerLeft,
-    pointerEvents: 'none',
-    ...style
+    pointerEvents: 'none'
   };
 
   const baseWrapperStyle = {
@@ -96,6 +102,7 @@ const MergedCell = ({
   };
 
   const valueStyle = {
+    ...style,
     width,
     height
   };
@@ -115,7 +122,13 @@ const MergedCell = ({
     elements.push(
       <div key="fix-row-column-0" style={rootStyle}>
         <div style={wrapperStyle}>
-          <div style={valueStyle}>
+          <div
+              style={valueStyle}
+              className={className}
+              onMouseDown={onMouseDown}
+              onMouseUp={onMouseUp}
+              onMouseMove={onMouseMove}
+              onClick={onClick}>
             {children}
           </div>
         </div>
@@ -137,7 +150,13 @@ const MergedCell = ({
     elements.push(
       <div key="fix-column-1" style={rootStyle}>
         <div style={wrapperStyle}>
-          <div style={valueStyle}>
+          <div
+              style={valueStyle}
+              className={className}
+              onMouseDown={onMouseDown}
+              onMouseUp={onMouseUp}
+              onMouseMove={onMouseMove}
+              onClick={onClick}>
             {children}
           </div>
         </div>
@@ -159,7 +178,13 @@ const MergedCell = ({
     elements.push(
       <div key="fix-row-2" style={rootStyle}>
         <div style={wrapperStyle}>
-          <div style={valueStyle}>
+          <div
+              style={valueStyle}
+              className={className}
+              onMouseDown={onMouseDown}
+              onMouseUp={onMouseUp}
+              onMouseMove={onMouseMove}
+              onClick={onClick}>
             {children}
           </div>
         </div>
@@ -171,15 +196,20 @@ const MergedCell = ({
   elements.push((
     <div
         key="fix-cell-3"
+        className={className}
         style={{
+          ...style,
           position: 'absolute',
           top: top - scrollerTop,
           left: left - scrollerLeft,
           width,
           height,
-          zIndex: 1,
-          ...style
-        }}>
+          zIndex: 1
+        }}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+        onMouseMove={onMouseMove}
+        onClick={onClick}>
       {children}
     </div>
   ));

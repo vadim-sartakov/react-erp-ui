@@ -4,24 +4,28 @@ import GroupLineView from './GroupLineView';
 
 const GroupLine = ({
   type,
-  rows,
-  columns,
   rowsGroups,
   columnsGroups,
-  rowIndex,
-  columnIndex,
   onRowGroupButtonClick,
   onColumnGroupButtonClick,
-  Component = GroupLineView
+  Component = GroupLineView,
+  ...props
 }) => {
+  const {
+    rows,
+    columns,
+    rowIndex,
+    columnIndex
+  } = props;
+
   const { defaultRowHeight, defaultColumnWidth, groupSize } = useContext(SpreadsheetContext);
 
-  const { group, lineStyle, containerStyle, onClick } = useMemo(() => {
-    let group, lineStyle, containerStyle, onClick;
+  const { group, lineStyle, containerStyle, onButtonClick } = useMemo(() => {
+    let group, lineStyle, containerStyle, onButtonClick;
     if (type === 'row') {
       const currentRowLevelGroups = rowsGroups[columnIndex];
       group = currentRowLevelGroups && currentRowLevelGroups.find(group => (group.offsetStart - 1) === rowIndex);
-      onClick = onRowGroupButtonClick(group);
+      onButtonClick = onRowGroupButtonClick(group);
 
       const height = (rows[rowIndex] && rows[rowIndex].size) || defaultRowHeight;
       containerStyle = { height };
@@ -33,7 +37,7 @@ const GroupLine = ({
     } else {
       const currentColumnLevelGroups = columnsGroups[rowIndex];
       group = currentColumnLevelGroups && currentColumnLevelGroups.find(group => (group.offsetStart - 1) === columnIndex);
-      onClick = onColumnGroupButtonClick(group);
+      onButtonClick = onColumnGroupButtonClick(group);
 
       const width = (columns[columnIndex] && columns[columnIndex].size) || defaultColumnWidth;
       containerStyle = { width };
@@ -43,7 +47,7 @@ const GroupLine = ({
         height: groupSize / 2
       }
     }
-    return { group, lineStyle, containerStyle, onClick };
+    return { group, lineStyle, containerStyle, onButtonClick };
   }, [
     columnIndex,
     columns,
@@ -61,11 +65,12 @@ const GroupLine = ({
 
   return (
     <Component
+        {...props}
         type={type}
         containerStyle={containerStyle}
         lineStyle={lineStyle}
         collapsed={group.collapsed}
-        onClick={onClick} />
+        onButtonClick={onButtonClick} />
   )
 };
 

@@ -1,4 +1,6 @@
 import { MutableRefObject, HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties } from 'react';
+import { ScrollerCellProps } from '../Scroller';
+import { MergedCellProps } from '../MergedCell';
 
 export interface Font {
   name?: string;
@@ -200,6 +202,8 @@ export interface UseSpreadsheetResult {
   mousePressed: MutableRefObject<boolean>;
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
+
+export const SpreadsheetCell: FunctionComponent<ScrollerCellProps | MergedCellProps>
 
 export interface SpreadsheetProps extends UseSpreadsheetOptions, ViewComponentsOptions {}
 /**

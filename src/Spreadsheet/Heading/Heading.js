@@ -1,9 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
+import SpreadsheetCell from '../SpreadsheetCell';
 import GridResizer from '../../GridResizer';
 import classes from './Heading.module.css';
 
 const Heading = ({
+  row,
+  column,
   defaultSize,
   onChange,
   type,
@@ -24,12 +27,10 @@ const Heading = ({
       className = classes.cell
   }
   return (
-    <div className={className}>
-      <>
-        {meta.key + 1}
-        <GridResizer type={type} meta={meta} defaultSize={defaultSize} onChange={onChange} index={index} className={resizerClassName} />
-      </>
-    </div>
+    <SpreadsheetCell className={className} row={row} column={column}>
+      {meta.key + 1}
+      <GridResizer type={type} meta={meta} defaultSize={defaultSize} onChange={onChange} index={index} className={resizerClassName} />
+    </SpreadsheetCell>
   )
 };
 

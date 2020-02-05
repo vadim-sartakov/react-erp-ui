@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { expandSelection } from '../utils';
+import Borders from './Borders';
 
 const flexAlignValuesMap = {
   top: 'flex-start',
@@ -19,17 +20,23 @@ function rangesAreEqual(rangeA, rangeB) {
 
 const mergedRangeFind = (rowIndex, columnIndex) => mergedRange => mergedRange.start.row === rowIndex && mergedRange.start.column === columnIndex;
 
-const Cell = ({
-  mergedCells,
-  row,
-  column,
-  rowIndex,
-  columnIndex,
-  cell,
-  Component,
-  onSelectedCellsChange,
-  mousePressed
-}) => {
+const Cell = props => {
+
+  const {
+    mergedCells,
+    fixRows,
+    fixColumns,
+    row,
+    column,
+    rowIndex,
+    columnIndex,
+    cell,
+    Component,
+    onSelectedCellsChange,
+    mousePressed,
+    children
+  } = props;
+
   const rowStyle = (row && row.style) || {};
   const columnStyle = (column && column.style) || {};
   const valueStyle = (cell && cell.style) || {};
@@ -86,12 +93,18 @@ const Cell = ({
     }
   }, [rowIndex, columnIndex, mousePressed, onSelectedCellsChange, mergedCells]);
 
+  if (rowIndex >= fixRows && columnIndex >= fixColumns) componentStyle.position = 'relative';
+
   return (
     <Component
+        {...props}
         style={componentStyle}
         cell={cell}
         onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove} />
+        onMouseMove={onMouseMove}>
+      {children}
+      <Borders cell={cell} />
+    </Component>
   )
 };
 

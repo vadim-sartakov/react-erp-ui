@@ -1,4 +1,5 @@
 import React from 'react';
+import SpreadsheetCell from '../SpreadsheetCell';
 import classes from './GroupLine.module.css';
 
 const GroupLineView = ({
@@ -7,7 +8,8 @@ const GroupLineView = ({
   containerStyle,
   lineStyle,
   collapsed,
-  onClick
+  onButtonClick,
+  ...props
 }) => {
   let lineClassName;
   switch (type) {
@@ -20,14 +22,14 @@ const GroupLineView = ({
     default:
   }
   return (
-    <div className={classes.root}>
+    <SpreadsheetCell className={classes.root} {...props}>
       <div className={classes.buttonContainer} style={{ ...containerStyle, backgroundColor }}>
-        <div className={classes.groupButton} style={{ backgroundColor }} onClick={onClick}>
+        <div className={classes.groupButton} style={{ backgroundColor }} onClick={onButtonClick}>
           {collapsed ? '+' : '-'}
         </div>
       </div>
       {!collapsed && <div className={lineClassName} style={lineStyle} />}
-    </div>
+    </SpreadsheetCell>
   )
 };
 

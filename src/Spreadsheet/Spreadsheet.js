@@ -5,10 +5,9 @@ import GroupLevelButton from './GroupLevelButton';
 import { Heading, HeadingsIntersection } from './Heading';
 import { GroupLine } from './GroupLine';
 import FixLines from './FixLines';
-import MergedCell from '../MergedCell';
 import SpecialCellEmptyArea from './SpecialCellEmptyArea';
 import SelectedRange from './SelectedRange';
-import Cell, { Borders } from './Cell';
+import Cell from './Cell';
 
 export const visibleRangesFilter = ({
   fixRows,
@@ -84,8 +83,7 @@ const Spreadsheet = inputProps => {
     const columnsElements = visibleColumns.map((columnIndex, seqColumnIndex) => {
       const column = columns[columnIndex] || {};
       const columnsType = column.type;
-
-      let element, spreadsheetCellProps;
+      const key=`${seqRowIndex}_${seqColumnIndex}`;
 
       const isMerged = !rowType && !columnsType ? mergedCells.some(mergedRange =>
           rowIndex >= mergedRange.start.row &&
@@ -93,92 +91,81 @@ const Spreadsheet = inputProps => {
           rowIndex <= mergedRange.end.row &&
           columnIndex <= mergedRange.end.column) : false;
 
-      if (!isMerged) {
-        
+      if (isMerged) {
+        return (
+          <ScrollerCell
+              key={key}
+              row={row}
+              column={column} />
+        )        
+      } else {
         switch(rowType) {
           case 'GROUP':
 
             switch(columnsType) {
               case 'NUMBER':
-                spreadsheetCellProps = { style: { zIndex: 8 } };
-                element = <GroupLevelButtonComponent index={rowIndex} onClick={onColumnGroupLevelButtonClick(rowIndex + 1)} />;
-                break;
+                return <GroupLevelButtonComponent key={key} index={rowIndex} row={row} column={column} onClick={onColumnGroupLevelButtonClick(rowIndex + 1)} />;
               default:
-                element = <SpecialCellEmptyAreaComponent />;
+                return <SpecialCellEmptyAreaComponent key={key} row={row} column={column} />;
             }
-            break;
           case 'NUMBER':
 
             switch(columnsType) {
               case 'GROUP':
-                spreadsheetCellProps = { style: { zIndex: 8 } };
-                element = <GroupLevelButtonComponent index={columnIndex} onClick={onRowGroupLevelButtonClick(columnIndex + 1)} />;
-                break;
+                return <GroupLevelButtonComponent key={key} row={row} column={column} index={columnIndex} onClick={onRowGroupLevelButtonClick(columnIndex + 1)} style={{ zIndex: 8 }} />;
               case 'NUMBER':
-                element = <HeadingsIntersectionComponent />;
-                break;
+                return <HeadingsIntersectionComponent key={key} row={row} column={column} />;
               default:
-                element = (
+                return (
                   <HeadingComponent
-                      key={`${seqRowIndex}_${seqColumnIndex}`}
+                      key={key}
+                      row={row}
+                      column={column}
                       type="column"
                       meta={column}
                       defaultSize={defaultColumnWidth}
                       index={columnIndex}
                       onChange={onColumnsChange} />
                 );
-                break;
             }
-            break;
           default:
             const rowCells = cells[rowIndex];
             const curCell = rowCells && rowCells[columnIndex];
             
             switch(columnsType) {
               case 'GROUP':
-                element = <SpecialCellEmptyArea />;
-                break
+                return <SpecialCellEmptyArea key={key} row={row} column={column} />;
               case 'NUMBER':
-                element = (
+                return (
                   <Heading
-                      key={`${seqRowIndex}_${seqColumnIndex}`}
+                      key={key}
+                      row={row}
+                      column={column}
                       type="row"
                       meta={row}
                       index={rowIndex}
                       defaultSize={defaultRowHeight}
                       onChange={onRowsChange} />
                 );
-                break;
               default:
-                spreadsheetCellProps = rowIndex >= fixRows && columnIndex >= fixColumns && { style: { position: 'relative' } };
-                element = (
-                  <>
-                    <Cell
-                        mergedCells={mergedCells}
-                        row={row}
-                        column={column}
-                        rowIndex={rowIndex}
-                        columnIndex={columnIndex}
-                        cell={curCell}
-                        Component={CellComponent}
-                        onSelectedCellsChange={onSelectedCellsChange}
-                        mousePressed={mousePressed} />
-                    <Borders cell={curCell} />
-                  </>
+                return (
+                  <Cell
+                      key={key}
+                      mergedCells={mergedCells}
+                      fixRows={fixRows}
+                      fixColumns={fixColumns}
+                      row={row}
+                      column={column}
+                      rowIndex={rowIndex}
+                      columnIndex={columnIndex}
+                      cell={curCell}
+                      Component={CellComponent}
+                      onSelectedCellsChange={onSelectedCellsChange}
+                      mousePressed={mousePressed} />
                 );
             }
         }
       }
-
-      return (
-        <ScrollerCell
-              key={`${seqRowIndex}_${seqColumnIndex}`}
-              row={row}
-              column={column}
-              {...spreadsheetCellProps}>
-          {element}
-        </ScrollerCell>
-      );
 
     });
 
@@ -203,6 +190,8 @@ const Spreadsheet = inputProps => {
       columns,
       fixRows,
       fixColumns,
+      rowIndex,
+      columnIndex,
       scrollerTop,
       scrollerLeft,
       defaultRowHeight,
@@ -211,35 +200,30 @@ const Spreadsheet = inputProps => {
 
     if (row.type === 'GROUP' || column.type === 'GROUP') {
       return (
-        <MergedCell {...mergedCellProps}>
-          <GroupLine
-              type={row.type === 'GROUP' ? 'column' : 'row'}
-              rows={rows}
-              columns={columns}
-              rowIndex={rowIndex}
-              columnIndex={columnIndex}
-              rowsGroups={rowsGroups}
-              columnsGroups={columnsGroups}
-              onRowGroupButtonClick={onRowGroupButtonClick}
-              onColumnGroupButtonClick={onColumnGroupButtonClick}
-              Component={GroupLineComponent} />
-        </MergedCell>
+        <GroupLine
+            {...mergedCellProps}
+            type={row.type === 'GROUP' ? 'column' : 'row'}
+            rows={rows}
+            columns={columns}
+            rowIndex={rowIndex}
+            columnIndex={columnIndex}
+            rowsGroups={rowsGroups}
+            columnsGroups={columnsGroups}
+            onRowGroupButtonClick={onRowGroupButtonClick}
+            onColumnGroupButtonClick={onColumnGroupButtonClick}
+            Component={GroupLineComponent} />
       )
     } else {
       return (
-        <MergedCell {...mergedCellProps}>
-          <Cell
-              mergedCells={mergedCells}
-              row={row}
-              column={column}
-              rowIndex={rowIndex}
-              columnIndex={columnIndex}
-              cell={curCell}
-              Component={CellComponent}
-              onSelectedCellsChange={onSelectedCellsChange}
-              mousePressed={mousePressed} />
-          <Borders cell={curCell} />
-        </MergedCell>
+        <Cell
+            {...mergedCellProps}
+            Component={CellComponent}
+            mergedCells={mergedCells}
+            row={row}
+            column={column}
+            cell={curCell}
+            onSelectedCellsChange={onSelectedCellsChange}
+            mousePressed={mousePressed} />
       )
     }
   });
@@ -258,19 +242,10 @@ const Spreadsheet = inputProps => {
       scrollerTop,
       scrollerLeft,
       defaultRowHeight,
-      defaultColumnWidth,
-      noPointerEvents: true,
-      style: {
-        pointerEvents: 'none',
-        transition: '100ms ease-in-out'
-      }
+      defaultColumnWidth
     };
 
-    return (
-      <MergedCell {...mergedCellProps}>
-        <SelectedRangeComponent />
-      </MergedCell>
-    )
+    return <SelectedRangeComponent {...mergedCellProps} />;
   });
 
   const fixedAreasElement = (
