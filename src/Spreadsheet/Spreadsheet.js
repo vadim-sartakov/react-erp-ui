@@ -242,7 +242,7 @@ const Spreadsheet = inputProps => {
       defaultColumnWidth
     };
 
-    return <SelectedRangeComponent {...mergedCellProps} />;
+    return <SelectedRangeComponent {...mergedCellProps} multiple={visibleSelections.length > 1} />;
   });
 
   const fixedAreasElement = (

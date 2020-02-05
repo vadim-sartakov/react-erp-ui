@@ -1,9 +1,9 @@
 .root {
-  height: 100%;
   border: solid 2px #008222;
   cursor: cell;
 }
 
-.range {
-  background-color: rgba(220, 220, 220, 0.6);
+.multiple {
+  background-color: rgba(220, 220, 220, 0.4);
+  border-color: #9a9a9a;
 }

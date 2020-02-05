@@ -364,12 +364,14 @@ const useSpreadsheet = ({
           const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex });
           return [nextLastSelection];
         }
-        /*if (event.ctrlKey) {
-          if (selectedCells.some(selectedRange => selectedRange.row === rowIndex && selectedRange.column === columnIndex)) return selectedCells;
+        if (event.ctrlKey) {
+          if (selectedCells.some(selectedRange => {
+            return selectedRange.start.row === curRange.start.row && selectedRange.start.column === curRange.start.column &&
+                selectedRange.end.row === curRange.end.row && selectedRange.end.column === curRange.end.column
+          })) return selectedCells;
           return [...selectedCells, curRange]
-        } else {*/
-          return [curRange];
-        //}
+        }
+        return [curRange];
       });
     };
 
