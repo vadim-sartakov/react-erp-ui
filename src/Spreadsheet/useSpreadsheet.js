@@ -78,6 +78,13 @@ const clickGroupButton = (meta, group, specialMetaCount) => {
   return nextMeta;
 };
 
+const rangesAreEqual = (rangeA, rangeB) => {
+  return rangeA.start.row === rangeB.start.row &&
+      rangeA.start.column === rangeB.start.column &&
+      rangeA.end.row === rangeB.end.row &&
+      rangeA.end.column === rangeB.end.column
+};
+
 /**
  * @param {import('.').UseSpreadsheetOptions} options
  * @returns {import('.').UseSpreadsheetResult}
@@ -315,15 +322,27 @@ const useSpreadsheet = ({
   const nextFixRows = fixRows + specialRowsCount;
   const nextFixColumns = fixColumns + specialColumnsCount;
 
-  const containerRef = useRef();
+  const mousePressed = useRef();
+  const scrollerContainerRect = useRef();
+  const scrollerContainerRef = useRef();
+  const spreadsheetContainerRef = useRef();
 
+  // Select interaction
   useEffect(() => {
     const onMouseDown = event => {
-      const rect = containerRef.current.getBoundingClientRect();
+      if (!scrollerContainerRef.current.contains(event.target)) return;
+
+      mousePressed.current = true;
+
+      const rect = scrollerContainerRef.current.getBoundingClientRect();
+      scrollerContainerRect.current = { top: rect.top, left: rect.left };
+
       const top = event.clientY - rect.top;
       const left = event.clientX - rect.left;
       const rowIndex = getIndexFromCoordinate({ coordinate: top, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextTotalRows });
       const columnIndex = getIndexFromCoordinate({ coordinate: left, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextTotalColumns });
+
+      if (rowIndex < specialRowsCount || columnIndex < specialColumnsCount) return;
       
       onSelectedCellsChange(selectedCells => {
         const mergedRange = mergedCells.find(mergedRange => {
@@ -347,11 +366,50 @@ const useSpreadsheet = ({
         //}
       });
     };
+
+    const onMouseUp = () => mousePressed.current = false;
+
+    const onMouseMove = event => {
+      if (mousePressed.current) {
+        const rect = scrollerContainerRect.current;
+        const top = event.clientY - rect.top;
+        const left = event.clientX - rect.left;
+        const rowIndex = getIndexFromCoordinate({ coordinate: top, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextTotalRows });
+        const columnIndex = getIndexFromCoordinate({ coordinate: left, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextTotalColumns });
+        
+        onSelectedCellsChange(selectedCells => {
+          const lastSelection = selectedCells[selectedCells.length - 1];
+          const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex });
+          // Preventing excessive updates
+          if (rangesAreEqual(lastSelection, nextLastSelection)) return selectedCells;
+          const nextSelectedCells = [...selectedCells];
+          nextSelectedCells[nextSelectedCells.length - 1] = nextLastSelection;
+          return nextSelectedCells;
+        });
+      };
+    }
+
     document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', onMouseMove);
+
     return () => {
       document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mousemove', onMouseMove);
     }
-  }, [nextRows, nextColumns, defaultRowHeight, defaultColumnWidth, nextTotalRows, nextTotalColumns, mergedCells, onSelectedCellsChange]);
+  }, [
+    nextRows,
+    nextColumns,
+    defaultRowHeight,
+    defaultColumnWidth,
+    nextTotalRows,
+    nextTotalColumns,
+    mergedCells,
+    onSelectedCellsChange,
+    specialRowsCount,
+    specialColumnsCount
+  ]);
 
   return {
     cells: nextValue,
@@ -375,7 +433,8 @@ const useSpreadsheet = ({
     onColumnGroupLevelButtonClick,
     onRowGroupButtonClick,
     onColumnGroupButtonClick,
-    containerRef
+    scrollerContainerRef,
+    spreadsheetContainerRef
   };
 };
 

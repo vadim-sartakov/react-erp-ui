@@ -264,10 +264,11 @@ const Spreadsheet = inputProps => {
 
   return (
     <ScrollerContainer
-          coverRef={props.containerRef}
+          coverRef={props.scrollerContainerRef}
           {...props}
           {...scrollerProps}>
       <SpreadsheetContainer
+          ref={props.scrollerContainerRef}
           {...props}
           {...spreadsheetProps}
           style={gridStyles}>

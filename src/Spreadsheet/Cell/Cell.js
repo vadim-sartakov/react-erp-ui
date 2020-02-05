@@ -1,5 +1,4 @@
-import React, { useCallback } from 'react';
-import { expandSelection } from '../utils';
+import React from 'react';
 import Borders from './Borders';
 
 const flexAlignValuesMap = {
@@ -10,15 +9,6 @@ const flexAlignValuesMap = {
   bottom: 'flex-end',
   right: 'flex-end'
 };
-
-function rangesAreEqual(rangeA, rangeB) {
-  return rangeA.start.row === rangeB.start.row &&
-      rangeA.start.column === rangeB.start.column &&
-      rangeA.end.row === rangeB.end.row &&
-      rangeA.end.column === rangeB.end.column
-};
-
-const mergedRangeFind = (rowIndex, columnIndex) => mergedRange => mergedRange.start.row === rowIndex && mergedRange.start.column === columnIndex;
 
 const Cell = props => {
 
@@ -58,20 +48,6 @@ const Cell = props => {
     if (resultStyle.font.bold) componentStyle.fontWeight = 'bold';
     if (resultStyle.font.italic) componentStyle.fontStyle = 'italic';
   }
-
-  /*const onMouseMove = useCallback(event => {
-    if (mousePressed.current) {
-      onSelectedCellsChange(selectedCells => {
-        const lastSelection = selectedCells[selectedCells.length - 1];
-        const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex });
-        // Preventing excessive updates
-        if (rangesAreEqual(lastSelection, nextLastSelection)) return selectedCells;
-        const nextSelectedCells = [...selectedCells];
-        nextSelectedCells[nextSelectedCells.length - 1] = nextLastSelection;
-        return nextSelectedCells;
-      });
-    }
-  }, [rowIndex, columnIndex, mousePressed, onSelectedCellsChange, mergedCells]);*/
 
   if (rowIndex >= fixRows && columnIndex >= fixColumns) componentStyle.position = 'relative';
 

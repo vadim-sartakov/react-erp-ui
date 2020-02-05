@@ -1,4 +1,4 @@
-import { MutableRefObject, HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties } from 'react';
+import { MutableRefObject, HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties, DOMElement } from 'react';
 import { ScrollerCellProps } from '../Scroller';
 import { MergedCellProps } from '../MergedCell';
 
@@ -201,6 +201,8 @@ export interface UseSpreadsheetResult {
   onColumnGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
   onRowGroupButtonClick: GroupButtonClickHandlerFactory;
   onColumnGroupButtonClick: GroupButtonClickHandlerFactory;
+  scrollerContainerRef: MutableRefObject<DOMElement>;
+  spreadsheetContainerRef: MutableRefObject<DOMElement>;
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
 
