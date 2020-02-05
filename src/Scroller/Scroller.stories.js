@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
-import Scroller from './';
+import Scroller, { ScrollerCell } from './';
 import { generateListValues, generateGridValues } from '../test-utils/generateValues';
 import classes from './Scroller-stories.module.sass';
 
@@ -11,11 +11,11 @@ export const listValue = generateListValues(1000);
 const listRows = generateCustomMeta(listValue.length, 80);
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerCellProps>} */
-const ListCellComponent = ({ value }) => {
+const ListCellComponent = ({ value, ...props }) => {
   return (
-    <div className="row">
+    <ScrollerCell {...props}>
       {value || 'Loading...'}
-    </div>
+    </ScrollerCell>
   )
 };
 
@@ -29,11 +29,11 @@ const gridRows = generateCustomMeta(gridValue.length, 60);
 const gridColumns = generateCustomMeta(gridValue[0].length, 180);
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerCellProps>} */
-const GridCellComponent = ({ value }) => {
+const GridCellComponent = ({ value, ...props }) => {
   return (
-    <div className={classes.cell}>
+    <ScrollerCell className={classes.cell} {...props}>
       {value || 'Loading...'}
-    </div>
+    </ScrollerCell>
   )
 };
 

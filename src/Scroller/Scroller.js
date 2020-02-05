@@ -28,22 +28,14 @@ const Scroller = inputProps => {
         const valueArray = loadedValues || value;
         const curValue = valueArray[rowIndex] && valueArray[rowIndex][columnIndex];
         const cellProps = { row, column, rowIndex, columnIndex, value: curValue };
-        return (
-          <ScrollerCell key={`${rowIndex}-${columnIndex}`} {...cellProps}>
-            <CellComponent {...cellProps} />
-          </ScrollerCell>
-        );
+        return <CellComponent key={`${rowIndex}-${columnIndex}`} {...cellProps} />;
       });
       return [...acc, ...columnsElements];
     } else {
       const valueArray = loadedValues || value;
       const curValue = valueArray[rowIndex];
       const cellProps = { row, rowIndex, value: curValue };
-      const rowElement = (
-        <ScrollerCell key={rowIndex} {...cellProps}>
-          <CellComponent {...cellProps} />
-        </ScrollerCell>
-      );
+      const rowElement = <CellComponent key={rowIndex} {...cellProps} />;
       return [...acc, rowElement];
     }
   }, []);
