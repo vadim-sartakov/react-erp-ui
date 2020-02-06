@@ -168,6 +168,8 @@ export interface UseSpreadsheetOptions {
    */
   groupSize?: number;
   mergedCells?: CellsRange[];
+  rowsPerPage: number;
+  columnsPerPage: number;
   totalRows: number;
   totalColumns: number;
   fixRows?: number;
