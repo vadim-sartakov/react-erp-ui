@@ -343,11 +343,40 @@ const useSpreadsheet = ({
       const fixedRowIndex = getIndexFromCoordinate({ coordinate: fixedTop, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextFixRows });
       const fixedColumnIndex = getIndexFromCoordinate({ coordinate: fixedLeft, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextFixColumns });
 
-      const rowIndex = fixedRowIndex || valueRowIndex;
-      const columnIndex = fixedColumnIndex || valueColumnIndex;
+      const rowIndex = fixedRowIndex !== undefined ? fixedRowIndex : valueRowIndex;
+      const columnIndex = fixedColumnIndex !== undefined ? fixedColumnIndex : valueColumnIndex;
 
       return { rowIndex, columnIndex };
     };
+
+    const getSelection = ({ lastSelection, rowType, columnType, rowIndex, columnIndex }) => {
+      let resultSelection;
+      if (rowType === 'NUMBER' && columnType === 'NUMBER') {
+        resultSelection = {
+          start: { row: rowIndex + 1, column: columnIndex + 1 }
+        };
+        resultSelection = expandSelection({ selection: resultSelection, mergedCells, columnIndex: nextTotalColumns - 1, rowIndex: nextTotalRows - 1 });
+      } else if (rowType === 'NUMBER') {
+        resultSelection = {
+          start: { row: rowIndex + 1, column: (lastSelection && lastSelection.start.column) || columnIndex }
+        };
+        resultSelection = expandSelection({ selection: resultSelection, mergedCells, columnIndex, rowIndex: nextTotalRows - 1 });
+      } else if (columnType === 'NUMBER') {
+        resultSelection = {
+          start: { row: (lastSelection && lastSelection.start.row) || rowIndex, column: columnIndex + 1 }
+        };
+        resultSelection = expandSelection({ selection: resultSelection, mergedCells, columnIndex: nextTotalColumns - 1, rowIndex });
+      } else {
+        resultSelection = lastSelection || {
+          start: { row: rowIndex, column: columnIndex }
+        };
+        resultSelection = expandSelection({ selection: resultSelection, mergedCells, rowIndex, columnIndex });
+      }
+      return resultSelection;
+    };
+
+    const isSpecialArea = (rowIndex, columnIndex) => (rowIndex < specialRowsCount && nextRows[rowIndex].type !== 'NUMBER') ||
+        (columnIndex < specialColumnsCount && nextColumns[columnIndex].type !== 'NUMBER');
 
     const onMouseDown = event => {
       if (!scrollerCoverRef.current || !scrollerCoverRef.current.contains(event.target)) return;
@@ -362,40 +391,22 @@ const useSpreadsheet = ({
 
       const { rowIndex, columnIndex } = getIndexes(event, scrollerContainerRect, scrollerCoverRect);
       
-      if ((rowIndex < specialRowsCount && nextRows[rowIndex].type !== 'NUMBER') || (columnIndex < specialColumnsCount && nextColumns[columnIndex].type !== 'NUMBER')) return;
+      if (isSpecialArea(rowIndex, columnIndex)) return;
+
+      const rowType = nextRows[rowIndex].type;
+      const columnType = nextColumns[columnIndex].type;
 
       onSelectedCellsChange(selectedCells => {
-        let curSelection = {
-          start: { row: rowIndex, column: columnIndex },
-          end: { row: rowIndex, column: columnIndex }
-        };
-
-        if (nextRows[rowIndex].type === 'NUMBER') {
-          curSelection = {
-            start: { row: rowIndex + 1, column: columnIndex },
-            end: { row: rowIndex + 1, column: columnIndex }
-          };
-          curSelection = expandSelection({ selection: curSelection, mergedCells, columnIndex, rowIndex: nextTotalRows - 1 });
-        } else if (nextColumns[columnIndex].type === 'NUMBER') {
-          curSelection = {
-            start: { row: rowIndex, column: columnIndex + 1 },
-            end: { row: rowIndex, column: columnIndex + 1 }
-          };
-          curSelection = expandSelection({ selection: curSelection, mergedCells, columnIndex: nextTotalColumns - 1, rowIndex });
-        } else {
-          curSelection = expandSelection({ selection: curSelection, mergedCells, rowIndex, columnIndex });
-        }
+        const curSelection = getSelection({ rowType, columnType, rowIndex, columnIndex });
 
         if (event.shiftKey) {
           const lastSelection = selectedCells[selectedCells.length - 1];
-          const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex });
+          const nextLastSelection = getSelection({ lastSelection, rowType, columnType, rowIndex, columnIndex });
           return [nextLastSelection];
         }
         if (event.ctrlKey) {
-          if (selectedCells.some(selectedRange => {
-            return selectedRange.start.row === curSelection.start.row && selectedRange.start.column === curSelection.start.column &&
-                selectedRange.end.row === curSelection.end.row && selectedRange.end.column === curSelection.end.column
-          })) return selectedCells;
+          // Excluding equal selections
+          if (selectedCells.some(selectedRange => rangesAreEqual(selectedRange, curSelection))) return selectedCells;
           return [...selectedCells, curSelection]
         }
         return [curSelection];
@@ -418,15 +429,18 @@ const useSpreadsheet = ({
 
         const { rowIndex, columnIndex } = getIndexes(event, scrollerContainerRect, scrollerCoverRect);
 
-        if (rowIndex < specialRowsCount || columnIndex < specialColumnsCount) return;
+        if (isSpecialArea(rowIndex, columnIndex)) return;
         
+        const rowType = nextRows[rowIndex].type;
+        const columnType = nextColumns[columnIndex].type;
+
         onSelectedCellsChange(selectedCells => {
           const lastSelection = selectedCells[selectedCells.length - 1];
 
-          // Happens when mouse pressed elsewhere (e.g. heading resizing) thus there is no last selection
+          // Happens when mouse pressed elsewhere (e.g. heading resizing) thus, there is no last selection
           if (!lastSelection) return selectedCells;
 
-          const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex });
+          const nextLastSelection = getSelection({ lastSelection, rowType, columnType, rowIndex, columnIndex });
           // Preventing excessive updates
           if (rangesAreEqual(lastSelection, nextLastSelection)) return selectedCells;
 
