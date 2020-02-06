@@ -60,3 +60,87 @@ export const getGroups = meta => {
 
   return groups;
 };
+
+const convertRangeToRect = (mergedRange) => {
+  return {
+    top: mergedRange.start.row,
+    left: mergedRange.start.column,
+    bottom: mergedRange.end.row,
+    right: mergedRange.end.column
+  }
+};
+
+const normalizeMergedRange = (mergedRange) => {
+  return {
+    start: {
+      row: Math.min(mergedRange.start.row, mergedRange.end.row),
+      column: Math.min(mergedRange.start.column, mergedRange.end.column)
+    },
+    end: {
+      row: Math.max(mergedRange.start.row, mergedRange.end.row),
+      column: Math.max(mergedRange.start.column, mergedRange.end.column)
+    }
+  }
+};
+
+const intersectRect = (a, b) => {
+  return (a.left <= b.right &&
+      b.left <= a.right &&
+      a.top <= b.bottom &&
+      b.top <= a.bottom)
+}
+
+const rangesIntersect = (rangeA, rangeB) => {
+  const normalizedA = normalizeMergedRange(rangeA);
+  const normalizedB = normalizeMergedRange(rangeB);
+  return intersectRect(convertRangeToRect(normalizedA), convertRangeToRect(normalizedB));
+};
+
+export const getIndexFromCoordinate = ({ coordinate, meta, defaultSize, totalCount }) => {
+  let index;
+  let curCoordinate = 0;
+  for (let i = 0; i < totalCount; i++) {
+    const curMeta = meta[i] || {};
+    const size = curMeta.size || defaultSize;
+    curCoordinate += size;
+    if (coordinate <= curCoordinate) {
+      index = i;
+      break;
+    }
+  }
+  return index;
+};
+
+export const expandSelection = ({ selection, mergedCells = [], rowIndex, columnIndex }) => {
+  const nextSelection = {
+    start: {
+      row: selection.start.row,
+      column: selection.start.column
+    },
+    end: {
+      row: rowIndex,
+      column: columnIndex
+    }
+  };
+
+  mergedCells.forEach(mergedRange => {
+    if (rangesIntersect(mergedRange, nextSelection)) {
+      if (nextSelection.start.row < nextSelection.end.row) {
+        nextSelection.start.row = Math.min(nextSelection.start.row, mergedRange.start.row);
+        nextSelection.end.row = Math.max(nextSelection.end.row, mergedRange.end.row);
+      } else {
+        nextSelection.start.row = Math.max(nextSelection.start.row, mergedRange.end.row);
+        nextSelection.end.row = Math.min(nextSelection.end.row, mergedRange.start.row);
+      }
+      if (nextSelection.start.column < nextSelection.end.column) {
+        nextSelection.start.column = Math.min(nextSelection.start.column, mergedRange.start.column);
+        nextSelection.end.column = Math.max(nextSelection.end.column, mergedRange.end.column);
+      } else {
+        nextSelection.start.column = Math.max(nextSelection.start.column, mergedRange.end.column);
+        nextSelection.end.column = Math.min(nextSelection.end.column, mergedRange.start.column);
+      }
+    }
+  });
+
+  return nextSelection;
+};

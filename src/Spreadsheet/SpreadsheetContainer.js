@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, forwardRef } from 'react';
 import { SpreadsheetContext } from './';
 
 /** @type {import('react').FunctionComponent<import('.').SpreadsheetContainerProps>} */
-const SpreadsheetContainer = ({
+const SpreadsheetContainer = forwardRef(({
   defaultColumnWidth,
   defaultRowHeight,
   groupSize,
@@ -11,7 +11,7 @@ const SpreadsheetContainer = ({
   className,
   style,
   children
-}) => {
+}, ref) => {
   const contextValue = useMemo(() => ({
     defaultColumnWidth,
     defaultRowHeight,
@@ -27,11 +27,11 @@ const SpreadsheetContainer = ({
   ]);
   return (
     <SpreadsheetContext.Provider value={contextValue}>
-      <div className={className} style={style}>
+      <div ref={ref} className={className} style={{ ...style, userSelect: 'none' }}>
         {children}
       </div>
     </SpreadsheetContext.Provider>
   )
-};
+});
 
 export default SpreadsheetContainer;

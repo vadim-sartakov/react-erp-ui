@@ -1,4 +1,4 @@
-import { CSSProperties, UIEventHandler, HTMLAttributes, FunctionComponent, Context } from 'react';
+import { Element, CSSProperties, UIEventHandler, HTMLAttributes, FunctionComponent, Context, MutableRefObject } from 'react';
 
 export interface Meta {
   size: number;
@@ -38,15 +38,23 @@ export interface ScrollerOptionsBase {
 }
 
 export interface UseScrollerOptions extends ScrollerOptionsBase {
+  scrollerContainerRef: MutableRefObject<Element>;
   /** When set to true whe height of scroller will expand on demand */
   lazy?: boolean;
   /** Load async page callback */
   loadPage?: (page: number, itemsPerPage: number) => void;
   fixRows?: number;
   fixColumns?: number;
+  /**
+   * To take control over current scroll position.
+   * If values change, scroll container sets new scroll values.
+   */
+  scroll: { top: number, left: number };
 }
 
 export interface UseScrollerResult {
+  rowsPage: number;
+  columnsPage: number;
   /** Rows indexes */
   visibleRows: number[],
   /** Columns indexes */

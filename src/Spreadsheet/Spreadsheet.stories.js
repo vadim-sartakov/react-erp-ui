@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { storiesOf } from '@storybook/react';
-import Spreadsheet from './';
+import Spreadsheet, { SpreadsheetCell } from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import exportToExcel from './exportToExcel';
 import classes from './Spreadsheet-stories.module.sass';
@@ -14,10 +14,11 @@ const gridValuesMapper = valueRow => {
   });
 };
 
-const CellComponent = ({ cell, style }) => (
-  <div className={classes.cell} style={style}>
+const CellComponent = ({ cell, children, ...props }) => (
+  <SpreadsheetCell className={classes.cell} {...props}>
     {cell ? cell.value : ''}
-  </div>
+    {children}
+  </SpreadsheetCell>
 );
 
 /**

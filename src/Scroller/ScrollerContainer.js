@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, forwardRef } from 'react';
 import { ScrollerContext } from './';
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerContainerProps>} */
-const ScrollerContainer = ({
+const ScrollerContainer = forwardRef(({
+  coverRef,
   width,
   height,
   children,
@@ -14,15 +15,15 @@ const ScrollerContainer = ({
   pagesStyles,
   gridStyles,
   className
-}) => {
+}, ref) => {
   const contextValue = useMemo(() => ({
     defaultRowHeight,
     defaultColumnWidth
   }), [defaultRowHeight, defaultColumnWidth]);
   return (
     <ScrollerContext.Provider value={contextValue}>
-      <div onScroll={onScroll} className={className} style={{ width, height, overflow: 'auto', ...style }}>
-        <div style={coverStyles}>
+      <div ref={ref} onScroll={onScroll} className={className} style={{ width, height, overflow: 'auto', ...style }}>
+        <div ref={coverRef} style={coverStyles}>
           <div style={pagesStyles}>
             <div style={gridStyles}>
               {children}
@@ -32,6 +33,6 @@ const ScrollerContainer = ({
       </div>
     </ScrollerContext.Provider>
   );
-};
+});
 
 export default ScrollerContainer;

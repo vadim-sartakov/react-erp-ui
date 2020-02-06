@@ -3,10 +3,16 @@ import { ScrollerContext } from './';
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerCellProps>} */
 const ScrollerCell = ({
+  className,
   style,
   row,
   column,
-  children
+  Component = 'div',
+  children,
+  onMouseDown,
+  onMouseUp,
+  onMouseMove,
+  onClick
 }) => {
   const { defaultColumnWidth, defaultRowHeight } = useContext(ScrollerContext);
   
@@ -30,9 +36,15 @@ const ScrollerCell = ({
   }
   nextStyle = { ...nextStyle, ...style };
   return (
-    <div style={nextStyle}>
+    <Component
+        style={nextStyle}
+        className={className}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+        onMouseMove={onMouseMove}
+        onClick={onClick}>
       {children}
-    </div>
+    </Component>
   );
 };
 

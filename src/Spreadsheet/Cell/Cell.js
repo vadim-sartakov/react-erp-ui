@@ -1,4 +1,5 @@
 import React from 'react';
+import Borders from './Borders';
 
 const flexAlignValuesMap = {
   top: 'flex-start',
@@ -9,12 +10,20 @@ const flexAlignValuesMap = {
   right: 'flex-end'
 };
 
-const Cell = ({
-  row,
-  column,
-  cell,
-  Component
-}) => {
+const Cell = props => {
+
+  const {
+    fixRows,
+    fixColumns,
+    row,
+    column,
+    rowIndex,
+    columnIndex,
+    cell,
+    Component,
+    children
+  } = props;
+
   const rowStyle = (row && row.style) || {};
   const columnStyle = (column && column.style) || {};
   const valueStyle = (cell && cell.style) || {};
@@ -30,7 +39,7 @@ const Cell = ({
   };
   componentStyle.alignItems = (resultStyle.verticalAlign && flexAlignValuesMap[resultStyle.verticalAlign]) || 'flex-end';
   if (resultStyle.horizontalAlign) componentStyle.justifyContent = flexAlignValuesMap[resultStyle.horizontalAlign];
-  if (resultStyle.wrapText) componentStyle.whiteSpace = 'nowrap';
+  if (!resultStyle.wrapText) componentStyle.whiteSpace = 'nowrap';
   if (resultStyle.fill) componentStyle.backgroundColor = resultStyle.fill;
   if (resultStyle.font) {
     if (resultStyle.font.color) componentStyle.color = resultStyle.font.color;
@@ -40,7 +49,17 @@ const Cell = ({
     if (resultStyle.font.italic) componentStyle.fontStyle = 'italic';
   }
 
-  return <Component style={componentStyle} cell={cell} />
+  if (rowIndex >= fixRows && columnIndex >= fixColumns) componentStyle.position = 'relative';
+
+  return (
+    <Component
+        {...props}
+        style={componentStyle}
+        cell={cell}>
+      {children}
+      <Borders cell={cell} />
+    </Component>
+  )
 };
 
 export default Cell;

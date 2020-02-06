@@ -1,10 +1,13 @@
 .cell {
-  height: 100%;
   padding: 4px 6px;
   border-bottom: solid 1px #c3c3c3;
   border-right: solid 1px #c3c3c3;
   font-size: 12px;
   background-color: #f1f1f1;
+}
+
+.selected {
+  background-color: #dadada;
 }
 
 .rowNumber {

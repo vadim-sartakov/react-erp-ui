@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, CSSProperties } from 'react';
 
 export interface Meta {
   size: number;
@@ -18,15 +18,19 @@ export interface MergedCellProps {
   defaultRowHeight: number;
   defaultColumnWidth: number;
   mergedRange: CellsRange;
-  rowIndex: number;
-  columnIndex: number;
   rows: Meta[];
   columns: Meta[];
-  fixRows;
-  fixColumns;
-  scrollerTop;
-  scrollerLeft;
+  fixRows: number;
+  fixColumns: number;
+  scrollerTop: number;
+  scrollerLeft: number;
+  /** Leave nodes with pointer events: 'none' value */
+  noPointerEvents: boolean;
+  /** Styles which will be applied to resulted root component */
+  rootStyle: CSSProperties;
 }
+
+export function normalizeMergedRange(mergedRange: CellsRange);
 
 /**
  * Helps to render merged cells range in grid components.

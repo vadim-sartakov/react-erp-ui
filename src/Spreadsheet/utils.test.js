@@ -1,4 +1,4 @@
-import { getGroups } from './utils';
+import { getGroups, expandSelection } from './utils';
 
 describe('Spreadsheet utils', () => {
 
@@ -177,6 +177,129 @@ describe('Spreadsheet utils', () => {
           { start: 5, end: 6, level: 2, offsetStart: 3, offsetEnd: 3, collapsed: true }
         ]
       ]);
+    });
+
+  });
+
+  describe('expandSelection', () => {
+
+    const selection = {
+      start: {
+        row: 100,
+        column: 100
+      },
+      end: {
+        row: 100,
+        column: 100
+      }
+    };
+
+    it('should expand to south-east', () => {
+      const result = expandSelection({ selection, rowIndex: 150, columnIndex: 150 });
+      expect(result).toEqual({
+        start: {
+          row: 100,
+          column: 100
+        },
+        end: {
+          row: 150,
+          column: 150
+        }
+      });
+    });
+
+    it('should expand to north-west', () => {
+      const result = expandSelection({ selection, rowIndex: 50, columnIndex: 50 });
+      expect(result).toEqual({
+        start: {
+          row: 100,
+          column: 100
+        },
+        end: {
+          row: 50,
+          column: 50
+        }
+      });
+    });
+
+    it('should expand south-east to merged cell', () => {
+      const mergedCells = [
+        {
+          start: { row: 150, column: 150 },
+          end: { row: 160, column: 160 }
+        }
+      ];
+      const result = expandSelection({ selection, rowIndex: 150, columnIndex: 150, mergedCells });
+      expect(result).toEqual({
+        start: {
+          row: 100,
+          column: 100
+        },
+        end: {
+          row: 160,
+          column: 160
+        }
+      });
+    });
+
+    it('should expand north-west to merged cell', () => {
+      const mergedCells = [
+        {
+          start: { row: 50, column: 50 },
+          end: { row: 60, column: 60 }
+        }
+      ];
+      const result = expandSelection({ selection, rowIndex: 60, columnIndex: 60, mergedCells });
+      expect(result).toEqual({
+        start: {
+          row: 100,
+          column: 100
+        },
+        end: {
+          row: 50,
+          column: 50
+        }
+      });
+    });
+
+    it('should expand south-east over merged cell', () => {
+      const mergedCells = [
+        {
+          start: { row: 150, column: 150 },
+          end: { row: 200, column: 200 }
+        }
+      ];
+      const result = expandSelection({ selection, rowIndex: 300, columnIndex: 300, mergedCells });
+      expect(result).toEqual({
+        start: {
+          row: 100,
+          column: 100
+        },
+        end: {
+          row: 300,
+          column: 300
+        }
+      });
+    });
+
+    it('should expand north-west over merged cell', () => {
+      const mergedCells = [
+        {
+          start: { row: 50, column: 50 },
+          end: { row: 60, column: 60 }
+        }
+      ];
+      const result = expandSelection({ selection, rowIndex: 10, columnIndex: 10, mergedCells });
+      expect(result).toEqual({
+        start: {
+          row: 100,
+          column: 100
+        },
+        end: {
+          row: 10,
+          column: 10
+        }
+      });
     });
 
   });

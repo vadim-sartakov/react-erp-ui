@@ -1,4 +1,6 @@
-import { HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties } from 'react';
+import { MutableRefObject, HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties, DOMElement } from 'react';
+import { ScrollerCellProps } from '../Scroller';
+import { MergedCellProps } from '../MergedCell';
 
 export interface Font {
   name?: string;
@@ -102,7 +104,7 @@ export interface GroupLineViewProps {
 }
 
 export interface CellComponentProps {
-  value: Cell
+  cell: Cell
 }
 
 export interface ViewComponentsOptions {
@@ -119,6 +121,7 @@ export interface ViewComponentsOptions {
   GroupLevelButtonComponent?: FunctionComponent<GroupLevelButtonViewProps>;
   /** Group line which located along with grouped items */
   GroupLineComponent?: FunctionComponent<GroupLineViewProps>;
+  SelectedRangeComponent?: FunctionComponent<{}>;
 }
 
 export interface SpreadsheetContextProps {
@@ -144,10 +147,14 @@ export const SpreadsheetContainer: FunctionComponent<SpreadsheetContainerProps>
 export interface UseSpreadsheetOptions {
   cells?: Cell[][];
   onCellsChange?: Dispatch<SetStateAction<Cell[][]>>;
+  defaultRowHeight: number;
+  defaultColumnWidth: number;
   rows?: Meta[]; 
   columns?: Meta[];
   onRowsChange?: Dispatch<SetStateAction<Meta[]>>;
   onColumnsChange?: Dispatch<SetStateAction<Meta[]>>;
+  selectedCells?: CellsRange[];
+  onSelectedCellsChange?: Dispatch<SetStateAction<CellsRange[]>>;
   /** If set to 'true' than rows/columns numbers won't be rendered */
   hideHeadings?: boolean;
   /** Height of special row with column numbers */
@@ -179,6 +186,8 @@ export interface UseSpreadsheetResult {
   columns: Meta[];
   onColumnsChange: Dispatch<SetStateAction<Meta[]>>;
   onRowsChange: Dispatch<SetStateAction<Meta[]>>;
+  selectedCells?: CellsRange[];
+  onSelectedCellsChange?: Dispatch<SetStateAction<CellsRange[]>>;
   totalRows: number;
   totalColumns: number;
   fixRows: number;
@@ -192,8 +201,13 @@ export interface UseSpreadsheetResult {
   onColumnGroupLevelButtonClick: GroupLevelButtonClickHandlerFactory;
   onRowGroupButtonClick: GroupButtonClickHandlerFactory;
   onColumnGroupButtonClick: GroupButtonClickHandlerFactory;
+  scrollerContainerRef: MutableRefObject<Element>;
+  scrollerCoverRef: MutableRefObject<Element>;
+  spreadsheetContainerRef: MutableRefObject<Element>;
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
+
+export const SpreadsheetCell: FunctionComponent<ScrollerCellProps | MergedCellProps>
 
 export interface SpreadsheetProps extends UseSpreadsheetOptions, ViewComponentsOptions {}
 /**
