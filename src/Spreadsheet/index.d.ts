@@ -141,6 +141,7 @@ export interface SpreadsheetContainerProps {
   fixColumns: number;
   specialRowsCount: number;
   specialColumnsCount: number;
+  onKeyDown: KeyboardEvent;
 }
 export const SpreadsheetContainer: FunctionComponent<SpreadsheetContainerProps>
 
@@ -204,6 +205,7 @@ export interface UseSpreadsheetResult {
   scrollerContainerRef: MutableRefObject<Element>;
   scrollerCoverRef: MutableRefObject<Element>;
   spreadsheetContainerRef: MutableRefObject<Element>;
+  onKeyDown: KeyboardEvent;
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
 

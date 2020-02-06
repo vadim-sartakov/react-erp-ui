@@ -14,7 +14,8 @@ const ScrollerContainer = forwardRef(({
   coverStyles,
   pagesStyles,
   gridStyles,
-  className
+  className,
+  onKeyDown
 }, ref) => {
   const contextValue = useMemo(() => ({
     defaultRowHeight,
@@ -22,7 +23,13 @@ const ScrollerContainer = forwardRef(({
   }), [defaultRowHeight, defaultColumnWidth]);
   return (
     <ScrollerContext.Provider value={contextValue}>
-      <div ref={ref} onScroll={onScroll} className={className} style={{ width, height, overflow: 'auto', ...style }}>
+      <div
+          tabIndex="0"
+          ref={ref}
+          onScroll={onScroll}
+          className={className}
+          style={{ width, height, overflow: 'auto', ...style }}
+          onKeyDown={onKeyDown}>
         <div ref={coverRef} style={coverStyles}>
           <div style={pagesStyles}>
             <div style={gridStyles}>

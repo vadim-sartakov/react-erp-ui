@@ -491,6 +491,53 @@ const useSpreadsheet = ({
     specialColumnsCount
   ]);
 
+  // Keyboard
+  const onKeyDown = useCallback(event => {
+    event.persist();
+    event.preventDefault();
+    
+    const moveSelection = (selectedCells, append, rowOffset, columnOffset) => {
+      const lastSelection = selectedCells[selectedCells.length - 1];
+      let nextSelection;
+      if (lastSelection) {
+        nextSelection = {};
+        if (append) {
+          nextSelection.start = { row: lastSelection.start.row, column: lastSelection.start.column };
+        } else {
+          nextSelection.start = { row: lastSelection.end.row + rowOffset, column: lastSelection.end.column + columnOffset };
+        }
+        nextSelection = expandSelection({
+          selection: nextSelection,
+          mergedCells,
+          rowIndex: lastSelection.end.row + rowOffset,
+          columnIndex: lastSelection.end.column + columnOffset
+        })  
+      } else {
+        nextSelection = {
+          start: { row: specialRowsCount, column: specialColumnsCount },
+          end: { row: specialRowsCount, column: specialColumnsCount }
+        }
+      }
+      return [nextSelection];
+    };
+
+    switch (event.key) {
+      case 'ArrowDown':
+        onSelectedCellsChange(selectedCells => moveSelection(selectedCells, event.shiftKey, 1, 0));
+        break;
+      case 'ArrowUp':
+        onSelectedCellsChange(selectedCells => moveSelection(selectedCells, event.shiftKey, -1, 0));
+        break;
+      case 'ArrowLeft':
+        onSelectedCellsChange(selectedCells => moveSelection(selectedCells, event.shiftKey, 0, -1));
+        break;
+      case 'ArrowRight':
+        onSelectedCellsChange(selectedCells => moveSelection(selectedCells, event.shiftKey, 0, 1));
+        break;
+      default:
+    };
+  }, [mergedCells, onSelectedCellsChange, specialRowsCount, specialColumnsCount]);
+
   return {
     cells: nextValue,
     onCellsChange: nextOnChange,
@@ -515,7 +562,8 @@ const useSpreadsheet = ({
     onColumnGroupButtonClick,
     scrollerContainerRef,
     scrollerCoverRef,
-    spreadsheetContainerRef
+    spreadsheetContainerRef,
+    onKeyDown
   };
 };
 

@@ -125,7 +125,7 @@ export const expandSelection = ({ selection, mergedCells = [], rowIndex, columnI
 
   mergedCells.forEach(mergedRange => {
     if (rangesIntersect(mergedRange, nextSelection)) {
-      if (nextSelection.start.row < nextSelection.end.row) {
+      if (nextSelection.start.row <= nextSelection.end.row) {
         nextSelection.start.row = Math.min(nextSelection.start.row, mergedRange.start.row);
         nextSelection.end.row = Math.max(nextSelection.end.row, mergedRange.end.row);
       } else {
