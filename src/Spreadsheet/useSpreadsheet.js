@@ -99,8 +99,8 @@ const moveSelection = ({ selectedCells, append, rowOffset, columnOffset, special
   let nextSelection;
 
   // Moving out of merged cell range
-  let endRow = (rowOffset > 0 ? lastSelection.end.row : lastSelection.start.row) + rowOffset;
-  let endColumn = (columnOffset > 0 ? lastSelection.end.column : lastSelection.start.column) + columnOffset;
+  let endRow = (rowOffset > 0 ? Math.max(lastSelection.start.row, lastSelection.end.row) : Math.min(lastSelection.start.row, lastSelection.end.row)) + rowOffset;
+  let endColumn = (columnOffset > 0 ? Math.max(lastSelection.start.column, lastSelection.end.column) : Math.min(lastSelection.start.column, lastSelection.end.column)) + columnOffset;
 
   // Preventing moving out of value area
   endRow = rowOffset > 0 ? Math.min(endRow, totalRows - 1) : Math.max(endRow, specialRowsCount);
@@ -110,8 +110,8 @@ const moveSelection = ({ selectedCells, append, rowOffset, columnOffset, special
     nextSelection = {};
     if (append) {
       nextSelection.start = {
-        row: rowOffset > 0 ? lastSelection.start.row : lastSelection.end.row,
-        column: columnOffset > 0 ? lastSelection.start.column : lastSelection.end.column 
+        row: rowOffset >= 0 ? Math.min(lastSelection.start.row, lastSelection.end.row) : Math.max(lastSelection.start.row, lastSelection.end.row),
+        column: columnOffset >= 0 ? Math.min(lastSelection.start.column, lastSelection.end.column) : Math.max(lastSelection.start.column, lastSelection.end.column)
       };
     } else {
       nextSelection.start = { row: endRow, column: endColumn };
