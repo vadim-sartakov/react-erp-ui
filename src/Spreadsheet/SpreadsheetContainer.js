@@ -10,6 +10,7 @@ const SpreadsheetContainer = forwardRef(({
   fixColumns,
   className,
   style,
+  onMouseDown,
   children
 }, ref) => {
   const contextValue = useMemo(() => ({
@@ -27,7 +28,7 @@ const SpreadsheetContainer = forwardRef(({
   ]);
   return (
     <SpreadsheetContext.Provider value={contextValue}>
-      <div ref={ref} className={className} style={{ ...style, userSelect: 'none' }}>
+      <div ref={ref} className={className} style={{ ...style, userSelect: 'none' }} onMouseDown={onMouseDown}>
         {children}
       </div>
     </SpreadsheetContext.Provider>
