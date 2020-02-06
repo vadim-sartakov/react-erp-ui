@@ -375,7 +375,14 @@ const useSpreadsheet = ({
       });
     };
 
-    const onMouseUp = () => mousePressed.current = false;
+    // Mouse up is not always triggered
+    const onMouseUp = () => {
+      mousePressed.current = false;
+    };
+
+    const onClick = () => {
+      mousePressed.current = false;
+    };
 
     const onMouseMove = event => {
       if (mousePressed.current) {
@@ -389,6 +396,10 @@ const useSpreadsheet = ({
         
         onSelectedCellsChange(selectedCells => {
           const lastSelection = selectedCells[selectedCells.length - 1];
+
+          // Happens when mouse pressed elsewhere (e.g. heading resizing) thus there is no last selection
+          if (!lastSelection) return selectedCells;
+
           const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex });
           // Preventing excessive updates
           if (rangesAreEqual(lastSelection, nextLastSelection)) return selectedCells;
@@ -416,11 +427,13 @@ const useSpreadsheet = ({
 
     document.addEventListener('mousedown', onMouseDown);
     document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('click', onClick);
     document.addEventListener('mousemove', onMouseMove);
 
     return () => {
       document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('click', onClick);
       document.removeEventListener('mousemove', onMouseMove);
     }
   }, [
