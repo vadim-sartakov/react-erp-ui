@@ -461,17 +461,17 @@ const useSpreadsheet = ({
           if (rangesAreEqual(lastSelection, nextLastSelection)) return selectedCells;
 
           // Scrolling if selection goes out of container
-          const scrollerLeftMouse = event.clientX - scrollerContainerRectRef.current.left;
-          const scrollerTopMouse = event.clientY - scrollerContainerRectRef.current.top;
-          const leftOverscroll = scrollerLeftMouse - scrollerContainerRectRef.current.width;
-          const topOverscroll = scrollerTopMouse - scrollerContainerRectRef.current.height;
-          if (scrollerLeftMouse < 0 || leftOverscroll > 0) {
-            scrollerCoverRectRef.current.left = scrollerCoverRectRef.current.left - leftOverscroll;
-            scrollerContainerRef.current.scrollLeft = scrollerContainerRef.current.scrollLeft + leftOverscroll;
+          const x = event.clientX - scrollerContainerRectRef.current.left;
+          const y = event.clientY - scrollerContainerRectRef.current.top;
+          const overscrollLeft = getOverscrolledOffset({ coordinate: x, containerSize: scrollerContainerRectRef.current.width, meta: nextColumns, fixCount: nextFixColumns, defaultSize: defaultColumnWidth });
+          const overscrollTop = getOverscrolledOffset({ coordinate: y, containerSize: scrollerContainerRectRef.current.height, meta: nextRows, fixCount: nextFixRows, defaultSize: defaultRowHeight });
+          if (overscrollLeft) {
+            scrollerCoverRectRef.current.left = scrollerCoverRectRef.current.left - overscrollLeft;
+            scrollerContainerRef.current.scrollLeft = scrollerContainerRef.current.scrollLeft + overscrollLeft;
           }
-          if (scrollerTopMouse < 0 || topOverscroll > 0) {
-            scrollerCoverRectRef.current.top = scrollerCoverRectRef.current.top - topOverscroll;
-            scrollerContainerRef.current.scrollTop = scrollerContainerRef.current.scrollTop + topOverscroll;
+          if (overscrollTop) {
+            scrollerCoverRectRef.current.top = scrollerCoverRectRef.current.top - overscrollTop;
+            scrollerContainerRef.current.scrollTop = scrollerContainerRef.current.scrollTop + overscrollTop;
           }
 
           const nextSelectedCells = [...selectedCells];
