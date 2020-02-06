@@ -98,9 +98,8 @@ const moveSelection = ({ selectedCells, append, rowOffset, columnOffset, special
   const lastSelection = selectedCells[selectedCells.length - 1];
   let nextSelection;
 
-  // Moving out of merged cell range
-  let endRow = (rowOffset > 0 ? Math.max(lastSelection.start.row, lastSelection.end.row) : Math.min(lastSelection.start.row, lastSelection.end.row)) + rowOffset;
-  let endColumn = (columnOffset > 0 ? Math.max(lastSelection.start.column, lastSelection.end.column) : Math.min(lastSelection.start.column, lastSelection.end.column)) + columnOffset;
+  let endRow = lastSelection.end.row + rowOffset;
+  let endColumn = lastSelection.end.column + columnOffset;
 
   // Preventing moving out of value area
   endRow = rowOffset > 0 ? Math.min(endRow, totalRows - 1) : Math.max(endRow, specialRowsCount);
@@ -110,8 +109,8 @@ const moveSelection = ({ selectedCells, append, rowOffset, columnOffset, special
     nextSelection = {};
     if (append) {
       nextSelection.start = {
-        row: rowOffset >= 0 ? Math.min(lastSelection.start.row, lastSelection.end.row) : Math.max(lastSelection.start.row, lastSelection.end.row),
-        column: columnOffset >= 0 ? Math.min(lastSelection.start.column, lastSelection.end.column) : Math.max(lastSelection.start.column, lastSelection.end.column)
+        row: lastSelection.start.row,
+        column: lastSelection.start.column
       };
     } else {
       nextSelection.start = { row: endRow, column: endColumn };
@@ -120,7 +119,9 @@ const moveSelection = ({ selectedCells, append, rowOffset, columnOffset, special
       selection: nextSelection,
       mergedCells,
       rowIndex: endRow,
-      columnIndex: endColumn
+      columnIndex: endColumn,
+      east: rowOffset > 0,
+      south: columnOffset > 0
     });
   } else {
     nextSelection = {
@@ -485,7 +486,7 @@ const useSpreadsheet = ({
       });
     };
 
-    // Mouse up is not always triggered
+    // Mouse up is not always triggered, so including onClick as well
     const onMouseUp = () => {
       mousePressed.current = false;
     };
