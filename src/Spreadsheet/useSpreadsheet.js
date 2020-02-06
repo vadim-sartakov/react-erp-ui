@@ -332,6 +332,23 @@ const useSpreadsheet = ({
 
   // Select interaction
   useEffect(() => {
+    const getIndexes = (event, scrollerContainerRect, scrollerCoverRect) => {
+      const valueTop = event.clientY - scrollerCoverRect.top;
+      const valueLeft = event.clientX - scrollerCoverRect.left;
+      const valueRowIndex = getIndexFromCoordinate({ coordinate: valueTop, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextTotalRows });
+      const valueColumnIndex = getIndexFromCoordinate({ coordinate: valueLeft, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextTotalColumns });
+
+      const fixedTop = event.clientY - scrollerContainerRect.top;
+      const fixedLeft = event.clientX - scrollerContainerRect.left;
+      const fixedRowIndex = getIndexFromCoordinate({ coordinate: fixedTop, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextFixRows });
+      const fixedColumnIndex = getIndexFromCoordinate({ coordinate: fixedLeft, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextFixColumns });
+
+      const rowIndex = fixedRowIndex || valueRowIndex;
+      const columnIndex = fixedColumnIndex || valueColumnIndex;
+
+      return { rowIndex, columnIndex };
+    };
+
     const onMouseDown = event => {
       if (!scrollerCoverRef.current || !scrollerCoverRef.current.contains(event.target)) return;
 
@@ -343,22 +360,32 @@ const useSpreadsheet = ({
       const scrollerCoverRect = scrollerCoverRef.current.getBoundingClientRect();      
       scrollerCoverRectRef.current = { top: scrollerCoverRect.top, left: scrollerCoverRect.left };
 
-      const top = event.clientY - scrollerCoverRect.top;
-      const left = event.clientX - scrollerCoverRect.left;
-      const rowIndex = getIndexFromCoordinate({ coordinate: top, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextTotalRows });
-      const columnIndex = getIndexFromCoordinate({ coordinate: left, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextTotalColumns });
-
-      if (rowIndex < specialRowsCount || columnIndex < specialColumnsCount) return;
+      const { rowIndex, columnIndex } = getIndexes(event, scrollerContainerRect, scrollerCoverRect);
       
+      if ((rowIndex < specialRowsCount && nextRows[rowIndex].type !== 'NUMBER') || (columnIndex < specialColumnsCount && nextColumns[columnIndex].type !== 'NUMBER')) return;
+
       onSelectedCellsChange(selectedCells => {
-        const mergedRange = mergedCells.find(mergedRange => {
-          return rowIndex >= mergedRange.start.row && rowIndex <= mergedRange.end.row &&
-              columnIndex >= mergedRange.start.column && columnIndex <= mergedRange.end.column;
-        });
-        const curRange = mergedRange || {
+        let curSelection = {
           start: { row: rowIndex, column: columnIndex },
           end: { row: rowIndex, column: columnIndex }
         };
+
+        if (nextRows[rowIndex].type === 'NUMBER') {
+          curSelection = {
+            start: { row: rowIndex + 1, column: columnIndex },
+            end: { row: rowIndex + 1, column: columnIndex }
+          };
+          curSelection = expandSelection({ selection: curSelection, mergedCells, columnIndex, rowIndex: nextTotalRows - 1 });
+        } else if (nextColumns[columnIndex].type === 'NUMBER') {
+          curSelection = {
+            start: { row: rowIndex, column: columnIndex + 1 },
+            end: { row: rowIndex, column: columnIndex + 1 }
+          };
+          curSelection = expandSelection({ selection: curSelection, mergedCells, columnIndex: nextTotalColumns - 1, rowIndex });
+        } else {
+          curSelection = expandSelection({ selection: curSelection, mergedCells, rowIndex, columnIndex });
+        }
+
         if (event.shiftKey) {
           const lastSelection = selectedCells[selectedCells.length - 1];
           const nextLastSelection = expandSelection({ selection: lastSelection, mergedCells, rowIndex, columnIndex });
@@ -366,12 +393,12 @@ const useSpreadsheet = ({
         }
         if (event.ctrlKey) {
           if (selectedCells.some(selectedRange => {
-            return selectedRange.start.row === curRange.start.row && selectedRange.start.column === curRange.start.column &&
-                selectedRange.end.row === curRange.end.row && selectedRange.end.column === curRange.end.column
+            return selectedRange.start.row === curSelection.start.row && selectedRange.start.column === curSelection.start.column &&
+                selectedRange.end.row === curSelection.end.row && selectedRange.end.column === curSelection.end.column
           })) return selectedCells;
-          return [...selectedCells, curRange]
+          return [...selectedCells, curSelection]
         }
-        return [curRange];
+        return [curSelection];
       });
     };
 
@@ -386,11 +413,10 @@ const useSpreadsheet = ({
 
     const onMouseMove = event => {
       if (mousePressed.current) {
-        const rect = scrollerCoverRectRef.current;
-        const top = event.clientY - rect.top;
-        const left = event.clientX - rect.left;
-        const rowIndex = getIndexFromCoordinate({ coordinate: top, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextTotalRows });
-        const columnIndex = getIndexFromCoordinate({ coordinate: left, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextTotalColumns });
+        const scrollerContainerRect = scrollerContainerRectRef.current;
+        const scrollerCoverRect = scrollerCoverRectRef.current;
+
+        const { rowIndex, columnIndex } = getIndexes(event, scrollerContainerRect, scrollerCoverRect);
 
         if (rowIndex < specialRowsCount || columnIndex < specialColumnsCount) return;
         
@@ -437,6 +463,8 @@ const useSpreadsheet = ({
       document.removeEventListener('mousemove', onMouseMove);
     }
   }, [
+    nextFixRows,
+    nextFixColumns,
     nextRows,
     nextColumns,
     defaultRowHeight,
