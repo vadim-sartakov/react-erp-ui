@@ -94,12 +94,12 @@ const getOverscrolledOffset = ({ coordinate, containerSize, meta, fixCount, defa
   else if (endOverscroll > 0) return endOverscroll;
 };
 
-const moveSelection = ({ selectedCells, append, rowOffset, columnOffset, specialRowsCount, specialColumnsCount, mergedCells }) => {
+const moveSelection = ({ selectedCells, append, rowOffset, columnOffset, specialRowsCount, specialColumnsCount, mergedCells, totalRows, totalColumns }) => {
   const lastSelection = selectedCells[selectedCells.length - 1];
   let nextSelection;
 
-  const endRow = Math.max(lastSelection.end.row + rowOffset, specialRowsCount);
-  const endColumn = Math.max(lastSelection.end.column + columnOffset, specialColumnsCount);
+  const endRow = rowOffset > 0 ? Math.min(lastSelection.end.row + rowOffset, totalRows - 1) : Math.max(lastSelection.end.row + rowOffset, specialRowsCount);
+  const endColumn = columnOffset > 0 ? Math.min(lastSelection.end.column + columnOffset, totalColumns - 1) : Math.max(lastSelection.end.column + columnOffset, specialColumnsCount);
 
   if (lastSelection) {
     nextSelection = {};
@@ -561,7 +561,7 @@ const useSpreadsheet = ({
     event.preventDefault();
     
     const setSelectedCells = (append, rowOffset, columnOffset) => selectedCells => {
-      const nextSelection = moveSelection({ selectedCells, append, rowOffset, columnOffset, specialRowsCount, specialColumnsCount, mergedCells });
+      const nextSelection = moveSelection({ selectedCells, append, rowOffset, columnOffset, specialRowsCount, specialColumnsCount, mergedCells, totalRows: nextTotalRows, totalColumns: nextTotalColumns });
       moveScrollPosition({ selectedCells: nextSelection, rowOffset, columnOffset, nextRows, nextColumns, nextFixColumns, nextFixRows, defaultRowHeight, defaultColumnWidth, scrollerContainerRef, scrollerContainerRectRef });
       return nextSelection;
     }
@@ -598,7 +598,9 @@ const useSpreadsheet = ({
     nextColumns,
     nextFixRows,
     nextFixColumns,
-    rowsPerPage
+    rowsPerPage,
+    nextTotalRows,
+    nextTotalColumns
   ]);
 
   return {
