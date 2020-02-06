@@ -98,13 +98,21 @@ const moveSelection = ({ selectedCells, append, rowOffset, columnOffset, special
   const lastSelection = selectedCells[selectedCells.length - 1];
   let nextSelection;
 
-  const endRow = rowOffset > 0 ? Math.min(lastSelection.end.row + rowOffset, totalRows - 1) : Math.max(lastSelection.end.row + rowOffset, specialRowsCount);
-  const endColumn = columnOffset > 0 ? Math.min(lastSelection.end.column + columnOffset, totalColumns - 1) : Math.max(lastSelection.end.column + columnOffset, specialColumnsCount);
+  // Moving out of merged cell range
+  let endRow = (rowOffset > 0 ? lastSelection.end.row : lastSelection.start.row) + rowOffset;
+  let endColumn = (columnOffset > 0 ? lastSelection.end.column : lastSelection.start.column) + columnOffset;
+
+  // Preventing moving out of value area
+  endRow = rowOffset > 0 ? Math.min(endRow, totalRows - 1) : Math.max(endRow, specialRowsCount);
+  endColumn = columnOffset > 0 ? Math.min(endColumn, totalColumns - 1) : Math.max(endColumn, specialColumnsCount);
 
   if (lastSelection) {
     nextSelection = {};
     if (append) {
-      nextSelection.start = { row: lastSelection.start.row, column: lastSelection.start.column };
+      nextSelection.start = {
+        row: rowOffset > 0 ? lastSelection.start.row : lastSelection.end.row,
+        column: columnOffset > 0 ? lastSelection.start.column : lastSelection.end.column 
+      };
     } else {
       nextSelection.start = { row: endRow, column: endColumn };
     }
@@ -113,7 +121,7 @@ const moveSelection = ({ selectedCells, append, rowOffset, columnOffset, special
       mergedCells,
       rowIndex: endRow,
       columnIndex: endColumn
-    })  
+    });
   } else {
     nextSelection = {
       start: { row: specialRowsCount, column: specialColumnsCount },

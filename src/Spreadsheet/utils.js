@@ -125,14 +125,14 @@ export const expandSelection = ({ selection, mergedCells = [], rowIndex, columnI
 
   mergedCells.forEach(mergedRange => {
     if (rangesIntersect(mergedRange, nextSelection)) {
-      if (nextSelection.start.row < nextSelection.end.row) {
+      if (nextSelection.start.row <= nextSelection.end.row) {
         nextSelection.start.row = Math.min(nextSelection.start.row, mergedRange.start.row);
         nextSelection.end.row = Math.max(nextSelection.end.row, mergedRange.end.row);
       } else {
         nextSelection.start.row = Math.max(nextSelection.start.row, mergedRange.end.row);
         nextSelection.end.row = Math.min(nextSelection.end.row, mergedRange.start.row);
       }
-      if (nextSelection.start.column < nextSelection.end.column) {
+      if (nextSelection.start.column <= nextSelection.end.column) {
         nextSelection.start.column = Math.min(nextSelection.start.column, mergedRange.start.column);
         nextSelection.end.column = Math.max(nextSelection.end.column, mergedRange.end.column);
       } else {
