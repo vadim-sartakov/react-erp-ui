@@ -9,9 +9,17 @@
   height: 100%
   position: relative
   padding: 2px
-  border-bottom: solid 1px #dee2e6
-  border-right: 1px solid #dee2e6
   background-color: #fff
+  &::before
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    display: block
+    content: ''
+    border-bottom: solid 1px #dee2e6
+    border-right: 1px solid #dee2e6
 
 .exportButton
   padding: 10px
