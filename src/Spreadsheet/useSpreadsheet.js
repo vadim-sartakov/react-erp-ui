@@ -575,7 +575,7 @@ const useSpreadsheet = ({
       const nextSelection = moveSelection({ selectedCells, append, rowOffset, columnOffset, specialRowsCount, specialColumnsCount, mergedCells, totalRows: nextTotalRows, totalColumns: nextTotalColumns });
       moveScrollPosition({ selectedCells: nextSelection, rowOffset, columnOffset, nextRows, nextColumns, nextFixColumns, nextFixRows, defaultRowHeight, defaultColumnWidth, scrollerContainerRef, scrollerContainerRectRef });
       return nextSelection;
-    }
+    };
 
     switch (event.key) {
       case 'ArrowDown':
@@ -596,6 +596,12 @@ const useSpreadsheet = ({
       case 'PageUp':
         onSelectedCellsChange(setSelectedCells(event.shiftKey, -Math.floor(rowsPerPage / 2, 0), 0));
         break;
+      case 'Home':
+        if (event.ctrlKey) onSelectedCellsChange(setSelectedCells(event.shiftKey, -nextTotalRows, 0));
+        break
+      case 'End':
+        if (event.ctrlKey) onSelectedCellsChange(setSelectedCells(event.shiftKey, nextTotalRows, 0));
+        break
       default:
     };
   }, [
