@@ -94,6 +94,55 @@ const getOverscrolledOffset = ({ coordinate, containerSize, meta, fixCount, defa
   else if (endOverscroll > 0) return endOverscroll;
 };
 
+const moveSelection = ({ selectedCells, append, rowOffset, columnOffset, specialRowsCount, specialColumnsCount, mergedCells }) => {
+  const lastSelection = selectedCells[selectedCells.length - 1];
+  let nextSelection;
+
+  const endRow = Math.max(lastSelection.end.row + rowOffset, specialRowsCount);
+  const endColumn = Math.max(lastSelection.end.column + columnOffset, specialColumnsCount);
+
+  if (lastSelection) {
+    nextSelection = {};
+    if (append) {
+      nextSelection.start = { row: lastSelection.start.row, column: lastSelection.start.column };
+    } else {
+      nextSelection.start = { row: endRow, column: endColumn };
+    }
+    nextSelection = expandSelection({
+      selection: nextSelection,
+      mergedCells,
+      rowIndex: endRow,
+      columnIndex: endColumn
+    })  
+  } else {
+    nextSelection = {
+      start: { row: specialRowsCount, column: specialColumnsCount },
+      end: { row: specialRowsCount, column: specialColumnsCount }
+    }
+  }
+  return [nextSelection];
+};
+
+const moveScrollPosition = ({ selectedCells, rowOffset, columnOffset, nextRows, nextColumns, nextFixColumns, nextFixRows, defaultRowHeight, defaultColumnWidth, scrollerContainerRectRef, scrollerContainerRef }) => {
+  const lastSelection = selectedCells[selectedCells.length - 1];
+  let x = getCellPosition({ meta: nextColumns, index: lastSelection.end.column, defaultSize: defaultColumnWidth });
+  let y = getCellPosition({ meta: nextRows, index: lastSelection.end.row, defaultSize: defaultRowHeight });
+  
+  if (rowOffset > 0) y += (nextRows[lastSelection.end.row] && nextRows[lastSelection.end.row].size) || defaultRowHeight;
+  if (columnOffset > 0) x += (nextColumns[lastSelection.end.column] && nextColumns[lastSelection.end.column].size) || defaultColumnWidth;
+
+  const rect = scrollerContainerRectRef.current;
+
+  x -= scrollerContainerRef.current.scrollLeft;
+  y -= scrollerContainerRef.current.scrollTop;
+
+  const overscrollLeft = getOverscrolledOffset({ coordinate: x, containerSize: rect.width, meta: nextColumns, fixCount: nextFixColumns, defaultSize: defaultColumnWidth });
+  const overscrollTop = getOverscrolledOffset({ coordinate: y, containerSize: rect.height, meta: nextRows, fixCount: nextFixRows, defaultSize: defaultRowHeight });
+
+  if (overscrollLeft) scrollerContainerRef.current.scrollLeft = scrollerContainerRef.current.scrollLeft + overscrollLeft;
+  if (overscrollTop) scrollerContainerRef.current.scrollTop = scrollerContainerRef.current.scrollTop + overscrollTop;
+};
+
 /**
  * @param {import('.').UseSpreadsheetOptions} options
  * @returns {import('.').UseSpreadsheetResult}
@@ -112,7 +161,6 @@ const useSpreadsheet = ({
   columnHeadingHeight,
   rowHeadingWidth,
   rowsPerPage,
-  columnsPerPage,
   totalRows,
   totalColumns,
   fixRows = 0,
@@ -512,58 +560,9 @@ const useSpreadsheet = ({
     event.persist();
     event.preventDefault();
     
-    const moveSelection = (selectedCells, append, rowOffset, columnOffset) => {
-      const lastSelection = selectedCells[selectedCells.length - 1];
-      let nextSelection;
-
-      const endRow = Math.max(lastSelection.end.row + rowOffset, specialRowsCount);
-      const endColumn = Math.max(lastSelection.end.column + columnOffset, specialColumnsCount);
-
-      if (lastSelection) {
-        nextSelection = {};
-        if (append) {
-          nextSelection.start = { row: lastSelection.start.row, column: lastSelection.start.column };
-        } else {
-          nextSelection.start = { row: endRow, column: endColumn };
-        }
-        nextSelection = expandSelection({
-          selection: nextSelection,
-          mergedCells,
-          rowIndex: endRow,
-          columnIndex: endColumn
-        })  
-      } else {
-        nextSelection = {
-          start: { row: specialRowsCount, column: specialColumnsCount },
-          end: { row: specialRowsCount, column: specialColumnsCount }
-        }
-      }
-      return [nextSelection];
-    };
-
-    const moveScrollPosition = (selectedCells, rowOffset, columnOffset) => {
-      const lastSelection = selectedCells[selectedCells.length - 1];
-      let x = getCellPosition({ meta: nextColumns, index: lastSelection.end.column, defaultSize: defaultColumnWidth });
-      let y = getCellPosition({ meta: nextRows, index: lastSelection.end.row, defaultSize: defaultRowHeight });
-      
-      if (rowOffset > 0) y += (nextRows[lastSelection.end.row] && nextRows[lastSelection.end.row].size) || defaultRowHeight;
-      if (columnOffset > 0) x += (nextColumns[lastSelection.end.column] && nextColumns[lastSelection.end.column].size) || defaultColumnWidth;
-
-      const rect = scrollerContainerRectRef.current;
-
-      x -= scrollerContainerRef.current.scrollLeft;
-      y -= scrollerContainerRef.current.scrollTop;
-
-      const overscrollLeft = getOverscrolledOffset({ coordinate: x, containerSize: rect.width, meta: nextColumns, fixCount: nextFixColumns, defaultSize: defaultColumnWidth });
-      const overscrollTop = getOverscrolledOffset({ coordinate: y, containerSize: rect.height, meta: nextRows, fixCount: nextFixRows, defaultSize: defaultRowHeight });
-
-      if (overscrollLeft) scrollerContainerRef.current.scrollLeft = scrollerContainerRef.current.scrollLeft + overscrollLeft;
-      if (overscrollTop) scrollerContainerRef.current.scrollTop = scrollerContainerRef.current.scrollTop + overscrollTop;
-    };
-
     const setSelectedCells = (append, rowOffset, columnOffset) => selectedCells => {
-      const nextSelection = moveSelection(selectedCells, append, rowOffset, columnOffset);
-      moveScrollPosition(nextSelection, rowOffset, columnOffset);
+      const nextSelection = moveSelection({ selectedCells, append, rowOffset, columnOffset, specialRowsCount, specialColumnsCount, mergedCells });
+      moveScrollPosition({ selectedCells: nextSelection, rowOffset, columnOffset, nextRows, nextColumns, nextFixColumns, nextFixRows, defaultRowHeight, defaultColumnWidth, scrollerContainerRef, scrollerContainerRectRef });
       return nextSelection;
     }
 
