@@ -27,35 +27,6 @@ export const convertInternalMetaToExternal = ({ meta, originExternalMeta, hidden
   return result;
 };
 
-export const convertExternalValueToInternal = ({ value, specialRowsCount, specialColumnsCount, hiddenRowsIndexes, hiddenColumnsIndexes }) => {
-  let result = value;
-  if (hiddenRowsIndexes) result = result.filter((row, index) => hiddenRowsIndexes.indexOf(index) === -1);
-  if (hiddenColumnsIndexes) result = result.map(row => row.filter((column, index) => hiddenColumnsIndexes.indexOf(index) === -1));
-
-  if (specialRowsCount) result = [...new Array(specialRowsCount), ...result];
-  if (specialColumnsCount) result = result.map(row => row ? [...new Array(specialColumnsCount), ...(row || [])] : row);
-  return result;
-};
-
-export const convertInternalValueToExternal = ({ value, originExternalValue, hiddenRowsIndexes, hiddenColumnsIndexes, specialRowsCount, specialColumnsCount }) => {
-  let result = [...value];
-  if (specialRowsCount) result.splice(0, specialRowsCount);
-  if (specialColumnsCount) result = result.map(row => {
-    if (!row) return row;
-    const nextRow = [...row];
-    nextRow.splice(0, specialColumnsCount);
-    return nextRow;
-  });
-  hiddenRowsIndexes.forEach(index => result.splice(index, 0, originExternalValue[index]));
-  if (hiddenColumnsIndexes) result = result.map((row, rowIndex) => {
-    if (hiddenRowsIndexes.indexOf(rowIndex) !== -1 || !row) return row;
-    const nextRow = [...row];
-    hiddenColumnsIndexes.forEach(columnIndex => nextRow.splice(columnIndex, 0, originExternalValue[rowIndex][columnIndex]));
-    return nextRow;
-  });
-  return result;
-};
-
 const clickGroupLevelButton = (meta, level) => {
   return meta.map(metaItem => {
     if (!metaItem || !metaItem.level) return metaItem;
@@ -192,39 +163,6 @@ const useSpreadsheet = ({
   const cells = cellsProp || cellsState;
   const onCellsChange = onCellsChangeProp || setCellsState;
 
-  const convertExternalValueToInternalCallback = useCallback(value => {
-    return convertExternalValueToInternal({
-      value,
-      specialRowsCount,
-      specialColumnsCount,
-      hiddenRowsIndexes,
-      hiddenColumnsIndexes
-    });
-  }, [specialRowsCount, specialColumnsCount, hiddenColumnsIndexes, hiddenRowsIndexes]);
-
-  const nextValue = convertExternalValueToInternal({
-    value: cells,
-    specialRowsCount,
-    specialColumnsCount,
-    hiddenRowsIndexes,
-    hiddenColumnsIndexes
-  });
-
-  const nextOnChange = useCallback(setValue => {
-    onCellsChange(value => {
-      let nextValue;
-      if (typeof value === 'function') nextValue = setValue(convertExternalValueToInternalCallback(value));
-      else nextValue = setValue;
-      if (specialRowsCount) nextValue = nextValue.splice(0, specialRowsCount);
-      if (specialColumnsCount) nextValue = nextValue.map(row => {
-        const nextRow = [...row];
-        nextRow.splice(0, specialColumnsCount);
-        return nextRow;
-      });
-      return nextValue;
-    });
-  }, [convertExternalValueToInternalCallback, specialRowsCount, specialColumnsCount, onCellsChange]);
-
   // Using mapper here because we calculated groups based on external (not filtered meta)
   // We can't calculate groups of internal meta because it does not have hidden items
   // Thus, we need to apply special meta offset
@@ -322,8 +260,8 @@ const useSpreadsheet = ({
   const [resizeColumns, onResizeColumns] = useState([...nextColumns]);
 
   return {
-    cells: nextValue,
-    onCellsChange: nextOnChange,
+    cells,
+    onCellsChange,
     rows: nextRows,
     columns: nextColumns,
     onColumnsChange: nextOnColumnsChange,
