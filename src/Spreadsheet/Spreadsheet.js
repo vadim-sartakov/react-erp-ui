@@ -276,6 +276,7 @@ const Spreadsheet = inputProps => {
   const resizeRowElement = resizeInteraction && resizeInteraction.type === 'row' && (
     <ResizeLines
         key="resize-row"
+        scroll={scrollerTop}
         index={resizeInteraction.index}
         type="row"
         defaultSize={defaultRowHeight}
@@ -284,6 +285,7 @@ const Spreadsheet = inputProps => {
   const resizeColumnElement = resizeInteraction && resizeInteraction.type === 'column' && (
     <ResizeLines
         key="resize-column"
+        scroll={scrollerLeft}
         index={resizeInteraction.index}
         type="column"
         defaultSize={defaultColumnWidth}
