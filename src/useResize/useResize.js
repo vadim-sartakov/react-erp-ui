@@ -18,11 +18,34 @@ import { useRef, useEffect, useCallback } from 'react';
  * @property {boolean} preserveAspectRatio
  */
 
+const getNextSizes = ({ x, y, interaction, preserveAspectRatio }) => {
+  const diffX = x - interaction.startCoordinates.x;
+  const diffY = y - interaction.startCoordinates.y;
+
+  let nextWidth = interaction.startSizes.width + diffX;
+  let nextHeight = interaction.startSizes.height + diffY;
+
+  if (preserveAspectRatio) {
+    const widthRatio = nextWidth / interaction.startSizes.width;
+    const heightRatio = nextHeight / interaction.startSizes.height;
+    const maxRatio = Math.max(widthRatio, heightRatio);
+    nextWidth = interaction.startSizes.width * maxRatio;
+    nextHeight = interaction.startSizes.height * maxRatio;
+  }
+
+  const nextSizes = {
+    width: nextWidth,
+    height: nextHeight
+  };
+
+  return nextSizes;
+};
+
 /**
  * 
  * @param {ResizeOptions} resizeOptions 
  */
-const useResize = ({ sizes, onSizesChange, preserveAspectRatio }) => {
+const useResize = ({ sizes, onMouseMove, onMouseUp, preserveAspectRatio }) => {
   const interactionRef = useRef();
 
   const handleMouseDown = useCallback(event => {
@@ -37,30 +60,18 @@ const useResize = ({ sizes, onSizesChange, preserveAspectRatio }) => {
   useEffect(() => {
     const handleMouseMove = event => {
       const interaction = interactionRef.current;
-      if (interaction) {
-        const diffX = event.clientX - interaction.startCoordinates.x;
-        const diffY = event.clientY - interaction.startCoordinates.y;
-
-        let nextWidth = interaction.startSizes.width + diffX;
-        let nextHeight = interaction.startSizes.height + diffY;
-
-        if (preserveAspectRatio) {
-          const widthRatio = nextWidth / interaction.startSizes.width;
-          const heightRatio = nextHeight / interaction.startSizes.height;
-          const maxRatio = Math.max(widthRatio, heightRatio);
-          nextWidth = interaction.startSizes.width * maxRatio;
-          nextHeight = interaction.startSizes.height * maxRatio;
-        }
-
-        const nextSizes = {
-          width: nextWidth,
-          height: nextHeight
-        };
-        onSizesChange(nextSizes);
+      if (interaction && onMouseMove) {
+        const nextSizes = getNextSizes({ x: event.clientX, y: event.clientY, interaction, preserveAspectRatio });
+        onMouseMove(nextSizes, event);
       }
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = event => {
+      const interaction = interactionRef.current;
+      if (interaction && onMouseUp) {
+        const nextSizes = getNextSizes({ x: event.clientX, y: event.clientY, interaction, preserveAspectRatio });
+        onMouseUp(nextSizes, event);
+      }
       interactionRef.current = undefined;
     };
 
@@ -71,7 +82,7 @@ const useResize = ({ sizes, onSizesChange, preserveAspectRatio }) => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [onSizesChange, preserveAspectRatio]);
+  }, [onMouseMove, onMouseUp, preserveAspectRatio]);
 
   return handleMouseDown;
 

@@ -5,7 +5,7 @@ import useResize from './useResize';
 
 const TestComponent = ({ startingSizes, preserveAspectRatio }) => {
   const [sizes, setSizes] = useState(startingSizes);
-  const onStartResize = useResize({ sizes, onSizesChange: setSizes, preserveAspectRatio });
+  const onStartResize = useResize({ sizes, onMouseMove: setSizes, preserveAspectRatio });
   return <div style={{ width: sizes.width, height: sizes.height }} onMouseDown={onStartResize} />
 };
 

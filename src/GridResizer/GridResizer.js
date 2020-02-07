@@ -20,7 +20,7 @@ const GridResizer = ({ type, index, defaultSize, meta, onChange, Component = 'di
       return nextSizes;
     });
   }, [index, onChange, resizeProperty, minSize]);
-  const onStartResize = useResize({ sizes, onSizesChange: handleSizesChange });
+  const onStartResize = useResize({ sizes, onMouseUp: handleSizesChange });
   return <Component {...props} onMouseDown={onStartResize} />;
 };
 
