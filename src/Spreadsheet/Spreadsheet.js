@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useScroller, ScrollerContainer } from '../Scroller';
-import { SpreadsheetContainer, SpreadsheetCell, useSpreadsheet, useKeyboard, useMouse } from './';
+import { SpreadsheetContext, SpreadsheetCell, useSpreadsheet, useKeyboard, useMouse } from './';
 import GroupLevelButton from './GroupLevelButton';
 import { Heading, HeadingsIntersection } from './Heading';
 import { GroupLine } from './GroupLine';
@@ -239,12 +239,8 @@ const Spreadsheet = inputProps => {
     ...scrollerProps
   };
 
-  const scrollerTop = scrollerProps.pagesStyles.top;
-  const scrollerLeft = scrollerProps.pagesStyles.left;
-
   const cellsElement = (
     <Cells
-        key="cells"
         HeadingComponent={props.HeadingComponent}
         HeadingsIntersectionComponent={props.HeadingsIntersectionComponent}
         GroupLevelButtonComponent={props.GroupLevelButtonComponent}
@@ -275,7 +271,6 @@ const Spreadsheet = inputProps => {
 
   const mergedCellsElements = (
     <MergedCells
-        key="merged-cells"
         mergedCells={props.mergedCells}
         GroupLineComponent={props.GroupLineComponent}
         CellComponent={props.CellComponent}
@@ -288,9 +283,6 @@ const Spreadsheet = inputProps => {
         cells={props.cells}
         specialRowsCount={props.specialRowsCount}
         specialColumnsCount={props.specialColumnsCount}
-        // TODO: get rid of this
-        scrollerTop={scrollerTop}
-        scrollerLeft={scrollerLeft}
         defaultRowHeight={props.defaultRowHeight}
         defaultColumnWidth={props.defaultColumnWidth}
         rowsGroups={props.rowsGroups}
@@ -302,7 +294,6 @@ const Spreadsheet = inputProps => {
 
   const visibleSelectionElements = (
     <SelectedRanges
-        key="selected-ranges"
         SelectedRangeComponent={props.SelectedRangeComponent}
         selectedCells={props.selectedCells}
         rowsPage={props.rowsPage}
@@ -311,16 +302,12 @@ const Spreadsheet = inputProps => {
         columns={props.columns}
         fixRows={props.fixRows}
         fixColumns={props.fixColumns}
-        // TODO: get rid of this
-        scrollerTop={scrollerTop}
-        scrollerLeft={scrollerLeft}
         defaultRowHeight={props.defaultRowHeight}
         defaultColumnWidth={props.defaultColumnWidth} />
   );
 
   const fixedAreasElement = (
     <FixLines
-        key="fixed-area"
         Component={props.FixLinesComponent}
         rows={props.rows}
         columns={props.columns}
@@ -329,8 +316,6 @@ const Spreadsheet = inputProps => {
   );
   const resizeRowElement = props.resizeInteraction && props.resizeInteraction.type === 'row' && (
     <ResizeLines
-        key="resize-row"
-        scroll={scrollerTop}
         index={props.resizeInteraction.index}
         visibleIndexes={props.visibleRows}
         fixCount={props.fixRows}
@@ -340,8 +325,6 @@ const Spreadsheet = inputProps => {
   );
   const resizeColumnElement = props.resizeInteraction && props.resizeInteraction.type === 'column' && (
     <ResizeLines
-        key="resize-column"
-        scroll={scrollerLeft}
         index={props.resizeInteraction.index}
         visibleIndexes={props.visibleColumns}
         fixCount={props.fixColumns}
@@ -350,41 +333,57 @@ const Spreadsheet = inputProps => {
         meta={props.resizeColumns} />
   );
 
-  const elements = [
-    cellsElement,
-    mergedCellsElements,
-    visibleSelectionElements,
-    fixedAreasElement,
-    resizeRowElement,
-    resizeColumnElement
-  ];
+  const contextValue = useMemo(() => ({
+    defaultColumnWidth: props.defaultColumnWidth,
+    defaultRowHeight: props.defaultRowHeight,
+    groupSize: props.groupSize,
+    fixRows: props.fixRows,
+    fixColumns: props.fixColumns
+  }), [
+    props.defaultColumnWidth,
+    props.defaultRowHeight,
+    props.groupSize,
+    props.fixRows,
+    props.fixColumns
+  ]);
 
   return (
-    <ScrollerContainer
+    <SpreadsheetContext.Provider value={contextValue}>
+      <ScrollerContainer
           ref={props.scrollerContainerRef}
+          className={props.className}
           onKeyDown={onKeyDown}
           defaultRowHeight={props.defaultRowHeight}
           defaultColumnWidth={props.defaultColumnWidth}
           onScroll={props.onScroll}
           width={props.width}
           height={props.height}>
-      <div ref={props.scrollerCoverRef} style={props.coverStyles}>
-        <div style={props.pagesStyles}>
-          <SpreadsheetContainer
-              ref={props.scrollerContainerRef}
-              className={props.className}
-              defaultRowHeight={props.defaultRowHeight}
-              defaultColumnWidth={props.defaultColumnWidth}
-              groupSize={props.groupSize}
-              fixRows={props.fixRows}
-              fixColumns={props.fixColumns}
-              onMouseDown={onMouseDown}
-              style={props.gridStyles}>
-            {elements}
-          </SpreadsheetContainer>
+        {/** 
+         * Placed mouse handler here because scroller would trigger selection on scroll bar click,
+         * while on spreadsheet level it would skip merged cells clicks
+         */}
+        <div ref={props.scrollerCoverRef}
+            style={props.coverStyles}
+            onMouseDown={onMouseDown}>
+          <div style={props.pagesStyles}>
+            <div
+                style={{ ...props.gridStyles, userSelect: 'none' }}
+                defaultRowHeight={props.defaultRowHeight}
+                defaultColumnWidth={props.defaultColumnWidth}
+                groupSize={props.groupSize}
+                fixRows={props.fixRows}
+                fixColumns={props.fixColumns}>
+              {cellsElement}
+            </div>
+          </div>
+          {mergedCellsElements}
+          {visibleSelectionElements}
+          {resizeRowElement}
+          {resizeColumnElement}
+          {fixedAreasElement}
         </div>
-      </div>
-    </ScrollerContainer>
+      </ScrollerContainer>
+    </SpreadsheetContext.Provider>
   );
 };
 

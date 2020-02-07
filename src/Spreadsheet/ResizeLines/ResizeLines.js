@@ -5,7 +5,6 @@ import { getCellsRangeSize } from '../../utils/gridUtils';
 const ResizeLines = ({
   Component = ResizeLinesView,
   type,
-  scroll,
   meta,
   fixCount,
   index,
@@ -37,7 +36,7 @@ const ResizeLines = ({
       width,
       height: '100%',
       top: 0,
-      left: index < fixCount ? 0 : -scroll
+      left: 0
     };
     return (
       <div style={containerStyle}>
@@ -50,7 +49,7 @@ const ResizeLines = ({
       position: index < fixCount ? 'sticky' : 'absolute',
       height,
       width: '100%',
-      top: index < fixCount ? 0 : -scroll,
+      top: 0,
       left: 0
     };
     return (
