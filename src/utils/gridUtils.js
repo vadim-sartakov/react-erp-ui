@@ -21,7 +21,7 @@ export const getCellPosition = ({ meta = [], index, defaultSize }) => {
  * @param {number} options.startIndex
  * @param {number} options.defaultSize
  */
-export const getCellsRangeSize = ({ count, meta = [], startIndex, defaultSize }) => {
+export const getCellsRangeSize = ({ count, meta = [], startIndex = 0, defaultSize }) => {
   return count && [...new Array(count).keys()].reduce((acc, key, index) => {
     const mergedMeta = meta[startIndex + index];
     const size = (mergedMeta && mergedMeta.size) || defaultSize;

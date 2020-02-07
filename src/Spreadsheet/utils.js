@@ -148,7 +148,7 @@ export const expandSelection = ({ selection, mergedCells = [], rowIndex, columnI
 };
 
 export const getOverscrolledOffset = ({ coordinate, containerSize, meta, fixCount, defaultSize }) => {
-  const fixedSize = getCellsRangeSize({ meta, count: fixCount, defaultSize });
+  const fixedSize = getCellsRangeSize({ startIndex: 0, meta, count: fixCount, defaultSize });
   const startOverscroll = coordinate - fixedSize;
   const endOverscroll = coordinate - containerSize;
   if (startOverscroll < 0) return startOverscroll;
