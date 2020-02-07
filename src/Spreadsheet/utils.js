@@ -1,3 +1,5 @@
+import { getCellsRangeSize } from '../utils/gridUtils';
+
 /**
   * Calculates groups object of meta value
   * @param {import('./').Meta[]} meta
@@ -143,4 +145,12 @@ export const expandSelection = ({ selection, mergedCells = [], rowIndex, columnI
   });
 
   return nextSelection;
+};
+
+export const getOverscrolledOffset = ({ coordinate, containerSize, meta, fixCount, defaultSize }) => {
+  const fixedSize = getCellsRangeSize({ meta, count: fixCount, defaultSize });
+  const startOverscroll = coordinate - fixedSize;
+  const endOverscroll = coordinate - containerSize;
+  if (startOverscroll < 0) return startOverscroll;
+  else if (endOverscroll > 0) return endOverscroll;
 };

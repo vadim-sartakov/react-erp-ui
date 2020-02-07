@@ -1,6 +1,6 @@
 import React from 'react';
 import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
-import { SpreadsheetContainer, useSpreadsheet } from './';
+import { SpreadsheetContainer, useSpreadsheet, useKeyboard, useMouse } from './';
 import GroupLevelButton from './GroupLevelButton';
 import { Heading, HeadingsIntersection } from './Heading';
 import { GroupLine } from './GroupLine';
@@ -24,14 +24,18 @@ export const visibleRangesFilter = ({
 
 /** @type {import('react').FunctionComponent<import('./').SpreadsheetProps>} */
 const Spreadsheet = inputProps => {
-  const spreadsheetProps = useSpreadsheet(inputProps);
+  let props;
 
-  const { gridStyles, ...scrollerProps } = useScroller({
+  const spreadsheetProps = useSpreadsheet(inputProps);
+  props = {
     ...inputProps,
     ...spreadsheetProps
-  });
+  };
+  const onKeyDown = useKeyboard(props);
+  const onMouseDown = useMouse(props);
+  const { gridStyles, ...scrollerProps } = useScroller(props);
 
-  const props = {
+  props = {
     ...inputProps,
     ...spreadsheetProps,
     ...scrollerProps
@@ -270,10 +274,12 @@ const Spreadsheet = inputProps => {
     <ScrollerContainer
           ref={props.scrollerContainerRef}
           coverRef={props.scrollerCoverRef}
+          onKeyDown={onKeyDown}
           {...props}
           {...scrollerProps}>
       <SpreadsheetContainer
           ref={props.scrollerContainerRef}
+          onMouseDown={onMouseDown}
           {...props}
           {...spreadsheetProps}
           style={gridStyles}>
