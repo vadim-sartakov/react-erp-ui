@@ -231,7 +231,7 @@ const Spreadsheet = inputProps => {
   };
   const onKeyDown = useKeyboard(props);
   const onMouseDown = useMouse(props);
-  const { gridStyles, ...scrollerProps } = useScroller(props);
+  const scrollerProps = useScroller(props);
 
   props = {
     ...inputProps,
@@ -362,18 +362,28 @@ const Spreadsheet = inputProps => {
   return (
     <ScrollerContainer
           ref={props.scrollerContainerRef}
-          coverRef={props.scrollerCoverRef}
           onKeyDown={onKeyDown}
-          {...props}
-          {...scrollerProps}>
-      <SpreadsheetContainer
-          ref={props.scrollerContainerRef}
-          onMouseDown={onMouseDown}
-          {...props}
-          {...spreadsheetProps}
-          style={gridStyles}>
-        {elements}
-      </SpreadsheetContainer>
+          defaultRowHeight={props.defaultRowHeight}
+          defaultColumnWidth={props.defaultColumnWidth}
+          onScroll={props.onScroll}
+          width={props.width}
+          height={props.height}>
+      <div ref={props.scrollerCoverRef} style={props.coverStyles}>
+        <div style={props.pagesStyles}>
+          <SpreadsheetContainer
+              ref={props.scrollerContainerRef}
+              className={props.className}
+              defaultRowHeight={props.defaultRowHeight}
+              defaultColumnWidth={props.defaultColumnWidth}
+              groupSize={props.groupSize}
+              fixRows={props.fixRows}
+              fixColumns={props.fixColumns}
+              onMouseDown={onMouseDown}
+              style={props.gridStyles}>
+            {elements}
+          </SpreadsheetContainer>
+        </div>
+      </div>
     </ScrollerContainer>
   );
 };

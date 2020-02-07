@@ -133,7 +133,7 @@ export interface SpreadsheetContextProps {
 }
 export const SpreadsheetContext: Context<SpreadsheetContextProps>
 
-export interface SpreadsheetContainerProps {
+export interface SpreadsheetContainerProps extends HTMLAttributes<{}> {
   defaultColumnWidth: number;
   defaultRowHeight: number;
   groupSize: number;

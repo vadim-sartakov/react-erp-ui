@@ -8,10 +8,8 @@ const SpreadsheetContainer = forwardRef(({
   groupSize,
   fixRows,
   fixColumns,
-  className,
   style,
-  onMouseDown,
-  children
+  ...props
 }, ref) => {
   const contextValue = useMemo(() => ({
     defaultColumnWidth,
@@ -28,9 +26,7 @@ const SpreadsheetContainer = forwardRef(({
   ]);
   return (
     <SpreadsheetContext.Provider value={contextValue}>
-      <div ref={ref} className={className} style={{ ...style, userSelect: 'none' }} onMouseDown={onMouseDown}>
-        {children}
-      </div>
+      <div ref={ref} {...props} style={{ ...style, userSelect: 'none' }} />
     </SpreadsheetContext.Provider>
   )
 });
