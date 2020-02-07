@@ -1,5 +1,5 @@
-import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
-import { getGroups, getIndexFromCoordinate, expandSelection } from './utils';
+import { useRef, useState, useMemo, useCallback } from 'react';
+import { getGroups } from './utils';
 
 export const convertExternalMetaToInternal = ({ meta = [], groups, groupSize, numberMetaSize, hideHeadings }) => {
   const result = [];
@@ -78,13 +78,6 @@ const clickGroupButton = (meta, group, specialMetaCount) => {
   return nextMeta;
 };
 
-const rangesAreEqual = (rangeA, rangeB) => {
-  return rangeA.start.row === rangeB.start.row &&
-      rangeA.start.column === rangeB.start.column &&
-      rangeA.end.row === rangeB.end.row &&
-      rangeA.end.column === rangeB.end.column
-};
-
 /**
  * @param {import('.').UseSpreadsheetOptions} options
  * @returns {import('.').UseSpreadsheetResult}
@@ -92,8 +85,6 @@ const rangesAreEqual = (rangeA, rangeB) => {
 const useSpreadsheet = ({
   cells: cellsProp,
   onCellsChange: onCellsChangeProp,
-  defaultRowHeight,
-  defaultColumnWidth,
   rows: rowsProp,
   onRowsChange: onRowsChangeProp,
   columns: columnsProp,
@@ -322,174 +313,9 @@ const useSpreadsheet = ({
   const nextFixRows = fixRows + specialRowsCount;
   const nextFixColumns = fixColumns + specialColumnsCount;
 
-  const mousePressed = useRef();
-
   const scrollerContainerRef = useRef();
-  const scrollerContainerRectRef = useRef();
   const scrollerCoverRef = useRef();
-  const scrollerCoverRectRef = useRef();
   const spreadsheetContainerRef = useRef();
-
-  // Select interaction
-  useEffect(() => {
-    const getIndexes = (event, scrollerContainerRect, scrollerCoverRect) => {
-      const valueTop = event.clientY - scrollerCoverRect.top;
-      const valueLeft = event.clientX - scrollerCoverRect.left;
-      const valueRowIndex = getIndexFromCoordinate({ coordinate: valueTop, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextTotalRows });
-      const valueColumnIndex = getIndexFromCoordinate({ coordinate: valueLeft, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextTotalColumns });
-
-      const fixedTop = event.clientY - scrollerContainerRect.top;
-      const fixedLeft = event.clientX - scrollerContainerRect.left;
-      const fixedRowIndex = getIndexFromCoordinate({ coordinate: fixedTop, meta: nextRows, defaultSize: defaultRowHeight, totalCount: nextFixRows });
-      const fixedColumnIndex = getIndexFromCoordinate({ coordinate: fixedLeft, meta: nextColumns, defaultSize: defaultColumnWidth, totalCount: nextFixColumns });
-
-      const rowIndex = fixedRowIndex !== undefined ? fixedRowIndex : valueRowIndex;
-      const columnIndex = fixedColumnIndex !== undefined ? fixedColumnIndex : valueColumnIndex;
-
-      return { rowIndex, columnIndex };
-    };
-
-    const getSelection = ({ lastSelection, rowType, columnType, rowIndex, columnIndex }) => {
-      let resultSelection;
-      if (rowType === 'NUMBER' && columnType === 'NUMBER') {
-        resultSelection = {
-          start: { row: rowIndex + 1, column: columnIndex + 1 }
-        };
-        resultSelection = expandSelection({ selection: resultSelection, mergedCells, columnIndex: nextTotalColumns - 1, rowIndex: nextTotalRows - 1 });
-      } else if (rowType === 'NUMBER') {
-        resultSelection = {
-          start: { row: rowIndex + 1, column: (lastSelection && lastSelection.start.column) || columnIndex }
-        };
-        resultSelection = expandSelection({ selection: resultSelection, mergedCells, columnIndex, rowIndex: nextTotalRows - 1 });
-      } else if (columnType === 'NUMBER') {
-        resultSelection = {
-          start: { row: (lastSelection && lastSelection.start.row) || rowIndex, column: columnIndex + 1 }
-        };
-        resultSelection = expandSelection({ selection: resultSelection, mergedCells, columnIndex: nextTotalColumns - 1, rowIndex });
-      } else {
-        resultSelection = lastSelection || {
-          start: { row: rowIndex, column: columnIndex }
-        };
-        resultSelection = expandSelection({ selection: resultSelection, mergedCells, rowIndex, columnIndex });
-      }
-      return resultSelection;
-    };
-
-    const isSpecialArea = (rowIndex, columnIndex) => (rowIndex < specialRowsCount && nextRows[rowIndex].type !== 'NUMBER') ||
-        (columnIndex < specialColumnsCount && nextColumns[columnIndex].type !== 'NUMBER');
-
-    const onMouseDown = event => {
-      if (!scrollerCoverRef.current || !scrollerCoverRef.current.contains(event.target)) return;
-
-      mousePressed.current = true;
-
-      const scrollerContainerRect = scrollerContainerRef.current.getBoundingClientRect();
-      scrollerContainerRectRef.current = { top: scrollerContainerRect.top, left: scrollerContainerRect.left, width: scrollerContainerRect.width, height: scrollerContainerRect.height };
-
-      const scrollerCoverRect = scrollerCoverRef.current.getBoundingClientRect();      
-      scrollerCoverRectRef.current = { top: scrollerCoverRect.top, left: scrollerCoverRect.left };
-
-      const { rowIndex, columnIndex } = getIndexes(event, scrollerContainerRect, scrollerCoverRect);
-      
-      if (isSpecialArea(rowIndex, columnIndex)) return;
-
-      const rowType = nextRows[rowIndex].type;
-      const columnType = nextColumns[columnIndex].type;
-
-      onSelectedCellsChange(selectedCells => {
-        const curSelection = getSelection({ rowType, columnType, rowIndex, columnIndex });
-
-        if (event.shiftKey) {
-          const lastSelection = selectedCells[selectedCells.length - 1];
-          const nextLastSelection = getSelection({ lastSelection, rowType, columnType, rowIndex, columnIndex });
-          return [nextLastSelection];
-        }
-        if (event.ctrlKey) {
-          // Excluding equal selections
-          if (selectedCells.some(selectedRange => rangesAreEqual(selectedRange, curSelection))) return selectedCells;
-          return [...selectedCells, curSelection]
-        }
-        return [curSelection];
-      });
-    };
-
-    // Mouse up is not always triggered
-    const onMouseUp = () => {
-      mousePressed.current = false;
-    };
-
-    const onClick = () => {
-      mousePressed.current = false;
-    };
-
-    const onMouseMove = event => {
-      if (mousePressed.current) {
-        const scrollerContainerRect = scrollerContainerRectRef.current;
-        const scrollerCoverRect = scrollerCoverRectRef.current;
-
-        const { rowIndex, columnIndex } = getIndexes(event, scrollerContainerRect, scrollerCoverRect);
-
-        if (isSpecialArea(rowIndex, columnIndex)) return;
-        
-        const rowType = nextRows[rowIndex].type;
-        const columnType = nextColumns[columnIndex].type;
-
-        onSelectedCellsChange(selectedCells => {
-          const lastSelection = selectedCells[selectedCells.length - 1];
-
-          // Happens when mouse pressed elsewhere (e.g. heading resizing) thus, there is no last selection
-          if (!lastSelection) return selectedCells;
-
-          const nextLastSelection = getSelection({ lastSelection, rowType, columnType, rowIndex, columnIndex });
-          // Preventing excessive updates
-          if (rangesAreEqual(lastSelection, nextLastSelection)) return selectedCells;
-
-          // Scrolling if selection goes out of container
-          const scrollerLeftMouse = event.clientX - scrollerContainerRectRef.current.left;
-          const scrollerTopMouse = event.clientY - scrollerContainerRectRef.current.top;
-          const leftOverscroll = scrollerLeftMouse - scrollerContainerRectRef.current.width;
-          const topOverscroll = scrollerTopMouse - scrollerContainerRectRef.current.height;
-          if (scrollerLeftMouse < 0 || leftOverscroll > 0) {
-            scrollerCoverRectRef.current.left = scrollerCoverRectRef.current.left - leftOverscroll;
-            scrollerContainerRef.current.scrollLeft = scrollerContainerRef.current.scrollLeft + leftOverscroll;
-          }
-          if (scrollerTopMouse < 0 || topOverscroll > 0) {
-            scrollerCoverRectRef.current.top = scrollerCoverRectRef.current.top - topOverscroll;
-            scrollerContainerRef.current.scrollTop = scrollerContainerRef.current.scrollTop + topOverscroll;
-          }
-
-          const nextSelectedCells = [...selectedCells];
-          nextSelectedCells[nextSelectedCells.length - 1] = nextLastSelection;
-          return nextSelectedCells;
-        });
-      };
-    }
-
-    document.addEventListener('mousedown', onMouseDown);
-    document.addEventListener('mouseup', onMouseUp);
-    document.addEventListener('click', onClick);
-    document.addEventListener('mousemove', onMouseMove);
-
-    return () => {
-      document.removeEventListener('mousedown', onMouseDown);
-      document.removeEventListener('mouseup', onMouseUp);
-      document.removeEventListener('click', onClick);
-      document.removeEventListener('mousemove', onMouseMove);
-    }
-  }, [
-    nextFixRows,
-    nextFixColumns,
-    nextRows,
-    nextColumns,
-    defaultRowHeight,
-    defaultColumnWidth,
-    nextTotalRows,
-    nextTotalColumns,
-    mergedCells,
-    onSelectedCellsChange,
-    specialRowsCount,
-    specialColumnsCount
-  ]);
 
   return {
     cells: nextValue,

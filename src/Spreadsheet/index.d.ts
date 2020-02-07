@@ -1,6 +1,6 @@
-import { MutableRefObject, HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties, DOMElement } from 'react';
-import { ScrollerCellProps } from '../Scroller';
-import { MergedCellProps } from '../MergedCell';
+import { MutableRefObject, HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties } from 'react';
+import { ScrollerCellProps } from '../Scroller/index';
+import { MergedCellProps } from '../MergedCell/index';
 
 export interface Font {
   name?: string;
@@ -141,14 +141,13 @@ export interface SpreadsheetContainerProps {
   fixColumns: number;
   specialRowsCount: number;
   specialColumnsCount: number;
+  onKeyDown: KeyboardEvent;
 }
 export const SpreadsheetContainer: FunctionComponent<SpreadsheetContainerProps>
 
 export interface UseSpreadsheetOptions {
   cells?: Cell[][];
   onCellsChange?: Dispatch<SetStateAction<Cell[][]>>;
-  defaultRowHeight: number;
-  defaultColumnWidth: number;
   rows?: Meta[]; 
   columns?: Meta[];
   onRowsChange?: Dispatch<SetStateAction<Meta[]>>;
@@ -206,6 +205,8 @@ export interface UseSpreadsheetResult {
   spreadsheetContainerRef: MutableRefObject<Element>;
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
+export function useKeyboard(options: UseSpreadsheetOptions | UseSpreadsheetResult): KeyboardEvent
+export function useMouse(options: UseSpreadsheetOptions | UseSpreadsheetResult): UIEvent
 
 export const SpreadsheetCell: FunctionComponent<ScrollerCellProps | MergedCellProps>
 

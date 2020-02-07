@@ -1,4 +1,4 @@
-import { Element, CSSProperties, UIEventHandler, HTMLAttributes, FunctionComponent, Context, MutableRefObject } from 'react';
+import { CSSProperties, UIEventHandler, HTMLAttributes, FunctionComponent, Context, MutableRefObject } from 'react';
 
 export interface Meta {
   size: number;

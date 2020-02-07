@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 
 /**
  * @typedef {Object} Sizes
@@ -23,18 +23,20 @@ import { useState, useEffect } from 'react';
  * @param {ResizeOptions} resizeOptions 
  */
 const useResize = ({ sizes, onSizesChange, preserveAspectRatio }) => {
+  const interactionRef = useRef();
 
-  const [interaction, setInteraction] = useState();
-
-  const handleMouseDown = event => {
-    setInteraction({
+  const handleMouseDown = useCallback(event => {
+    event.persist();
+    event.stopPropagation();
+    interactionRef.current = {
       startCoordinates: { x: event.clientX, y: event.clientY },
       startSizes: sizes
-    });
-  };
+    };
+  }, [sizes]);
 
   useEffect(() => {
     const handleMouseMove = event => {
+      const interaction = interactionRef.current;
       if (interaction) {
         const diffX = event.clientX - interaction.startCoordinates.x;
         const diffY = event.clientY - interaction.startCoordinates.y;
@@ -59,7 +61,7 @@ const useResize = ({ sizes, onSizesChange, preserveAspectRatio }) => {
     };
 
     const handleMouseUp = () => {
-      if (interaction) setInteraction(null);
+      interactionRef.current = undefined;
     };
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -69,7 +71,7 @@ const useResize = ({ sizes, onSizesChange, preserveAspectRatio }) => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [interaction, onSizesChange, preserveAspectRatio]);
+  }, [onSizesChange, preserveAspectRatio]);
 
   return handleMouseDown;
 

@@ -1,3 +1,5 @@
+import { getCellsRangeSize } from '../utils/gridUtils';
+
 /**
   * Calculates groups object of meta value
   * @param {import('./').Meta[]} meta
@@ -111,7 +113,7 @@ export const getIndexFromCoordinate = ({ coordinate, meta, defaultSize, totalCou
   return index;
 };
 
-export const expandSelection = ({ selection, mergedCells = [], rowIndex, columnIndex }) => {
+export const expandSelection = ({ selection, mergedCells = [], rowIndex, columnIndex, east, south }) => {
   const nextSelection = {
     start: {
       row: selection.start.row,
@@ -125,14 +127,14 @@ export const expandSelection = ({ selection, mergedCells = [], rowIndex, columnI
 
   mergedCells.forEach(mergedRange => {
     if (rangesIntersect(mergedRange, nextSelection)) {
-      if (nextSelection.start.row < nextSelection.end.row) {
+      if ((nextSelection.start.row < nextSelection.end.row) || east) {
         nextSelection.start.row = Math.min(nextSelection.start.row, mergedRange.start.row);
         nextSelection.end.row = Math.max(nextSelection.end.row, mergedRange.end.row);
       } else {
         nextSelection.start.row = Math.max(nextSelection.start.row, mergedRange.end.row);
         nextSelection.end.row = Math.min(nextSelection.end.row, mergedRange.start.row);
       }
-      if (nextSelection.start.column < nextSelection.end.column) {
+      if ((nextSelection.start.column < nextSelection.end.column) || south) {
         nextSelection.start.column = Math.min(nextSelection.start.column, mergedRange.start.column);
         nextSelection.end.column = Math.max(nextSelection.end.column, mergedRange.end.column);
       } else {
@@ -143,4 +145,12 @@ export const expandSelection = ({ selection, mergedCells = [], rowIndex, columnI
   });
 
   return nextSelection;
+};
+
+export const getOverscrolledOffset = ({ coordinate, containerSize, meta, fixCount, defaultSize }) => {
+  const fixedSize = getCellsRangeSize({ meta, count: fixCount, defaultSize });
+  const startOverscroll = coordinate - fixedSize;
+  const endOverscroll = coordinate - containerSize;
+  if (startOverscroll < 0) return startOverscroll;
+  else if (endOverscroll > 0) return endOverscroll;
 };
