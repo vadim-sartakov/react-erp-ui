@@ -4,12 +4,15 @@ import SpreadsheetCell from '../SpreadsheetCell';
 import GridResizer from '../../GridResizer';
 import classes from './Heading.module.css';
 
-const Heading = ({
+const HeadingView = ({
   selected,
   row,
   column,
   defaultSize,
   onChange,
+  onMouseDown,
+  onMouseUp,
+  onResize,
   type,
   meta,
   index
@@ -30,9 +33,18 @@ const Heading = ({
   return (
     <SpreadsheetCell className={classNames(className, { [classes.selected]: selected })} row={row} column={column}>
       {meta.key + 1}
-      <GridResizer type={type} meta={meta} defaultSize={defaultSize} onChange={onChange} index={index} className={resizerClassName} />
+      <GridResizer
+          type={type}
+          meta={meta}
+          defaultSize={defaultSize}
+          onChange={onChange}
+          onMouseUp={onMouseUp}
+          onMouseDown={onMouseDown}
+          onResize={onResize}
+          index={index}
+          className={resizerClassName} />
     </SpreadsheetCell>
   )
 };
 
-export default Heading;
+export default HeadingView;

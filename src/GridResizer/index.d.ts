@@ -12,6 +12,8 @@ export interface GridResizerProps {
   onChange: Dispatch<SetStateAction<Meta[]>>;
   Component: FunctionComponent | string;
   minSize: number;
+  resizeMeta: Meta;
+  onResizeMetaChange: Dispatch<SetStateAction<Meta[]>>;
 }
 
 declare const GridResizer: FunctionComponent<GridResizerProps>;

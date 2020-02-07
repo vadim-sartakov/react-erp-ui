@@ -317,6 +317,10 @@ const useSpreadsheet = ({
   const scrollerCoverRef = useRef();
   const spreadsheetContainerRef = useRef();
 
+  const [resizeInteraction, onResizeInteractionChange] = useState();
+  const [resizeRows, onResizeRows] = useState([...nextRows]);
+  const [resizeColumns, onResizeColumns] = useState([...nextColumns]);
+
   return {
     cells: nextValue,
     onCellsChange: nextOnChange,
@@ -341,7 +345,13 @@ const useSpreadsheet = ({
     onColumnGroupButtonClick,
     scrollerContainerRef,
     scrollerCoverRef,
-    spreadsheetContainerRef
+    spreadsheetContainerRef,
+    resizeInteraction,
+    onResizeInteractionChange,
+    resizeRows,
+    resizeColumns,
+    onResizeRows,
+    onResizeColumns
   };
 };
 

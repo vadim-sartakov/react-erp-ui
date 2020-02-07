@@ -4,6 +4,7 @@ import { SpreadsheetContainer, useSpreadsheet, useKeyboard, useMouse } from './'
 import GroupLevelButton from './GroupLevelButton';
 import { Heading, HeadingsIntersection } from './Heading';
 import { GroupLine } from './GroupLine';
+import ResizeLines from './ResizeLines';
 import FixLines from './FixLines';
 import SpecialCellEmptyArea from './SpecialCellEmptyArea';
 import SelectedRange from './SelectedRange';
@@ -76,7 +77,13 @@ const Spreadsheet = inputProps => {
     onRowGroupLevelButtonClick,
     onColumnGroupLevelButtonClick,
     onRowGroupButtonClick,
-    onColumnGroupButtonClick
+    onColumnGroupButtonClick,
+    resizeInteraction,
+    onResizeInteractionChange,
+    resizeRows,
+    resizeColumns,
+    onResizeRows,
+    onResizeColumns
   } = props;
 
   const cellsElements = visibleRows.reduce((acc, rowIndex, seqRowIndex) => {
@@ -128,9 +135,11 @@ const Spreadsheet = inputProps => {
                       column={column}
                       type="column"
                       meta={column}
+                      onResizeInteractionChange={onResizeInteractionChange}
                       defaultSize={defaultColumnWidth}
                       index={columnIndex}
-                      onChange={onColumnsChange} />
+                      onChange={onColumnsChange}
+                      onResize={onResizeColumns} />
                 );
             }
           default:
@@ -151,8 +160,10 @@ const Spreadsheet = inputProps => {
                       type="row"
                       meta={row}
                       index={rowIndex}
+                      onResizeInteractionChange={onResizeInteractionChange}
                       defaultSize={defaultRowHeight}
-                      onChange={onRowsChange} />
+                      onChange={onRowsChange}
+                      onResize={onResizeRows} />
                 );
               default:
                 return (
@@ -262,12 +273,30 @@ const Spreadsheet = inputProps => {
         specialRowsCount={specialRowsCount}
         specialColumnsCount={specialColumnsCount} />
   );
+  const resizeRowElement = resizeInteraction && resizeInteraction.type === 'row' && (
+    <ResizeLines
+        key="resize-row"
+        index={resizeInteraction.index}
+        type="row"
+        defaultSize={defaultRowHeight}
+        meta={resizeRows} />
+  );
+  const resizeColumnElement = resizeInteraction && resizeInteraction.type === 'column' && (
+    <ResizeLines
+        key="resize-column"
+        index={resizeInteraction.index}
+        type="column"
+        defaultSize={defaultColumnWidth}
+        meta={resizeColumns} />
+  );
 
   const elements = [
     ...cellsElements,
     ...mergedCellsElements,
     ...visibleSelectionElements,
-    fixedAreasElement
+    fixedAreasElement,
+    resizeRowElement,
+    resizeColumnElement
   ];
 
   return (
