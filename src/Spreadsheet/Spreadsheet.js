@@ -366,13 +366,7 @@ const Spreadsheet = inputProps => {
             style={props.coverStyles}
             onMouseDown={onMouseDown}>
           <div style={props.pagesStyles}>
-            <div
-                style={{ ...props.gridStyles, userSelect: 'none' }}
-                defaultRowHeight={props.defaultRowHeight}
-                defaultColumnWidth={props.defaultColumnWidth}
-                groupSize={props.groupSize}
-                fixRows={props.fixRows}
-                fixColumns={props.fixColumns}>
+            <div style={{ ...props.gridStyles, userSelect: 'none' }}>
               {cellsElement}
             </div>
           </div>
