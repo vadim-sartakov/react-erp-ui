@@ -7,19 +7,25 @@ const ResizeLines = ({
   type,
   scroll,
   meta,
+  fixCount,
   index,
+  visibleIndexes,
   defaultSize
 }) => {
 
-  const baseStyle = {
+  const containerStyle = {
     position: 'absolute',
     pointerEvents: 'none',
-    zIndex: 10
+    zIndex: 10,
+    width: '100%',
+    height: '100%'
   };
 
+  const startIndex = visibleIndexes[0];
+
   const size = getCellsRangeSize({
-    startIndex: 0,
-    count: index + 1,
+    startIndex,
+    count: (index + 1) - startIndex,
     defaultSize,
     meta
   });
@@ -27,21 +33,31 @@ const ResizeLines = ({
   if (type === 'column') {
     const width = size;
     const style = {
-      ...baseStyle,
-      left: -scroll,
+      position: index < fixCount ? 'sticky' : 'absolute',
       width,
-      height: '100%'
+      height: '100%',
+      top: 0,
+      left: index < fixCount ? 0 : -scroll
     };
-    return <Component type={type} style={style} />;
+    return (
+      <div style={containerStyle}>
+        <Component type={type} style={style} />
+      </div>
+    );
   } else if (type === 'row') {
     const height = size;
     const style = {
-      ...baseStyle,
-      top: - scroll,
+      position: index < fixCount ? 'sticky' : 'absolute',
+      height,
       width: '100%',
-      height
+      top: index < fixCount ? 0 : -scroll,
+      left: 0
     };
-    return <Component type={type} style={style} />;
+    return (
+      <div style={containerStyle}>
+        <Component type={type} style={style} />
+      </div>
+    );
   }
 
 };

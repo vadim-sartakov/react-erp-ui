@@ -278,6 +278,8 @@ const Spreadsheet = inputProps => {
         key="resize-row"
         scroll={scrollerTop}
         index={resizeInteraction.index}
+        visibleIndexes={visibleRows}
+        fixCount={fixRows}
         type="row"
         defaultSize={defaultRowHeight}
         meta={resizeRows} />
@@ -287,6 +289,8 @@ const Spreadsheet = inputProps => {
         key="resize-column"
         scroll={scrollerLeft}
         index={resizeInteraction.index}
+        visibleIndexes={visibleColumns}
+        fixCount={fixColumns}
         type="column"
         defaultSize={defaultColumnWidth}
         meta={resizeColumns} />
