@@ -133,18 +133,6 @@ export interface SpreadsheetContextProps {
 }
 export const SpreadsheetContext: Context<SpreadsheetContextProps>
 
-export interface SpreadsheetContainerProps {
-  defaultColumnWidth: number;
-  defaultRowHeight: number;
-  groupSize: number;
-  fixRows: number;
-  fixColumns: number;
-  specialRowsCount: number;
-  specialColumnsCount: number;
-  onKeyDown: KeyboardEvent;
-}
-export const SpreadsheetContainer: FunctionComponent<SpreadsheetContainerProps>
-
 export interface UseSpreadsheetOptions {
   cells?: Cell[][];
   onCellsChange?: Dispatch<SetStateAction<Cell[][]>>;

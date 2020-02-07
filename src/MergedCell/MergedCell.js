@@ -26,8 +26,6 @@ const MergedCell = ({
   fixRows,
   fixColumns,
   noPointerEvents,
-  scrollerTop,
-  scrollerLeft,
   children,
   onMouseDown,
   onMouseUp,
@@ -88,8 +86,8 @@ const MergedCell = ({
   const baseRootStyle = {
     ...rootStyle,
     position: 'absolute',
-    top: top - scrollerTop,
-    left: left - scrollerLeft,
+    top: top,
+    left: left,
     pointerEvents: 'none'
   };
 
@@ -110,8 +108,8 @@ const MergedCell = ({
   if (isFixedRowArea && isFixedColumnArea) {
     const rootStyle = {
       ...baseRootStyle,
-      width: `calc(100% + ${scrollerLeft - left}px)`,
-      height: `calc(100% + ${scrollerTop - top}px)`,
+      width: `calc(100% - ${left}px)`,
+      height: `calc(100% - ${top}px)`,
       zIndex: 7
     };
     const wrapperStyle = {
@@ -138,7 +136,7 @@ const MergedCell = ({
   if (isFixedColumnArea) {
     const rootStyle = {
       ...baseRootStyle,
-      width: `calc(100% + ${scrollerLeft - left}px)`,
+      width: `calc(100% - ${left}px)`,
       height,
       zIndex: 3
     };
@@ -167,7 +165,7 @@ const MergedCell = ({
     const rootStyle = {
       ...baseRootStyle,
       width,
-      height: `calc(100% + ${scrollerTop - top}px)`,
+      height: `calc(100% - ${top}px)`,
       zIndex: 5
     };
     const wrapperStyle = {
@@ -202,8 +200,8 @@ const MergedCell = ({
           ...style,
           pointerEvents: noPointerEvents ? 'none' : undefined,
           position: 'absolute',
-          top: top - scrollerTop,
-          left: left - scrollerLeft,
+          top,
+          left,
           width,
           height,
           zIndex: 1

@@ -45,7 +45,7 @@ const getNextSizes = ({ x, y, interaction, preserveAspectRatio }) => {
  * 
  * @param {ResizeOptions} resizeOptions 
  */
-const useResize = ({ sizes, onMouseMove, onMouseUp, preserveAspectRatio }) => {
+const useResize = ({ sizes, onMouseDown, onMouseMove, onMouseUp, preserveAspectRatio }) => {
   const interactionRef = useRef();
 
   const handleMouseDown = useCallback(event => {
@@ -55,7 +55,8 @@ const useResize = ({ sizes, onMouseMove, onMouseUp, preserveAspectRatio }) => {
       startCoordinates: { x: event.clientX, y: event.clientY },
       startSizes: sizes
     };
-  }, [sizes]);
+    if (onMouseDown) onMouseDown(event);
+  }, [onMouseDown, sizes]);
 
   useEffect(() => {
     const handleMouseMove = event => {

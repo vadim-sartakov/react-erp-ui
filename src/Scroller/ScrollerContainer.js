@@ -3,19 +3,12 @@ import { ScrollerContext } from './';
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerContainerProps>} */
 const ScrollerContainer = forwardRef(({
-  coverRef,
   width,
   height,
-  children,
   style,
   defaultRowHeight,
   defaultColumnWidth,
-  onScroll,
-  coverStyles,
-  pagesStyles,
-  gridStyles,
-  className,
-  onKeyDown
+  ...props
 }, ref) => {
   const contextValue = useMemo(() => ({
     defaultRowHeight,
@@ -26,18 +19,8 @@ const ScrollerContainer = forwardRef(({
       <div
           tabIndex="0"
           ref={ref}
-          onScroll={onScroll}
-          className={className}
-          style={{ width, height, overflow: 'auto', ...style }}
-          onKeyDown={onKeyDown}>
-        <div ref={coverRef} style={coverStyles}>
-          <div style={pagesStyles}>
-            <div style={gridStyles}>
-              {children}
-            </div>
-          </div>
-        </div>
-      </div>
+          {...props}
+          style={{ width, height, overflow: 'auto', ...style }} />
     </ScrollerContext.Provider>
   );
 });

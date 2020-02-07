@@ -15,9 +15,6 @@ export interface ScrollerContainerProps extends HTMLAttributes<{}> {
   height: number;
   defaultRowHeight: number; 
   defaultColumnWidth: number;
-  coverStyles: CSSProperties;
-  pagesStyles: CSSProperties;
-  gridStyles?: CSSProperties;
   onScroll: UIEventHandler;
 }
 

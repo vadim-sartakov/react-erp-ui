@@ -12,29 +12,21 @@ const Scroller = inputProps => {
     ...scrollerProps
   };
 
-  const {
-    visibleRows,
-    visibleColumns,
-    rows,
-    columns,
-    value,
-    loadedValues,
-    CellComponent
-  } = props;
+  const { CellComponent } = props;
 
-  const elements = visibleRows.reduce((acc, rowIndex) => {
-    const row = rows && rows[rowIndex];
-    if (visibleColumns) {
-      const columnsElements = visibleColumns.map(columnIndex => {
-        const column = columns && columns[columnIndex];
-        const valueArray = loadedValues || value;
+  const elements = props.visibleRows.reduce((acc, rowIndex) => {
+    const row = props.rows && props.rows[rowIndex];
+    if (props.visibleColumns) {
+      const columnsElements = props.visibleColumns.map(columnIndex => {
+        const column = props.columns && props.columns[columnIndex];
+        const valueArray = props.loadedValues || props.value;
         const curValue = valueArray[rowIndex] && valueArray[rowIndex][columnIndex];
         const cellProps = { row, column, rowIndex, columnIndex, value: curValue };
         return <CellComponent key={`${rowIndex}-${columnIndex}`} {...cellProps} />;
       });
       return [...acc, ...columnsElements];
     } else {
-      const valueArray = loadedValues || value;
+      const valueArray = props.loadedValues || props.value;
       const curValue = valueArray[rowIndex];
       const cellProps = { row, rowIndex, value: curValue };
       const rowElement = <CellComponent key={rowIndex} {...cellProps} />;
@@ -43,8 +35,20 @@ const Scroller = inputProps => {
   }, []);
 
   return (
-    <ScrollerContainer {...props} ref={scrollerContainerRef}>
-      {elements}
+    <ScrollerContainer
+        ref={scrollerContainerRef}
+        defaultRowHeight={props.defaultRowHeight}
+        defaultColumnWidth={props.defaultColumnWidth}
+        onScroll={props.onScroll}
+        width={props.width}
+        height={props.height}>
+      <div style={props.coverStyles}>
+        <div style={props.pagesStyles}>
+          <div style={props.gridStyles}>
+            {elements}
+          </div>
+        </div>
+      </div>
     </ScrollerContainer>
   )
 };

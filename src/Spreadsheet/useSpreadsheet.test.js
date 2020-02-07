@@ -1,8 +1,6 @@
 import {
   convertExternalMetaToInternal,
-  convertInternalMetaToExternal,
-  convertExternalValueToInternal,
-  convertInternalValueToExternal
+  convertInternalMetaToExternal
 } from './useSpreadsheet';
 
 describe('useSpreadsheet', () => {
@@ -70,99 +68,6 @@ describe('useSpreadsheet', () => {
         { size: 160 }
       ]);
     })
-  });
-
-  describe('convertExternalValueToInternal', () => {
-    it('should convert external value to internal', () => {
-      const value = [
-        [
-          '0 - 0',
-          '0 - 1',
-          '0 - 2'
-        ],
-        [
-          '1 - 0',
-          '1 - 1',
-          '1 - 2'
-        ],
-        [
-          '2 - 0',
-          '2 - 1',
-          '2 - 2'
-        ]
-      ];
-      const hiddenRowsIndexes = [1];
-      const hiddenColumnsIndexes = [2];
-      const result = convertExternalValueToInternal({ value, specialRowsCount: 1, specialColumnsCount: 1, hiddenRowsIndexes, hiddenColumnsIndexes });
-      expect(result).toEqual([
-        undefined,
-        [
-          undefined,
-          '0 - 0',
-          '0 - 1'
-        ],
-        [
-          undefined,
-          '2 - 0',
-          '2 - 1'
-        ]
-      ]);
-    });
-  });
-
-  describe('convertInternalValueToExternal', () => {
-    it('should convert internal value to external', () => {
-      const value = [
-        undefined,
-        [
-          undefined,
-          '0 - 0 - 0',
-          '0 - 1 - 1'
-        ],
-        [
-          undefined,
-          '2 - 0 - 0',
-          '2 - 1 - 1'
-        ]
-      ];
-      const originExternalValue = [
-        [
-          '0 - 0',
-          '0 - 1',
-          '0 - 2'
-        ],
-        [
-          '1 - 0',
-          '1 - 1',
-          '1 - 2'
-        ],
-        [
-          '2 - 0',
-          '2 - 1',
-          '2 - 2'
-        ]
-      ];
-      const hiddenRowsIndexes = [1];
-      const hiddenColumnsIndexes = [2];
-      const result = convertInternalValueToExternal({ value, originExternalValue, specialRowsCount: 1, specialColumnsCount: 1, hiddenRowsIndexes, hiddenColumnsIndexes });
-      expect(result).toEqual([
-        [
-          '0 - 0 - 0',
-          '0 - 1 - 1',
-          '0 - 2'
-        ],
-        [
-          '1 - 0',
-          '1 - 1',
-          '1 - 2'
-        ],
-        [
-          '2 - 0 - 0',
-          '2 - 1 - 1',
-          '2 - 2'
-        ]
-      ]);
-    });
   });
 
 });

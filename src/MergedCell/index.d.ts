@@ -22,8 +22,6 @@ export interface MergedCellProps {
   columns: Meta[];
   fixRows: number;
   fixColumns: number;
-  scrollerTop: number;
-  scrollerLeft: number;
   /** Leave nodes with pointer events: 'none' value */
   noPointerEvents: boolean;
   /** Styles which will be applied to resulted root component */

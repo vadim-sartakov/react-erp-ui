@@ -10,7 +10,7 @@ const flexAlignValuesMap = {
   right: 'flex-end'
 };
 
-const Cell = props => {
+const Cell = React.memo(props => {
 
   const {
     fixRows,
@@ -20,8 +20,7 @@ const Cell = props => {
     rowIndex,
     columnIndex,
     cell,
-    Component,
-    children
+    Component
   } = props;
 
   const rowStyle = (row && row.style) || {};
@@ -56,10 +55,9 @@ const Cell = props => {
         {...props}
         style={componentStyle}
         cell={cell}>
-      {children}
       <Borders cell={cell} />
     </Component>
   )
-};
+});
 
 export default Cell;
