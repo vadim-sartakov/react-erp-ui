@@ -72,8 +72,8 @@ const SpreadsheetComponent = props => {
           fixColumns={0}
           width={undefined}
           height={undefined}
-          //rowsPerPage={props.totalRows}
-          /*columnsPerPage={props.totalColumns}*/ />
+          rowsPerPage={props.totalRows}
+          columnsPerPage={props.totalColumns} />
     );
     print(element);
   };
