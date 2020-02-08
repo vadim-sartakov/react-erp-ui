@@ -31,7 +31,7 @@ const MergedCell = ({
   onMouseUp,
   onMouseMove,
   onClick
-}) => { 
+}) => {
   const elements = [];
 
   const normalizedMergedRange = normalizeMergedRange(mergedRange);
