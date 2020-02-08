@@ -12,7 +12,8 @@ function getBorderStyle(borderStyle) {
 };
 
 const Borders = ({ cell }) => {
-  const { cellBorderColor } = useContext(SpreadsheetContext);
+  const { cellBorderColor, hideGrid } = useContext(SpreadsheetContext);
+  const defaultBorder = !hideGrid && { color: cellBorderColor };
 
   const style = {
     position: 'absolute',
@@ -25,8 +26,8 @@ const Borders = ({ cell }) => {
   const { border } = (cell && cell.style) || { border: {} };
   style.borderTop = getBorderStyle(border.top);
   style.borderLeft = getBorderStyle(border.left);
-  style.borderBottom = getBorderStyle(border.bottom || { color: cellBorderColor });
-  style.borderRight = getBorderStyle(border.right || { color: cellBorderColor });
+  style.borderBottom = getBorderStyle(border.bottom || defaultBorder);
+  style.borderRight = getBorderStyle(border.right || defaultBorder);
   return <div style={style} />;
 };
 

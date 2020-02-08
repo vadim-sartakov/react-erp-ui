@@ -131,6 +131,7 @@ export interface SpreadsheetContextProps {
   fixRows: number;
   fixColumns: number;
   cellBorderColor: number;
+  hideGrid: boolean;
 }
 export const SpreadsheetContext: Context<SpreadsheetContextProps>
 
@@ -200,7 +201,8 @@ export function useMouse(options: UseSpreadsheetOptions | UseSpreadsheetResult):
 export const SpreadsheetCell: FunctionComponent<ScrollerCellProps | MergedCellProps>
 
 export interface SpreadsheetProps extends UseSpreadsheetOptions, ViewComponentsOptions {
-  cellBorderColor?: string
+  cellBorderColor?: string;
+  hideGrid?: boolean;
 }
 /**
  * Data grid, Excel-like spreadsheet component.
