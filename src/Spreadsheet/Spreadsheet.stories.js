@@ -3,6 +3,7 @@ import { storiesOf } from '@storybook/react';
 import Spreadsheet, { SpreadsheetCell } from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import exportToExcel from './exportToExcel';
+import Print from '../Print';
 import classes from './Spreadsheet-stories.module.sass';
 
 const gridValuesMapper = valueRow => {
@@ -28,6 +29,7 @@ const SpreadsheetComponent = props => {
 
   const [rows, onRowsChange] = useState(props.rows);
   const [columns, onColumnsChange] = useState(props.columns);
+  const [print, setPrint] = useState(false);
 
   const handleExportToExcel = useCallback(() => {
     exportToExcel({
@@ -65,9 +67,28 @@ const SpreadsheetComponent = props => {
         onColumnsChange={onColumnsChange}
         className={classes.spreadsheet}
         CellComponent={CellComponent} />
-      <button className={classes.exportButton} onClick={handleExportToExcel}>
-        Export to Excel
-      </button>
+
+      <Print print={print}>
+        <Spreadsheet
+            {...props}
+            rows={rows}
+            onRowsChange={onRowsChange}
+            columns={columns}
+            onColumnsChange={onColumnsChange}
+            className={classes.spreadsheet}
+            CellComponent={CellComponent}
+            hideHeadings
+            hideGrid
+            fixRows={0}
+            fixColumns={0}
+            //rowsPerPage={props.totalRows}
+            /*columnsPerPage={props.totalColumns}*/ />
+      </Print>
+
+      <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+        <button className={classes.exportButton} onClick={handleExportToExcel}>Export to Excel</button>
+        <button className={classes.printButton} onClick={setPrint}>Print</button>
+      </div>
     </div>
   );
 };

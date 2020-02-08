@@ -202,6 +202,7 @@ export const SpreadsheetCell: FunctionComponent<ScrollerCellProps | MergedCellPr
 
 export interface SpreadsheetProps extends UseSpreadsheetOptions, ViewComponentsOptions {
   cellBorderColor?: string;
+  /** When set to 'true', default cell border will be hidden */
   hideGrid?: boolean;
 }
 /**
