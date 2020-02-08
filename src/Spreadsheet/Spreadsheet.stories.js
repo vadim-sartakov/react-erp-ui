@@ -68,7 +68,7 @@ const SpreadsheetComponent = props => {
         className={classes.spreadsheet}
         CellComponent={CellComponent} />
 
-      <Print print={print}>
+      <Print print={print} onPrintChange={setPrint}>
         <Spreadsheet
             {...props}
             rows={rows}
@@ -81,13 +81,15 @@ const SpreadsheetComponent = props => {
             hideGrid
             fixRows={0}
             fixColumns={0}
+            width={undefined}
+            height={undefined}
             //rowsPerPage={props.totalRows}
             /*columnsPerPage={props.totalColumns}*/ />
       </Print>
 
       <div style={{ display: 'flex', alignItems: 'flex-end' }}>
         <button className={classes.exportButton} onClick={handleExportToExcel}>Export to Excel</button>
-        <button className={classes.printButton} onClick={setPrint}>Print</button>
+        <button className={classes.printButton} onClick={() => setPrint(true)}>Print</button>
       </div>
     </div>
   );

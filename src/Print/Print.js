@@ -8,31 +8,32 @@ const Print = ({
   ...props
 }) => {
   const [, setState] = useState();
-  const contentRef = useRef();
+  const windowRef = useRef();
   const setContentRef = node => {
-    if (contentRef.current) return;
-    contentRef.current = node && node.contentWindow ? node.contentWindow.document.body : null;
+    if (windowRef.current) return;
+    windowRef.current = node && node.contentWindow ? node.contentWindow : null;
     setState({});
   };
 
   useEffect(() => {
-    return () => contentRef.current = undefined;
+    return () => windowRef.current = undefined;
   }, []);
 
   useEffect(() => {
     if (print) {
-      /*const iframeWindow = iframeRef.current.contentWindow;
-      iframeWindow.document.open();
-      iframeWindow.document.write(content.innerHTML);
-      iframeWindow.document.close();
-      iframeWindow.focus();
-      iframeWindow.print();*/
+      const iframeWindow = windowRef.current;
+      iframeWindow.print();
+      //onPrintChange(false)
     }
   }, [print, onPrintChange]);
 
   return print ? (
-    <iframe ref={setContentRef} title="printing-content" {...props}>
-      {contentRef.current && ReactDOM.createPortal(children, contentRef.current)}
+    <iframe
+        ref={setContentRef}
+        title="printing-content"
+        {...props}
+        style={{ width: 0, height: 0, position: 'absolute' }}>
+      {windowRef.current && ReactDOM.createPortal(children, windowRef.current.document.body)}
     </iframe>
   ) : null;
 };
