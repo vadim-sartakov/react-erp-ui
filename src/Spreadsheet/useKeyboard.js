@@ -2,16 +2,29 @@ import { useRef, useCallback, useEffect } from 'react';
 import { expandSelection, getOverscrolledOffset } from './utils';
 import { getCellPosition } from '../utils/gridUtils';
 
-const moveSelection = ({ selectedCells, append, rowOffset, columnOffset, specialRowsCount, specialColumnsCount, mergedCells, totalRows, totalColumns }) => {
+export const moveSelection = ({
+  selectedCells,
+  append,
+  rowOffset = 0,
+  columnOffset = 0,
+  specialRowsCount = 0,
+  specialColumnsCount = 0,
+  mergedCells,
+  totalRows,
+  totalColumns
+}) => {
   const lastSelection = selectedCells[selectedCells.length - 1];
   let nextSelection;
 
-  let endRow = lastSelection.end.row + rowOffset;
-  let endColumn = lastSelection.end.column + columnOffset;
+  const rowEdge = rowOffset > 0 ? Math.max(lastSelection.end.row, lastSelection.start.row, lastSelection.end.row) : Math.min(lastSelection.end.row, lastSelection.start.row, lastSelection.end.row);
+  const columnEdge = columnOffset > 0 ? Math.max(lastSelection.end.column, lastSelection.start.column, lastSelection.end.column) : Math.min(lastSelection.end.column, lastSelection.start.column, lastSelection.end.column);
+
+  let endRow = rowEdge + rowOffset;
+  let endColumn = columnEdge + columnOffset;
 
   // Preventing moving out of value area
-  endRow = rowOffset > 0 ? Math.min(endRow, totalRows - 1) : Math.max(endRow, specialRowsCount);
-  endColumn = columnOffset > 0 ? Math.min(endColumn, totalColumns - 1) : Math.max(endColumn, specialColumnsCount);
+  if (totalRows) endRow = rowOffset > 0 ? Math.min(endRow, totalRows - 1) : Math.max(endRow, specialRowsCount);
+  if (totalColumns) endColumn = columnOffset > 0 ? Math.min(endColumn, totalColumns - 1) : Math.max(endColumn, specialColumnsCount);
 
   if (lastSelection) {
     nextSelection = {};
