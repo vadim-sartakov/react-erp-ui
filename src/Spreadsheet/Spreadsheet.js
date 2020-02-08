@@ -338,13 +338,17 @@ const Spreadsheet = inputProps => {
     defaultRowHeight: props.defaultRowHeight,
     groupSize: props.groupSize,
     fixRows: props.fixRows,
-    fixColumns: props.fixColumns
+    fixColumns: props.fixColumns,
+    cellBorderColor: props.cellBorderColor || '#dee2e6',
+    hideGrid: props.hideGrid
   }), [
     props.defaultColumnWidth,
     props.defaultRowHeight,
     props.groupSize,
     props.fixRows,
-    props.fixColumns
+    props.fixColumns,
+    props.cellBorderColor,
+    props.hideGrid
   ]);
 
   return (

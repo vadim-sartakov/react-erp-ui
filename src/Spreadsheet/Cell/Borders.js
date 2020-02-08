@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { SpreadsheetContext } from '../'
 
 const borderSizeMap = {
   thin: 1,
@@ -11,7 +12,9 @@ function getBorderStyle(borderStyle) {
 };
 
 const Borders = ({ cell }) => {
-  if (!cell || !cell.style || !cell.style.border) return null;
+  const { cellBorderColor, hideGrid } = useContext(SpreadsheetContext);
+  const defaultBorder = !hideGrid && { color: cellBorderColor };
+
   const style = {
     position: 'absolute',
     top: 0,
@@ -20,11 +23,11 @@ const Borders = ({ cell }) => {
     left: 0,
     pointerEvents: 'none'
   };
-  const border = cell.style.border;
+  const { border } = (cell && cell.style) || { border: {} };
   style.borderTop = getBorderStyle(border.top);
   style.borderLeft = getBorderStyle(border.left);
-  style.borderBottom = getBorderStyle(border.bottom);
-  style.borderRight = getBorderStyle(border.right);
+  style.borderBottom = getBorderStyle(border.bottom || defaultBorder);
+  style.borderRight = getBorderStyle(border.right || defaultBorder);
   return <div style={style} />;
 };
 

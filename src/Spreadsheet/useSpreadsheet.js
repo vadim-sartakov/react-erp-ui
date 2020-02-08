@@ -4,7 +4,7 @@ import { getGroups } from './utils';
 export const convertExternalMetaToInternal = ({ meta = [], groups, groupSize, numberMetaSize, hideHeadings }) => {
   const result = [];
   
-  groups.length && [...new Array(groups.length + 1).keys()].forEach(group => result.push({ size: groupSize, type: 'GROUP' }));
+  groups.length && !hideHeadings && [...new Array(groups.length + 1).keys()].forEach(group => result.push({ size: groupSize, type: 'GROUP' }));
   if (!hideHeadings) result.push({ size: numberMetaSize, type: 'NUMBER' });
   
   // Not using filter here because meta may contain empty items
@@ -196,7 +196,7 @@ const useSpreadsheet = ({
       }
     });
     // Adding groups merges
-    const mergedRowGroups = rowsGroups.reduce((acc, rowLevelGroups, level) => {
+    const mergedRowGroups = hideHeadings ? [] : rowsGroups.reduce((acc, rowLevelGroups, level) => {
       const rowGroups = rowLevelGroups.reduce((acc, rowGroup) => {
         return [
           ...acc,
@@ -217,7 +217,7 @@ const useSpreadsheet = ({
         ...rowGroups
       ]
     }, []);
-    const mergedColumnsGroups = columnsGroups.reduce((acc, columnLevelGroups, level) => {
+    const mergedColumnsGroups = hideHeadings ? [] : columnsGroups.reduce((acc, columnLevelGroups, level) => {
       const columnGroups = columnLevelGroups.reduce((acc, columnGroup) => {
         return [
           ...acc,
@@ -243,7 +243,7 @@ const useSpreadsheet = ({
       ...mergedRowGroups,
       ...mergedColumnsGroups
     ];
-  }, [mergedCellsProp, specialRowsCount, specialColumnsCount, rowsGroups, columnsGroups]);
+  }, [mergedCellsProp, specialRowsCount, specialColumnsCount, rowsGroups, columnsGroups, hideHeadings]);
 
   const nextTotalRows = (totalRows + specialRowsCount) - hiddenRowsIndexes.length;
   const nextTotalColumns = (totalColumns + specialColumnsCount) - hiddenColumnsIndexes.length;

@@ -8,20 +8,17 @@
   overflow: hidden
   padding: 2px
   background-color: #fff
-  &::before
-    position: absolute
-    top: 0
-    left: 0
-    right: 0
-    bottom: 0
-    display: block
-    content: ''
-    border-bottom: solid 1px #dee2e6
-    border-right: 1px solid #dee2e6
 
-.exportButton
+.button
   padding: 10px
-  margin-top: 10px
   cursor: pointer
   background-color: #379636
   color: #fff
+
+.exportButton
+  composes: button
+  margin-top: 10px
+  margin-right: 20px
+
+.printButton
+  composes: button
