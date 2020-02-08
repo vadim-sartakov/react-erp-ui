@@ -7,6 +7,13 @@ const print = element => {
   iframe.style.position = 'absolute';
   document.body.appendChild(iframe);
 
+  // Including headers with styles
+  document.head.children.forEach(child => {
+    if (child.tagName === 'STYLE' || child.tagName === 'LINK') {
+      iframe.contentWindow.document.head.appendChild(child.cloneNode(true));
+    }
+  });
+
   const div = iframe.contentWindow.document.createElement('div');
   iframe.contentWindow.document.body.appendChild(div);
   ReactDOM.render(element, div);
