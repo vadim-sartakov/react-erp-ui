@@ -14,6 +14,8 @@ const print = element => {
     }
   });
 
+  iframe.contentWindow.document.body.style.overflow = 'hidden';
+
   const div = iframe.contentWindow.document.createElement('div');
   iframe.contentWindow.document.body.appendChild(div);
   ReactDOM.render(element, div);
