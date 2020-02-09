@@ -20,7 +20,7 @@ const ScrollerContainer = forwardRef(({
           tabIndex="0"
           ref={ref}
           {...props}
-          style={{ width, height, overflow: 'auto', ...style }} />
+          style={{ width, height, overflow: height && 'auto', ...style }} />
     </ScrollerContext.Provider>
   );
 });
