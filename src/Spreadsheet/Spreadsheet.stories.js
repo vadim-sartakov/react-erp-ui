@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import _ from 'lodash';
 import { storiesOf } from '@storybook/react';
 import Spreadsheet, { SpreadsheetCell } from './';
 import { generateGridValues } from '../test-utils/generateValues';
@@ -58,32 +57,14 @@ const SpreadsheetComponent = props => {
   ]);
 
   const handlePrint = () => {
-    const cellsChunks = _.chunk(props.cells, 20);
-    const rowsChunks = _.chunk(props.rows, 20);
-    const columnsChunks = _.chunk(props.columns, 20);
-    const elements = cellsChunks.reduce((acc, cellsChunk, index) => {
-      const rows = rowsChunks[index];
-      const columns = columnsChunks[index];
-      const element = (
-        <Spreadsheet
-            {...props}
-            cells={cellsChunk}
-            totalRows={cellsChunk.length}
-            rows={rows}
-            columns={columns}
-            className={classes.spreadsheet}
-            CellComponent={CellComponent}
-            hideHeadings
-            hideGrid
-            fixRows={0}
-            fixColumns={0}
-            width={undefined}
-            height={undefined}
-            columnsPerPage={props.totalColumns} />
-      );
-      return [...acc, element];
-    }, [])
-    print(...elements);
+    const element = (
+      <Spreadsheet
+          {...props}
+          className={classes.spreadsheet}
+          CellComponent={CellComponent}
+          printMode />
+    );
+    print(element);
   };
 
   return (

@@ -201,6 +201,10 @@ export function useMouse(options: UseSpreadsheetOptions | UseSpreadsheetResult):
 export const SpreadsheetCell: FunctionComponent<ScrollerCellProps | MergedCellProps>
 
 export interface SpreadsheetProps extends UseSpreadsheetOptions, ViewComponentsOptions {
+  /** When set to true - whole document will be rendered for printing */
+  printMode: boolean;
+  rowsPerPage: number;
+  columnsPerPage: number;
   width?: number;
   height: number;
   cellBorderColor?: string;

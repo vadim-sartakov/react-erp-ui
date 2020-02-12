@@ -224,17 +224,36 @@ const SelectedRanges = React.memo(({
 const Spreadsheet = inputProps => {
   let props;
 
-  const spreadsheetProps = useSpreadsheet(inputProps);
+  const printProps = inputProps.printMode ? {
+    width: 'auto',
+    height: 'auto',
+    rowsPerPage: inputProps.totalRows,
+    columnsPerPage: inputProps.totalColumns,
+    hideHeadings: true,
+    hideGrid: true,
+    fixRows: 0,
+    fixColumns: 0
+  } : undefined;
+
   props = {
     ...inputProps,
+    ...printProps
+  };
+
+  const spreadsheetProps = useSpreadsheet(props);
+  props = {
+    ...inputProps,
+    ...printProps,
     ...spreadsheetProps
   };
   const onKeyDown = useKeyboard(props);
   const onMouseDown = useMouse(props);
+
   const scrollerProps = useScroller(props);
 
   props = {
     ...inputProps,
+    ...printProps,
     ...spreadsheetProps,
     ...scrollerProps
   };
@@ -361,7 +380,9 @@ const Spreadsheet = inputProps => {
           defaultColumnWidth={props.defaultColumnWidth}
           onScroll={props.onScroll}
           width={props.width}
-          height={props.height}>
+          height={props.height}
+          //'hidden' value will prevent scroll appearing on print mode
+          style={{ overflow: props.printMode ? 'hidden' : 'auto' }}>
         {/** 
          * Placed mouse handler here because scroller would trigger selection on scroll bar click,
          * while on spreadsheet level it would skip merged cells clicks
@@ -369,7 +390,8 @@ const Spreadsheet = inputProps => {
         <div ref={props.scrollerCoverRef}
             style={props.coverStyles}
             onMouseDown={onMouseDown}>
-          <div style={props.pagesStyles}>
+          {/** Static positioning on print mode will prevent incorrect page breaks */}
+          <div style={{ ...props.pagesStyles, position: props.printMode ? 'static' : 'absolute' }}>
             <div style={{ ...props.gridStyles, userSelect: 'none' }}>
               {cellsElement}
             </div>
