@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback } from 'react';
 import { expandSelection, getOverscrolledOffset } from './utils';
 import { getCellPosition } from '../utils/gridUtils';
 
@@ -53,7 +53,19 @@ export const moveSelection = ({
   return [nextSelection];
 };
 
-const moveScrollPosition = ({ selectedCells, rowOffset, columnOffset, rows, columns, fixColumns, fixRows, defaultRowHeight, defaultColumnWidth, scrollerContainerRectRef, scrollerContainerRef }) => {
+const moveScrollPosition = ({
+  selectedCells,
+  rowOffset,
+  columnOffset,
+  rows,
+  columns,
+  fixColumns,
+  fixRows,
+  defaultRowHeight,
+  defaultColumnWidth, 
+  scrollerContainerRect,
+  scrollerContainerRef
+}) => {
   const lastSelection = selectedCells[selectedCells.length - 1];
   let x = getCellPosition({ meta: columns, index: lastSelection.end.column, defaultSize: defaultColumnWidth });
   let y = getCellPosition({ meta: rows, index: lastSelection.end.row, defaultSize: defaultRowHeight });
@@ -61,7 +73,7 @@ const moveScrollPosition = ({ selectedCells, rowOffset, columnOffset, rows, colu
   if (rowOffset > 0) y += (rows[lastSelection.end.row] && rows[lastSelection.end.row].size) || defaultRowHeight;
   if (columnOffset > 0) x += (columns[lastSelection.end.column] && columns[lastSelection.end.column].size) || defaultColumnWidth;
 
-  const rect = scrollerContainerRectRef.current;
+  const rect = scrollerContainerRect;
 
   x -= scrollerContainerRef.current.scrollLeft;
   y -= scrollerContainerRef.current.scrollTop;
@@ -90,14 +102,6 @@ const useKeyboard = ({
   scrollerContainerRef
 }) => {
 
-  const scrollerContainerRectRef = useRef();
-
-  // Saving initial sizes to reuse it for performance
-  useEffect(() => {
-    const rect = scrollerContainerRef.current.getBoundingClientRect();
-    scrollerContainerRectRef.current = { top: rect.top, left: rect.left, width: rect.width, height: rect.height };
-  }, [scrollerContainerRef]);
-
   const handlingKeyDown = useRef(false);
 
   const onKeyDown = useCallback(event => {
@@ -107,8 +111,30 @@ const useKeyboard = ({
     if (handlingKeyDown.current) return;
     
     const setSelectedCells = (append, rowOffset, columnOffset) => selectedCells => {
-      const nextSelection = moveSelection({ selectedCells, append, rowOffset, columnOffset, specialRowsCount, specialColumnsCount, mergedCells, totalRows: totalRows, totalColumns: totalColumns });
-      moveScrollPosition({ selectedCells: nextSelection, rowOffset, columnOffset, rows, columns, fixColumns, fixRows, defaultRowHeight, defaultColumnWidth, scrollerContainerRef, scrollerContainerRectRef });
+      const nextSelection = moveSelection({
+        selectedCells,
+        append,
+        rowOffset,
+        columnOffset,
+        specialRowsCount,
+        specialColumnsCount,
+        mergedCells,
+        totalRows,
+        totalColumns
+      });
+      moveScrollPosition({
+        selectedCells: nextSelection,
+        rowOffset,
+        columnOffset,
+        rows,
+        columns,
+        fixColumns,
+        fixRows,
+        defaultRowHeight,
+        defaultColumnWidth,
+        scrollerContainerRef,
+        scrollerContainerRect: scrollerContainerRef.current.getBoundingClientRect()
+      });
       return nextSelection;
     };
 
@@ -156,8 +182,7 @@ const useKeyboard = ({
     rowsPerPage,
     totalRows,
     totalColumns,
-    scrollerContainerRef,
-    scrollerContainerRectRef
+    scrollerContainerRef
   ]);
 
   return onKeyDown;
