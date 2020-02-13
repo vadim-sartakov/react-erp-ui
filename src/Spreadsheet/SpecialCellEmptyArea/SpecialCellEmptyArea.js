@@ -1,7 +1,6 @@
 import React from 'react';
 import SpreadsheetCell from '../SpreadsheetCell';
-import classes from './SpecialCellEmptyArea.module.css';
 
-const SpecialCellEmptyArea = props => <SpreadsheetCell className={classes.root} {...props} />;
+const SpecialCellEmptyArea = props => <SpreadsheetCell className="special-cell-empty-area" {...props} />;
 
 export default SpecialCellEmptyArea;

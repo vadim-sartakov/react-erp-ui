@@ -2,7 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 import SpreadsheetCell from '../SpreadsheetCell';
 import GridResizer from '../../GridResizer';
-import classes from './Heading.module.css';
 
 const HeadingView = ({
   selected,
@@ -20,18 +19,18 @@ const HeadingView = ({
   let className, resizerClassName;
   switch (type) {
     case 'column':
-      className = classNames(classes.cell, classes.columnNumber);
-      resizerClassName = classNames(classes.resizer, classes.columnResizer);
+      className = classNames('heading-cell', 'heading-column-number');
+      resizerClassName = classNames('heading-resizer', 'heading-column-resizer');
       break;
     case 'row':
-      className = classNames(classes.cell, classes.rowNumber);
-      resizerClassName = classNames(classes.resizer, classes.rowResizer);
+      className = classNames('heading-cell', 'heading-row-number');
+      resizerClassName = classNames('heading-resizer', 'heading-row-resizer');
       break;
     default:
-      className = classes.cell
+      className = 'heading-cell';
   }
   return (
-    <SpreadsheetCell className={classNames(className, { [classes.selected]: selected })} row={row} column={column}>
+    <SpreadsheetCell className={classNames(className, { 'heading-selected': selected })} row={row} column={column}>
       {meta.key + 1}
       <GridResizer
           type={type}

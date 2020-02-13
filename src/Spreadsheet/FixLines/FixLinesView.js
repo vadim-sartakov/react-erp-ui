@@ -1,8 +1,7 @@
 import React from 'react';
-import classes from './FixLinesView.module.css';
 
 const FixLinesView = ({ type, style }) => {
-  const className = type === 'rows' ? classes.fixedRows : classes.fixedColumns
+  const className = type === 'rows' ? 'fixed-rows' : 'fixed-columns'
   return <div className={className} style={style} />;
 };
 
