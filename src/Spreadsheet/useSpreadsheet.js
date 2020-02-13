@@ -54,10 +54,13 @@ const clickGroupButton = (meta, group, specialMetaCount) => {
  * @returns {import('.').UseSpreadsheetResult}
  */
 const useSpreadsheet = ({
+  defaultCells,
   cells: cellsProp,
   onCellsChange: onCellsChangeProp,
+  defaultRows,
   rows: rowsProp,
   onRowsChange: onRowsChangeProp,
+  defaultColumns,
   columns: columnsProp,
   onColumnsChange: onColumnsChangeProp,
   selectedCells: selectedCellsProp,
@@ -77,8 +80,8 @@ const useSpreadsheet = ({
   const selectedCells = selectedCellsProp || selectedCellsState;
   const onSelectedCellsChange = onSelectedCellsChangeProp || setSelectedCellsState;
 
-  const [rowsState, setRowsState] = useState([]);
-  const [columnsState, setColumnsState] = useState([]);
+  const [rowsState, setRowsState] = useState(defaultRows || []);
+  const [columnsState, setColumnsState] = useState(defaultColumns || []);
 
   const rows = rowsProp || rowsState;
   const columns = columnsProp || columnsState;
@@ -158,7 +161,7 @@ const useSpreadsheet = ({
   const onColumnGroupLevelButtonClick = useCallback(level => event => onColumnsChange(clickGroupLevelButton(columns, level)), [columns, onColumnsChange]);
   const onColumnGroupButtonClick = useCallback(group => event => onColumnsChange(clickGroupButton(columns, group, specialColumnsCount)), [columns, onColumnsChange, specialColumnsCount]);
 
-  const [cellsState, setCellsState] = useState([]);
+  const [cellsState, setCellsState] = useState(defaultCells || []);
 
   const cells = cellsProp || cellsState;
   const onCellsChange = onCellsChangeProp || setCellsState;
