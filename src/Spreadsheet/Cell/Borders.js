@@ -23,7 +23,7 @@ const Borders = ({ cell }) => {
     left: 0,
     pointerEvents: 'none'
   };
-  const { border } = (cell && cell.style) || { border: {} };
+  const border = (cell && cell.style && cell.style.border) || {};
   style.borderTop = getBorderStyle(border.top);
   style.borderLeft = getBorderStyle(border.left);
   style.borderBottom = getBorderStyle(border.bottom || defaultBorder);
