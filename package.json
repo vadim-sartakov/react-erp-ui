@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "rm -rf lib && cross-env NODE_ENV=production babel src --out-dir lib --ignore src/setupTests.js,src/**/*.stories.js,src/**/*.test.js && copyfiles -u 1 src/**/*.d.ts lib",
+    "build": "rm -rf lib && cross-env NODE_ENV=production babel src --out-dir lib --ignore src/setupTests.js,src/**/*.stories.js,src/**/*.test.js && copyfiles -u 1 src/**/*.d.ts lib && copyfiles -u 1 src/**/*.css lib",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
