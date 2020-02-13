@@ -34,7 +34,8 @@ const Cell = React.memo(props => {
   };
 
   const componentStyle = {
-    display: 'flex'
+    display: 'flex',
+    overflow: 'hidden'
   };
   componentStyle.alignItems = (resultStyle.verticalAlign && flexAlignValuesMap[resultStyle.verticalAlign]) || 'flex-end';
   if (resultStyle.horizontalAlign) componentStyle.justifyContent = flexAlignValuesMap[resultStyle.horizontalAlign];
@@ -54,7 +55,8 @@ const Cell = React.memo(props => {
     <Component
         {...props}
         style={componentStyle}
-        cell={cell}>
+        cell={cell}
+        className="value-cell">
       <Borders cell={cell} />
     </Component>
   )

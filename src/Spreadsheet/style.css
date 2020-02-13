@@ -126,3 +126,8 @@
   background-color: #f1f1f1;
   height: 100%
 }
+
+.spreadsheet .value-cell {
+  background-color: #fff;
+  cursor: cell
+}
