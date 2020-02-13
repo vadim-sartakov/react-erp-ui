@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { storiesOf } from '@storybook/react';
-import classNames from 'classnames';
 import Spreadsheet, { SpreadsheetCell } from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import exportToExcel from './exportToExcel';
@@ -62,7 +61,7 @@ const SpreadsheetComponent = props => {
     const element = (
       <Spreadsheet
           {...props}
-          className={classNames('spreadsheet', classes.spreadsheet)}
+          className={classes.spreadsheet}
           CellComponent={CellComponent}
           printMode />
     );
@@ -73,7 +72,7 @@ const SpreadsheetComponent = props => {
     <div>
       <Spreadsheet
         {...props}
-        className={classNames('spreadsheet', classes.spreadsheet)}
+        className={classes.spreadsheet}
         rows={rows}
         onRowsChange={onRowsChange}
         columns={columns}
