@@ -1,8 +1,7 @@
 import React from 'react';
-import classes from './ResizeLines.module.css';
 
 const ResizeLinesView = ({ type, style }) => {
-  const className = type === 'row' ? classes.row : classes.column;
+  const className = type === 'row' ? 'resize-line-row' : 'resize-line-column';
   return <div className={className} style={style} />;
 };
 

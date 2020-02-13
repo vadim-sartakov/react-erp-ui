@@ -1,9 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { storiesOf } from '@storybook/react';
+import classNames from 'classnames';
 import Spreadsheet, { SpreadsheetCell } from './';
 import { generateGridValues } from '../test-utils/generateValues';
 import exportToExcel from './exportToExcel';
 import print from '../utils/print';
+import './style.css';
 import classes from './Spreadsheet-stories.module.sass';
 
 const gridValuesMapper = valueRow => {
@@ -60,7 +62,7 @@ const SpreadsheetComponent = props => {
     const element = (
       <Spreadsheet
           {...props}
-          className={classes.spreadsheet}
+          className={classNames('spreadsheet', classes.spreadsheet)}
           CellComponent={CellComponent}
           printMode />
     );
@@ -71,11 +73,11 @@ const SpreadsheetComponent = props => {
     <div>
       <Spreadsheet
         {...props}
+        className={classNames('spreadsheet', classes.spreadsheet)}
         rows={rows}
         onRowsChange={onRowsChange}
         columns={columns}
         onColumnsChange={onColumnsChange}
-        className={classes.spreadsheet}
         CellComponent={CellComponent} />
       <div style={{ display: 'flex', alignItems: 'flex-end' }}>
         <button className={classes.exportButton} onClick={handleExportToExcel}>Export to Excel</button>
