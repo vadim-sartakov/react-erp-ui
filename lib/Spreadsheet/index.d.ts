@@ -207,6 +207,8 @@ export interface SpreadsheetProps extends UseSpreadsheetOptions, ViewComponentsO
   columnsPerPage: number;
   width?: number;
   height: number;
+  defaultRowHeight: number;
+  defaultColumnWidth: number;
   cellBorderColor?: string;
   /** When set to 'true', default cell border will be hidden */
   hideGrid?: boolean;
