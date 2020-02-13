@@ -70,16 +70,26 @@
   background-color: #f1f1f1;
 }
 
+.spreadsheet .heading-intersection {
+  cursor: pointer;
+}
+
 .spreadsheet .heading-selected {
   background-color: #dadada;
 }
 
 .spreadsheet .heading-row-number {
-  text-align: right;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  cursor: pointer;
 }
 
 .spreadsheet .heading-column-number {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .spreadsheet .heading-resizer {

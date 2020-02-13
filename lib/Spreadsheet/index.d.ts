@@ -136,8 +136,13 @@ export interface SpreadsheetContextProps {
 export const SpreadsheetContext: Context<SpreadsheetContextProps>
 
 export interface UseSpreadsheetOptions {
+  defaultCells?: Cell[][];
   cells?: Cell[][];
   onCellsChange?: Dispatch<SetStateAction<Cell[][]>>;
+  /** Default value for internal state management */
+  defaultRows?: Meta[];
+  defaultColumns?: Meta[];
+  /** If managing supposed to be by the upper component, passing value as prop */
   rows?: Meta[]; 
   columns?: Meta[];
   onRowsChange?: Dispatch<SetStateAction<Meta[]>>;
