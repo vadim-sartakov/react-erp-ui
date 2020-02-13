@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import classNames from 'classnames';
 import { useScroller, ScrollerContainer } from '../Scroller';
 import { SpreadsheetContext, SpreadsheetCell, useSpreadsheet, useKeyboard, useMouse } from './';
 import GroupLevelButton from './GroupLevelButton';
@@ -374,7 +375,7 @@ const Spreadsheet = inputProps => {
     <SpreadsheetContext.Provider value={contextValue}>
       <ScrollerContainer
           ref={props.scrollerContainerRef}
-          className={props.className}
+          className={classNames('spreadsheet', props.className)}
           onKeyDown={onKeyDown}
           defaultRowHeight={props.defaultRowHeight}
           defaultColumnWidth={props.defaultColumnWidth}
