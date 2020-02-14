@@ -6,7 +6,8 @@ import {
   getGaps,
   getFixedOffsets,
   getScrollPages,
-  getItemsSize
+  getItemsSize,
+  getOverscrolledCellOffset
 } from './utils';
 
 /**
@@ -27,7 +28,8 @@ const useScroller = ({
   lazy,
   loadPage,
   fixRows = 0,
-  fixColumns = 0
+  fixColumns = 0,
+  focusedCell
 }) => {
 
   useEffect(() => {
@@ -36,6 +38,28 @@ const useScroller = ({
       if (scroll.left !== undefined) scrollerContainerRef.current.scrollLeft = scroll.left;
     }
   }, [scrollerContainerRef, scroll]);
+
+  useEffect(() => {
+    if (focusedCell && scrollerContainerRef.current) {
+      const containerRect = scrollerContainerRef.current.getBoundingClientRect();
+      const { overscrollLeft, overscrollTop } = getOverscrolledCellOffset({
+        rows,
+        columns,
+        defaultRowHeight,
+        defaultColumnWidth,
+        rowIndex: focusedCell.row,
+        columnIndex: focusedCell.column,
+        fixRows,
+        fixColumns,
+        scrollTop: scrollerContainerRef.current.scrollTop,
+        scrollLeft: scrollerContainerRef.current.scrollLeft,
+        containerWidth: containerRect.width,
+        containerHeight: containerRect.height
+      });
+      if (overscrollLeft) scrollerContainerRef.current.scrollLeft = scrollerContainerRef.current.scrollLeft + overscrollLeft;
+      if (overscrollTop) scrollerContainerRef.current.scrollTop = scrollerContainerRef.current.scrollTop + overscrollTop;
+    }
+  }, [focusedCell, scrollerContainerRef, rows, columns, defaultColumnWidth, defaultRowHeight, fixRows, fixColumns]);
 
   const [lastRowsPage, setLastRowsPage] = useState(1);
   const [rowsPage, setRowsPage] = useState(0);

@@ -1,6 +1,7 @@
 import { useRef, useEffect, useCallback } from 'react';
 import { expandSelection, getIndexFromCoordinate } from './utils';
-import { getOverscrolledOffset } from '../Scroller/utils';
+import { getOverscrolledCoordinateOffset } from '../Scroller/utils';
+import { getCellsRangeSize } from '../MergedCell/utils';
 
 const rangesAreEqual = (rangeA, rangeB) => {
   return rangeA.start.row === rangeB.start.row &&
@@ -152,8 +153,10 @@ const useMouse = ({
           // Scrolling if selection goes out of container
           const x = event.clientX - scrollerContainerRectRef.current.left;
           const y = event.clientY - scrollerContainerRectRef.current.top;
-          const overscrollLeft = getOverscrolledOffset({ coordinate: x, containerSize: scrollerContainerRectRef.current.width, meta: columns, fixCount: fixColumns, defaultSize: defaultColumnWidth });
-          const overscrollTop = getOverscrolledOffset({ coordinate: y, containerSize: scrollerContainerRectRef.current.height, meta: rows, fixCount: fixRows, defaultSize: defaultRowHeight });
+          const fixedRowsSize = getCellsRangeSize({ startIndex: 0, meta: rows, count: fixRows, defaultSize: defaultRowHeight });
+          const fixedColumnsSize = getCellsRangeSize({ startIndex: 0, meta: columns, count: fixColumns, defaultSize: defaultColumnWidth });
+          const overscrollLeft = getOverscrolledCoordinateOffset({ coordinate: x, containerSize: scrollerContainerRectRef.current.width, fixedSize: fixedRowsSize });
+          const overscrollTop = getOverscrolledCoordinateOffset({ coordinate: y, containerSize: scrollerContainerRectRef.current.height, fixedSize: fixedColumnsSize });
           if (overscrollLeft) {
             scrollerCoverRectRef.current.left = scrollerCoverRectRef.current.left - overscrollLeft;
             scrollerContainerRef.current.scrollLeft = scrollerContainerRef.current.scrollLeft + overscrollLeft;

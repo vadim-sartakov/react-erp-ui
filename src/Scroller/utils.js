@@ -1,4 +1,4 @@
-import { getCellsRangeSize } from "../MergedCell/utils";
+import { getCellsRangeSize, getCellPosition } from "../MergedCell/utils";
 
 /**
  * @typedef ScrollPage
@@ -255,10 +255,47 @@ export const getItemsSize = ({ startIndex = 0, meta, count, defaultSize }) => {
  */
 export const loadPage = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 
-export const getOverscrolledOffset = ({ coordinate, containerSize, meta, fixCount, defaultSize }) => {
-  const fixedSize = getCellsRangeSize({ startIndex: 0, meta, count: fixCount, defaultSize });
+export const getOverscrolledCoordinateOffset = ({ coordinate, containerSize, fixedSize }) => {
   const startOverscroll = coordinate - fixedSize;
   const endOverscroll = coordinate - containerSize;
   if (startOverscroll < 0) return startOverscroll;
   else if (endOverscroll > 0) return endOverscroll;
+};
+
+export const getOverscrolledCellOffset = ({
+  rows,
+  columns,
+  defaultRowHeight,
+  defaultColumnWidth,
+  rowIndex,
+  columnIndex,
+  fixRows,
+  fixColumns,
+  scrollTop,
+  scrollLeft,
+  containerWidth,
+  containerHeight
+}) => {
+  let x = getCellPosition({ meta: columns, index: columnIndex, defaultSize: defaultColumnWidth });
+  let y = getCellPosition({ meta: rows, index: rowIndex, defaultSize: defaultRowHeight });
+
+  const relativeX = x - scrollLeft;
+  const relativeY = y - scrollTop;
+
+  const fixedRowsSize = getCellsRangeSize({ startIndex: 0, meta: rows, count: fixRows, defaultSize: defaultRowHeight });
+  const fixedColumnsSize = getCellsRangeSize({ startIndex: 0, meta: columns, count: fixColumns, defaultSize: defaultColumnWidth });
+
+  const height = (rows && rows[rowIndex] && rows[rowIndex].size) || defaultRowHeight;
+  const width = (columns && columns[columnIndex] && columns[columnIndex].size) || defaultColumnWidth;
+
+  if ((y + height) >= y && relativeY > fixedRowsSize) y += height;
+  if ((x + width) >= x && relativeX > fixedColumnsSize) x += width;
+
+  x -= scrollLeft;
+  y -= scrollTop;
+
+  const overscrollLeft = getOverscrolledCoordinateOffset({ coordinate: x, containerSize: containerWidth, fixedSize: fixedColumnsSize });
+  const overscrollTop = getOverscrolledCoordinateOffset({ coordinate: y, containerSize: containerHeight, fixedSize: fixedRowsSize });
+
+  return { overscrollLeft, overscrollTop };
 };
