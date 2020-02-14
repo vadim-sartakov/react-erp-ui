@@ -1,6 +1,5 @@
 import { useRef, useCallback } from 'react';
 import { expandSelection } from './utils';
-import { getCellPosition, getCellsRangeSize } from '../MergedCell/utils';
 import { getOverscrolledCellOffset } from '../Scroller/utils';
 
 export const moveSelection = ({

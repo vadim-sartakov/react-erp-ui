@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { loadPage } from './utils';
 import Scroller, { ScrollerCell } from './';
 import { generateListValues, generateGridValues } from '../test-utils/generateValues';
 import classes from './Scroller-stories.module.sass';
-import { useEffect } from 'react';
 
 export const generateCustomMeta = (count, size) => [...new Array(count).keys()].map(() => ({ size }));
 
