@@ -1,6 +1,6 @@
 import { useRef, useCallback } from 'react';
-import { expandSelection, getOverscrolledOffset } from './utils';
-import { getCellPosition } from '../utils/gridUtils';
+import { expandSelection } from './utils';
+import { getOverscrolledCellOffset } from '../Scroller/utils';
 
 export const moveSelection = ({
   selectedCells,
@@ -55,8 +55,6 @@ export const moveSelection = ({
 
 const moveScrollPosition = ({
   selectedCells,
-  rowOffset,
-  columnOffset,
   rows,
   columns,
   fixColumns,
@@ -67,20 +65,21 @@ const moveScrollPosition = ({
   scrollerContainerRef
 }) => {
   const lastSelection = selectedCells[selectedCells.length - 1];
-  let x = getCellPosition({ meta: columns, index: lastSelection.end.column, defaultSize: defaultColumnWidth });
-  let y = getCellPosition({ meta: rows, index: lastSelection.end.row, defaultSize: defaultRowHeight });
-  
-  if (rowOffset > 0) y += (rows[lastSelection.end.row] && rows[lastSelection.end.row].size) || defaultRowHeight;
-  if (columnOffset > 0) x += (columns[lastSelection.end.column] && columns[lastSelection.end.column].size) || defaultColumnWidth;
-
   const rect = scrollerContainerRect;
-
-  x -= scrollerContainerRef.current.scrollLeft;
-  y -= scrollerContainerRef.current.scrollTop;
-
-  const overscrollLeft = getOverscrolledOffset({ coordinate: x, containerSize: rect.width, meta: columns, fixCount: fixColumns, defaultSize: defaultColumnWidth });
-  const overscrollTop = getOverscrolledOffset({ coordinate: y, containerSize: rect.height, meta: rows, fixCount: fixRows, defaultSize: defaultRowHeight });
-
+  const { overscrollLeft, overscrollTop } = getOverscrolledCellOffset({
+    rows,
+    columns,
+    defaultRowHeight,
+    defaultColumnWidth,
+    rowIndex: lastSelection.end.row,
+    columnIndex: lastSelection.end.column,
+    fixRows,
+    fixColumns,
+    scrollTop: scrollerContainerRef.current.scrollTop,
+    scrollLeft: scrollerContainerRef.current.scrollLeft,
+    containerWidth: rect.width,
+    containerHeight: rect.height
+  });
   if (overscrollLeft) scrollerContainerRef.current.scrollLeft = scrollerContainerRef.current.scrollLeft + overscrollLeft;
   if (overscrollTop) scrollerContainerRef.current.scrollTop = scrollerContainerRef.current.scrollTop + overscrollTop;
 };

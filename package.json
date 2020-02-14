@@ -1,26 +1,23 @@
 {
-  "name": "react-erp-ui",
-  "version": "0.1.0",
+  "name": "@vadim-sartakov/react-erp-ui",
+  "version": "0.0.1",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "dependencies": {
     "classnames": "^2.2.6",
     "exceljs": "^3.7.0",
     "lodash": "^4.17.15",
     "prop-types": "^15.7.2",
     "react": "^16.10.1",
-    "react-dom": "^16.10.1",
-    "react-jss": "^8.6.1"
+    "react-dom": "^16.10.1"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "rm -rf lib && cross-env NODE_ENV=production babel src --out-dir lib --ignore src/setupTests.js,src/**/*.stories.js,src/**/*.test.js && copyfiles -u 1 src/**/*.d.ts lib && copyfiles -u 1 src/**/*.css lib",
+    "build": "rm -rf lib && mkdir lib && cp package.json .npmignore lib/ && cross-env NODE_ENV=production babel src --out-dir lib --ignore src/setupTests.js,src/**/*.stories.js,src/**/*.test.js && copyfiles -u 1 src/**/*.d.ts lib && copyfiles -u 1 src/**/*.css lib",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "rm -rf docs/storybook && build-storybook -s public -o docs/storybook",
-    "build-docs": "rm -rf docs/docs && typedoc --includeDeclarations --excludeExternals --ignoreCompilerErrors --out docs/docs --readme README.md src/",
-    "typescript": "tsc"
+    "build-docs": "rm -rf docs/docs && typedoc --includeDeclarations --excludeExternals --ignoreCompilerErrors --out docs/docs --readme README.md src/"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -36,6 +33,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.2",
