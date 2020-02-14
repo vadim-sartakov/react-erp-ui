@@ -3,30 +3,27 @@ import moment from 'moment';
 
 /** @type {import('./').DatePickerInputType} */
 const DatePickerInput = ({
-  format,
-  value,
+  format = 'DD.MM.YYYY',
+  defaultValue,
   onChange,
-  onBlur,
   ...props
 }) => {
-  const [valueState, setValueState] = useState('');
+  const inputCaretPosition = useRef();
+  const [inputValue, setInputValue] = useState((defaultValue && defaultValue.format(format)) || '');
   
-  const handleChange = useCallback(event => {
-    const nextValue = event.target.value;
-    console.log(event.target.selectionStart)
-    onChange && onChange(nextValue, event);
-  }, [onChange]);
-
-  const handleBlur = useCallback(event => {
-
-    onBlur && onBlur(event);
-  }, [onBlur]);
+  const handleInputChange = useCallback(event => {
+    const nextInputValue = event.target.value;
+    inputCaretPosition.current = event.target.selectionStart;
+    setInputValue(nextInputValue);
+    const nextValue = moment(nextInputValue, format, true);
+    onChange && onChange(nextValue);
+  }, [format, onChange]);
 
   return (
     <input
         {...props}
-        onChange={handleChange}
-        onBlur={handleBlur} />
+        value={inputValue}
+        onChange={handleInputChange} />
   );
 };
 
