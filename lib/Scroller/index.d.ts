@@ -47,6 +47,8 @@ export interface UseScrollerOptions extends ScrollerOptionsBase {
    * If values change, scroll container sets new scroll values.
    */
   scroll: { top: number, left: number };
+  /** To navigate scroller to specific cell */
+  focusedCell: { row: number, column: number }
 }
 
 export interface UseScrollerResult {
