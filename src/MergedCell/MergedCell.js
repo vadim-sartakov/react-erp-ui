@@ -1,5 +1,5 @@
 import React from 'react';
-import { getCellPosition, getCellsRangeSize } from '../utils/gridUtils';
+import { getCellPosition, getCellsRangeSize } from './utils';
 
 export function normalizeMergedRange(mergedRange) {
   return {

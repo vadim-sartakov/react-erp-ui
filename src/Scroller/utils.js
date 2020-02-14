@@ -1,3 +1,5 @@
+import { getCellsRangeSize } from "../MergedCell/utils";
+
 /**
  * @typedef ScrollPage
  * @property {number} start
@@ -252,3 +254,11 @@ export const getItemsSize = ({ startIndex = 0, meta, count, defaultSize }) => {
  * @returns {Object[]}
  */
 export const loadPage = (value, page, itemsPerPage) => value.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
+
+export const getOverscrolledOffset = ({ coordinate, containerSize, meta, fixCount, defaultSize }) => {
+  const fixedSize = getCellsRangeSize({ startIndex: 0, meta, count: fixCount, defaultSize });
+  const startOverscroll = coordinate - fixedSize;
+  const endOverscroll = coordinate - containerSize;
+  if (startOverscroll < 0) return startOverscroll;
+  else if (endOverscroll > 0) return endOverscroll;
+};

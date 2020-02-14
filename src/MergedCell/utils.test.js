@@ -1,6 +1,6 @@
-import { getCellsRangeSize, getCellPosition } from './gridUtils';
+import { getCellsRangeSize, getCellPosition } from './utils';
 
-describe('gridUtils', () => {
+describe('MergedCell utils', () => {
   describe('getCellsRangeSize', () => {
 
     it('should calculate size', () => {

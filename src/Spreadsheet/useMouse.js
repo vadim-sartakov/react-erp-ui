@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback } from 'react';
-import { expandSelection, getIndexFromCoordinate, getOverscrolledOffset } from './utils';
+import { expandSelection, getIndexFromCoordinate } from './utils';
+import { getOverscrolledOffset } from '../Scroller/utils';
 
 const rangesAreEqual = (rangeA, rangeB) => {
   return rangeA.start.row === rangeB.start.row &&

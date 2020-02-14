@@ -1,6 +1,6 @@
 import React from 'react';
 import ResizeLinesView from './ResizeLinesView';
-import { getCellsRangeSize } from '../../utils/gridUtils';
+import { getCellsRangeSize } from '../../MergedCell/utils';
 
 const ResizeLines = ({
   Component = ResizeLinesView,
