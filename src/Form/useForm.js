@@ -10,6 +10,9 @@ const useForm = ({
   handleSubmit: handleSubmitProp
 }) => {
   const [stateValue, setStateValue] = useState(defaultValue || {});
+  
+  const [fieldsValidating, setFieldsValidating] = useState({});
+
   const [fieldErrors, setFieldErrors] = useState({});
   const [formErrors, setFormErrors] = useState({});
   const [submitErrors, setSubmitErrors] = useState({});
@@ -28,7 +31,9 @@ const useForm = ({
       if (!formErrors) {
         return;
       } else if (formErrors.then) {
-        formErrors.then(formErrors => setFormErrors(formErrors || {}));
+        formErrors.then(formErrors => {
+          setFormErrors(formErrors || {});
+        });
       } else {
         setFormErrors(formErrors || {});
       }
@@ -39,7 +44,7 @@ const useForm = ({
 
   const handleSubmit = useCallback(event => {
     event && event.preventDefault();
-    if (submitting || Object.keys(fieldErrors).length) return;
+    if (submitting || Object.keys(fieldErrors).length || Object.keys(formErrors).length) return;
     const submitErrors = handleSubmitProp(value);
     if (submitErrors && submitErrors.then) {
       setSubmitting(true);
@@ -50,7 +55,7 @@ const useForm = ({
     } else {
       setSubmitErrors(submitErrors || {});
     }
-  }, [value, fieldErrors, handleSubmitProp, submitting]);
+  }, [value, fieldErrors, formErrors, handleSubmitProp, submitting]);
 
   return {
     submitting,

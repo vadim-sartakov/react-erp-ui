@@ -11,7 +11,7 @@ const FieldComponent = ({ value, onChange, error }) => {
           className="field"
           value={value}
           onChange={event => onChange(event.target.value)} />
-      <div className="message">{error}</div>
+      <div className="field-message">{error}</div>
     </div>
   )
 };
@@ -55,14 +55,14 @@ describe('Form', () => {
     const onSubmit = jest.fn(() => ({ 'field': 'Submit error' }));
     const wrapper = mount(<TestComponent value={{ field: 'test' }} onSubmit={onSubmit} />);
     act(() => { wrapper.find('.submit').simulate('click'); });
-    expect(wrapper.find('.message').text()).toEqual('Submit error');
+    expect(wrapper.find('.field-message').text()).toEqual('Submit error');
   });
 
   it('should show submit async error', async () => {
     const onSubmit = jest.fn(async () => ({ 'field': 'Submit error' }));
     const wrapper = mount(<TestComponent value={{ field: 'test' }} onSubmit={onSubmit} />);
     await act(async () => { wrapper.find('.submit').simulate('click'); });
-    expect(wrapper.find('.message').text()).toEqual('Submit error');
+    expect(wrapper.find('.field-message').text()).toEqual('Submit error');
   });
 
   it('should not submit on sync validation error', () => {
@@ -71,17 +71,18 @@ describe('Form', () => {
     let wrapper;
     act(() => wrapper = mount(<TestComponent value={{ field: 'test' }} onSubmit={onSubmit} validate={validate} />));
     act(() => { wrapper.find('.submit').simulate('click'); });
-    expect(wrapper.find('.message').text()).toEqual('Validation error');
+    expect(wrapper.find('.field-message').text()).toEqual('Validation error');
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  /*it('should not submit on async validation error', async () => {
+  /*it('should not submit when field validation is processing', () => {
     const onSubmit = jest.fn();
-    const validate = () => ({ 'field': 'Validation error' });
+    const validate = async () => ({ 'field': 'Validation error' });
     let wrapper;
     act(() => wrapper = mount(<TestComponent value={{ field: 'test' }} onSubmit={onSubmit} validate={validate} />));
     act(() => { wrapper.find('.submit').simulate('click'); });
-    expect(wrapper.find('.message').text()).toEqual('Validation error');
+    expect(wrapper.find('.field-message').text()).toEqual('Validation error');
+    expect(onSubmit).not.toHaveBeenCalled();
   });*/
 
 });
