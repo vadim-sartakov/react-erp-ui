@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, FunctionComponent, HTMLAttributes } from 'react';
 import { Moment } from 'moment';
 
-export interface DatePickerInputProps extends HTMLAttributes<{}> {
+export interface InputDateProps extends HTMLAttributes<{}> {
   defaultValue?: Moment;
   value?: Moment;
   onChange?: Dispatch<SetStateAction<Moment>>;
@@ -9,5 +9,9 @@ export interface DatePickerInputProps extends HTMLAttributes<{}> {
   format: string;
 }
 
-export type DatePickerInputType = FunctionComponent<DatePickerInputProps>
-export declare const DatePickerInput: DatePickerInputType
+export type InputDateType = FunctionComponent<InputDateProps>
+
+/**
+ * Date time text input component. Provides masked input according to specified date format.
+ */
+export declare const DatePickerInput: InputDateType

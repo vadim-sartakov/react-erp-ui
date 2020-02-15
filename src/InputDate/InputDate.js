@@ -1,9 +1,10 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
+import InputMask from 'react-input-mask';
 import moment from 'moment';
 
-/** @type {import('./').DatePickerInputType} */
-const DatePickerInput = ({
-  format = 'DD.MM.YYYY',
+/** @type {import('./').InputDateType} */
+const InputDate = ({
+  format = 'DD/MM/YYYY',
   defaultValue,
   onChange,
   ...props
@@ -19,12 +20,15 @@ const DatePickerInput = ({
     onChange && onChange(nextValue);
   }, [format, onChange]);
 
+  const mask = useMemo(() => format.replace(/[\w]/g, '9'), [format]);
+
   return (
-    <input
+    <InputMask
         {...props}
+        mask={mask}
         value={inputValue}
         onChange={handleInputChange} />
   );
 };
 
-export default DatePickerInput;
+export default InputDate;

@@ -1,13 +1,13 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import DatePickerInput from './DatePickerInput';
+import InputDate from './InputDate';
 
-export const keyboardInput = () => (
-  <DatePickerInput
+export const defaultComponent = () => (
+  <InputDate
       style={{ padding: 10, border: 'solid 1px #ccc', borderRadius: 4 }}
       onChange={action('onChange')} />
 );
 
-storiesOf('DatePicker', module)
-    .add('keyboard input', keyboardInput);
+storiesOf('InputDate', module)
+    .add('default', defaultComponent);
