@@ -41,7 +41,7 @@ const useForm = ({
     event && event.preventDefault();
     if (submitting || Object.keys(fieldErrors).length) return;
     const submitErrors = handleSubmitProp(value);
-    if (submitErrors.then) {
+    if (submitErrors && submitErrors.then) {
       setSubmitting(true);
       submitErrors.then(submitErrors => {
         setSubmitErrors(submitErrors || {});

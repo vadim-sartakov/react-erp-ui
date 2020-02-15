@@ -48,7 +48,7 @@ export declare function useForm(options: UseFormOptions): UseFormResult
 /** Field validate function. If there is error it should return error message, undefined otherwise */
 export type ValidateFieldCallback = (value: any, allValues: Object, fieldName: string) => string | undefined;
 
-export interface Field {
+export interface FieldProps {
   name: string;
   Component: FunctionComponent;
   /**
@@ -57,3 +57,5 @@ export interface Field {
    */
   validators: Array<ValidateFieldCallback>;
 }
+
+export declare const Field: FunctionComponent<FieldProps>
