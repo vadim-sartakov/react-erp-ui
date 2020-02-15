@@ -11,11 +11,11 @@ const Day = ({ day }) => {
 
 /** @type {import('./').MonthCalendarType} */
 const MonthCalendar = ({
-  month = moment(),
+  month,
   DayNameComponent = DayName,
   DayComponent = Day
 }) => {
-  const startDate = month.clone().startOf('month').startOf('week');
+  const startDate = moment(month).clone().startOf('month').startOf('week');
   return (
     <div className="month-calendar">
       <div className="days-of-week">
