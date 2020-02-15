@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, Dispatch, SetStateAction } from "react";
 
 /**
  * Field errors object.
@@ -43,7 +43,7 @@ export interface UseFormResult {
 }
 
 export type useFormType = (options: UseFormOptions) => UseFormResult
-export declare const useForm = useFormType;
+export declare function useForm(options: UseFormOptions): UseFormResult
 
 /** Field validate function. If there is error it should return error message, undefined otherwise */
 export type ValidateFieldCallback = (value: any, allValues: Object, fieldName: string) => string | undefined;
