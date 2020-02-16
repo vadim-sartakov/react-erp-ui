@@ -4,17 +4,21 @@ import FormContext from './FormContext';
 const Form = ({
   value,
   onChange,
-  fieldErrors,
-  setFieldErrors,
+  errors,
+  setErrors,
+  validatingFields,
+  setValidatingFields,
   children
 }) => {
   return (
     <FormContext.Provider value={useMemo(() => ({
       value,
       onChange,
-      fieldErrors,
-      setFieldErrors
-    }), [value, onChange, fieldErrors, setFieldErrors])}>
+      errors,
+      setErrors,
+      validatingFields,
+      setValidatingFields
+    }), [value, onChange, errors, setErrors, validatingFields, setValidatingFields])}>
       {children}
     </FormContext.Provider>
   )

@@ -1,15 +1,27 @@
-import { FunctionComponent, Dispatch, SetStateAction } from "react";
+import { FunctionComponent, Dispatch, SetStateAction, Context, ReactElement } from "react";
 
 /**
  * Field errors object.
- * Keys are field paths, values are error messages or undefined if there is no error
+ * Keys are field paths, values are error messages or undefined if there is no error.
+ * There is also special '_form' error field for general error message
  */
 export type FieldErrors = { [field:string]: string }
+
+export interface FormContextProps {
+  value: Object;
+  onChange: Dispatch<SetStateAction<Object>>;
+  errors: FieldErrors;
+  setErrors: Dispatch<SetStateAction<FieldErrors>>;
+  validatingFields: Array<string>;
+  setValidatingFields: Dispatch<SetStateAction<string>>;
+  children: ReactElement
+}
+export declare const FormContext: Context<FormContextProps>
 
 export interface FormProps {
   value?: Object;
   onChange?: (fieldName: string, value: any) => void;
-  fieldErrors: FieldErrors;
+  errors: FieldErrors;
   setFieldErrors: Dispatch<SetStateAction<FieldErrors>>;
 }
 
@@ -33,6 +45,8 @@ export interface UseFormOptions {
    * Could be async.
    */
   handleSubmit?: (value: Object) => FieldErrors | Promise<FieldErrors>;
+  /** Whether one of form's field has been touched or not */
+  dirty: boolean;
 }
 
 export interface UseFormResult {
@@ -40,6 +54,8 @@ export interface UseFormResult {
   /** Callback which should be passed to submit trigger (Button or html form's onSubmit) */
   onSubmit: Function;
   formProps: FormProps;
+  /** Array of field paths which are currently validating */
+  validatingFields: Array<string>;
 }
 
 export type useFormType = (options: UseFormOptions) => UseFormResult
@@ -59,3 +75,13 @@ export interface FieldProps {
 }
 
 export declare const Field: FunctionComponent<FieldProps>
+
+export interface FieldComponentProps {
+  value: any;
+  onChange: (value: any) => void;
+  error: string;
+  validating: boolean;
+  dirty: boolean;
+}
+
+export type FieldComponent = FunctionComponent<FieldComponentProps>

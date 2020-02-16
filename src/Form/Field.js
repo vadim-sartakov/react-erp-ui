@@ -12,39 +12,46 @@ const Field = ({
   const {
     value: formValue,
     onChange,
-    fieldErrors,
-    setFieldErrors
+    errors,
+    setErrors: setErrorsContext,
+    validatingFields,
+    setValidatingFields
   } = useContext(FormContext);
 
   let value = _.get(formValue, name);
-  const error = fieldErrors && fieldErrors[name];
+  const error = errors && errors[name];
 
   useEffect(() => {
+    if (!validators || !validators.length) return;
+
     const setErrors = error => errors => {
       if (error) return { ...errors, [name]: error };
       else return _.omit(errors, name);
     };
 
-    const error = validators && validators.reduce((acc, validator) => {
-      if (acc) return acc;
+    let error;
+    for (let i = 0; i < validators.length; i++) {
+      if (error) break;
+      const validator = validators[i];
+      error = validator(value, formValue, name);
+    }
 
-      const error = validator(value, formValue, name);
-      if (!error) return acc;
-
-      if (error.then) {
-        return error.then(error => {
-          setFieldErrors(setErrors(error));
-        });
-      } else {
-        return error;
-      }
-    }, false);
-    setFieldErrors(setErrors(error));
-  }, [value, formValue, name, setFieldErrors, validators]);
+    if (error.then) {
+      setValidatingFields(validatingFields => [...validatingFields, name]);
+      return error.then(error => {
+        setErrorsContext(setErrors(error));
+        setValidatingFields(validatingFields => validatingFields.filter(field => field !== name));
+      });
+    } else {
+      setErrorsContext(setErrors(error));
+    }
+  }, [value, formValue, name, setErrorsContext, validators, setValidatingFields]);
 
   const handleChange = useCallback((fieldValue, event) => {
     onChange(name, fieldValue, event);
   }, [name, onChange]);
+
+  const validating = validatingFields.some(field => field === name);
 
   return (
     <Component
@@ -52,7 +59,8 @@ const Field = ({
         name={name}
         value={value}
         onChange={handleChange}
-        error={error} />
+        error={error}
+        validating={validating} />
   );
 };
 

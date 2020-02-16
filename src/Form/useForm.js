@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import setIn from 'lodash/fp/set';
 
 /** @type {import('./').useFormType} */
@@ -11,9 +11,10 @@ const useForm = ({
 }) => {
   const [stateValue, setStateValue] = useState(defaultValue || {});
   
-  const [fieldsValidating, setFieldsValidating] = useState({});
+  const [formValidating, setFormValidating] = useState(false);
+  const [validatingFields, setValidatingFields] = useState([]);
 
-  const [fieldErrors, setFieldErrors] = useState({});
+  const [fieldErrors, setErrors] = useState({});
   const [formErrors, setFormErrors] = useState({});
   const [submitErrors, setSubmitErrors] = useState({});
 
@@ -31,8 +32,10 @@ const useForm = ({
       if (!formErrors) {
         return;
       } else if (formErrors.then) {
+        setFormValidating(true);
         formErrors.then(formErrors => {
           setFormErrors(formErrors || {});
+          setFormValidating(false);
         });
       } else {
         setFormErrors(formErrors || {});
@@ -44,7 +47,7 @@ const useForm = ({
 
   const handleSubmit = useCallback(event => {
     event && event.preventDefault();
-    if (submitting || Object.keys(fieldErrors).length || Object.keys(formErrors).length) return;
+    if (submitting || formValidating || validatingFields.length || Object.keys(fieldErrors).length || Object.keys(formErrors).length) return;
     const submitErrors = handleSubmitProp(value);
     if (submitErrors && submitErrors.then) {
       setSubmitting(true);
@@ -55,20 +58,27 @@ const useForm = ({
     } else {
       setSubmitErrors(submitErrors || {});
     }
-  }, [value, fieldErrors, formErrors, handleSubmitProp, submitting]);
+  }, [value, fieldErrors, formErrors, handleSubmitProp, submitting, formValidating, validatingFields]);
+
+  const errors = useMemo(() => {
+    return {
+      ...fieldErrors,
+      ...formErrors,
+      ...submitErrors
+    }
+  }, [fieldErrors, formErrors, submitErrors]);
 
   return {
     submitting,
     onSubmit: handleSubmit,
+    errors,
     formProps: {
       value,
       onChange: handleChange,
-      fieldErrors: {
-        ...fieldErrors,
-        ...formErrors,
-        ...submitErrors
-      },
-      setFieldErrors
+      errors,
+      setErrors,
+      validatingFields,
+      setValidatingFields
     }
   }
 };

@@ -4,7 +4,7 @@ import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
 import { useForm, Form, Field } from './';
 
-const FieldComponent = ({ value, onChange, error }) => {
+const FieldComponent = ({ value, onChange, error, validating }) => {
   return (
     <div>
       <input
@@ -12,17 +12,19 @@ const FieldComponent = ({ value, onChange, error }) => {
           value={value}
           onChange={event => onChange(event.target.value)} />
       <div className="field-message">{error}</div>
+      {validating && <div className="field-validating-message">Validating</div>}
     </div>
   )
 };
 
-const TestComponent = ({ value, onChange, onSubmit: handleSubmit, validate }) => {
-  const { formProps, onSubmit, submitting } = useForm({ value, onChange, handleSubmit, validate });
+const TestComponent = ({ value, onChange, onSubmit: handleSubmit, validate, fieldValidators }) => {
+  const { errors, formProps, onSubmit, submitting } = useForm({ value, onChange, handleSubmit, validate });
   return (
     <Form {...formProps}>
       <div>
-        <Field Component={FieldComponent} name="field" />
+        <Field Component={FieldComponent} name="field" validators={fieldValidators} />
         <button type="submit" className={classNames('submit', { submitting })} onClick={onSubmit}>Submit</button>
+        <div className="form-message">{errors._form}</div>
       </div>
     </Form>
   );
@@ -44,11 +46,67 @@ describe('Form', () => {
     expect(onSubmit.mock.calls[0][0]).toEqual({ field: 'test' });
   });
 
-  it('should set submitting status on async submit', () => {
+  it('should show sync field error', () => {
+    const value = { 'field': 'test' };
+    const validators = [() => 'Field error'];
+    let wrapper;
+    act(() => { wrapper = mount(<TestComponent value={value} fieldValidators={validators} />) });
+    expect(wrapper.find('.field-message').text()).toEqual('Field error');
+  });
+
+  it('should show async field error', async () => {
+    const value = { 'field': 'test' };
+    const validators = [async () => 'Field error'];
+    let wrapper;
+    await act(async () => { wrapper = mount(<TestComponent value={value} fieldValidators={validators} />) });
+    expect(wrapper.find('.field-message').text()).toEqual('Field error');
+  });
+
+  it('should not submit on field error', () => {
+    const value = { 'field': 'test' };
+    const onSubmit = jest.fn();
+    const validators = [() => 'Field error'];
+    let wrapper;
+    act(() => wrapper = mount(<TestComponent value={value} onSubmit={onSubmit} fieldValidators={validators} />));
+    act(() => { wrapper.find('.submit').simulate('click'); });
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('should not submit when field validation is processing', () => {
+    const value = { 'field': 'test' };
+    const onSubmit = jest.fn();
+    const validators = [async () => 'Field error'];
+    let wrapper;
+    act(() => wrapper = mount(<TestComponent value={value} onSubmit={onSubmit} fieldValidators={validators} />));
+    act(() => { wrapper.find('.submit').simulate('click'); });
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('should show async validating status on field', () => {
+    const value = { 'field': 'test' };
+    const validators = [async () => 'Field error'];
+    let  wrapper = mount(<TestComponent value={value} fieldValidators={validators} />);
+    expect(wrapper.find('.field-validating-message').length).toBe(1);
+  });
+
+  it('should proceed normally when field validation passes', async () => {
+    const onSubmit = jest.fn();
+    const value = { 'field': 'test' };
+    const validators = [async () => undefined];
+    let wrapper;
+    await act(async () => wrapper = mount(<TestComponent value={value} fieldValidators={validators} onSubmit={onSubmit} />));
+    act(() => { wrapper.find('.submit').simulate('click'); });
+    expect(wrapper.find('.field-validating-message').length).toBe(0);
+    expect(onSubmit).toHaveBeenCalled();
+  });
+
+  it('should set submitting status on async submit and be unable to submit again', () => {
     const onSubmit = jest.fn(async () => {});
     const wrapper = mount(<TestComponent value={{ field: 'test' }} onSubmit={onSubmit} />);
     wrapper.find('.submit').simulate('click');
     expect(wrapper.find('.submit').hasClass('submitting')).toBeTruthy();
+    wrapper.find('.submit').simulate('click');
+    expect(onSubmit).toHaveBeenCalledTimes(1);
   });
 
   it('should show submit sync error', () => {
@@ -75,14 +133,13 @@ describe('Form', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  /*it('should not submit when field validation is processing', () => {
+  it('should not submit when form validation is processing', () => {
     const onSubmit = jest.fn();
-    const validate = async () => ({ 'field': 'Validation error' });
+    const validate = async () => ({ '_form': 'Validation error' });
     let wrapper;
     act(() => wrapper = mount(<TestComponent value={{ field: 'test' }} onSubmit={onSubmit} validate={validate} />));
     act(() => { wrapper.find('.submit').simulate('click'); });
-    expect(wrapper.find('.field-message').text()).toEqual('Validation error');
     expect(onSubmit).not.toHaveBeenCalled();
-  });*/
+  });
 
 });
