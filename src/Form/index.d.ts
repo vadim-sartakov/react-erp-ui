@@ -9,7 +9,7 @@ export type FieldErrors = { [field:string]: string }
 
 export interface FormContextProps {
   registeredFields: MutableRefObject<Array<string>>;
-  initialValue: MutableRefObject<Object>;
+  defaultValue: MutableRefObject<Object>;
   value: Object;
   onChange: Dispatch<SetStateAction<Object>>;
   errors: FieldErrors;
@@ -23,7 +23,7 @@ export declare const FormContext: Context<FormContextProps>
 
 export interface FormProps {
   registeredFields: MutableRefObject<Array<string>>;
-  initialValue: MutableRefObject<Object>;
+  defaultValue: MutableRefObject<Object>;
   value?: Object;
   onChange?: (fieldName: string, value: any) => void;
   errors: FieldErrors;
@@ -59,10 +59,6 @@ export interface UseFormOptions {
 }
 
 export interface UseFormResult {
-  /**
-   * Initializes form with new default values. It will clear all 'dirty' fields state
-   */
-  initialize: (value: Object) => void;
   /** Indicates if submi is processing */
   submitting: boolean;
   /** Indicates if async form validation is processing */
