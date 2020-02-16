@@ -1,30 +1,35 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import setIn from 'lodash/fp/set';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+
+const defaultValueObject = {};
 
 /** @type {import('./').useFormType} */
 const useForm = ({
-  defaultValue,
+  defaultValue = defaultValueObject,
   value: valueProp,
   onChange: onChangeProp,
   validate,
   handleSubmit: handleSubmitProp
 }) => {
-  const [stateValue, setStateValue] = useState(defaultValue || {});
+  const registeredFields = useRef([]);
+
+  // Cleaning up dirty state on initialize
+  useEffect(() => {
+    setDirtyFields([]);
+  }, [defaultValue]);
+
+  const [stateValue, setStateValue] = useState(defaultValue);
   
   const [formValidating, setFormValidating] = useState(false);
   const [validatingFields, setValidatingFields] = useState([]);
 
-  const [fieldErrors, setErrors] = useState({});
+  const [fieldErrors, setFieldErrors] = useState({});
   const [formErrors, setFormErrors] = useState({});
   const [submitErrors, setSubmitErrors] = useState({});
 
+  const [dirtyFields, setDirtyFields] = useState([]);
+
   const value = valueProp || stateValue;
   const onChange = onChangeProp || setStateValue;
-
-  const handleChange = useCallback((property, propertyValue) => {
-    const nextValue = setIn(property, propertyValue, value);
-    onChange(nextValue);
-  }, [value, onChange]);
 
   useEffect(() => {
     if (validate) {
@@ -48,6 +53,7 @@ const useForm = ({
   const handleSubmit = useCallback(event => {
     event && event.preventDefault();
     if (submitting || formValidating || validatingFields.length || Object.keys(fieldErrors).length || Object.keys(formErrors).length) return;
+    setDirtyFields([...registeredFields.current]);
     const submitErrors = handleSubmitProp(value);
     if (submitErrors && submitErrors.then) {
       setSubmitting(true);
@@ -68,17 +74,26 @@ const useForm = ({
     }
   }, [fieldErrors, formErrors, submitErrors]);
 
+  const validating = formValidating || validatingFields.length;
+  const dirty = dirtyFields.length > 0;
+
   return {
     submitting,
+    validating,
     onSubmit: handleSubmit,
-    errors,
+    error: errors._form,
+    dirty,
     formProps: {
+      registeredFields,
+      defaultValue,
       value,
-      onChange: handleChange,
+      onChange,
       errors,
-      setErrors,
+      setErrors: setFieldErrors,
       validatingFields,
-      setValidatingFields
+      setValidatingFields,
+      dirtyFields,
+      setDirtyFields
     }
   }
 };

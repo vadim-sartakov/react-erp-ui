@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import _ from 'lodash';
+import setIn from 'lodash/fp/set';
 import FormContext from './FormContext';
 import { useCallback } from 'react';
 
@@ -10,14 +11,23 @@ const Field = ({
   ...props
 }) => {
   const {
+    registeredFields,
+    defaultValue: defaultFormValue,
     value: formValue,
     onChange,
     errors,
     setErrors: setErrorsContext,
     validatingFields,
-    setValidatingFields
+    setValidatingFields,
+    dirtyFields,
+    setDirtyFields
   } = useContext(FormContext);
 
+  useEffect(() => {
+    registeredFields.current = [...registeredFields.current, name];
+  }, [registeredFields, name]);
+
+  const defaultValue = _.get(defaultFormValue, name);
   let value = _.get(formValue, name);
   const error = errors && errors[name];
 
@@ -33,7 +43,7 @@ const Field = ({
     for (let i = 0; i < validators.length; i++) {
       if (error) break;
       const validator = validators[i];
-      error = validator(value, formValue, name);
+      error = validator(value, name);
     }
 
     if (error.then) {
@@ -45,13 +55,26 @@ const Field = ({
     } else {
       setErrorsContext(setErrors(error));
     }
-  }, [value, formValue, name, setErrorsContext, validators, setValidatingFields]);
+  }, [value, name, setErrorsContext, validators, setValidatingFields]);
 
   const handleChange = useCallback((fieldValue, event) => {
-    onChange(name, fieldValue, event);
-  }, [name, onChange]);
+    onChange(formValue => {
+      const nextValue = setIn(name, fieldValue, formValue);
+      if (_.isEqual(fieldValue, defaultValue)) {
+        setDirtyFields(dirtyFields => dirtyFields.filter(field => field !== name));
+      } else {
+        setDirtyFields(dirtyFields => [...dirtyFields, name]);
+      }
+      return nextValue;
+    });
+  }, [name, onChange, setDirtyFields, defaultValue]);
+
+  const handleBlur = useCallback(() => {
+    setDirtyFields(dirtyFields => [...dirtyFields, name]);
+  }, [name, setDirtyFields]);
 
   const validating = validatingFields.some(field => field === name);
+  const dirty = dirtyFields.some(field => field === name);
 
   return (
     <Component
@@ -59,8 +82,10 @@ const Field = ({
         name={name}
         value={value}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={error}
-        validating={validating} />
+        validating={validating}
+        dirty={dirty} />
   );
 };
 
