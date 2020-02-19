@@ -1,4 +1,4 @@
-import { getCellsRangeSize, getCellPosition } from "../MergedCell/utils";
+import { getCellsRangeSize, getCellPosition } from "../grid/MergedCell/utils";
 
 /**
  * @typedef ScrollPage

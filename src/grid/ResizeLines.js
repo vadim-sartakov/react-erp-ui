@@ -1,9 +1,7 @@
 import React from 'react';
-import ResizeLinesView from './ResizeLinesView';
-import { getCellsRangeSize } from '../../MergedCell/utils';
+import { getCellsRangeSize } from './MergedCell/utils';
 
 const ResizeLines = ({
-  Component = ResizeLinesView,
   type,
   meta,
   fixCount,
@@ -29,35 +27,35 @@ const ResizeLines = ({
     meta
   });
 
+  let className, style;
+
   if (type === 'column') {
     const width = size;
-    const style = {
+    className = 'resize-line-column';
+    style = {
       position: index < fixCount ? 'sticky' : 'absolute',
       width,
       height: '100%',
       top: 0,
       left: 0
     };
-    return (
-      <div style={containerStyle}>
-        <Component type={type} style={style} />
-      </div>
-    );
   } else if (type === 'row') {
     const height = size;
-    const style = {
+    className = 'resize-line-row';
+    style = {
       position: index < fixCount ? 'sticky' : 'absolute',
       height,
       width: '100%',
       top: 0,
       left: 0
     };
-    return (
-      <div style={containerStyle}>
-        <Component type={type} style={style} />
-      </div>
-    );
   }
+
+  return (
+    <div style={containerStyle}>
+      <div className={className} style={style} />
+    </div>
+  );
 
 };
 

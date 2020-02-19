@@ -1,7 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import {} from './';
-import './Table.stories.sass';
+import './Table-stories.module.sass';
 
 export const TableComponent = ({ ...props }) => {
   return (

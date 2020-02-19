@@ -1,6 +1,6 @@
 import { MutableRefObject, HTMLAttributes, Dispatch, SetStateAction, FunctionComponent, MouseEventHandler, Context, CSSProperties } from 'react';
 import { ScrollerCellProps } from '../Scroller/index';
-import { MergedCellProps } from '../MergedCell/index';
+import { MergedCellProps } from '../grid/MergedCell/index';
 
 export interface Font {
   name?: string;
@@ -110,13 +110,9 @@ export interface CellComponentProps {
 export interface ViewComponentsOptions {
   /** Value cell */
   CellComponent: FunctionComponent<CellComponentProps>;
-  /** Fixed rows and columns lines */
-  FixLinesComponent?: FunctionComponent<FixLinesViewProps>;
   /** Rows and columns numbers */
   HeadingComponent?: FunctionComponent<HeadingViewProps>;
   HeadingsIntersectionComponent?: FunctionComponent<HTMLAttributes<{}>>;
-  /** Empty area of special rows and columns  */
-  SpecialCellEmptyAreaComponent: FunctionComponent<HTMLAttributes<{}>>;
   /** Row group level buttons which allows to manage expand/collapse state */
   GroupLevelButtonComponent?: FunctionComponent<GroupLevelButtonViewProps>;
   /** Group line which located along with grouped items */

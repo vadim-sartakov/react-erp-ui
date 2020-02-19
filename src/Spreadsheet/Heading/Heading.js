@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import HeadingView from './HeadingView';
-import { normalizeMergedRange } from '../../MergedCell';
+import { normalizeMergedRange } from '../../grid/MergedCell';
 
 const Heading = React.memo(({
   Component = HeadingView,

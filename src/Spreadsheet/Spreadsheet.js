@@ -5,30 +5,18 @@ import { SpreadsheetContext, SpreadsheetCell, useSpreadsheet, useKeyboard, useMo
 import GroupLevelButton from './GroupLevelButton';
 import { Heading, HeadingsIntersection } from './Heading';
 import { GroupLine } from './GroupLine';
-import ResizeLines from './ResizeLines';
-import FixLines from './FixLines';
-import SpecialCellEmptyArea from './SpecialCellEmptyArea';
 import SelectedRange from './SelectedRange';
 import Cell from './Cell';
+import ResizeLines from '../grid/ResizeLines';
+import FixLines from '../grid/FixLines';
+import { visibleRangesFilter } from '../grid/utils';
 
-export const visibleRangesFilter = ({
-  fixRows,
-  fixColumns,
-  visibleRows,
-  visibleColumns
-}) => mergedRange => {
-  return mergedRange.start.row < visibleRows[fixRows] || mergedRange.start.column < visibleColumns[fixColumns] ||
-      (mergedRange.start.row <= visibleRows[visibleRows.length - 1] &&
-          mergedRange.start.column <= visibleColumns[visibleColumns.length - 1] &&
-          mergedRange.end.row >= visibleRows[fixRows] &&
-          mergedRange.end.column >= visibleColumns[fixColumns]);
-};
+const SpecialCellEmptyArea = props => <SpreadsheetCell className="special-cell-empty-area" {...props} />;
 
 const Cells = React.memo(({
   HeadingComponent,
   HeadingsIntersectionComponent = HeadingsIntersection,
   GroupLevelButtonComponent = GroupLevelButton,
-  SpecialCellEmptyAreaComponent = SpecialCellEmptyArea,
   CellComponent,
   ...props
 }) => {
@@ -62,7 +50,7 @@ const Cells = React.memo(({
               case 'NUMBER':
                 return <GroupLevelButtonComponent key={key} index={rowIndex} row={row} column={column} onClick={props.onColumnGroupLevelButtonClick(rowIndex + 1)} />;
               default:
-                return <SpecialCellEmptyAreaComponent key={key} row={row} column={column} />;
+                return <SpecialCellEmptyArea key={key} row={row} column={column} />;
             }
           case 'NUMBER':
 
@@ -328,7 +316,6 @@ const Spreadsheet = inputProps => {
 
   const fixedAreasElement = (
     <FixLines
-        Component={props.FixLinesComponent}
         rows={props.rows}
         columns={props.columns}
         specialRowsCount={props.specialRowsCount}

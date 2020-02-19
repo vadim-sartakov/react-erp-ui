@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import useResize from '../useResize';
+import useResize from '../../useResize';
 
 const setMeta = ({ index, resizeProperty, minSize, onChange, beforeCallback }) => newSize => {
   beforeCallback && beforeCallback();

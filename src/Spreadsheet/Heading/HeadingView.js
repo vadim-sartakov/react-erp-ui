@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import SpreadsheetCell from '../SpreadsheetCell';
-import GridResizer from '../../GridResizer';
+import GridResizer from '../../grid/GridResizer';
 
 const HeadingView = ({
   selected,

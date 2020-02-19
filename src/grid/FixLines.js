@@ -1,10 +1,8 @@
 import React, { useContext } from 'react';
-import { SpreadsheetContext } from '..';
-import FixLinesView from './FixLinesView';
-import { getCellsRangeSize } from '../../MergedCell/utils';
+import { SpreadsheetContext } from '../Spreadsheet';
+import { getCellsRangeSize } from './MergedCell/utils';
 
 const FixLines = ({
-  Component = FixLinesView,
   rows,
   columns,
   specialRowsCount,
@@ -41,7 +39,7 @@ const FixLines = ({
     };
     result.push((
       <div key="fixed_columns" style={containerStyle}>
-        <Component type="columns" style={style} />
+        <div className="fixed-columns" style={style} />
       </div>
     ));
   }
@@ -60,7 +58,7 @@ const FixLines = ({
     };
     result.push((
       <div key="fixed_rows" style={containerStyle}>
-        <Component type="rows" style={style} />
+        <div className="fixed-rows" style={style} />
       </div>
     ));
   }

@@ -1,7 +1,7 @@
 /**
  * Calculates cell position (top and left absolute position)
  * @param {Object} options
- * @param {import('./').Meta} options.meta
+ * @param {import('.').Meta} options.meta
  * @param {number} options.index
  * @param {number} options.defaultSize
  */
@@ -17,7 +17,7 @@ export const getCellPosition = ({ meta = [], index, defaultSize }) => {
  * Calculates merged cells size (width and height)
  * @param {Object} options
  * @param {number} options.count
- * @param {import('./').Meta} options.meta
+ * @param {import('.').Meta} options.meta
  * @param {number} options.startIndex
  * @param {number} options.defaultSize
  */
