@@ -1,4 +1,4 @@
-import { FunctionComponent, Dispatch, SetStateAction } from 'react';
+import { FunctionComponent, Dispatch, SetStateAction, MutableRefObject, Context } from 'react';
 import { Filter } from '../dataCompose/index';
 
 export interface CellAddress {
@@ -9,6 +9,15 @@ export interface CellAddress {
 export interface Meta {
   size?: number;
 }
+
+export interface TableContextProps {
+  defaultColumnWidth: number;
+  defaultRowHeight: number;
+  fixRows: number;
+  fixColumns: number;
+}
+
+export declare const TableContext: Context<TableContextProps>
 
 export interface Column {
   /** Default is 'string' */
