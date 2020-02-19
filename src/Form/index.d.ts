@@ -59,6 +59,12 @@ export interface UseFormOptions {
 }
 
 export interface UseFormResult {
+  /**
+   * If default value is provided, but value management is
+   * supposed to be left to form hook
+   */
+  value: Object;
+  onChange: Dispatch<SetStateAction<Object>>;
   /** Indicates if submi is processing */
   submitting: boolean;
   /** Indicates if async form validation is processing */

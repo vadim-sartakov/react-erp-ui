@@ -78,6 +78,8 @@ const useForm = ({
   const dirty = dirtyFields.length > 0;
 
   return {
+    value,
+    onChange,
     submitting,
     validating,
     onSubmit: handleSubmit,
