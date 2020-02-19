@@ -1,4 +1,10 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, Dispatch, SetStateAction } from 'react';
+import { Filter } from '../dataCompose/index';
+
+export interface CellAddress {
+  row: number;
+  column: number;
+}
 
 export interface Meta {
   size?: number;
@@ -35,6 +41,8 @@ export interface HeaderComponentProps {
   column: Column;
 }
 
+export type Value = any[][];
+
 export interface UseTableOptions {
   defaultRowHeight: number;
   defaultColumnWidth: number;
@@ -42,12 +50,19 @@ export interface UseTableOptions {
   totalColumns: number[];
   rowsPerPage: number;
   columnsPerPage: number;
-  value: any[][];
+  defaultValue?: Value;
+  value?: Value;
+  onChange?: Dispatch<SetStateAction<Value>>;
   /** Number of header rows. Will help to create table headers with merged cells */
   headerRows?: number;
+  filter: Filter;
+  /** Array of property paths */
+  sort: string[];
 }
 
 export interface UseTableResult {
+  selectedCells: CellAddress[];
+  onSelectedCellsChange: Dispatch<SetStateAction<CellAddress[]>>;
   columns: Meta[];
 }
 
