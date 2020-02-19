@@ -1,4 +1,4 @@
-import { FunctionComponent, Dispatch, SetStateAction, MutableRefObject, Context } from 'react';
+import { FunctionComponent, Dispatch, SetStateAction, Context } from 'react';
 import { Filter } from '../dataCompose/index';
 
 export interface CellAddress {
@@ -13,7 +13,6 @@ export interface Meta {
 export interface TableContextProps {
   defaultColumnWidth: number;
   defaultRowHeight: number;
-  fixRows: number;
   fixColumns: number;
 }
 
@@ -26,7 +25,7 @@ export interface Column {
    * If value is an object, then result value for the table
    * will be received with provided valuePath
    */
-  valuePath?: string,
+  valuePath: string,
   format?: (value: any) => string;
   /** Custom value component */
   Component?: FunctionComponent<ValueComponentProps>;
@@ -34,8 +33,6 @@ export interface Column {
   title: string;
   size?: number;
   HeaderComponent?: FunctionComponent<HeaderComponentProps>;
-  headerRowSpan?: number;
-  headerColumnSpan?: number;
 }
 
 export interface ValueComponentProps {
@@ -48,9 +45,10 @@ export interface ValueComponentProps {
 export interface HeaderComponentProps {
   index: number;
   column: Column;
+  fixedIntersection: boolean;
 }
 
-export type Value = any[][];
+export type Value = Object[][];
 
 export interface UseTableOptions {
   defaultRowHeight: number;
@@ -65,8 +63,6 @@ export interface UseTableOptions {
   value?: Value;
   onChange?: Dispatch<SetStateAction<Value>>;
   columns: Column[];
-  /** Number of header rows. Will help to create table headers with merged cells */
-  headerRows?: number;
   filter: Filter;
   /** Array of property paths */
   sort: string[];

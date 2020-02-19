@@ -2,7 +2,8 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import Table from './';
 import { randomDate, getRandomInt } from '../test-utils/generateValues';
-import './Table-stories.module.sass';
+import moment from 'moment';
+import './styles.css';
 
 /** @type {import('./').Column[]} */
 const columns = [
@@ -11,8 +12,8 @@ const columns = [
     valuePath: 'firstName'
   },
   {
-    title: 'Second name',
-    valuePath: 'secondName'
+    title: 'Last name',
+    valuePath: 'lastName'
   },
   {
     title: 'Number',
@@ -22,7 +23,8 @@ const columns = [
   {
     title: 'Date of birth',
     type: 'date',
-    valuePath: 'birthDay'
+    valuePath: 'birthDay',
+    format: value => moment(value).format('DD/MM/YYYY')
   },
   {
     title: 'Department',
@@ -40,9 +42,9 @@ const generateEmployees = count => {
     return {
       firstName: `First name ${key}`,
       lastName: `Last name ${key}`,
-      borthDay: randomDate(new Date(1970, 0, 0), new Date(2000, 0, 0)),
+      birthDay: randomDate(new Date(1970, 0, 0), new Date(2000, 0, 0)),
       number: key,
-      department: departments[getRandomInt(0, departments.length)]
+      department: departments[getRandomInt(0, departments.length - 1)]
     }
   });
 };
@@ -65,6 +67,7 @@ export const defaultTable = props => {
         defaultRowHeight={30}
         defaultColumnWidth={150}
         height={600}
+        fixColumns={1}
         {...props} />
   )
 };

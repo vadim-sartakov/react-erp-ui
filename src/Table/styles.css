@@ -1,0 +1,17 @@
+.table {
+  font-size: 14px;
+}
+
+.table .header {
+  font-weight: 600;
+}
+
+.table .header, .table .cell {
+  background-color: #fff;
+  border-bottom: solid 1px #ccc;
+  padding: 5px
+}
+
+.table .header.number, .table .cell.number {
+  text-align: right;
+}

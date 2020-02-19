@@ -1,29 +1,53 @@
 import React, { useMemo } from 'react';
 import classNames from 'classnames';
+import get from 'lodash/get';
 import { useTable, TableContext } from './';
 import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
 import ResizeLines from '../grid/ResizeLines';
-import MergedCell from '../grid/MergedCell';
 
-const Header = ({ column }) => {
+const Heading = ({ column, fixedIntersection }) => {
+  const style = {
+    position: 'sticky',
+    top: 0,
+    zIndex: fixedIntersection ? 4 : 3
+  };
   return (
-    <ScrollerCell className={classNames('header', column.type || 'string')} column={column}>
+    <ScrollerCell
+        className={classNames('header', column.type || 'string')}
+        column={column}
+        style={style}>
       {column.title}
     </ScrollerCell>
   )
 };
 
-const Headers = React.memo(props => {
+const Header = React.memo(props => {
   return props.columns.map((column, index) => {
-    const Component = column.HeaderComponent || Header;
-    return <Component key={index} index={index} column={column} />
+    const Component = column.HeaderComponent || Heading;
+    const fixedIntersection = index < props.fixColumns;
+    return <Component key={index} index={index} column={column} fixedIntersection={fixedIntersection} />
   })
 });
 
-const Cells = React.memo(props => {
+const Cell = ({ column, value }) => {
   return (
-    <div></div>
+    <ScrollerCell className={classNames('cell', column.type || 'string')} column={column}>
+      {column.format ? column.format(value) : value}
+    </ScrollerCell>
   )
+};
+
+const Cells = React.memo(({ visibleRows, visibleColumns, value, columns }) => {
+  return visibleRows.reduce((acc, rowIndex) => {
+    const rowValue = value[rowIndex];
+    const columnsElements = visibleColumns.map(columnIndex => {
+      const column = columns[columnIndex];
+      const value = get(rowValue, column.valuePath);
+      const Component = column.Component || Cell;
+      return <Component key={`${rowIndex}-${columnIndex}`} column={column} value={value} />;
+    });
+    return [...acc, ...columnsElements];
+  }, [])
 });
 
 const Footer = React.memo(props => {
@@ -56,11 +80,13 @@ const Table = inputProps => {
     props.fixColumns
   ]);
 
-  const headersElement = (
-    <Headers columns={props.columns} headerRows={props.headerRows} />
+  const headerElement = (
+    <Header fixColumns={props.fixColumns} columns={props.columns} headerRows={props.headerRows} />
   );
   const cellsElement = (
     <Cells
+        visibleRows={props.visibleRows}
+        visibleColumns={props.visibleColumns}
         value={props.value}
         columns={props.columns} />
   );
@@ -89,8 +115,8 @@ const Table = inputProps => {
         <div ref={props.scrollerCoverRef}
             style={props.coverStyles}>
           <div style={props.pagesStyles}>
-            <div style={{ ...props.gridStyles, userSelect: 'none' }}>
-              {headersElement}
+            <div style={props.gridStyles}>
+              {headerElement}
               {cellsElement}
               {footerElement}
             </div>
