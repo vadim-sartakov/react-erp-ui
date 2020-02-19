@@ -7,7 +7,7 @@ export interface CellAddress {
 }
 
 export interface Meta {
-  size?: number;
+  size: number;
 }
 
 export interface TableContextProps {
@@ -32,6 +32,7 @@ export interface Column {
   Component?: FunctionComponent<ValueComponentProps>;
   /** Header title */
   title: string;
+  size?: number;
   HeaderComponent?: FunctionComponent<HeaderComponentProps>;
   headerRowSpan?: number;
   headerColumnSpan?: number;
@@ -45,8 +46,7 @@ export interface ValueComponentProps {
 }
 
 export interface HeaderComponentProps {
-  rowIndex: number;
-  columnIndex: number;
+  index: number;
   column: Column;
 }
 
@@ -59,9 +59,12 @@ export interface UseTableOptions {
   totalColumns: number[];
   rowsPerPage: number;
   columnsPerPage: number;
+  fixRows?: number;
+  fixColumns?: number;
   defaultValue?: Value;
   value?: Value;
   onChange?: Dispatch<SetStateAction<Value>>;
+  columns: Column[];
   /** Number of header rows. Will help to create table headers with merged cells */
   headerRows?: number;
   filter: Filter;
@@ -71,8 +74,13 @@ export interface UseTableOptions {
 
 export interface UseTableResult {
   selectedCells: CellAddress[];
+  columns: Column[];
+  onColumnsChange: Dispatch<SetStateAction<Column[]>>;
   onSelectedCellsChange: Dispatch<SetStateAction<CellAddress[]>>;
-  columns: Meta[];
+  resizeInteraction: number;
+  onResizeInteractionChange: Dispatch<SetStateAction<number>>;
+  resizeColumns: Meta[];
+  onResizeColumns: Dispatch<SetStateAction<Meta[]>>;
 }
 
 export declare function useTable(UseTableOptions): UseTableResult

@@ -164,6 +164,12 @@ export interface UseSpreadsheetOptions {
 }
 export type GroupLevelButtonClickHandlerFactory = (level: number) => MouseEventHandler;
 export type GroupButtonClickHandlerFactory = (group: Group) => MouseEventHandler;
+
+export interface ResizeInteraction {
+  type: 'row' | 'column';
+  index: number;
+}
+
 /**
  * Transformed input properties as well as additional properties.
  * Transformation is the offset of input values and occures when
@@ -194,6 +200,12 @@ export interface UseSpreadsheetResult {
   scrollerContainerRef: MutableRefObject<Element>;
   scrollerCoverRef: MutableRefObject<Element>;
   spreadsheetContainerRef: MutableRefObject<Element>;
+  resizeInteraction: ResizeInteraction;
+  onResizeInteractionChange: Dispatch<SetStateAction<ResizeInteraction>>;
+  resizeRows: Meta[];
+  resizeColumns: Meta[];
+  onResizeRows: Dispatch<SetStateAction<Meta[]>>;
+  onResizeColumns: Dispatch<SetStateAction<Meta[]>>;
 }
 export function useSpreadsheet(options: UseSpreadsheetOptions): UseSpreadsheetResult
 export function useKeyboard(options: UseSpreadsheetOptions | UseSpreadsheetResult): KeyboardEvent
