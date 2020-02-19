@@ -4,8 +4,9 @@ import get from 'lodash/get';
 import { useTable, TableContext } from './';
 import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
 import ResizeLines from '../grid/ResizeLines';
+import GridResizer from '../grid/GridResizer';
 
-const Heading = ({ column, fixedIntersection }) => {
+const Heading = ({ index, columns, onColumnsChange, column, defaultColumnWidth, fixedIntersection }) => {
   const style = {
     position: 'sticky',
     top: 0,
@@ -17,6 +18,14 @@ const Heading = ({ column, fixedIntersection }) => {
         column={column}
         style={style}>
       {column.title}
+      <GridResizer
+          type="column"
+          className="column-resizer"
+          index={index}
+          defaultSize={defaultColumnWidth}
+          meta={column}
+          onChange={onColumnsChange}
+          onResize={onColumnsChange} />
     </ScrollerCell>
   )
 };
@@ -25,7 +34,16 @@ const Header = React.memo(props => {
   return props.columns.map((column, index) => {
     const Component = column.HeaderComponent || Heading;
     const fixedIntersection = index < props.fixColumns;
-    return <Component key={index} index={index} column={column} fixedIntersection={fixedIntersection} />
+    return (
+      <Component
+          key={index}
+          index={index}
+          columns={props.columns}
+          column={column}
+          onColumnsChange={props.onColumnsChange}
+          defaultColumnWidth={props.defaultColumnWidth}
+          fixedIntersection={fixedIntersection} />
+    )
   })
 });
 
@@ -81,7 +99,12 @@ const Table = inputProps => {
   ]);
 
   const headerElement = (
-    <Header fixColumns={props.fixColumns} columns={props.columns} headerRows={props.headerRows} />
+    <Header
+        fixColumns={props.fixColumns}
+        columns={props.columns}
+        onColumnsChange={props.onColumnsChange}
+        headerRows={props.headerRows}
+        defaultColumnWidth={props.defaultColumnWidth} />
   );
   const cellsElement = (
     <Cells
