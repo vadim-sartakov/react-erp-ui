@@ -134,7 +134,6 @@ const useMouse = ({
         const scrollerCoverRect = scrollerCoverRectRef.current;
 
         const { rowIndex, columnIndex } = getIndexes(event, scrollerContainerRect, scrollerCoverRect);
-
         if (isSpecialArea(rowIndex, columnIndex)) return;
         
         const rowType = rows[rowIndex].type;
@@ -155,8 +154,8 @@ const useMouse = ({
           const y = event.clientY - scrollerContainerRectRef.current.top;
           const fixedRowsSize = getCellsRangeSize({ startIndex: 0, meta: rows, count: fixRows, defaultSize: defaultRowHeight });
           const fixedColumnsSize = getCellsRangeSize({ startIndex: 0, meta: columns, count: fixColumns, defaultSize: defaultColumnWidth });
-          const overscrollLeft = getOverscrolledCoordinateOffset({ coordinate: x, containerSize: scrollerContainerRectRef.current.width, fixedSize: fixedRowsSize });
-          const overscrollTop = getOverscrolledCoordinateOffset({ coordinate: y, containerSize: scrollerContainerRectRef.current.height, fixedSize: fixedColumnsSize });
+          const overscrollLeft = getOverscrolledCoordinateOffset({ coordinate: x, containerSize: scrollerContainerRectRef.current.width, fixedSize: fixedColumnsSize });
+          const overscrollTop = getOverscrolledCoordinateOffset({ coordinate: y, containerSize: scrollerContainerRectRef.current.height, fixedSize: fixedRowsSize });
           if (overscrollLeft) {
             scrollerCoverRectRef.current.left = scrollerCoverRectRef.current.left - overscrollLeft;
             scrollerContainerRef.current.scrollLeft = scrollerContainerRef.current.scrollLeft + overscrollLeft;
