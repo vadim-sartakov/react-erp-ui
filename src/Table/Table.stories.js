@@ -63,7 +63,7 @@ export const defaultTable = props => {
   return (
     <TableComponent
         columns={columns}
-        value={employees}
+        defaultValue={employees}
         totalColumns={columns.length}
         totalRows={employees.length}
         rowsPerPage={60}
@@ -79,7 +79,7 @@ export const withFooter = props => {
   return (
     <TableComponent
         columns={columns}
-        value={employees}
+        defaultValue={employees}
         totalColumns={columns.length}
         totalRows={employees.length}
         rowsPerPage={60}

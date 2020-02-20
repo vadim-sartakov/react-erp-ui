@@ -1,17 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { getOverscrolledCellOffset } from '../Scroller/utils';
 
-const NAVIGATION_KEYS = [
-  'ArrowDown',
-  'ArrowUp',
-  'ArrowLeft',
-  'ArrowRight',
-  'PageDown',
-  'PageUp',
-  'Home',
-  'End'
-];
-
 const moveSelection = ({
   selectedCells,
   append,
@@ -77,6 +66,7 @@ const moveScrollPosition = ({
 };
 
 const useKeyboard = ({
+  editingCell,
   scrollerContainerRef,
   columns,
   fixColumns,
@@ -91,8 +81,9 @@ const useKeyboard = ({
   const handlingKeyDown = useRef(false);
 
   const onKeyDown = useCallback(event => {
-    if (NAVIGATION_KEYS.indexOf(event.key) === -1) return;
     
+    if (editingCell) return;
+
     event.persist();
     event.preventDefault();
 
@@ -153,6 +144,7 @@ const useKeyboard = ({
     handlingKeyDown.current = true;
     setTimeout(() => handlingKeyDown.current = false, 50);
   }, [
+    editingCell,
     showFooter,
     fixColumns,
     scrollerContainerRef,

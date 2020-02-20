@@ -23,6 +23,8 @@
 }
 
 .table .header, .table .cell, .table .footer {
+  display: flex;
+  align-items: center;
   overflow: hidden;
   background-color: #fff;
   border-bottom: solid 1px #ccc;
@@ -30,7 +32,7 @@
 }
 
 .table .header.number, .table .cell.number, .table .footer {
-  text-align: right;
+  justify-content: flex-end;
 }
 
 .table .hover-row {
@@ -46,6 +48,5 @@
 }
 
 .table .edit {
-  min-width: 0;
-  height: 100%;
+  background-color: #fff
 }

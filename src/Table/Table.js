@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, createContext, useContext } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback, createContext, useContext } from 'react';
 import classNames from 'classnames';
 import get from 'lodash/get';
 import setIn from 'lodash/fp/set';
@@ -6,20 +6,29 @@ import { useTable, useKeyboard, TableContext } from './';
 import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
 import GridResizer from '../grid/GridResizer';
 
-const StringEditComponent = ({ column, rowIndex, value: valueProp, onChange, ...props }) => {
+const StringEditComponent = ({ column, rowIndex, value: valueProp, onChange, onEditingCellChange, ...props }) => {
   const [value, setValue] = useState(valueProp || '');
+  const rootRef = useRef();
+
+  useEffect(() => {
+    rootRef.current.focus();
+  }, []);
 
   const handleChange = useCallback(event => {
     setValue(event.target.value);
   }, []);
 
   const handleBlur = useCallback(() => {
-    const nextValue = setIn(`[${rowIndex}].${column.valuePath}`, value, valueProp);
-    console.log(nextValue);
-  }, [column.valuePath, rowIndex, value, valueProp]);
+    onChange(sourceValue => {
+      const nextValue = setIn(`[${rowIndex}].${column.valuePath}`, value, sourceValue);
+      return nextValue;
+    });
+    onEditingCellChange(undefined);
+  }, [onChange, onEditingCellChange, column.valuePath, rowIndex, value]);
 
   return (
     <ScrollerCell
+        ref={rootRef}
         Component="input"
         column={column}
         {...props}
@@ -113,19 +122,6 @@ const CellWrapper = ({
   const selectedRow = selectedCells.some(selectedCell => selectedCell.row === rowIndex);
   const selectedCell = selectedCells.some(selectedCell => selectedCell.row === rowIndex && selectedCell.column === columnIndex);
 
-  const className = classNames(
-    'cell',
-    column.type || 'string',
-    {
-      'hover-row': hoverRow,
-      'selected-row': selectedRow,
-      'selected-cell': selectedCell
-    }
-  );
-
-  const EditComponent = column.EditComponent || defaultEditComponents[column.type || 'string'];
-  const Component = (editing && EditComponent) || column.Component || Cell;
-
   const onMouseEnter = useCallback(() => onHoverRowChange(true), [onHoverRowChange]);
   const onMouseLeave = useCallback(() => onHoverRowChange(false), [onHoverRowChange]);
 
@@ -155,19 +151,46 @@ const CellWrapper = ({
     onEditingCellChange({ row: rowIndex, column: columnIndex });
   }, [onEditingCellChange, rowIndex, columnIndex]);
 
-  return (
-    <Component
-        className={className}
-        rowIndex={rowIndex}
-        columnIndex={columnIndex}
-        column={column}
-        value={curValue}
-        onChange={onChange}
-        onClick={handleSelect}
-        onDoubleClick={handleStartEdit}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave} />
-  );
+  const baseComponentProps = {
+    rowIndex,
+    columnIndex,
+    column,
+    value: curValue,
+    onClick: handleSelect,
+    onMouseEnter: onMouseEnter,
+    onMouseLeave: onMouseLeave,
+    className: classNames(
+      'cell',
+      column.type || 'string',
+      {
+        'hover-row': hoverRow,
+        'selected-row': selectedRow,
+        'selected-cell': selectedCell
+      }
+    )
+  };
+
+  const EditComponent = column.EditComponent || defaultEditComponents[column.type || 'string'];
+  const ValueComponent = (editing && EditComponent) || column.Component || Cell;
+
+  let Component, componentProps;
+  if (editing && EditComponent) {
+    Component = EditComponent;
+    componentProps = {
+      ...baseComponentProps,
+      className: classNames(baseComponentProps.className, 'edit'),
+      onChange,
+      onEditingCellChange
+    };
+  } else {
+    Component = ValueComponent;
+    componentProps = {
+      ...baseComponentProps,
+      onDoubleClick: handleStartEdit
+    };
+  }
+
+  return <Component {...componentProps} />;
 };
 
 const Cells = React.memo(({

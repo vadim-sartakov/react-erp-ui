@@ -68,6 +68,9 @@ export interface FooterComponentProps {
 export type Value = Object[];
 
 export interface UseTableOptions {
+  defaultValue?: Value;
+  value?: Value;
+  onChange?: Dispatch<SetStateAction<Value>>;
   defaultRowHeight: number;
   defaultColumnWidth: number;
   totalRows: number;
@@ -77,8 +80,6 @@ export interface UseTableOptions {
   fixRows?: number;
   fixColumns?: number;
   defaultValue?: Value;
-  value?: Value;
-  onChange?: Dispatch<SetStateAction<Value>>;
   columns: Column[];
   search?: string;
   filter?: Filter;
@@ -87,6 +88,8 @@ export interface UseTableOptions {
 }
 
 export interface UseTableResult {
+  value: Value;
+  onChange: Dispatch<SetStateAction<Value>>;
   scrollerContainerRef: MutableRefObject<Element>;
   selectedCells: CellAddress[];
   onSelectedCellsChange: Dispatch<SetStateAction<CellAddress[]>>;
