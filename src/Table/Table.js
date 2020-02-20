@@ -156,7 +156,7 @@ const CellWrapper = ({
     columnIndex,
     column,
     value: curValue,
-    onClick: handleSelect,
+    onMouseDown: handleSelect,
     onMouseEnter: onMouseEnter,
     onMouseLeave: onMouseLeave,
     className: classNames(

@@ -10,11 +10,9 @@ const flexAlignValuesMap = {
   right: 'flex-end'
 };
 
-const Cell = React.memo(props => {
+const Cell = React.memo(({ fixRows, fixColumns, ...props }) => {
 
   const {
-    fixRows,
-    fixColumns,
     row,
     column,
     rowIndex,

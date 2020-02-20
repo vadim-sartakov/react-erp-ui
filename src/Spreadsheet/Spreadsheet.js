@@ -103,7 +103,6 @@ const Cells = React.memo(({
                 return (
                   <Cell
                       key={key}
-                      mergedCells={props.mergedCells}
                       fixRows={props.fixRows}
                       fixColumns={props.fixColumns}
                       row={row}
@@ -111,8 +110,7 @@ const Cells = React.memo(({
                       rowIndex={rowIndex}
                       columnIndex={columnIndex}
                       cell={curCell}
-                      Component={CellComponent}
-                      onSelectedCellsChange={props.onSelectedCellsChange} />
+                      Component={CellComponent} />
                 );
             }
         }
