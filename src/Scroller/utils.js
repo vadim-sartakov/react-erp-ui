@@ -282,8 +282,8 @@ export const getOverscrolledCellOffset = ({
   const relativeX = x - scrollLeft;
   const relativeY = y - scrollTop;
 
-  const fixedRowsSize = getCellsRangeSize({ startIndex: 0, meta: rows, count: fixRows, defaultSize: defaultRowHeight });
-  const fixedColumnsSize = getCellsRangeSize({ startIndex: 0, meta: columns, count: fixColumns, defaultSize: defaultColumnWidth });
+  const fixedRowsSize = getCellsRangeSize({ startIndex: 0, meta: rows, count: fixRows, defaultSize: defaultRowHeight }) || 0;
+  const fixedColumnsSize = getCellsRangeSize({ startIndex: 0, meta: columns, count: fixColumns, defaultSize: defaultColumnWidth }) || 0;
 
   const height = (rows && rows[rowIndex] && rows[rowIndex].size) || defaultRowHeight;
   const width = (columns && columns[columnIndex] && columns[columnIndex].size) || defaultColumnWidth;

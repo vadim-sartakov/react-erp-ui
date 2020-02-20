@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 /**
  * @param {import('./').UseTableOptions} options
@@ -7,6 +7,7 @@ import { useState } from 'react';
 const useTable = ({
   columns: columnsProp
 }) => {
+  const scrollerContainerRef = useRef();
   const [columns, onColumnsChange] = useState(columnsProp);
   const [selectedCells, onSelectedCellsChange] = useState([]);
 
@@ -14,6 +15,7 @@ const useTable = ({
   const [resizeColumns, onResizeColumns] = useState(columnsProp.map(column => ({ size: column.size })));
 
   return {
+    scrollerContainerRef,
     columns,
     onColumnsChange,
     selectedCells,

@@ -1,4 +1,4 @@
-import { FunctionComponent, Dispatch, SetStateAction, Context, CSSProperties } from 'react';
+import { FunctionComponent, Dispatch, SetStateAction, Context, CSSProperties, MutableRefObject } from 'react';
 import { Filter } from '../dataCompose/index';
 
 export interface Selection {
@@ -78,14 +78,13 @@ export interface UseTableOptions {
   onChange?: Dispatch<SetStateAction<Value>>;
   columns: Column[];
   search?: string;
-  searchIndex?: number;
-  onSearchIndexChange?: number;
-  filter: Filter;
+  filter?: Filter;
   /** Array of property paths */
-  sort: string[];
+  sort?: string[];
 }
 
 export interface UseTableResult {
+  scrollerContainerRef: MutableRefObject<Element>;
   selectedCells: CellAddress[];
   columns: Column[];
   onColumnsChange: Dispatch<SetStateAction<Column[]>>;
@@ -97,6 +96,7 @@ export interface UseTableResult {
 }
 
 export declare function useTable(options: UseTableOptions): UseTableResult
+export declare function useKeyboard(options: UseTableOptions | UseTableResult): UIEvent
 
 export interface TableProps extends UseTableOptions {
   showFooter?: boolean;

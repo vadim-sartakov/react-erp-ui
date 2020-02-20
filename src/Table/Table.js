@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, createContext, useContext } from 'react';
 import classNames from 'classnames';
 import get from 'lodash/get';
-import { useTable, TableContext } from './';
+import { useTable, useKeyboard, TableContext } from './';
 import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
 import ResizeLines from '../grid/ResizeLines';
 import GridResizer from '../grid/GridResizer';
@@ -101,7 +101,7 @@ const CellWrapper = ({ value, columns, selectedCells, onSelectedCellsChange, row
       }      
       return nextSelection;
     });
-  }, [columnIndex, rowIndex, onSelectedCellsChange]);
+  }, [columnIndex, rowIndex, onSelectedCellsChange, value.length]);
 
   const column = columns[columnIndex];
   const rowValue = value[rowIndex];
@@ -187,7 +187,7 @@ const Table = inputProps => {
   const scrollerProps = useScroller(props);
   props = { ...props, ...scrollerProps };
 
-  const onKeyDown = () => {};
+  const onKeyDown = useKeyboard(props);
 
   const contextValue = useMemo(() => ({
     defaultColumnWidth: props.defaultColumnWidth,
