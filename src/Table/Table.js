@@ -1,10 +1,37 @@
 import React, { useState, useMemo, useCallback, createContext, useContext } from 'react';
 import classNames from 'classnames';
 import get from 'lodash/get';
+import setIn from 'lodash/fp/set';
 import { useTable, useKeyboard, TableContext } from './';
 import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
-import ResizeLines from '../grid/ResizeLines';
 import GridResizer from '../grid/GridResizer';
+
+const StringEditComponent = ({ column, rowIndex, value: valueProp, onChange, ...props }) => {
+  const [value, setValue] = useState(valueProp || '');
+
+  const handleChange = useCallback(event => {
+    setValue(event.target.value);
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    const nextValue = setIn(`[${rowIndex}].${column.valuePath}`, value, valueProp);
+    console.log(nextValue);
+  }, [column.valuePath, rowIndex, value, valueProp]);
+
+  return (
+    <ScrollerCell
+        Component="input"
+        column={column}
+        {...props}
+        value={value}
+        onChange={handleChange}
+        onBlur={handleBlur} />
+  );
+};
+
+const defaultEditComponents = {
+  string: StringEditComponent
+};
 
 const Heading = ({ index, onColumnsChange, column, defaultColumnWidth, style }) => {
   return (
@@ -56,27 +83,48 @@ const CellsRow = ({ children }) => {
   )
 };
 
-const Cell = ({ value, hover, selectedRow, selectedCell, column, ...props }) => {
+const Cell = ({ value, column, ...props }) => {
   return (
-    <ScrollerCell
-        className={classNames(
-          'cell',
-          column.type || 'string',
-          {
-            'hover-row': hover,
-            'selected-row': selectedRow,
-            'selected-cell': selectedCell
-          }
-        )}
-        column={column}
-        {...props}>
+    <ScrollerCell column={column} {...props}>
       {column.format ? column.format(value) : value}
     </ScrollerCell>
   )
 };
 
-const CellWrapper = ({ value, columns, selectedCells, onSelectedCellsChange, rowIndex, columnIndex }) => {
+const CellWrapper = ({
+  defaultEditComponents = {},
+  readOnly,
+  value,
+  onChange,
+  columns,
+  selectedCells,
+  onSelectedCellsChange,
+  rowIndex,
+  columnIndex,
+  editingCell,
+  onEditingCellChange
+}) => {
   const { hoverRow, onHoverRowChange } = useContext(CellsRowContext);
+
+  const column = columns[columnIndex];
+  const rowValue = value[rowIndex];
+  const curValue = get(rowValue, column.valuePath);
+  const editing = !readOnly && editingCell && (editingCell.row === rowIndex && editingCell.column === columnIndex);
+  const selectedRow = selectedCells.some(selectedCell => selectedCell.row === rowIndex);
+  const selectedCell = selectedCells.some(selectedCell => selectedCell.row === rowIndex && selectedCell.column === columnIndex);
+
+  const className = classNames(
+    'cell',
+    column.type || 'string',
+    {
+      'hover-row': hoverRow,
+      'selected-row': selectedRow,
+      'selected-cell': selectedCell
+    }
+  );
+
+  const EditComponent = column.EditComponent || defaultEditComponents[column.type || 'string'];
+  const Component = (editing && EditComponent) || column.Component || Cell;
 
   const onMouseEnter = useCallback(() => onHoverRowChange(true), [onHoverRowChange]);
   const onMouseLeave = useCallback(() => onHoverRowChange(false), [onHoverRowChange]);
@@ -103,28 +151,30 @@ const CellWrapper = ({ value, columns, selectedCells, onSelectedCellsChange, row
     });
   }, [columnIndex, rowIndex, onSelectedCellsChange, value.length]);
 
-  const column = columns[columnIndex];
-  const rowValue = value[rowIndex];
-  const curValue = get(rowValue, column.valuePath);
-  const Component = column.Component || Cell;
-
-  const selectedRow = selectedCells.some(selectedCell => selectedCell.row === rowIndex);
-  const selectedCell = selectedCells.some(selectedCell => selectedCell.row === rowIndex && selectedCell.column === columnIndex);
+  const handleStartEdit = useCallback(() => {
+    onEditingCellChange({ row: rowIndex, column: columnIndex });
+  }, [onEditingCellChange, rowIndex, columnIndex]);
 
   return (
     <Component
-        hover={hoverRow}
-        selectedRow={selectedRow}
-        selectedCell={selectedCell}
+        className={className}
+        rowIndex={rowIndex}
+        columnIndex={columnIndex}
         column={column}
         value={curValue}
+        onChange={onChange}
         onClick={handleSelect}
+        onDoubleClick={handleStartEdit}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave} />
   );
 };
 
-const Cells = React.memo(({ selectedCells, onSelectedCellsChange, visibleRows, visibleColumns, value, columns }) => {
+const Cells = React.memo(({
+  visibleRows,
+  visibleColumns,
+  ...props
+}) => {
   return visibleRows.map(rowIndex => {
     const columnsElements = (
       <CellsRow key={rowIndex}>
@@ -132,12 +182,9 @@ const Cells = React.memo(({ selectedCells, onSelectedCellsChange, visibleRows, v
           return (
             <CellWrapper
                 key={`${rowIndex}-${columnIndex}`}
-                value={value}
-                columns={columns}
                 rowIndex={rowIndex}
                 columnIndex={columnIndex}
-                selectedCells={selectedCells}
-                onSelectedCellsChange={onSelectedCellsChange} />
+                {...props} />
           );
         })}
       </CellsRow>
@@ -181,7 +228,7 @@ const Footer = React.memo(props => {
  * @type {import('react').FunctionComponent<import('./').TableProps>}
  */
 const Table = inputProps => {
-  let props = inputProps;
+  let props = { defaultEditComponents, ...inputProps };
   const tableProps = useTable(props);
   props = { ...props, ...tableProps };
   const scrollerProps = useScroller(props);
@@ -211,11 +258,16 @@ const Table = inputProps => {
   );
   const cellsElement = (
     <Cells
+        defaultEditComponents={props.defaultEditComponents}
+        readOnly={props.readOnly}
+        editingCell={props.editingCell}
+        onEditingCellChange={props.onEditingCellChange}
         selectedCells={props.selectedCells}
         onSelectedCellsChange={props.onSelectedCellsChange}
         visibleRows={props.visibleRows}
         visibleColumns={props.visibleColumns}
         value={props.value}
+        onChange={props.onChange}
         columns={props.columns} />
   );
   const footerElement = props.showFooter ? (
@@ -224,15 +276,6 @@ const Table = inputProps => {
         columns={props.columns}
         fixColumns={props.fixColumns} />
   ) : null;
-  const resizeColumnElement = props.resizeInteraction && props.resizeInteraction.type === 'column' && (
-    <ResizeLines
-        index={props.resizeInteraction.index}
-        visibleIndexes={props.visibleColumns}
-        fixCount={props.fixColumns}
-        type="column"
-        defaultSize={props.defaultColumnWidth}
-        meta={props.resizeColumns} />
-  );
 
   return (
     <TableContext.Provider value={contextValue}>
@@ -254,7 +297,6 @@ const Table = inputProps => {
               {footerElement}
             </div>
           </div>
-          {resizeColumnElement}
         </div>
       </ScrollerContainer>
     </TableContext.Provider>

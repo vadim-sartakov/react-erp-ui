@@ -44,3 +44,8 @@
 .table .selected-cell {
   background-color: #d6d6d6;
 }
+
+.table .edit {
+  min-width: 0;
+  height: 100%;
+}

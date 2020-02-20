@@ -1,7 +1,7 @@
 import { FunctionComponent, Dispatch, SetStateAction, Context, CSSProperties, MutableRefObject } from 'react';
 import { Filter } from '../dataCompose/index';
 
-export interface Selection {
+export interface CellAddress {
   row: number;
   column?: number;
 }
@@ -9,6 +9,8 @@ export interface Selection {
 export interface Meta {
   size: number;
 }
+
+export type ValueType = 'number' | 'boolean' | 'string' | 'date'
 
 export interface TableContextProps {
   defaultColumnWidth: number;
@@ -18,34 +20,35 @@ export interface TableContextProps {
 
 export declare const TableContext: Context<TableContextProps>
 
+export interface CellComponentProps {
+  value: any;
+  rowIndex: number;
+  columnIndex: number;
+  column: Column;
+  onMouseEnter: UIEvent;
+  onMouseLeave: UIEvent;
+  onClick: UIEvent;
+  onDoubleClick: UIEvent;
+}
+
 export interface Column {
   /** Default is 'string' */
-  type?: 'number' | 'boolean' | 'string' | 'date',
+  type?: ValueType;
   /**
    * If value is an object, then result value for the table
    * will be received with provided valuePath
    */
-  valuePath: string,
+  valuePath: string;
   format?: (value: any) => string;
   /** Custom value component */
-  Component?: FunctionComponent<ValueComponentProps>;
+  Component?: FunctionComponent<CellComponentProps>;
+  EditComponent?: FunctionComponent<CellComponentProps>;
   /** Header title */
   title: string;
   size?: number;
   HeaderComponent?: FunctionComponent<HeaderComponentProps>;
   FooterComponent?: FunctionComponent<FooterComponentProps>;
   footerValue?: (value: Value) => string;
-}
-
-export interface ValueComponentProps {
-  value: any;
-  rowIndex: number;
-  columnIndex: number;
-  column: Column;
-  /** If mouse is over a row */
-  hover: boolean;
-  selectedRow: boolean;
-  selectedCell: boolean;
 }
 
 export interface HeaderComponentProps {
@@ -86,13 +89,12 @@ export interface UseTableOptions {
 export interface UseTableResult {
   scrollerContainerRef: MutableRefObject<Element>;
   selectedCells: CellAddress[];
+  onSelectedCellsChange: Dispatch<SetStateAction<CellAddress[]>>;
   columns: Column[];
   onColumnsChange: Dispatch<SetStateAction<Column[]>>;
-  onSelectedCellsChange: Dispatch<SetStateAction<CellAddress[]>>;
-  resizeInteraction: number;
-  onResizeInteractionChange: Dispatch<SetStateAction<number>>;
-  resizeColumns: Meta[];
-  onResizeColumns: Dispatch<SetStateAction<Meta[]>>;
+  /** Which cell is currently editing */
+  editingCell: CellAddress;
+  onEditingCellChange: Dispatch<SetStateAction<CellAddress>>;
 }
 
 export declare function useTable(options: UseTableOptions): UseTableResult
@@ -100,6 +102,14 @@ export declare function useKeyboard(options: UseTableOptions | UseTableResult): 
 
 export interface TableProps extends UseTableOptions {
   showFooter?: boolean;
+  /** If true, then table is not editable */
+  readOnly?: boolean;
+  /**
+   * Default edit components which will be used in edit mode.
+   * The fallback is the EditComponent of column's prop.
+   * If none was found then cell is supposed to be non-editable
+   */
+  defaultEditComponents?: { [type: ValueType]: FunctionComponent<CellEditComponentProps> };
 }
 
 declare const Table: FunctionComponent<TableProps>

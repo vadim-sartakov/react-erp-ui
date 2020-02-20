@@ -1,6 +1,17 @@
 import { useCallback, useRef } from 'react';
 import { getOverscrolledCellOffset } from '../Scroller/utils';
 
+const NAVIGATION_KEYS = [
+  'ArrowDown',
+  'ArrowUp',
+  'ArrowLeft',
+  'ArrowRight',
+  'PageDown',
+  'PageUp',
+  'Home',
+  'End'
+];
+
 const moveSelection = ({
   selectedCells,
   append,
@@ -55,6 +66,7 @@ const moveScrollPosition = ({
     rowIndex: lastSelection.row,
     columnIndex: lastSelection.column,
     fixColumns,
+    // Since header and footer out of scrollable values, making offsets here
     scrollTop: scrollerContainerRef.current.scrollTop - (rowOffset > 0 ? defaultRowHeight : 0) - (rowOffset > 0 && showFooter ? defaultRowHeight : 0),
     scrollLeft: scrollerContainerRef.current.scrollLeft,
     containerWidth: rect.width,
@@ -79,6 +91,8 @@ const useKeyboard = ({
   const handlingKeyDown = useRef(false);
 
   const onKeyDown = useCallback(event => {
+    if (NAVIGATION_KEYS.indexOf(event.key) === -1) return;
+    
     event.persist();
     event.preventDefault();
 

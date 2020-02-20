@@ -78,7 +78,7 @@ export interface UseScrollerResult {
  */
 export function useScroller(options: UseScrollerOptions): UseScrollerResult
 
-export interface ScrollerCellProps {
+export interface ScrollerCellProps extends HTMLAttributes<{}> {
   rowIndex: number;
   columnIndex: number;
   row: Meta;
