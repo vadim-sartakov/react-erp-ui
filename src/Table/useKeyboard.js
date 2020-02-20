@@ -9,7 +9,7 @@ const moveSelection = ({
   totalRows,
   totalColumns
 }) => {
-  const lastSelection = selectedCells[selectedCells.length - 1];
+  const lastSelection = rowOffset >= 0 ? selectedCells[selectedCells.length - 1] : selectedCells[0];
   let nextSelection;
 
   let endRow = ((lastSelection && lastSelection.row) || 0) + rowOffset;
@@ -40,7 +40,6 @@ const moveScrollPosition = ({
   columns,
   fixColumns,
   rowOffset,
-  columnOffset,
   showFooter,
   defaultRowHeight,
   defaultColumnWidth, 
@@ -136,6 +135,9 @@ const useKeyboard = ({
         break
       default:
     };
+    
+    handlingKeyDown.current = true;
+    setTimeout(() => handlingKeyDown.current = false, 50);
   }, [
     showFooter,
     fixColumns,
