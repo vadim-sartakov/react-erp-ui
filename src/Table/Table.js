@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo, useCallback, createContext, useContext } from 'react';
 import classNames from 'classnames';
 import get from 'lodash/get';
 import { useTable, TableContext } from './';
@@ -6,12 +6,7 @@ import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
 import ResizeLines from '../grid/ResizeLines';
 import GridResizer from '../grid/GridResizer';
 
-const Heading = ({ index, columns, onColumnsChange, column, defaultColumnWidth, fixedIntersection }) => {
-  const style = {
-    position: 'sticky',
-    top: 0,
-    zIndex: fixedIntersection ? 4 : 3
-  };
+const Heading = ({ index, onColumnsChange, column, defaultColumnWidth, style }) => {
   return (
     <ScrollerCell
         className={classNames('header', column.type || 'string')}
@@ -33,44 +28,153 @@ const Header = React.memo(props => {
   return props.columns.map((column, index) => {
     const Component = column.HeaderComponent || Heading;
     const fixedIntersection = index < props.fixColumns;
+    const style = {
+      position: 'sticky',
+      top: 0,
+      zIndex: fixedIntersection ? 4 : 3
+    };
     return (
       <Component
           key={index}
           index={index}
-          columns={props.columns}
           column={column}
           onColumnsChange={props.onColumnsChange}
           defaultColumnWidth={props.defaultColumnWidth}
-          fixedIntersection={fixedIntersection} />
+          style={style} />
     )
   })
 });
 
-const Cell = ({ column, value }) => {
+const CellsRowContext = createContext();
+
+const CellsRow = ({ children }) => {
+  const [hoverRow, onHoverRowChange] = useState();
   return (
-    <ScrollerCell className={classNames('cell', column.type || 'string')} column={column}>
+    <CellsRowContext.Provider value={{ hoverRow, onHoverRowChange }}>
+      {children}
+    </CellsRowContext.Provider>
+  )
+};
+
+const Cell = ({ value, hover, selectedRow, selectedCell, column, ...props }) => {
+  return (
+    <ScrollerCell
+        className={classNames(
+          'cell',
+          column.type || 'string',
+          {
+            'hover-row': hover,
+            'selected-row': selectedRow,
+            'selected-cell': selectedCell
+          }
+        )}
+        column={column}
+        {...props}>
       {column.format ? column.format(value) : value}
     </ScrollerCell>
   )
 };
 
-const Cells = React.memo(({ visibleRows, visibleColumns, value, columns }) => {
-  return visibleRows.reduce((acc, rowIndex) => {
-    const rowValue = value[rowIndex];
-    const columnsElements = visibleColumns.map(columnIndex => {
-      const column = columns[columnIndex];
-      const value = get(rowValue, column.valuePath);
-      const Component = column.Component || Cell;
-      return <Component key={`${rowIndex}-${columnIndex}`} column={column} value={value} />;
+const CellWrapper = ({ value, columns, selectedCells, onSelectedCellsChange, rowIndex, columnIndex }) => {
+  const { hoverRow, onHoverRowChange } = useContext(CellsRowContext);
+
+  const onMouseEnter = useCallback(() => onHoverRowChange(true), [onHoverRowChange]);
+  const onMouseLeave = useCallback(() => onHoverRowChange(false), [onHoverRowChange]);
+
+  const handleSelect = useCallback(({ ctrlKey, shiftKey }) => {
+    onSelectedCellsChange(selectedCells => {
+      const lastSelection = selectedCells[selectedCells.length - 1];
+      const curSelection = { row: rowIndex, column: columnIndex };
+
+      let nextSelection;
+      if (ctrlKey && lastSelection) {
+        nextSelection = [...selectedCells, curSelection];
+      } else if (shiftKey && lastSelection) {
+        const startRowIndex = Math.min(lastSelection.row, curSelection.row);
+        const endRowIndex = Math.max(lastSelection.row, curSelection.row);
+        nextSelection = [];
+        for (let i = startRowIndex; i <= endRowIndex; i++) {
+          nextSelection.push({ row: i });
+        }
+      } else {
+        nextSelection = [curSelection];
+      }      
+      return nextSelection;
     });
-    return [...acc, ...columnsElements];
+  }, [columnIndex, rowIndex, onSelectedCellsChange]);
+
+  const column = columns[columnIndex];
+  const rowValue = value[rowIndex];
+  const curValue = get(rowValue, column.valuePath);
+  const Component = column.Component || Cell;
+
+  const selectedRow = selectedCells.some(selectedCell => selectedCell.row === rowIndex);
+  const selectedCell = selectedCells.some(selectedCell => selectedCell.row === rowIndex && selectedCell.column === columnIndex);
+
+  return (
+    <Component
+        hover={hoverRow}
+        selectedRow={selectedRow}
+        selectedCell={selectedCell}
+        column={column}
+        value={curValue}
+        onClick={handleSelect}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave} />
+  );
+};
+
+const Cells = React.memo(({ selectedCells, onSelectedCellsChange, visibleRows, visibleColumns, value, columns }) => {
+  return visibleRows.map(rowIndex => {
+    const columnsElements = (
+      <CellsRow key={rowIndex}>
+        {visibleColumns.map(columnIndex => {
+          return (
+            <CellWrapper
+                key={`${rowIndex}-${columnIndex}`}
+                value={value}
+                columns={columns}
+                rowIndex={rowIndex}
+                columnIndex={columnIndex}
+                selectedCells={selectedCells}
+                onSelectedCellsChange={onSelectedCellsChange} />
+          );
+        })}
+      </CellsRow>
+    );
+    return columnsElements;
   }, [])
 });
 
-const Footer = React.memo(props => {
+const FooterItem = ({ value, column, style }) => {
+  const footerValue = column.footerValue && column.footerValue(value);
   return (
-    <div></div>
+    <ScrollerCell
+        className={classNames('footer', column.type || 'string')}
+        column={column}
+        style={style}>
+      {footerValue}
+    </ScrollerCell>
   )
+};
+
+const Footer = React.memo(props => {
+  return props.columns.map((column, index) => {
+    const Component = column.FooterComponent || FooterItem;
+    const fixedIntersection = index < props.fixColumns;
+    const style = {
+      position: 'sticky',
+      bottom: 0,
+      zIndex: fixedIntersection ? 4 : 3
+    };
+    return (
+      <Component
+          key={index}
+          value={props.value}
+          column={column}
+          style={style} />
+    )
+  })
 });
 
 /**
@@ -107,12 +211,19 @@ const Table = inputProps => {
   );
   const cellsElement = (
     <Cells
+        selectedCells={props.selectedCells}
+        onSelectedCellsChange={props.onSelectedCellsChange}
         visibleRows={props.visibleRows}
         visibleColumns={props.visibleColumns}
         value={props.value}
         columns={props.columns} />
   );
-  const footerElement = [];
+  const footerElement = props.showFooter ? (
+    <Footer
+        value={props.value}
+        columns={props.columns}
+        fixColumns={props.fixColumns} />
+  ) : null;
   const resizeColumnElement = props.resizeInteraction && props.resizeInteraction.type === 'column' && (
     <ResizeLines
         index={props.resizeInteraction.index}
@@ -137,7 +248,7 @@ const Table = inputProps => {
         <div ref={props.scrollerCoverRef}
             style={props.coverStyles}>
           <div style={props.pagesStyles}>
-            <div style={props.gridStyles}>
+            <div style={{ ...props.gridStyles, userSelect: 'none' }}>
               {headerElement}
               {cellsElement}
               {footerElement}

@@ -18,7 +18,11 @@ const columns = [
   {
     title: 'Number',
     type: 'number',
-    valuePath: 'number'
+    valuePath: 'number',
+    footerValue: value => {
+      const total = value.reduce((acc, item) => acc + item.number, 0);
+      return `Avarage is ${(total / value.length).toFixed(2)}`
+    }
   },
   {
     title: 'Date of birth',
@@ -43,7 +47,7 @@ const generateEmployees = count => {
       firstName: `First name ${key}`,
       lastName: `Last name ${key}`,
       birthDay: randomDate(new Date(1970, 0, 0), new Date(2000, 0, 0)),
-      number: key,
+      number: getRandomInt(0, 1000),
       department: departments[getRandomInt(0, departments.length - 1)]
     }
   });
@@ -67,10 +71,28 @@ export const defaultTable = props => {
         defaultRowHeight={30}
         defaultColumnWidth={150}
         height={600}
+        {...props} />
+  )
+};
+
+export const withFooter = props => {
+  return (
+    <TableComponent
+        columns={columns}
+        value={employees}
+        totalColumns={columns.length}
+        totalRows={employees.length}
+        rowsPerPage={60}
+        columnsPerPage={15}
+        defaultRowHeight={30}
+        defaultColumnWidth={150}
+        height={600}
         fixColumns={1}
+        showFooter
         {...props} />
   )
 };
 
 storiesOf('Table', module)
-  .add('default', defaultTable);
+  .add('default', defaultTable)
+  .add('withFooter', withFooter);

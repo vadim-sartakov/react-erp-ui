@@ -22,12 +22,25 @@
   position: relative;
 }
 
-.table .header, .table .cell {
+.table .header, .table .cell, .table .footer {
+  overflow: hidden;
   background-color: #fff;
   border-bottom: solid 1px #ccc;
   padding: 5px
 }
 
-.table .header.number, .table .cell.number {
+.table .header.number, .table .cell.number, .table .footer {
   text-align: right;
+}
+
+.table .hover-row {
+  background-color: #efefef;
+}
+
+.table .selected-row {
+  background-color: #e6e6e6;
+}
+
+.table .selected-cell {
+  background-color: #d6d6d6;
 }

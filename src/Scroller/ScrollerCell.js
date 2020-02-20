@@ -12,6 +12,8 @@ const ScrollerCell = ({
   onMouseDown,
   onMouseUp,
   onMouseMove,
+  onMouseEnter,
+  onMouseLeave,
   onClick
 }) => {
   const { defaultColumnWidth, defaultRowHeight } = useContext(ScrollerContext);
@@ -42,6 +44,8 @@ const ScrollerCell = ({
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
         onClick={onClick}>
       {children}
     </Component>

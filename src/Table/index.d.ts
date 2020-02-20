@@ -1,9 +1,9 @@
-import { FunctionComponent, Dispatch, SetStateAction, Context } from 'react';
+import { FunctionComponent, Dispatch, SetStateAction, Context, CSSProperties } from 'react';
 import { Filter } from '../dataCompose/index';
 
-export interface CellAddress {
+export interface Selection {
   row: number;
-  column: number;
+  column?: number;
 }
 
 export interface Meta {
@@ -33,6 +33,8 @@ export interface Column {
   title: string;
   size?: number;
   HeaderComponent?: FunctionComponent<HeaderComponentProps>;
+  FooterComponent?: FunctionComponent<FooterComponentProps>;
+  footerValue?: (value: Value) => string;
 }
 
 export interface ValueComponentProps {
@@ -40,12 +42,24 @@ export interface ValueComponentProps {
   rowIndex: number;
   columnIndex: number;
   column: Column;
+  /** If mouse is over a row */
+  hover: boolean;
+  selectedRow: boolean;
+  selectedCell: boolean;
 }
 
 export interface HeaderComponentProps {
   index: number;
   column: Column;
-  fixedIntersection: boolean;
+  onColumnsChange: Dispatch<SetStateAction<Column[]>>;
+  defaultColumnWidth: number;
+  style: CSSProperties;
+}
+
+export interface FooterComponentProps {
+  value: Value;
+  column: Column;
+  style: CSSProperties;
 }
 
 export type Value = Object[];
@@ -63,6 +77,9 @@ export interface UseTableOptions {
   value?: Value;
   onChange?: Dispatch<SetStateAction<Value>>;
   columns: Column[];
+  search?: string;
+  searchIndex?: number;
+  onSearchIndexChange?: number;
   filter: Filter;
   /** Array of property paths */
   sort: string[];
@@ -79,10 +96,10 @@ export interface UseTableResult {
   onResizeColumns: Dispatch<SetStateAction<Meta[]>>;
 }
 
-export declare function useTable(UseTableOptions): UseTableResult
+export declare function useTable(options: UseTableOptions): UseTableResult
 
 export interface TableProps extends UseTableOptions {
-
+  showFooter?: boolean;
 }
 
 declare const Table: FunctionComponent<TableProps>
