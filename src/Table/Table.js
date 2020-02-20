@@ -90,8 +90,8 @@ const CellWrapper = ({ value, columns, selectedCells, onSelectedCellsChange, row
       if (ctrlKey && lastSelection) {
         nextSelection = [...selectedCells, curSelection];
       } else if (shiftKey && lastSelection) {
-        const startRowIndex = Math.min(lastSelection.row, curSelection.row);
-        const endRowIndex = Math.max(lastSelection.row, curSelection.row);
+        const startRowIndex = selectedCells.reduce((prev, selection) => Math.min(prev, selection.row, curSelection.row), value.length - 1);
+        const endRowIndex = selectedCells.reduce((prev, selection) => Math.max(prev, selection.row, curSelection.row), 0);
         nextSelection = [];
         for (let i = startRowIndex; i <= endRowIndex; i++) {
           nextSelection.push({ row: i });
