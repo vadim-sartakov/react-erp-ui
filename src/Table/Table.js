@@ -24,8 +24,7 @@ const Heading = ({ index, columns, onColumnsChange, column, defaultColumnWidth, 
           index={index}
           defaultSize={defaultColumnWidth}
           meta={column}
-          onChange={onColumnsChange}
-          onResize={onColumnsChange} />
+          onMouseMove={onColumnsChange} />
     </ScrollerCell>
   )
 };

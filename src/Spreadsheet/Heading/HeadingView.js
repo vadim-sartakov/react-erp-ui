@@ -8,7 +8,6 @@ const HeadingView = ({
   row,
   column,
   defaultSize,
-  onChange,
   onMouseDown,
   onMouseUp,
   onResize,
@@ -36,10 +35,9 @@ const HeadingView = ({
           type={type}
           meta={meta}
           defaultSize={defaultSize}
-          onChange={onChange}
           onMouseUp={onMouseUp}
           onMouseDown={onMouseDown}
-          onResize={onResize}
+          onMouseMove={onResize}
           index={index}
           className={resizerClassName} />
     </SpreadsheetCell>

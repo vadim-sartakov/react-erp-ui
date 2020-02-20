@@ -48,7 +48,7 @@ export interface HeaderComponentProps {
   fixedIntersection: boolean;
 }
 
-export type Value = Object[][];
+export type Value = Object[];
 
 export interface UseTableOptions {
   defaultRowHeight: number;

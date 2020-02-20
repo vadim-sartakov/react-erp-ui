@@ -5,6 +5,7 @@ import { normalizeMergedRange } from '../../grid/MergedCell';
 const Heading = React.memo(({
   Component = HeadingView,
   onResizeInteractionChange,
+  onChange,
   ...props
 }) => {
   const selected = props.selectedCells.some(selectedRange => {
@@ -13,7 +14,10 @@ const Heading = React.memo(({
   });
 
   const onMouseDown = useCallback(() => onResizeInteractionChange({ index: props.index, type: props.type }), [onResizeInteractionChange, props.index, props.type]);
-  const onMouseUp = useCallback(() => onResizeInteractionChange(undefined), [onResizeInteractionChange]);
+  const onMouseUp = useCallback(nextSizes => {
+    onChange(nextSizes);
+    onResizeInteractionChange(undefined);
+  }, [onChange, onResizeInteractionChange]);
 
   return <Component {...props} selected={selected} onMouseDown={onMouseDown} onMouseUp={onMouseUp} />
 });
