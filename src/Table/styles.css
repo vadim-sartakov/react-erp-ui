@@ -31,6 +31,10 @@
   padding: 5px
 }
 
+.table .cell {
+  white-space: pre;
+}
+
 .table .header.number, .table .cell.number, .table .footer {
   justify-content: flex-end;
 }
