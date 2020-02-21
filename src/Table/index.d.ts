@@ -23,12 +23,25 @@ export declare const TableContext: Context<TableContextProps>
 export interface CellComponentProps {
   value: any;
   rowIndex: number;
-  columnIndex: number;
   column: Column;
   onMouseEnter: UIEvent;
   onMouseLeave: UIEvent;
   onClick: UIEvent;
   onDoubleClick: UIEvent;
+}
+
+export interface CellEditComponentProps {
+  value: any;
+  onChange: (value: any) => void;
+  rowIndex: number;
+  column: Column;
+  createOnBlur: (value: any) => MouseEvent;
+  /**
+   * Helper function to initialize on key down event handler.
+   * It's already bound to generic keys, so default actions will be executed.
+   * If handler returned from this creator is used
+   */
+  createOnKeyDown: (value: any) => KeyboardEvent;
 }
 
 export interface Column {
@@ -42,7 +55,7 @@ export interface Column {
   format?: (value: any) => string;
   /** Custom value component */
   Component?: FunctionComponent<CellComponentProps>;
-  EditComponent?: FunctionComponent<CellComponentProps>;
+  EditComponent?: FunctionComponent<CellEditComponentProps>;
   /** Header title */
   title: string;
   size?: number;
