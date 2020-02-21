@@ -4,7 +4,7 @@ import get from 'lodash/get';
  * @param {import('./').FilterItem} filterItem
  * @returns {boolean}
  */
-const evaluateFilterResult = (value, filterItem, comparators) => {
+const evaluateFilterResult = (value, filterItem) => {
   if (filterItem.$and || Array.isArray(filterItem)) {
     return (filterItem.$and || filterItem).reduce((prev, filterItem) => {
       if (!prev) return prev;
@@ -18,18 +18,37 @@ const evaluateFilterResult = (value, filterItem, comparators) => {
   }
 
   const [path, filter] = Object.entries(filterItem)[0];
+  const fieldValue = get(value, path);
 
-  const comparableValue = get(value, path);
-  const comparator = comparators && comparators[path];
-
-  if (comparator) return comparator(comparableValue, filter);
-
-  if (filter.$eq) {
-    return comparableValue === Object.entries(filter)[0][1];
-    // Assuming it as default 'eq' filter
-  } else {
-    return comparableValue === filter;
+  const type = typeof filter;
+  if (type === 'function') {
+    return filter(fieldValue);
   }
+
+  const [filterType, filterValue] = type === 'object' ? Object.entries(filter)[0] : ['', filter];
+
+  switch(filterType) {
+    case '$eq':
+      return fieldValue === filterValue;
+    case '$ne':
+      return fieldValue !== filterValue;
+    case '$gt':
+      return fieldValue > filterValue;
+    case '$gte':
+      return fieldValue >= filterValue;
+    case '$lt':
+      return fieldValue < filterValue;
+    case '$lte':
+      return fieldValue <= filterValue;
+    case '$in':
+      return filterValue.some(item => item === fieldValue);
+    case '$nin':
+      return !filterValue.some(item => item === fieldValue);
+    default:
+      // Assuming it as default 'eq' filter
+      return fieldValue === filterValue;
+  }
+
 };
 
 /**
