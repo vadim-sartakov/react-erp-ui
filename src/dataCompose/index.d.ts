@@ -27,19 +27,20 @@ type CompareCallback = (a: any, b: any) => 1 | 0 | -1;
  */
 export type Sort = Array<{ [path: string]: 1 | -1 | CompareCallback }>
 
-export interface DataComposeOptions {
-  /** Value paths */
-  rowsGroups?: string[];
-  /** Value paths */
-  columnsGroups?: string[];
-  sort?: Sort;
-  filter?: Filter;
-  comparators?: {
-    [path: string]: {
-      [filterType: 'default' | FilterType]: () => boolean
-    }
+type GroupItem = {
+  [path: string]: {
+    hierarchy?: boolean;
+    comparator?: CompareCallback;
   }
 }
+export type Group = Array<GroupItem | string>
 
-export declare function dataCompose(value: Object[] | Object[][], options: DataComposeOptions): Array<Object>
-export declare function dataComposeAsync(value: Object[] | Object[][], options: DataComposeOptions): Promise<Array<Object>>
+export interface DataComposeOptions {
+  /** Value paths */
+  groups?: string[];
+  sort?: Sort;
+  filter?: Filter;
+}
+
+export declare function dataCompose(value: Object[], options: DataComposeOptions): Array<Object>
+export declare function dataComposeAsync(value: Object[], options: DataComposeOptions): Promise<Array<Object>>

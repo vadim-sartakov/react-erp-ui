@@ -1,6 +1,7 @@
 import get from 'lodash/get';
 
 /**
+ * @param {Object[]} value
  * @param {import('./').FilterItem} filterItem
  * @returns {boolean}
  */
