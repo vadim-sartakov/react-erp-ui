@@ -117,7 +117,7 @@ const EditCellWrapper = ({
           let nextEditingCell;
           if (editingCell.row === totalRows - 1 && editingCell.column === totalColumns - 1) {
             // Adding new row
-            handleChange(value => [...value, {}]);
+            onChangeProp(value => [...value, {}]);
             nextEditingCell = { row: totalRows, column: 0 };
           } else if (editingCell.column === totalColumns - 1) {
             nextEditingCell = { row: editingCell.row + 1, column: 0 };
