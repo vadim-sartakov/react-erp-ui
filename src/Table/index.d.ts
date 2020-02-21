@@ -49,9 +49,9 @@ export interface Column {
   type?: ValueType;
   /**
    * If value is an object, then result value for the table
-   * will be received with provided valuePath
+   * will be received with provided path
    */
-  valuePath: string;
+  path: string;
   format?: (value: any) => string;
   /** Custom value component */
   Component?: FunctionComponent<CellComponentProps>;

@@ -9,16 +9,16 @@ import './styles.css';
 const columns = [
   {
     title: 'First name',
-    valuePath: 'firstName'
+    path: 'firstName'
   },
   {
     title: 'Last name',
-    valuePath: 'lastName'
+    path: 'lastName'
   },
   {
     title: 'Number',
     type: 'number',
-    valuePath: 'number',
+    path: 'number',
     footerValue: value => {
       const total = value.reduce((acc, item) => acc + item.number, 0);
       return `Avarage is ${(total / value.length).toFixed(2)}`
@@ -27,12 +27,12 @@ const columns = [
   {
     title: 'Date of birth',
     type: 'date',
-    valuePath: 'birthDay',
+    path: 'birthDay',
     format: value => value && moment(value).format('DD/MM/YYYY')
   },
   {
     title: 'Department',
-    valuePath: 'department.name'
+    path: 'department.name'
   }
 ];
 

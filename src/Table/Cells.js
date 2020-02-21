@@ -93,7 +93,7 @@ const EditCellWrapper = ({
 
   const handleChange = value => {
     onChangeProp(sourceValue => {
-      const nextValue = setIn(`[${rowIndex}].${column.valuePath}`, value, sourceValue);
+      const nextValue = setIn(`[${rowIndex}].${column.path}`, value, sourceValue);
       return nextValue;
     });
   };
@@ -164,7 +164,7 @@ const CellWrapper = ({
 
   const column = columns[columnIndex];
   const rowValue = value[rowIndex];
-  const curValue = get(rowValue, column.valuePath);
+  const curValue = get(rowValue, column.path);
   const editing = !readOnly && editingCell && (editingCell.row === rowIndex && editingCell.column === columnIndex);
   const selectedRow = selectedCells.some(selectedCell => selectedCell.row === rowIndex);
   const selectedCell = selectedCells.some(selectedCell => selectedCell.row === rowIndex && selectedCell.column === columnIndex);
