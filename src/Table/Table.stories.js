@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import Table from './';
 import { randomDate, getRandomInt } from '../test-utils/generateValues';
@@ -56,7 +56,12 @@ const generateEmployees = count => {
 const employees = generateEmployees(1000);
 
 export const TableComponent = ({ ...props }) => {
-  return <Table {...props} />
+  const [value, onChange] = useState(props.defaultValue);
+  const onRowAdd = () => onChange(value => [...value, {}]);
+  const onRowDelete = selectedCells => {
+    onChange(value => value.filter((item, curIndex) => !selectedCells.some(selectedCell => selectedCell.row === curIndex)));
+  };
+  return <Table {...props} value={value} onChange={onChange} onRowAdd={onRowAdd} onRowDelete={onRowDelete} />
 };
 
 export const defaultTable = props => {

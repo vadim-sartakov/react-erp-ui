@@ -126,6 +126,7 @@ export interface TableProps extends UseTableOptions {
    * If none was found then cell is supposed to be non-editable
    */
   defaultEditComponents?: { [type: ValueType]: FunctionComponent<CellEditComponentProps> };
+  onRowAdd?: Function;
 }
 
 declare const Table: FunctionComponent<TableProps>

@@ -77,6 +77,8 @@ const moveScrollPosition = ({
 };
 
 const useKeyboard = ({
+  onRowAdd,
+  onRowDelete,
   editingCell,
   onEditingCellChange,
   scrollerContainerRef,
@@ -101,6 +103,27 @@ const useKeyboard = ({
         case 'Enter':
           const lastSelectedCell = selectedCells[selectedCells.length - 1];
           lastSelectedCell && onEditingCellChange({ row: lastSelectedCell.row, column: lastSelectedCell.column });
+          break;
+        case 'Insert':
+          onRowAdd();
+          const nextSelectedCells = [{ row: totalRows, column: 0 }];
+          onSelectedCellsChange(nextSelectedCells);
+          moveScrollPosition({
+            selectedCells: nextSelectedCells,
+            columns,
+            fixColumns,
+            rowOffset: totalRows,
+            showFooter,
+            defaultRowHeight,
+            defaultColumnWidth,
+            scrollerContainerRef,
+            scrollerContainerRect: scrollerContainerRef.current.getBoundingClientRect()
+          });
+          break;
+        case 'Delete':
+          selectedCells.length && onRowDelete && onRowDelete(selectedCells);
+          const firstSelection = selectedCells[0];
+          onSelectedCellsChange([{ row: firstSelection.row }]);
           break;
         default:
       }
@@ -180,7 +203,9 @@ const useKeyboard = ({
     defaultRowHeight,
     rowsPerPage,
     totalRows,
-    onSelectedCellsChange
+    onSelectedCellsChange,
+    onRowAdd,
+    onRowDelete
   ]);
 
   return onKeyDown;

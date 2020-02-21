@@ -80,6 +80,7 @@ const Cell = ({ value, column, ...props }) => {
 const EditCellWrapper = ({
   Component,
   value: valueProp,
+  onRowAdd,
   onChange: onChangeProp,
   rowIndex,
   column,
@@ -115,9 +116,8 @@ const EditCellWrapper = ({
         handleChange(value);
         onEditingCellChange(editingCell => {
           let nextEditingCell;
-          if (editingCell.row === totalRows - 1 && editingCell.column === totalColumns - 1) {
-            // Adding new row
-            onChangeProp(value => [...value, {}]);
+          if (editingCell.row === totalRows - 1 && editingCell.column === totalColumns - 1 && onRowAdd) {
+            onRowAdd();
             nextEditingCell = { row: totalRows, column: 0 };
           } else if (editingCell.column === totalColumns - 1) {
             nextEditingCell = { row: editingCell.row + 1, column: 0 };
@@ -152,6 +152,7 @@ const CellWrapper = ({
   columns,
   selectedCells,
   onSelectedCellsChange,
+  onRowAdd,
   rowIndex,
   columnIndex,
   editingCell,
@@ -229,6 +230,7 @@ const CellWrapper = ({
       onChange,
       onEditingCellChange,
       onSelectedCellsChange,
+      onRowAdd,
       totalRows,
       totalColumns
     };

@@ -121,7 +121,8 @@ const Table = inputProps => {
         onChange={props.onChange}
         columns={props.columns}
         totalRows={props.totalRows}
-        totalColumns={props.totalColumns} />
+        totalColumns={props.totalColumns}
+        onRowAdd={props.onRowAdd} />
   );
   const footerElement = props.showFooter ? (
     <Footer
