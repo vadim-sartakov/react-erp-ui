@@ -1,14 +1,13 @@
 import React from 'react';
 import classNames from 'classnames';
 import SpreadsheetCell from '../SpreadsheetCell';
-import GridResizer from '../../GridResizer';
+import GridResizer from '../../grid/GridResizer';
 
 const HeadingView = ({
   selected,
   row,
   column,
   defaultSize,
-  onChange,
   onMouseDown,
   onMouseUp,
   onResize,
@@ -36,10 +35,9 @@ const HeadingView = ({
           type={type}
           meta={meta}
           defaultSize={defaultSize}
-          onChange={onChange}
           onMouseUp={onMouseUp}
           onMouseDown={onMouseDown}
-          onResize={onResize}
+          onMouseMove={onResize}
           index={index}
           className={resizerClassName} />
     </SpreadsheetCell>

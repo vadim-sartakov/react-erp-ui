@@ -1,19 +1,16 @@
-import React, { useContext } from 'react';
+import React, { useContext, forwardRef } from 'react';
 import { ScrollerContext } from './';
 
 /** @type {import('react').FunctionComponent<import('.').ScrollerCellProps>} */
-const ScrollerCell = ({
-  className,
+const ScrollerCell = forwardRef(({
   style,
+  rowIndex,
+  columnIndex,
   row,
   column,
   Component = 'div',
-  children,
-  onMouseDown,
-  onMouseUp,
-  onMouseMove,
-  onClick
-}) => {
+  ...props
+}, ref) => {
   const { defaultColumnWidth, defaultRowHeight } = useContext(ScrollerContext);
   
   const { size: rowSize, offset: rowOffset } = row || {};
@@ -36,16 +33,8 @@ const ScrollerCell = ({
   }
   nextStyle = { ...nextStyle, ...style };
   return (
-    <Component
-        style={nextStyle}
-        className={className}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        onMouseMove={onMouseMove}
-        onClick={onClick}>
-      {children}
-    </Component>
+    <Component ref={ref} style={nextStyle} {...props} />
   );
-};
+});
 
 export default ScrollerCell;

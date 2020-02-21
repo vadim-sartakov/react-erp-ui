@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback } from 'react';
 import { expandSelection, getIndexFromCoordinate } from './utils';
 import { getOverscrolledCoordinateOffset } from '../Scroller/utils';
-import { getCellsRangeSize } from '../MergedCell/utils';
+import { getCellsRangeSize } from '../grid/MergedCell/utils';
 
 const rangesAreEqual = (rangeA, rangeB) => {
   return rangeA.start.row === rangeB.start.row &&

@@ -1,5 +1,5 @@
 import React from 'react';
-import MergedCell from '../MergedCell';
+import MergedCell from '../grid/MergedCell';
 import { ScrollerCell } from '../Scroller';
 
 const SpreadsheetCell = props => {

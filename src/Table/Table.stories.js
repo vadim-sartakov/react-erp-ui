@@ -1,81 +1,101 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHeaderCell,
-  TableCellValue,
-  TableColumnResizer,
-  TableRowResizer,
-  TableBody,
-  TableCell
-} from './';
-import './Table.stories.sass';
+import Table from './';
+import { randomDate, getRandomInt } from '../test-utils/generateValues';
+import moment from 'moment';
+import './styles.css';
 
-const TestTable = ({ columns, rows, ...props }) => {
-  return (
-    <Table
-        className="table"
-        defaultRowHeight={16}
-        defaultColumnWidth={300}
-        classes={{
-          fixColumn: 'fix-column',
-          lastFixColumn: 'last-fix-column',
-          fixRow: 'fix-row'
-        }}
-        {...props}>
-      <TableHeader>
-        <TableRow index={0}>
-          {columns.map((column, columnIndex) => (
-            <TableHeaderCell key={columnIndex} columnIndex={columnIndex}>
-              <TableCellValue>
-                {column.title}
-              </TableCellValue>
-              <TableColumnResizer index={columnIndex} className="resizer column-resizer" />
-              <TableRowResizer className="resizer row-resizer" />
-            </TableHeaderCell>
-          ))}
-        </TableRow>
-      </TableHeader>
-      
-      <TableBody>
-        {rows.map((value, rowIndex) => (
-          <TableRow key={rowIndex} index={rowIndex + 1}>
-            {columns.map((column, columnIndex) => (
-              <TableCell key={columnIndex} columnIndex={columnIndex}>
-                <TableCellValue>
-                  {value[column.key]}
-                </TableCellValue>
-                <TableRowResizer className="resizer row-resizer" />
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
+/** @type {import('./').Column[]} */
+const columns = [
+  {
+    title: 'First name',
+    valuePath: 'firstName'
+  },
+  {
+    title: 'Last name',
+    valuePath: 'lastName'
+  },
+  {
+    title: 'Number',
+    type: 'number',
+    valuePath: 'number',
+    footerValue: value => {
+      const total = value.reduce((acc, item) => acc + item.number, 0);
+      return `Avarage is ${(total / value.length).toFixed(2)}`
+    }
+  },
+  {
+    title: 'Date of birth',
+    type: 'date',
+    valuePath: 'birthDay',
+    format: value => value && moment(value).format('DD/MM/YYYY')
+  },
+  {
+    title: 'Department',
+    valuePath: 'department.name'
+  }
+];
+
+const generateDepartments = count => {
+  return [...new Array(count).keys()].map(key => ({ name: `Department ${key}` }))
+};
+const departments = generateDepartments(20);
+
+const generateEmployees = count => {
+  return [...new Array(count).keys()].map(key => {
+    return {
+      firstName: `First name ${key}`,
+      lastName: `Last name ${key}`,
+      birthDay: randomDate(new Date(1970, 0, 0), new Date(2000, 0, 0)),
+      number: getRandomInt(0, 1000),
+      department: departments[getRandomInt(0, departments.length - 1)]
+    }
+  });
 };
 
-const createColumns = count => new Array(count).fill(1).map((item, index) => {
-  return {
-    title: `Column ${index}`,
-    key: `field${index}`
+const employees = generateEmployees(1000);
+
+export const TableComponent = ({ ...props }) => {
+  const [value, onChange] = useState(props.defaultValue);
+  const onRowAdd = () => onChange(value => [...value, {}]);
+  const onRowDelete = selectedCells => {
+    onChange(value => value.filter((item, curIndex) => !selectedCells.some(selectedCell => selectedCell.row === curIndex)));
   };
-});
+  return <Table {...props} value={value} onChange={onChange} onRowAdd={onRowAdd} onRowDelete={onRowDelete} />
+};
 
-const createValues = (columns, count) => new Array(count).fill(1).map((item, valueIndex) => {
-  return columns.reduce((acc, column, columnIndex) => {
-    return {
-      ...acc,
-      [column.key]: `Value ${valueIndex} - ${columnIndex}`
-    };
-  }, {});
-});
+export const defaultTable = props => {
+  return (
+    <TableComponent
+        columns={columns}
+        defaultValue={employees}
+        rowsPerPage={60}
+        columnsPerPage={15}
+        defaultRowHeight={30}
+        defaultColumnWidth={150}
+        height={600}
+        {...props} />
+  )
+};
 
-const columns = createColumns(6);
-const rows = createValues(columns, 20);
+export const withFooter = props => {
+  return (
+    <TableComponent
+        columns={columns}
+        defaultValue={employees}
+        totalColumns={columns.length}
+        totalRows={employees.length}
+        rowsPerPage={60}
+        columnsPerPage={15}
+        defaultRowHeight={30}
+        defaultColumnWidth={150}
+        height={600}
+        fixColumns={1}
+        showFooter
+        {...props} />
+  )
+};
 
 storiesOf('Table', module)
-  .add('default', () => <TestTable columns={columns} rows={rows} />)
-  .add('fixed columns', () => <TestTable columns={columns} rows={rows} fixRows={1} fixColumns={2} />);
+  .add('default', defaultTable)
+  .add('withFooter', withFooter);

@@ -9,11 +9,11 @@ export interface GridResizerProps {
   index: number;
   defaultSize: number;
   meta: Meta,
-  onChange: Dispatch<SetStateAction<Meta[]>>;
+  onMouseDown?: Function;
+  onMouseMove?: Dispatch<SetStateAction<Meta[]>>;
+  onMouseUp?: Dispatch<SetStateAction<Meta[]>>;
   Component: FunctionComponent | string;
   minSize: number;
-  resizeMeta: Meta;
-  onResizeMetaChange: Dispatch<SetStateAction<Meta[]>>;
 }
 
 declare const GridResizer: FunctionComponent<GridResizerProps>;

@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
-import useResize from '../useResize';
+import useResize from '../../useResize';
 
-const setMeta = ({ index, resizeProperty, minSize, onChange, beforeCallback }) => newSize => {
-  beforeCallback && beforeCallback();
+const setMeta = ({ index, resizeProperty, minSize, onChange }) => newSize => {
+  if (!onChange) return;
   const curSize = Math.max(newSize[resizeProperty], minSize);
   onChange(sizes => {
     const nextSizes = [...(sizes || [])];
@@ -16,11 +16,9 @@ const GridResizer = ({
   index,
   defaultSize,
   meta,
-  onChange,
-  resizeMeta,
   onMouseDown,
+  onMouseMove,
   onMouseUp,
-  onResize,
   Component = 'div',
   minSize = 10,
   ...props
@@ -36,8 +34,8 @@ const GridResizer = ({
 
   const sizes = { [resizeProperty] : (meta && meta.size) || defaultSize, [otherResizeProperty]: 0 };
 
-  const handleMouseMove = useCallback(setMeta({ index, resizeProperty, minSize, onChange: onResize }), [index, onChange, resizeProperty, minSize]);
-  const handleMouseUp = useCallback(setMeta({ index, resizeProperty, minSize, onChange, beforeCallback: onMouseUp }), [index, onChange, resizeProperty, minSize]);
+  const handleMouseMove = useCallback(setMeta({ index, resizeProperty, minSize, onChange: onMouseMove }), [index, onMouseMove, resizeProperty, minSize]);
+  const handleMouseUp = useCallback(setMeta({ index, resizeProperty, minSize, onChange: onMouseUp }), [index, onMouseUp, resizeProperty, minSize]);
 
   const onStartResize = useResize({ sizes, onMouseDown, onMouseMove: handleMouseMove, onMouseUp: handleMouseUp });
   return <Component {...props} onMouseDown={onStartResize} />;

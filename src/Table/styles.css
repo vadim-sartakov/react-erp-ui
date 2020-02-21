@@ -1,0 +1,56 @@
+.table {
+  font-size: 14px;
+}
+
+.table .column-resizer {
+  position: absolute;
+  z-index: 1;
+  user-select: none;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+}
+
+.table .header:hover .column-resizer {
+  border-right: solid 1px #ccc;
+}
+
+.table .header {
+  font-weight: 600;
+  position: relative;
+}
+
+.table .header, .table .cell, .table .footer {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background-color: #fff;
+  border-bottom: solid 1px #ccc;
+  padding: 5px
+}
+
+.table .cell {
+  white-space: pre;
+}
+
+.table .header.number, .table .cell.number, .table .footer {
+  justify-content: flex-end;
+}
+
+.table .hover-row {
+  background-color: #efefef;
+}
+
+.table .selected-row {
+  background-color: #e6e6e6;
+}
+
+.table .selected-cell {
+  background-color: #d6d6d6;
+}
+
+.table .edit {
+  background-color: #fff
+}
