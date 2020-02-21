@@ -73,4 +73,14 @@ describe('filter', () => {
     expect(result).toEqual([{ string: '2', number: 2 }]);
   });
 
+  it('should filter dates', () => {
+    const value = [
+      { date: new Date(2000, 0, 0) },
+      { date: new Date(2000, 1, 0) },
+      { date: new Date(2000, 2, 0) }
+    ];
+    const result = filter(value, [{ date: { $lte: new Date(2000, 1, 0) } }]);
+    expect(result).toEqual([ { date: new Date(2000, 0, 0) }, { date: new Date(2000, 1, 0) }]);
+  });
+
 });

@@ -19,14 +19,17 @@ const evaluateFilterResult = (value, filterItem) => {
   }
 
   const [path, filter] = Object.entries(filterItem)[0];
-  const fieldValue = get(value, path);
+  let fieldValue = get(value, path);
 
   const type = typeof filter;
   if (type === 'function') {
     return filter(fieldValue);
   }
 
-  const [filterType, filterValue] = type === 'object' ? Object.entries(filter)[0] : ['', filter];
+  let [filterType, filterValue] = type === 'object' ? Object.entries(filter)[0] : ['', filter];
+  
+  if (fieldValue instanceof Date) fieldValue = fieldValue.getTime();
+  if (filterValue instanceof Date) filterValue = filterValue.getTime();
 
   switch(filterType) {
     case '$eq':

@@ -7,7 +7,7 @@ function comparePlainValues(a, b) {
     return a.getTime() < b.getTime() ? -1 : a.getTime() > b.getTime() ? 1 : 0;
   } else if (aType === 'string' && bType === 'string') {
     return a.localeCompare(b);
-  } else if (aType === 'number' && bType === 'number') {
+  } else {
     return a < b ? -1 : a > b ? 1 : 0;
   }
 };
