@@ -11,7 +11,7 @@ type In = { $in: any[] };
 type Nin = { $nin: any[] };
 
 type FilterItem = {
-  [path: string]: any | Eq | Ne | Gt | Gte | Lt | Lte | In | Nin
+  [path: string]: any | Eq | Ne | Gt | Gte | Lt | Lte | In | Nin | Or | And
 };
 
 type Or = { $or: FilterItem[] }
@@ -22,11 +22,13 @@ export type Filter = FilterItem[] | And | Or
 /**
  * 1: ascending, -1: descending
  */
-export type SortItem = { [path: string]: 1 | -1 }
-export type Sort = Array<SortItem>
+export type Sort = Array<{ [path: string]: 1 | -1 }>
 
 export interface DataComposeOptions {
-  rowsGroups
+  /** Value paths */
+  rowsGroups?: string[];
+  /** Value paths */
+  columnsGroups?: string[];
   sort?: Sort;
   filter?: Filter;
 }
