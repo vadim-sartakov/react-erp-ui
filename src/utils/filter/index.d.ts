@@ -20,19 +20,9 @@ type And = { $and: FilterItem[] }
 
 export type Filter = FilterItem[] | And | Or
 
-type CompareCallback = (a: any, b: any) => 1 | 0 | -1;
-
 /**
- * 1: ascending, -1: descending
+ * Filter array utility which provides interface similar to MongoDB
  */
-export type Sort = Array<{ [path: string]: 1 | -1 | CompareCallback }>
+declare function filter(value: Object[], filter: Filter): Array<Object>
 
-type GroupItem = {
-  [path: string]: {
-    hierarchy?: boolean;
-    comparator?: CompareCallback;
-  }
-}
-export type Group = Array<GroupItem | string>
-
-export declare function filter(value: Object[], filter: Filter): Array<Object>
+export default filter;

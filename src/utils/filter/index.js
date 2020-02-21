@@ -57,6 +57,8 @@ const evaluateFilterResult = (value, filterItem) => {
  * @param {Object[]} value 
  * @param {import('./').Filter} filter 
  */
-export const filter = (value, filter) => {
+const filter = (value, filter) => {
   return value.filter(rowValue => evaluateFilterResult(rowValue, filter));
 };
+
+export default filter;
