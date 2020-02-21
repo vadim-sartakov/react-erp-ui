@@ -6,8 +6,7 @@ import { useTable, useKeyboard, TableContext } from './';
 import { useScroller, ScrollerContainer, ScrollerCell } from '../Scroller';
 import GridResizer from '../grid/GridResizer';
 
-const StringEditComponent = ({ column, rowIndex, value: valueProp, onChange, onEditingCellChange, ...props }) => {
-  const [value, setValue] = useState(valueProp || '');
+const StringEditComponent = ({ column, rowIndex, value = '', onChange, onEditingCellChange, ...props }) => {
   const rootRef = useRef();
 
   useEffect(() => {
@@ -15,16 +14,8 @@ const StringEditComponent = ({ column, rowIndex, value: valueProp, onChange, onE
   }, []);
 
   const handleChange = useCallback(event => {
-    setValue(event.target.value);
-  }, []);
-
-  const handleBlur = useCallback(() => {
-    onChange(sourceValue => {
-      const nextValue = setIn(`[${rowIndex}].${column.valuePath}`, value, sourceValue);
-      return nextValue;
-    });
-    onEditingCellChange(undefined);
-  }, [onChange, onEditingCellChange, column.valuePath, rowIndex, value]);
+    onChange(event.target.value);
+  }, [onChange]);
 
   return (
     <ScrollerCell
@@ -33,8 +24,7 @@ const StringEditComponent = ({ column, rowIndex, value: valueProp, onChange, onE
         column={column}
         {...props}
         value={value}
-        onChange={handleChange}
-        onBlur={handleBlur} />
+        onChange={handleChange} />
   );
 };
 
@@ -100,6 +90,74 @@ const Cell = ({ value, column, ...props }) => {
   )
 };
 
+const EditCellWrapper = ({
+  Component,
+  value: valueProp,
+  onChange,
+  rowIndex,
+  column,
+  onEditingCellChange,
+  onSelectedCellsChange,
+  totalRows,
+  totalColumns,
+  ...props
+}) => {
+  const [value, setValue] = useState(valueProp);
+
+  const submitChange = useCallback(() => {
+    onChange(sourceValue => {
+      const nextValue = setIn(`[${rowIndex}].${column.valuePath}`, value, sourceValue);
+      return nextValue;
+    });
+  }, [column.valuePath, rowIndex, value, onChange]);
+
+  const onBlur = useCallback(() => {
+    submitChange();
+    onEditingCellChange(undefined);
+  }, [onEditingCellChange, submitChange]);
+
+  const onKeyDown = useCallback(event => {
+    switch(event.key) {
+      case 'Escape':
+        onEditingCellChange(undefined);
+        break;
+      case 'Enter':
+        submitChange();
+        onEditingCellChange(undefined);
+        break;
+      case 'Tab':
+        submitChange();
+        onEditingCellChange(editingCell => {
+          let nextEditingCell;
+          if (editingCell.row === totalRows - 1 && editingCell.column === totalColumns - 1) {
+            // Adding new row
+            onChange(value => [...value, {}]);
+            nextEditingCell = { row: totalRows, column: 0 };
+          } else if (editingCell.column === totalColumns - 1) {
+            nextEditingCell = { row: editingCell.row + 1, column: 0 };
+          } else {
+            nextEditingCell = { row: editingCell.row, column: editingCell.column + 1 };
+          }
+          onSelectedCellsChange([nextEditingCell]);
+          return nextEditingCell;
+        });
+        break;
+      default:
+    }
+  }, [onChange, submitChange, onEditingCellChange, onSelectedCellsChange, totalRows, totalColumns]);
+
+  return (
+    <Component
+        rowIndex={rowIndex}
+        column={column}
+        value={value}
+        onChange={setValue}
+        onBlur={onBlur}
+        onKeyDown={onKeyDown}
+        {...props} />
+  )
+};
+
 const CellWrapper = ({
   defaultEditComponents = {},
   readOnly,
@@ -111,7 +169,9 @@ const CellWrapper = ({
   rowIndex,
   columnIndex,
   editingCell,
-  onEditingCellChange
+  onEditingCellChange,
+  totalRows,
+  totalColumns
 }) => {
   const { hoverRow, onHoverRowChange } = useContext(CellsRowContext);
 
@@ -147,7 +207,7 @@ const CellWrapper = ({
     });
   }, [columnIndex, rowIndex, onSelectedCellsChange, value.length]);
 
-  const handleStartEdit = useCallback(() => {
+  const startEditCell = useCallback(() => {
     onEditingCellChange({ row: rowIndex, column: columnIndex });
   }, [onEditingCellChange, rowIndex, columnIndex]);
 
@@ -171,22 +231,26 @@ const CellWrapper = ({
   };
 
   const EditComponent = column.EditComponent || defaultEditComponents[column.type || 'string'];
-  const ValueComponent = (editing && EditComponent) || column.Component || Cell;
+  const ValueComponent = column.Component || Cell;
 
   let Component, componentProps;
   if (editing && EditComponent) {
-    Component = EditComponent;
+    Component = EditCellWrapper;
     componentProps = {
       ...baseComponentProps,
+      Component: EditComponent,
       className: classNames(baseComponentProps.className, 'edit'),
       onChange,
-      onEditingCellChange
+      onEditingCellChange,
+      onSelectedCellsChange,
+      totalRows,
+      totalColumns
     };
   } else {
     Component = ValueComponent;
     componentProps = {
       ...baseComponentProps,
-      onDoubleClick: handleStartEdit
+      onDoubleClick: startEditCell
     };
   }
 
@@ -291,7 +355,9 @@ const Table = inputProps => {
         visibleColumns={props.visibleColumns}
         value={props.value}
         onChange={props.onChange}
-        columns={props.columns} />
+        columns={props.columns}
+        totalRows={props.totalRows}
+        totalColumns={props.totalColumns} />
   );
   const footerElement = props.showFooter ? (
     <Footer

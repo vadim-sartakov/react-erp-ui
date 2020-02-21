@@ -28,7 +28,7 @@ const columns = [
     title: 'Date of birth',
     type: 'date',
     valuePath: 'birthDay',
-    format: value => moment(value).format('DD/MM/YYYY')
+    format: value => value && moment(value).format('DD/MM/YYYY')
   },
   {
     title: 'Department',
@@ -64,8 +64,6 @@ export const defaultTable = props => {
     <TableComponent
         columns={columns}
         defaultValue={employees}
-        totalColumns={columns.length}
-        totalRows={employees.length}
         rowsPerPage={60}
         columnsPerPage={15}
         defaultRowHeight={30}

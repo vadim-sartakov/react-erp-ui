@@ -19,9 +19,14 @@ const useTable = ({
   const [selectedCells, onSelectedCellsChange] = useState([]);
   const [editingCell, onEditingCellChange] = useState();
 
+  const totalRows = value.length;
+  const totalColumns = Object.keys(value[0]).length;
+
   return {
     value,
     onChange,
+    totalRows,
+    totalColumns,
     scrollerContainerRef,
     columns,
     onColumnsChange,

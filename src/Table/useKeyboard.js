@@ -1,6 +1,17 @@
 import { useCallback, useRef } from 'react';
 import { getOverscrolledCellOffset } from '../Scroller/utils';
 
+const NAVIGATION_KEYS = [
+  'ArrowDown',
+  'ArrowUp',
+  'ArrowLeft',
+  'ArrowRight',
+  'PageDown',
+  'PageUp',
+  'Home',
+  'End'
+];
+
 const moveSelection = ({
   selectedCells,
   append,
@@ -67,6 +78,7 @@ const moveScrollPosition = ({
 
 const useKeyboard = ({
   editingCell,
+  onEditingCellChange,
   scrollerContainerRef,
   columns,
   fixColumns,
@@ -75,14 +87,25 @@ const useKeyboard = ({
   totalRows,
   totalColumns,
   rowsPerPage,
+  selectedCells,
   onSelectedCellsChange,
   showFooter
 }) => {
   const handlingKeyDown = useRef(false);
 
   const onKeyDown = useCallback(event => {
-    
     if (editingCell) return;
+
+    if (!editingCell && NAVIGATION_KEYS.indexOf(event.key) === -1) {
+      switch(event.key) {
+        case 'Enter':
+          const lastSelectedCell = selectedCells[selectedCells.length - 1];
+          lastSelectedCell && onEditingCellChange({ row: lastSelectedCell.row, column: lastSelectedCell.column });
+          break;
+        default:
+      }
+      return;
+    }
 
     event.persist();
     event.preventDefault();
@@ -137,14 +160,17 @@ const useKeyboard = ({
         break
       case 'End':
         if (event.ctrlKey) onSelectedCellsChange(setSelectedCells(event.shiftKey, totalRows, 0));
-        break
+        break;
       default:
     };
     
     handlingKeyDown.current = true;
     setTimeout(() => handlingKeyDown.current = false, 50);
+    
   }, [
+    selectedCells,
     editingCell,
+    onEditingCellChange,
     showFooter,
     fixColumns,
     scrollerContainerRef,

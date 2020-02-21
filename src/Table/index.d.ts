@@ -73,8 +73,6 @@ export interface UseTableOptions {
   onChange?: Dispatch<SetStateAction<Value>>;
   defaultRowHeight: number;
   defaultColumnWidth: number;
-  totalRows: number;
-  totalColumns: number[];
   rowsPerPage: number;
   columnsPerPage: number;
   fixRows?: number;
@@ -89,6 +87,8 @@ export interface UseTableOptions {
 
 export interface UseTableResult {
   value: Value;
+  totalRows: number;
+  totalColumns: number;
   onChange: Dispatch<SetStateAction<Value>>;
   scrollerContainerRef: MutableRefObject<Element>;
   selectedCells: CellAddress[];
