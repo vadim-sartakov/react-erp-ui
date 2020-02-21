@@ -35,12 +35,4 @@ type GroupItem = {
 }
 export type Group = Array<GroupItem | string>
 
-export interface DataComposeOptions {
-  /** Value paths */
-  groups?: string[];
-  sort?: Sort;
-  filter?: Filter;
-}
-
-export declare function dataCompose(value: Object[], options: DataComposeOptions): Array<Object>
-export declare function dataComposeAsync(value: Object[], options: DataComposeOptions): Promise<Array<Object>>
+export declare function filter(value: Object[], filter: Filter): Array<Object>

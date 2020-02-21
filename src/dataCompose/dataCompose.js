@@ -55,17 +55,8 @@ const evaluateFilterResult = (value, filterItem) => {
 /**
  * 
  * @param {Object[] | Object[][]} value 
- * @param {import('./').DataComposeOptions} options 
+ * @param {import('./').Filter} filter 
  */
-export const dataCompose = (value, options) => {
-  let composeResult = value;
-
-  if (options.filter) {
-    composeResult = composeResult.filter(rowValue => {
-      return evaluateFilterResult(rowValue, options.filter);
-    });
-  }
-
-  return composeResult;
+export const filter = (value, filter) => {
+  return value.filter(rowValue => evaluateFilterResult(rowValue, filter));
 };
-export const dataComposeAsync = async () => {};
