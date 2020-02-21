@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 
 /**
- * @param {Object[]} value
+ * @param {Object} value
  * @param {import('./').FilterItem} filterItem
  * @returns {boolean}
  */
@@ -54,7 +54,7 @@ const evaluateFilterResult = (value, filterItem) => {
 
 /**
  * 
- * @param {Object[] | Object[][]} value 
+ * @param {Object[]} value 
  * @param {import('./').Filter} filter 
  */
 export const filter = (value, filter) => {
