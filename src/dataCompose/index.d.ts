@@ -10,11 +10,26 @@ type Lte = { $lte: any };
 type In = { $in: any[] };
 type Nin = { $nin: any[] };
 
-type PathFilter = {
+type FilterItem = {
   [path: string]: any | Eq | Ne | Gt | Gte | Lt | Lte | In | Nin
 };
 
-type Or = { $or: PathFilter[] }
-type And = { $and: PathFilter[] }
+type Or = { $or: FilterItem[] }
+type And = { $and: FilterItem[] }
 
-export type Filter = PathFilter[] | And | Or
+export type Filter = FilterItem[] | And | Or
+
+/**
+ * 1: ascending, -1: descending
+ */
+export type SortItem = { [path: string]: 1 | -1 }
+export type Sort = Array<SortItem>
+
+export interface DataComposeOptions {
+  rowsGroups
+  sort?: Sort;
+  filter?: Filter;
+}
+
+export declare function dataCompose(value: Object[] | Object[][], options: DataComposeOptions): Array<Object>
+export declare function dataComposeAsync(value: Object[] | Object[][], options: DataComposeOptions): Promise<Array<Object>>
