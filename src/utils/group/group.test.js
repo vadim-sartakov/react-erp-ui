@@ -1,8 +1,45 @@
-import group from './';
+import group, { extractGroupValues } from './';
 
 describe('group', () => {
+
+  describe('extractGroupValues', () => {
+
+    const value = [
+      { string: '1', boolean: true, number: 1 },
+      { string: '2', boolean: false, number: 2 },
+      { string: '1', boolean: true, number: 3 },
+      { string: '1', boolean: false, number: 4 },
+      { string: '2', boolean: true, number: 4 }
+    ];
+
+    it('should extract default (defined as string\'s) group values', () => {
+      const groups = ['string', 'boolean', 'number']
+      const result = extractGroupValues(value, groups);
+      expect(result).toEqual([
+        { string: ['1', '2'] },
+        { boolean: [true, false] },
+        { number: [1, 2, 3, 4] }
+      ]);
+    });
+
+    it('should extract group values when custom comparator provided', () => {
+      const groups = [
+        {
+          'string': { comparator: (a, b) => a === b }
+        },
+        'boolean',
+        'number']
+      const result = extractGroupValues(value, groups);
+      expect(result).toEqual([
+        { string: ['1', '2'] },
+        { boolean: [true, false] },
+        { number: [1, 2, 3, 4] }
+      ]);
+    });
+
+  });
   
-  it('should group flat array', () => {
+  it.skip('should group flat array', () => {
     const value = [
       { string: '1', boolean: true, number: 1 },
       { string: '2', boolean: false, number: 2 },
