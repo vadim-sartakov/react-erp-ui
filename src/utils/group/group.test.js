@@ -1,4 +1,4 @@
-import group, { extractGroupValues } from './';
+import group, { extractGroupValues, buildTree } from './';
 
 describe('group', () => {
 
@@ -37,6 +37,60 @@ describe('group', () => {
       ]);
     });
 
+  });
+
+  describe('buildTree', () => {
+    it('should build tree', () => {
+      const value = [
+        { string: '1', boolean: true, number: 1 },
+        { string: '2', boolean: false, number: 2 },
+        { string: '1', boolean: true, number: 3 },
+        { string: '1', boolean: false, number: 4 },
+        { string: '2', boolean: true, number: 4 }
+      ];
+      const groupValues = [
+        { string: ['1', '2'] },
+        { boolean: [true, false] }
+      ];
+      const result = buildTree(value, groupValues);
+      expect(result).toEqual([
+        {
+          string: '1',
+          children: [
+            {
+              boolean: true,
+              children: [
+                { string: '1', boolean: true, number: 1 },
+                { string: '1', boolean: true, number: 3 }
+              ]
+            },
+            {
+              boolean: false,
+              children: [
+                { string: '1', boolean: false, number: 4 }
+              ]
+            }
+          ]
+        },
+        {
+          string: '2',
+          children: [
+            {
+              boolean: true,
+              children: [
+                { string: '2', boolean: true, number: 4 }
+              ]
+            },
+            {
+              boolean: false,
+              children: [
+                { string: '2', boolean: false, number: 2 }
+              ]
+            }
+          ]
+        }
+      ]);
+    });
   });
   
   it.skip('should group flat array', () => {
