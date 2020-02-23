@@ -21,6 +21,7 @@ type GroupValues = { [path: string]: Array<any> }
 export function extractGroupValues(array: Object[], groups: Group[]): GroupValues
 export function buildGroupsTree(groupValues: GroupValues): TreeValue[]
 export function fillGroupsTree(array: Object[], groupsTree: TreeValue[], groups: Group[]): TreeValue[]
+export function reduceGroups(tree: TreeValue[], groups: Group[])
 
 /**
  * Array grouping utility.

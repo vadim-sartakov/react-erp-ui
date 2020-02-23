@@ -178,12 +178,12 @@ describe('group', () => {
           ]
         }
       ];
-      const groups = [{
-        string: {
-          reducer: (prev, cur) => ({ ...prev, number: prev.number + cur.number }),
-          initialReducerValue: value => ({ ...value, number: 0 })
-        }
-      }];
+      const reducer = (prev, cur) => ({ ...prev, number: prev.number + cur.number });
+      const initialReducerValue = value => ({ ...value, number: 0 });
+      const groups = [
+        { string: { reducer, initialReducerValue } },
+        { boolean: { reducer, initialReducerValue } }
+      ];
       const result = reduceGroups(tree, groups);
       expect(result).toEqual([
         {
@@ -213,6 +213,7 @@ describe('group', () => {
           children: [
             {
               boolean: true,
+              number: 4,
               children: [
                 { string: '2', boolean: true, number: 4 }
               ]
