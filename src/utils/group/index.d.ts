@@ -1,5 +1,9 @@
+export interface NormalizedTreeValue {
+  parent: any;
+}
+
 export interface TreeValue {
-  children?: TreeValue[]
+  children?: TreeValue[];
 }
 
 export type Group = string | {
@@ -15,6 +19,7 @@ type GroupValues = { [path: string]: Array<any> }
 
 export function extractGroupValues(array: Object[], groups: Group[]): GroupValues
 export function buildGroupsTree(groupValues: GroupValues): TreeValue[]
+export function fillGroupsTree(array: Object[], groupsTree: TreeValue[], groups: Group[]): TreeValue[]
 
 /**
  * Array grouping utility.

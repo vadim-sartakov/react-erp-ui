@@ -43,7 +43,7 @@ function findChildrenElements(array, groups, groupValues) {
       });
       const groupParams = curGroup && typeof curGroup === 'object' && Object.entries(curGroup)[0][1];
       const comparator = groupParams && groupParams.comparator;
-      return comparator ? comparator(curValue, value) : curValue === value;
+      return comparator ? comparator(curValue, value) : valuesAreEqual(curValue, value);
     }, true);
   });
 };
