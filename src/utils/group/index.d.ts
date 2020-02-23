@@ -11,13 +11,16 @@ export type Group = string | {
   }
 }
 
-export function extractGroupValues(value: Object[], groups: Group[]): { [path: string]: Array<any> }
+type GroupValues = { [path: string]: Array<any> }
+
+export function extractGroupValues(array: Object[], groups: Group[]): GroupValues
+export function buildGroupsTree(groupValues: GroupValues): TreeValue[]
 
 /**
  * Array grouping utility.
  * Initial tree value could be supplied. In that case
  * final result will be built inside provided value.
  */
-declare function group(value: Object[], groups: Group[]): TreeValue[]
+declare function group(array: Object[], groups: Group[]): TreeValue[]
 
 export default group

@@ -1,4 +1,4 @@
-import group, { extractGroupValues, buildTree } from './';
+import group, { extractGroupValues, buildGroupsTree, fillGroupsTree } from './';
 
 describe('group', () => {
 
@@ -39,7 +39,34 @@ describe('group', () => {
 
   });
 
-  describe('buildTree', () => {
+  describe('buildGroupsTree', () => {
+    it('should build groups tree', () => {
+      const groupValues = [
+        { string: ['1', '2'] },
+        { boolean: [true, false] },
+        { number: [1, 2] }
+      ];
+      const result = buildGroupsTree(groupValues);
+      expect(result).toEqual([
+        {
+          string: '1',
+          children: [
+            { boolean: true, children: [{ number: 1 }, { number: 2 }] },
+            { boolean: false, children: [{ number: 1 }, { number: 2 }] }
+          ]
+        },
+        {
+          string: '2',
+          children: [
+            { boolean: true, children: [{ number: 1 }, { number: 2 }] },
+            { boolean: false, children: [{ number: 1 }, { number: 2 }] }
+          ]
+        }
+      ]);
+    });
+  });
+
+  describe.skip('buildTree', () => {
     it('should build tree', () => {
       const value = [
         { string: '1', boolean: true, number: 1 },
@@ -52,7 +79,7 @@ describe('group', () => {
         { string: ['1', '2'] },
         { boolean: [true, false] }
       ];
-      const result = buildTree(value, groupValues);
+      const result = fillGroupsTree(value, groupValues);
       expect(result).toEqual([
         {
           string: '1',
