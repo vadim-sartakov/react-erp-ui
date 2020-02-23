@@ -8,6 +8,35 @@ function valuesAreEqual(a, b) {
   }
 };
 
+function getChildren(array, item, options) {
+  const curId = get(item, options.idPath || 'id');
+  let children = array.filter(curItem => {
+    const curParent = get(curItem, options.parentPath || 'parent');
+    const comparator = options.comparator;
+    return comparator ? comparator(curId, curParent) : valuesAreEqual(curId, curParent);
+  });
+  children = children.map(child => {
+    const result = { ...child };
+    const nestedChildren = getChildren(array, child, options);
+    if (nestedChildren.length) result.children = nestedChildren;
+    return result;
+  });
+  return children;
+};
+
+export function buildTree(array, options = {}) {
+  const rootElements = array.filter(item => {
+    const parent = get(item, options.parentPath || 'parent');
+    return parent === undefined || parent === null;
+  });
+  return rootElements.reduce((acc, item) => {
+    const children = getChildren(array, item, options);
+    const result = { ...item };
+    if (children.length) result.children = children;
+    return [...acc, result];
+  }, []);
+};
+
 export function extractGroupValues(array, groups) {
   return groups.reduce((acc, group) => {
     const [path, groupParams] = typeof group === 'string' ? [group, group] : Object.entries(group)[0];

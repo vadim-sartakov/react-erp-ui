@@ -1,5 +1,6 @@
 import group,
 {
+  buildTree,
   extractGroupValues,
   buildGroupsTree,
   fillGroupsTree,
@@ -7,6 +8,33 @@ import group,
 } from './';
 
 describe('group', () => {
+
+  describe('buildTree', () => {
+    it('should build tree with default params', () => {
+      const array = [
+        { id: 0, name: '1' },
+        { id: 1, name: '1.1', parent: 0 },
+        { id: 2, name: '1.1.1', parent: 1 },
+        { id: 3, name: '1.2', parent: 0 },
+        { id: 4, name: '2' },
+        { id: 5, name: '2.1', parent: 4 },
+        { id: 6, name: '3' }
+      ];
+      const result = buildTree(array);
+      expect(result).toEqual([
+        {
+          id: 0,
+          name: '1',
+          children: [
+            { id: 1, name: '1.1', parent: 0, children: [{ id: 2, name: '1.1.1', parent: 1 }] },
+            { id: 3, name: '1.2', parent: 0 },
+          ]
+        },
+        { id: 4, name: '2', children: [{ id: 5, name: '2.1', parent: 4 }] },
+        { id: 6, name: '3' }
+      ]);
+    });
+  });
 
   describe('extractGroupValues', () => {
 
@@ -140,7 +168,7 @@ describe('group', () => {
   });
   
   describe('reduceGroups', () => {
-    it('should reduce groups', () => {
+    it('should reduce groups with custom reducers and initial values', () => {
       const tree = [
         {
           string: '1',

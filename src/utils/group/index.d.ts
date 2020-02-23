@@ -6,6 +6,8 @@ export interface TreeValue {
   children?: TreeValue[];
 }
 
+type CompareCallback = (a: any, b: any) => boolean
+
 export type Group = string | {
   [path: string]: {
     /** Group key compare callback */
@@ -18,8 +20,20 @@ export type Group = string | {
 
 type GroupValues = { [path: string]: Array<any> }
 
+interface BuildTreeOptions {
+  /** Default is 'id' */
+  idPath?: string;
+  /** Default is 'parent' */
+  parentPath?: string;
+  /** How id and parent should be compared. If not provided then strict '===' will be used */
+  comparator?: CompareCallback
+}
+/** Builds a tree of normalized array values */
+export function buildTree(array: NormalizedTreeValue[], options?: BuildTreeOptions): TreeValue[]
+/** Extracts unique values for each group */
 export function extractGroupValues(array: Object[], groups: Group[]): GroupValues
 export function buildGroupsTree(groupValues: GroupValues): TreeValue[]
+/** Fills groups tree with values from the array */
 export function fillGroupsTree(array: Object[], groupsTree: TreeValue[], groups: Group[]): TreeValue[]
 export function reduceGroups(tree: TreeValue[], groups: Group[])
 
