@@ -11,7 +11,8 @@ export type Group = string | {
     /** Group key compare callback */
     comparator?: CompareCallback;
     /** Describes how to accumulate data into current group */
-    reduce: (value: Object, allValues: Object[]) => Object;
+    reducer: (value: Object) => Object;
+    initialReducerValue?: any;
   }
 }
 

@@ -1,4 +1,10 @@
-import group, { extractGroupValues, buildGroupsTree, fillGroupsTree } from './';
+import group,
+{
+  extractGroupValues,
+  buildGroupsTree,
+  fillGroupsTree,
+  reduceGroups
+} from './';
 
 describe('group', () => {
 
@@ -133,70 +139,95 @@ describe('group', () => {
     });
   });
   
-  it.skip('should group flat array', () => {
-    const value = [
-      { string: '1', boolean: true, number: 1 },
-      { string: '2', boolean: false, number: 2 },
-      { string: '1', boolean: true, number: 3 },
-      { string: '1', boolean: false, number: 4 },
-      { string: '2', boolean: true, number: 5 }
-    ];
-    const reduceStringGroup = (value, allValues) => {
-      const total = allValues.reduce((acc, curValue) => acc + curValue.number, 0);
-      return { string: value.string, total };
-    };
-    const reduceBooleanGroup = (value, allValues) => {
-      const total = allValues.reduce((acc, curValue) => acc + curValue.number, 0);
-      return { boolean: value.boolean, total };
-    };
-    const groups = [
-      { string: { reduce: reduceStringGroup } },
-      { boolean: { reduce: reduceBooleanGroup } }
-    ];
-    const result = group(value, groups);
-    expect(result).toEqual([
-      {
-        string: '1',
-        total: 8,
-        children: [
-          {
-            boolean: true,
-            total: 4,
-            children: [
-              { string: '1', number: 1 },
-              { string: '1', number: 3 }
-            ]
-          },
-          {
-            boolean: false,
-            total: 4,
-            children: [
-              { string: '1', number: 4 }
-            ]
-          }
-        ]
-      },
-      {
-        string: '2',
-        total: 7,
-        children: [
-          {
-            boolean: false,
-            total: 2,
-            children: [
-              { string: '2', number: 2 }
-            ]
-          },
-          {
-            boolean: true,
-            total: 5,
-            children: [
-              { string: '2', number: 5 }
-            ]
-          }
-        ]
-      }
-    ]);
+  describe('reduceGroups', () => {
+    it('should reduce groups', () => {
+      const tree = [
+        {
+          string: '1',
+          children: [
+            {
+              boolean: true,
+              children: [
+                { string: '1', boolean: true, number: 1 },
+                { string: '1', boolean: true, number: 3 }
+              ]
+            },
+            {
+              boolean: false,
+              children: [
+                { string: '1', boolean: false, number: 4 }
+              ]
+            }
+          ]
+        },
+        {
+          string: '2',
+          children: [
+            {
+              boolean: true,
+              children: [
+                { string: '2', boolean: true, number: 4 }
+              ]
+            },
+            {
+              boolean: false,
+              children: [
+                { string: '2', boolean: false, number: 2 }
+              ]
+            }
+          ]
+        }
+      ];
+      const groups = [{
+        string: {
+          reducer: (prev, cur) => ({ ...prev, number: prev.number + cur.number }),
+          initialReducerValue: value => ({ ...value, number: 0 })
+        }
+      }];
+      const result = reduceGroups(tree, groups);
+      expect(result).toEqual([
+        {
+          string: '1',
+          number: 8,
+          children: [
+            {
+              boolean: true,
+              number: 4,
+              children: [
+                { string: '1', boolean: true, number: 1 },
+                { string: '1', boolean: true, number: 3 }
+              ]
+            },
+            {
+              boolean: false,
+              number: 4,
+              children: [
+                { string: '1', boolean: false, number: 4 }
+              ]
+            }
+          ]
+        },
+        {
+          string: '2',
+          number: 6,
+          children: [
+            {
+              boolean: true,
+              children: [
+                { string: '2', boolean: true, number: 4 }
+              ]
+            },
+            {
+              boolean: false,
+              number: 2,
+              children: [
+                { string: '2', boolean: false, number: 2 }
+              ]
+            }
+          ]
+        }
+      ]);
+    });
   });
 
 });
