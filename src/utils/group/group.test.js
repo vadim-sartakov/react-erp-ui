@@ -66,20 +66,33 @@ describe('group', () => {
     });
   });
 
-  describe.skip('buildTree', () => {
-    it('should build tree', () => {
-      const value = [
+  describe('fillGroupsTree', () => {
+    it('should fill groups tree', () => {
+      const array = [
         { string: '1', boolean: true, number: 1 },
         { string: '2', boolean: false, number: 2 },
         { string: '1', boolean: true, number: 3 },
         { string: '1', boolean: false, number: 4 },
         { string: '2', boolean: true, number: 4 }
       ];
-      const groupValues = [
-        { string: ['1', '2'] },
-        { boolean: [true, false] }
+      const groupsTree = [
+        {
+          string: '1',
+          children: [
+            { boolean: true },
+            { boolean: false }
+          ]
+        },
+        {
+          string: '2',
+          children: [
+            { boolean: true },
+            { boolean: false }
+          ]
+        }
       ];
-      const result = fillGroupsTree(value, groupValues);
+      const groups = ['string', { 'boolean': { comparator: (a, b) => a === b } }];
+      const result = fillGroupsTree(array, groupsTree, groups);
       expect(result).toEqual([
         {
           string: '1',

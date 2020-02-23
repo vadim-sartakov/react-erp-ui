@@ -32,6 +32,35 @@ export function buildGroupsTree(groupValues) {
   }, []);
 };
 
+function findChildrenElements(array, groups, groupValues) {
+  return array.filter(item => {
+    return Object.entries(groupValues).reduce((prev, [path, value]) => {
+      if (!prev) return prev;
+      const curValue = get(item, path);
+      const curGroup = groups.find(group => {
+        const curPath = typeof group === 'string' ? group : Object.keys(group)[0];
+        return curPath === path;
+      });
+      const groupParams = curGroup && typeof curGroup === 'object' && Object.entries(curGroup)[0][1];
+      const comparator = groupParams && groupParams.comparator;
+      return comparator ? comparator(curValue, value) : curValue === value;
+    }, true);
+  });
+};
+
+export function fillGroupsTree(array, groupsTree, groups, groupValues = {}) {
+  return groupsTree.map(({ children: groupTreeItemChildren, ...groupTreeItem }) => {
+    const [path, groupValue] = Object.entries(groupTreeItem)[0];
+    const nextGroupValues = { ...groupValues, [path]: groupValue };
+    const children = groupTreeItemChildren ?
+        fillGroupsTree(array, groupTreeItemChildren, groups, nextGroupValues) :
+        findChildrenElements(array, groups, nextGroupValues);
+    const result = { ...groupTreeItem };
+    if (children) result.children = children;
+    return result;
+  });
+};
+
 /**
  * 
  * @param {Object[]} value 
