@@ -71,6 +71,22 @@ describe('group', () => {
       ]);
     });
 
+    it('should extract default group values when grouped on object', () => {
+      const value = [
+        { number: 1, object: { id: 0 } },
+        { number: 2, object: { id: 1 } },
+        { number: 3, object: { id: 2 } },
+        { number: 4, object: { id: 1 } },
+        { number: 4, object: { id: 2 } }
+      ];
+
+      const groups = [{ 'object': { comparator: (a, b) => a.id === b.id } }];
+      const result = extractGroupValues(value, groups);
+      expect(result).toEqual([
+        { object: [{ id: 0 } , { id: 1 }, { id: 2 }] },
+      ]);
+    });
+
   });
 
   describe('buildGroupsTree', () => {
@@ -82,6 +98,51 @@ describe('group', () => {
       ];
       const result = buildGroupsTree(groupValues);
       expect(result).toEqual([
+        {
+          string: '1',
+          children: [
+            { boolean: true, children: [{ number: 1 }, { number: 2 }] },
+            { boolean: false, children: [{ number: 1 }, { number: 2 }] }
+          ]
+        },
+        {
+          string: '2',
+          children: [
+            { boolean: true, children: [{ number: 1 }, { number: 2 }] },
+            { boolean: false, children: [{ number: 1 }, { number: 2 }] }
+          ]
+        }
+      ]);
+    });
+
+    it.skip('should build groups tree when group\'s tree specified', () => {
+      const groupValues = [
+        { string: ['1.1.1', '2.1'] },
+        { boolean: [true, false] }
+      ];
+      const tree = [
+        { string: '1', children: [{ string: '1.1' }] },
+        { string: '2' }
+      ];
+      const groups = [
+        { string: { tree } },
+        'boolean'
+      ];
+      const result = buildGroupsTree(groupValues, groups);
+      expect(result).toEqual([
+        {
+          string: '1',
+          children: [
+            {
+              string: '1.1',
+              children: [
+                { string: '1.1.1' }
+              ]
+            }
+          ]
+        },
+        { string: '2' },
+
         {
           string: '1',
           children: [
