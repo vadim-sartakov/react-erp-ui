@@ -115,46 +115,39 @@ describe('group', () => {
       ]);
     });
 
-    it.skip('should build groups tree when group\'s tree specified', () => {
+    it('should build hierarchical groups tree', () => {
       const groupValues = [
-        { string: ['1.1.1', '2.1'] },
+        {
+          object: [
+            { id: '1', children: [{ id: '1.1', children: [{ id: '1.1.1' }] }] },
+            { id: '2', children: [{ id: '2.1' }] }
+          ]
+        },
         { boolean: [true, false] }
       ];
-      const tree = [
-        { string: '1', children: [{ string: '1.1' }] },
-        { string: '2' }
-      ];
-      const groups = [
-        { string: { tree } },
-        'boolean'
-      ];
-      const result = buildGroupsTree(groupValues, groups);
+      const result = buildGroupsTree(groupValues);
       expect(result).toEqual([
         {
-          string: '1',
+          object: { id: '1' },
           children: [
             {
-              string: '1.1',
+              object: {  id: '1.1' },
               children: [
-                { string: '1.1.1' }
+                {
+                  object: { id: '1.1.1' },
+                  children: [{ boolean: true }, { boolean: false }]
+                }
               ]
             }
           ]
         },
-        { string: '2' },
-
         {
-          string: '1',
+          object: { id: '2' },
           children: [
-            { boolean: true, children: [{ number: 1 }, { number: 2 }] },
-            { boolean: false, children: [{ number: 1 }, { number: 2 }] }
-          ]
-        },
-        {
-          string: '2',
-          children: [
-            { boolean: true, children: [{ number: 1 }, { number: 2 }] },
-            { boolean: false, children: [{ number: 1 }, { number: 2 }] }
+            {
+              object: { id: '2.1' },
+              children: [{ boolean: true }, { boolean: false }]
+            }
           ]
         }
       ]);

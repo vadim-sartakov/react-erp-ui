@@ -50,15 +50,34 @@ export function extractGroupValues(array, groups) {
   }, []);
 };
 
-export function buildGroupsTree(groupValues) {
-  if (!groupValues || groupValues.length === 0) return;
-  const [path, values] = Object.entries(groupValues[0])[0];
+function convertHierarchyToGroupsTree(tree, path) {
+  return tree.map(({ children, ...item }) => {
+    const nextChildren = children && convertHierarchyToGroupsTree(children, path);
+    return {
+      [path]: item,
+      children: nextChildren
+    }
+  });
+}
+
+export function buildGroupsTree(groupValues, level = 0, curValues) {
+  const [path, groupValuesArray] = Object.entries(groupValues[level])[0];
+  const values = curValues || groupValuesArray;
   return values.map(value => {
-    const children = buildGroupsTree(groupValues.slice(1));
-    const result = { [path]: value };
+    // Working with tree node
+    let result, children;
+    if (value.children) {
+      const nextValue = { ...value };
+      delete nextValue.children;
+      result = { [path]: nextValue };
+      children = buildGroupsTree(groupValues, level, value.children);
+    } else {
+      result = { [path]: value };
+      children = level < groupValues.length - 1 && buildGroupsTree(groupValues, level + 1);
+    }
     if (children) result.children = children;
     return result;
-  }, []);
+  });
 };
 
 function getCurrentGroup(groups, path) {
