@@ -50,17 +50,7 @@ export function extractGroupValues(array, groups) {
   }, []);
 };
 
-function convertHierarchyToGroupsTree(tree, path) {
-  return tree.map(({ children, ...item }) => {
-    const nextChildren = children && convertHierarchyToGroupsTree(children, path);
-    return {
-      [path]: item,
-      children: nextChildren
-    }
-  });
-}
-
-export function buildGroupsTree(groupValues, level = 0, curValues) {
+export function buildGroupsTree(groupValues, level = 0, curValues = undefined) {
   const [path, groupValuesArray] = Object.entries(groupValues[level])[0];
   const values = curValues || groupValuesArray;
   return values.map(value => {

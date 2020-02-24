@@ -131,7 +131,7 @@ describe('group', () => {
           object: { id: '1' },
           children: [
             {
-              object: {  id: '1.1' },
+              object: { id: '1.1' },
               children: [
                 {
                   object: { id: '1.1.1' },
