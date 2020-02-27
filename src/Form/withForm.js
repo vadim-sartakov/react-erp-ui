@@ -4,7 +4,7 @@ import Form from './Form';
 
 const withForm = Component => {
   return props => {
-    const { formProps, ...componentProps } = useForm({ ...props, handleSubmit: props.onSubmit });
+    const { formProps, ...componentProps } = useForm(props);
     return (
       <Form {...formProps}>
         <Component {...props} {...componentProps} />

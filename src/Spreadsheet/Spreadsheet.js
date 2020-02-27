@@ -9,7 +9,19 @@ import SelectedRange from './SelectedRange';
 import Cell from './Cell';
 import ResizeLines from '../grid/ResizeLines';
 import FixLines from '../grid/FixLines';
-import { visibleRangesFilter } from '../grid/utils';
+
+const visibleRangesFilter = ({
+  fixRows,
+  fixColumns,
+  visibleRows,
+  visibleColumns
+}) => mergedRange => {
+  return mergedRange.start.row < visibleRows[fixRows] || mergedRange.start.column < visibleColumns[fixColumns] ||
+      (mergedRange.start.row <= visibleRows[visibleRows.length - 1] &&
+          mergedRange.start.column <= visibleColumns[visibleColumns.length - 1] &&
+          mergedRange.end.row >= visibleRows[fixRows] &&
+          mergedRange.end.column >= visibleColumns[fixColumns]);
+};
 
 const SpecialCellEmptyArea = props => <SpreadsheetCell className="special-cell-empty-area" {...props} />;
 
