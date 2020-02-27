@@ -10,7 +10,7 @@ import group,
 describe('group', () => {
 
   describe('buildTree', () => {
-    it('should build tree with default params', () => {
+    it('should build tree with default params', async () => {
       const array = [
         { id: 0, name: '1' },
         { id: 1, name: '1.1', parent: 0 },
@@ -20,7 +20,7 @@ describe('group', () => {
         { id: 5, name: '2.1', parent: 4 },
         { id: 6, name: '3' }
       ];
-      const result = buildTree(array);
+      const result = await buildTree(array);
       expect(result).toEqual([
         {
           id: 0,
@@ -46,9 +46,9 @@ describe('group', () => {
       { string: '2', boolean: true, number: 4 }
     ];
 
-    it('should extract default (defined as string\'s) group values', () => {
+    it('should extract default (defined as string\'s) group values', async () => {
       const groups = ['string', 'boolean', 'number']
-      const result = extractGroupValues(value, groups);
+      const result = await extractGroupValues(value, groups);
       expect(result).toEqual([
         { string: ['1', '2'] },
         { boolean: [true, false] },
@@ -56,14 +56,14 @@ describe('group', () => {
       ]);
     });
 
-    it('should extract group values when custom comparator provided', () => {
+    it('should extract group values when custom comparator provided', async () => {
       const groups = [
         {
           'string': { comparator: (a, b) => a === b }
         },
         'boolean',
         'number']
-      const result = extractGroupValues(value, groups);
+      const result = await extractGroupValues(value, groups);
       expect(result).toEqual([
         { string: ['1', '2'] },
         { boolean: [true, false] },
@@ -71,7 +71,7 @@ describe('group', () => {
       ]);
     });
 
-    it('should extract default group values when grouped on object', () => {
+    it('should extract default group values when grouped on object', async () => {
       const value = [
         { number: 1, object: { id: 0 } },
         { number: 2, object: { id: 1 } },
@@ -81,13 +81,13 @@ describe('group', () => {
       ];
 
       const groups = [{ 'object': { comparator: (a, b) => a.id === b.id } }];
-      const result = extractGroupValues(value, groups);
+      const result = await extractGroupValues(value, groups);
       expect(result).toEqual([
         { object: [{ id: 0 } , { id: 1 }, { id: 2 }] },
       ]);
     });
 
-    it('should extract tree value when provided', () => {
+    it('should extract tree value when provided', async () => {
       const value = [
         { string: '1.1', boolean: true },
         { string: '1.1.1', boolean: false },
@@ -114,7 +114,7 @@ describe('group', () => {
           }
         }
       ];
-      const result = extractGroupValues(value, groups);
+      const result = await extractGroupValues(value, groups);
       expect(result).toEqual([
         {
           string: [
@@ -137,13 +137,13 @@ describe('group', () => {
   });
 
   describe('buildGroupsTree', () => {
-    it('should build groups tree', () => {
+    it('should build groups tree', async () => {
       const groupValues = [
         { string: ['1', '2'] },
         { boolean: [true, false] },
         { number: [1, 2] }
       ];
-      const result = buildGroupsTree(groupValues);
+      const result = await buildGroupsTree(groupValues);
       expect(result).toEqual([
         {
           string: '1',
@@ -162,7 +162,7 @@ describe('group', () => {
       ]);
     });
 
-    it('should build hierarchical groups tree', () => {
+    it('should build hierarchical groups tree', async () => {
       const groupValues = [
         {
           object: [
@@ -172,7 +172,7 @@ describe('group', () => {
         },
         { boolean: [true, false] }
       ];
-      const result = buildGroupsTree(groupValues);
+      const result = await buildGroupsTree(groupValues);
       expect(result).toEqual([
         {
           object: { id: '1' },
@@ -202,7 +202,7 @@ describe('group', () => {
   });
 
   describe('fillGroupsTree', () => {
-    it('should fill groups tree', () => {
+    it('should fill groups tree', async () => {
       const array = [
         { string: '1', boolean: true, number: 1 },
         { string: '2', boolean: false, number: 2 },
@@ -227,7 +227,7 @@ describe('group', () => {
         }
       ];
       const groups = ['string', { 'boolean': { comparator: (a, b) => a === b } }];
-      const result = fillGroupsTree(array, groupsTree, groups);
+      const result = await fillGroupsTree(array, groupsTree, groups);
       expect(result).toEqual([
         {
           string: '1',
@@ -267,7 +267,7 @@ describe('group', () => {
       ]);
     });
 
-    it('should fill heirarchical groups tree', () => {
+    it('should fill heirarchical groups tree', async () => {
       const array = [
         { object: { id: '1.1.1' }, boolean: true, number: 1 },
         { object: { id: '1.1.1' }, boolean: false, number: 2 },
@@ -305,7 +305,7 @@ describe('group', () => {
         },
         'boolean'
       ];
-      const result = fillGroupsTree(array, groupsTree, groups);
+      const result = await fillGroupsTree(array, groupsTree, groups);
       expect(result).toEqual([
         {
           object: { id: '1' },
@@ -345,7 +345,7 @@ describe('group', () => {
     const reducer = (prev, cur) => ({ ...prev, number: prev.number + cur.number });
     const initialReducerValue = value => ({ ...value, number: 0 });
 
-    it('should reduce groups with custom reducers and initial values', () => {
+    it('should reduce groups with custom reducers and initial values', async () => {
       const tree = [
         {
           string: '1',
@@ -387,7 +387,7 @@ describe('group', () => {
         { string: { reducer, initialReducerValue } },
         { boolean: { reducer, initialReducerValue } }
       ];
-      const result = reduceGroups(tree, groups);
+      const result = await reduceGroups(tree, groups);
       expect(result).toEqual([
         {
           string: '1',
@@ -433,7 +433,7 @@ describe('group', () => {
       ]);
     });
 
-    describe('should reduce hierarchical values', () => {
+    it('should reduce hierarchical values', async () => {
       const tree = [
         {
           object: { id: '1' },
@@ -476,7 +476,7 @@ describe('group', () => {
         { object: { reducer, initialReducerValue } },
         { boolean: { reducer, initialReducerValue } }
       ];
-      const result = reduceGroups(tree, groups);
+      const result = await reduceGroups(tree, groups);
       expect(result).toEqual([
         {
           object: { id: '1' },

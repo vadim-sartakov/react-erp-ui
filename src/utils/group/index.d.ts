@@ -22,7 +22,7 @@ export type Group = string | {
 
 type GroupValues = { [path: string]: Array<any> }
 
-interface BuildTreeOptions {
+export interface BuildTreeOptions {
   /** Default is 'id' */
   idPath?: string;
   /** Default is 'parent' */
@@ -31,19 +31,14 @@ interface BuildTreeOptions {
   comparator?: CompareCallback
 }
 /** Builds a tree of normalized array values */
-export function buildTree(array: NormalizedTreeValue[], options?: BuildTreeOptions): TreeValue[]
+export declare function buildTree(array: NormalizedTreeValue[], options?: BuildTreeOptions): Promise<TreeValue[]>
 /** Extracts unique values for each group */
-export function extractGroupValues(array: Object[], groups: Group[]): GroupValues
-export function buildGroupsTree(groupValues: GroupValues): TreeValue[]
+export declare function extractGroupValues(array: Object[], groups: Group[]): Promise<GroupValues>
+export declare function buildGroupsTree(groupValues: GroupValues): Promise<TreeValue[]>
 /** Fills groups tree with values from the array */
-export function fillGroupsTree(array: Object[], groupsTree: TreeValue[], groups: Group[]): TreeValue[]
-export function reduceGroups(tree: TreeValue[], groups: Group[])
+export declare function fillGroupsTree(array: Object[], groupsTree: TreeValue[], groups: Group[]): Promise<TreeValue[]>
+export declare function reduceGroups(tree: TreeValue[], groups: Group[]): Promise<TreeValue[]>
 
-/**
- * Array grouping utility.
- * Initial tree value could be supplied. In that case
- * final result will be built inside provided value.
- */
-declare function group(array: Object[], groups: Group[]): TreeValue[]
+declare function group(array: Object[], groups: Group[]): Promise<TreeValue[]>
 
 export default group
