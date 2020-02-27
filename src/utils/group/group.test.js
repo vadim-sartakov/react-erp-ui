@@ -341,6 +341,10 @@ describe('group', () => {
   });
   
   describe('reduceGroups', () => {
+    
+    const reducer = (prev, cur) => ({ ...prev, number: prev.number + cur.number });
+    const initialReducerValue = value => ({ ...value, number: 0 });
+
     it('should reduce groups with custom reducers and initial values', () => {
       const tree = [
         {
@@ -379,8 +383,6 @@ describe('group', () => {
           ]
         }
       ];
-      const reducer = (prev, cur) => ({ ...prev, number: prev.number + cur.number });
-      const initialReducerValue = value => ({ ...value, number: 0 });
       const groups = [
         { string: { reducer, initialReducerValue } },
         { boolean: { reducer, initialReducerValue } }
@@ -424,6 +426,96 @@ describe('group', () => {
               number: 2,
               children: [
                 { string: '2', boolean: false, number: 2 }
+              ]
+            }
+          ]
+        }
+      ]);
+    });
+
+    describe('should reduce hierarchical values', () => {
+      const tree = [
+        {
+          object: { id: '1' },
+          children: [
+            {
+              object: { id: '1.1' },
+              children: [
+                {
+                  object: { id: '1.1.1' },
+                  children: [
+                    { boolean: true, children: [{ object: { id: '1.1.1' }, boolean: true, number: 1 }] },
+                    { boolean: false, children: [{ object: { id: '1.1.1' }, boolean: false, number: 2 }] }
+                  ]
+                }
+              ]
+            },
+            {
+              object: { id: '1.2' },
+              children: [
+                { boolean: true, children: [{ object: { id: '1.2' }, boolean: true, number: 5 }] },
+                { boolean: false, children: [{ object: { id: '1.2' }, boolean: false, number: 8 }] }
+              ]
+            }
+          ]
+        },
+        {
+          object: { id: '2' },
+          children: [
+            {
+              object: { id: '2.1' },
+              children: [
+                { boolean: true, children: [{ object: { id: '2.1' }, boolean: true, number: 3 }] },
+                { boolean: false, children: [{ object: { id: '2.1' }, boolean: false, number: 4 }] }
+              ]
+            }
+          ]
+        }
+      ];
+      const groups = [
+        { object: { reducer, initialReducerValue } },
+        { boolean: { reducer, initialReducerValue } }
+      ];
+      const result = reduceGroups(tree, groups);
+      expect(result).toEqual([
+        {
+          object: { id: '1' },
+          number: 16,
+          children: [
+            {
+              object: { id: '1.1' },
+              number: 3,
+              children: [
+                {
+                  object: { id: '1.1.1' },
+                  number: 3,
+                  children: [
+                    { boolean: true, number: 1, children: [{ object: { id: '1.1.1' }, boolean: true, number: 1 }] },
+                    { boolean: false, number: 2, children: [{ object: { id: '1.1.1' }, boolean: false, number: 2 }] }
+                  ]
+                }
+              ]
+            },
+            {
+              object: { id: '1.2' },
+              number: 13,
+              children: [
+                { boolean: true, number: 5, children: [{ object: { id: '1.2' }, boolean: true, number: 5 }] },
+                { boolean: false, number: 8, children: [{ object: { id: '1.2' }, boolean: false, number: 8 }] }
+              ]
+            }
+          ]
+        },
+        {
+          object: { id: '2' },
+          number: 7,
+          children: [
+            {
+              object: { id: '2.1' },
+              number: 7,
+              children: [
+                { boolean: true, number: 3, children: [{ object: { id: '2.1' }, boolean: true, number: 3 }] },
+                { boolean: false, number: 4, children: [{ object: { id: '2.1' }, boolean: false, number: 4 }] }
               ]
             }
           ]
