@@ -40,6 +40,7 @@ export function buildTree(array, options = {}) {
 export function extractGroupValues(array, groups) {
   return groups.reduce((acc, group) => {
     const [path, groupParams] = typeof group === 'string' ? [group, group] : Object.entries(group)[0];
+    if (groupParams && groupParams.tree) return [...acc, { [path]: groupParams.tree }];
     const values = array.reduce((acc, valueItem) => {
       const curValue = get(valueItem, path);
       const comparator = groupParams.comparator;

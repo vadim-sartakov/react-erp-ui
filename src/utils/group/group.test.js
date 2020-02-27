@@ -87,6 +87,53 @@ describe('group', () => {
       ]);
     });
 
+    it('should extract tree value when provided', () => {
+      const value = [
+        { string: '1.1', boolean: true },
+        { string: '1.1.1', boolean: false },
+        { string: '2.1', boolean: true },
+        { string: '2.2', boolean: false }
+      ];
+
+      const groups = [
+        {
+          'string': {
+            tree: [
+              {
+                string: '1',
+                children: [{ string: '1.1', children: [{ string: '1.1.1' }] }]
+              },
+              {
+                string: '2',
+                children: [
+                  { string: '2.1' },
+                  { string: '2.2' }
+                ]
+              }
+            ]
+          }
+        }
+      ];
+      const result = extractGroupValues(value, groups);
+      expect(result).toEqual([
+        {
+          string: [
+            {
+              string: '1',
+              children: [{ string: '1.1', children: [{ string: '1.1.1' }] }]
+            },
+            {
+              string: '2',
+              children: [
+                { string: '2.1' },
+                { string: '2.2' }
+              ]
+            }
+          ]
+        },
+      ]);
+    });
+
   });
 
   describe('buildGroupsTree', () => {
@@ -213,6 +260,78 @@ describe('group', () => {
               boolean: false,
               children: [
                 { string: '2', boolean: false, number: 2 }
+              ]
+            }
+          ]
+        }
+      ]);
+    });
+
+    it('should fill heirarchical groups tree', () => {
+      const array = [
+        { object: { id: '1.1.1' }, boolean: true, number: 1 },
+        { object: { id: '1.1.1' }, boolean: false, number: 2 },
+        { object: { id: '2.1' }, boolean: true, number: 3 },
+        { object: { id: '2.1' }, boolean: false, number: 4 }
+      ];
+      const groupsTree = [
+        {
+          object: { id: '1' },
+          children: [
+            {
+              object: { id: '1.1' },
+              children: [
+                {
+                  object: { id: '1.1.1' },
+                  children: [{ boolean: true }, { boolean: false }]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          object: { id: '2' },
+          children: [
+            {
+              object: { id: '2.1' },
+              children: [{ boolean: true }, { boolean: false }]
+            }
+          ]
+        }
+      ];
+      const groups = [
+        {
+          object: { comparator: (a, b) => a.id === b.id },
+        },
+        'boolean'
+      ];
+      const result = fillGroupsTree(array, groupsTree, groups);
+      expect(result).toEqual([
+        {
+          object: { id: '1' },
+          children: [
+            {
+              object: { id: '1.1' },
+              children: [
+                {
+                  object: { id: '1.1.1' },
+                  children: [
+                    { boolean: true, children: [{ object: { id: '1.1.1' }, boolean: true, number: 1 }] },
+                    { boolean: false, children: [{ object: { id: '1.1.1' }, boolean: false, number: 2 }] }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          object: { id: '2' },
+          children: [
+            {
+              object: { id: '2.1' },
+              children: [
+                { boolean: true, children: [{ object: { id: '2.1' }, boolean: true, number: 3 }] },
+                { boolean: false, children: [{ object: { id: '2.1' }, boolean: false, number: 4 }] }
               ]
             }
           ]

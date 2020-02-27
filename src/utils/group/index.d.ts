@@ -6,7 +6,7 @@ export interface TreeValue {
   children?: TreeValue[];
 }
 
-type CompareCallback = (a: any, b: any) => boolean
+export type CompareCallback = (a: any, b: any) => boolean
 
 export type Group = string | {
   [path: string]: {
@@ -15,6 +15,8 @@ export type Group = string | {
     /** Describes how to accumulate data into current group */
     reducer: (value: Object) => Object;
     initialReducerValue?: any;
+    /** If current group supposed to be as hierarchical tree */
+    tree?: TreeValue[];
   }
 }
 
