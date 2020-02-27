@@ -7,6 +7,9 @@ import group,
   reduceGroups
 } from './';
 
+const reducer = (prev, cur) => ({ ...prev, number: prev.number + cur.number });
+const initialReducerValue = value => ({ ...value, number: 0 });
+
 describe('group', () => {
 
   describe('buildTree', () => {
@@ -342,9 +345,6 @@ describe('group', () => {
   
   describe('reduceGroups', () => {
     
-    const reducer = (prev, cur) => ({ ...prev, number: prev.number + cur.number });
-    const initialReducerValue = value => ({ ...value, number: 0 });
-
     it('should reduce groups with custom reducers and initial values', async () => {
       const tree = [
         {
@@ -518,6 +518,39 @@ describe('group', () => {
                 { boolean: false, number: 4, children: [{ object: { id: '2.1' }, boolean: false, number: 4 }] }
               ]
             }
+          ]
+        }
+      ]);
+    });
+  });
+
+  describe('group', () => {
+    it('should group array', async () => {
+      const array = [
+        { string: '1', number: 5 },
+        { string: '2', number: 2 },
+        { string: '2', number: 3 },
+        { string: '1', number: 8 },
+      ];
+      const groups = [
+        { string: { reducer, initialReducerValue } }
+      ];
+      const result = await group(array, groups);
+      expect(result).toEqual([
+        {
+          string: '1',
+          number: 13,
+          children: [
+            { string: '1', number: 5 },
+            { string: '1', number: 8 }
+          ]
+        },
+        {
+          string: '2',
+          number: 5,
+          children: [
+            { string: '2', number: 2 },
+            { string: '2', number: 3 }
           ]
         }
       ]);

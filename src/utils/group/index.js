@@ -140,15 +140,15 @@ export async function reduceGroups(tree, groups) {
 
 /**
  * 
- * @param {Object[]} value 
+ * @param {Object[]} array 
  * @param {import('./').Group[]} groups 
  */
-function group(value, groups) {
-  let groupedResult = [];
-  
-  
-
-  return groupedResult;
+async function group(array, groups) {
+  const groupValues = await extractGroupValues(array, groups);
+  const groupsTree = await buildGroupsTree(groupValues);
+  const filledGroupsTree = await fillGroupsTree(array, groupsTree, groups);
+  const reducedGroupsTree = await reduceGroups(filledGroupsTree, groups);
+  return reducedGroupsTree;
 }
 
 export default group;
