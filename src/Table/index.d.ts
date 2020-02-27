@@ -1,5 +1,4 @@
 import { FunctionComponent, Dispatch, SetStateAction, Context, CSSProperties, MutableRefObject } from 'react';
-import { Filter } from '../dataCompose/index';
 
 export interface CellAddress {
   row: number;
@@ -90,12 +89,8 @@ export interface UseTableOptions {
   columnsPerPage: number;
   fixRows?: number;
   fixColumns?: number;
-  defaultValue?: Value;
   columns: Column[];
   search?: string;
-  filter?: Filter;
-  /** Array of property paths */
-  sort?: string[];
 }
 
 export interface UseTableResult {
@@ -125,7 +120,12 @@ export interface TableProps extends UseTableOptions {
    * The fallback is the EditComponent of column's prop.
    * If none was found then cell is supposed to be non-editable
    */
-  defaultEditComponents?: { [type: ValueType]: FunctionComponent<CellEditComponentProps> };
+  defaultEditComponents?: {
+    string: FunctionComponent<CellEditComponentProps>,
+    number: FunctionComponent<CellEditComponentProps>,
+    boolean: FunctionComponent<CellEditComponentProps>,
+    date: FunctionComponent<CellEditComponentProps>
+  };
   onRowAdd?: Function;
 }
 

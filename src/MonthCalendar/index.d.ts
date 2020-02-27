@@ -1,13 +1,16 @@
 import { FunctionComponent } from 'react';
-import { Moment } from 'moment';
 
-export type DayNameComponentType = FunctionComponent<{ day: Moment }>;
-export type DayComponentType = FunctionComponent<{ day: Moment }>;
+export type DayNameComponentType = FunctionComponent<{ day: Object }>;
+export type DayComponentType = FunctionComponent<{ day: Object }>;
 
 export interface MonthCalendarProps {
-  month: Moment;
+  /** Moment.js object */
+  month: Object;
   DayNameComponent?: DayNameComponentType;
   DayComponent?: DayComponentType;
 }
 
 export type MonthCalendarType = FunctionComponent<MonthCalendarProps>
+
+declare const MonthCalendar: FunctionComponent<MonthCalendarProps>
+export default MonthCalendar
