@@ -49,7 +49,7 @@ const evaluateFilterResult = (value, filterItem) => {
     case '$nin':
       return !filterValue.some(item => item === fieldValue);
     default:
-      // Assuming it as default 'eq' filter
+      // Assuming it is a default 'eq' filter
       return fieldValue === filterValue;
   }
 
@@ -60,8 +60,12 @@ const evaluateFilterResult = (value, filterItem) => {
  * @param {Object[]} value 
  * @param {import('./').Filter} filter 
  */
-const filter = (value, filter) => {
-  return value.filter(rowValue => evaluateFilterResult(rowValue, filter));
+async function filter(value, filter) {
+  return value.reduce(async (prev, rowValue) => {
+    const acc = await prev;
+    const shouldInclude = evaluateFilterResult(rowValue, filter);
+    return shouldInclude ? [...acc, rowValue] : acc;
+  }, Promise.resolve([]));
 };
 
 export default filter;

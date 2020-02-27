@@ -23,6 +23,6 @@ export type Filter = FilterItem[] | And | Or
 /**
  * Filter array utility which provides interface similar to MongoDB
  */
-declare function filter(value: Object[], filter: Filter): Array<Object>
+declare function filter(value: Object[], filter: Filter): Promise<Array<Object>>
 
 export default filter;
