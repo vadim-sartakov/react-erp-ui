@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
-import { useForm, Form, Field } from './';
+import { Field, withForm } from './';
 
 const FieldComponent = ({ value, onChange, onBlur, error, validating, dirty, triggerChangeAsCallback }) => {
   return (
@@ -19,20 +19,17 @@ const FieldComponent = ({ value, onChange, onBlur, error, validating, dirty, tri
   )
 };
 
-const TestComponent = ({ value, onChange, onSubmit: handleSubmit, validate, fieldValidators, defaultValue, triggerChangeAsCallback }) => {
-  const { dirty, validating, error, formProps, onSubmit, submitting } = useForm({ value, onChange, handleSubmit, validate, defaultValue });
+const TestComponent = withForm(({ dirty, validating, error, submitting, onSubmit, fieldValidators, triggerChangeAsCallback }) => {
   return (
-    <Form {...formProps}>
-      <div>
-        <Field Component={FieldComponent} name="field" validators={fieldValidators} triggerChangeAsCallback={triggerChangeAsCallback} />
-        <button type="submit" className={classNames('submit', { submitting })} onClick={onSubmit}>Submit</button>
-        {validating && <div className="form-validating-message">Validating</div>}
-        <div className="form-message">{error}</div>
-        {dirty && <div className="form-dirty">Dirty</div>}
-      </div>
-    </Form>
+    <div>
+      <Field Component={FieldComponent} name="field" validators={fieldValidators} triggerChangeAsCallback={triggerChangeAsCallback} />
+      <button type="submit" className={classNames('submit', { submitting })} onClick={onSubmit}>Submit</button>
+      {validating && <div className="form-validating-message">Validating</div>}
+      <div className="form-message">{error}</div>
+      {dirty && <div className="form-dirty">Dirty</div>}
+    </div>
   );
-};
+});
 
 describe('Form', () => {
 

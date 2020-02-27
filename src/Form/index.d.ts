@@ -55,7 +55,7 @@ export interface UseFormOptions {
    * Should be memorized.
    * Could be async.
    */
-  handleSubmit?: (value: Object) => FieldErrors | Promise<FieldErrors>;
+  onSubmit?: (value: Object) => FieldErrors | Promise<FieldErrors>;
 }
 
 export interface UseFormResult {
@@ -108,3 +108,5 @@ export interface FieldComponentProps {
 }
 
 export type FieldComponent = FunctionComponent<FieldComponentProps>
+
+export declare function withForm(Component: FunctionComponent<UseFormOptions>): FunctionComponent

@@ -8,7 +8,7 @@ const useForm = ({
   value: valueProp,
   onChange: onChangeProp,
   validate,
-  handleSubmit: handleSubmitProp
+  onSubmit: onSubmitProp
 }) => {
   const registeredFields = useRef([]);
 
@@ -54,7 +54,7 @@ const useForm = ({
     event && event.preventDefault();
     if (submitting || formValidating || validatingFields.length || Object.keys(fieldErrors).length || Object.keys(formErrors).length) return;
     setDirtyFields([...registeredFields.current]);
-    const submitErrors = handleSubmitProp(value);
+    const submitErrors = onSubmitProp(value);
     if (submitErrors && submitErrors.then) {
       setSubmitting(true);
       submitErrors.then(submitErrors => {
@@ -64,7 +64,7 @@ const useForm = ({
     } else {
       setSubmitErrors(submitErrors || {});
     }
-  }, [value, fieldErrors, formErrors, handleSubmitProp, submitting, formValidating, validatingFields]);
+  }, [value, fieldErrors, formErrors, onSubmitProp, submitting, formValidating, validatingFields]);
 
   const errors = useMemo(() => {
     return {
