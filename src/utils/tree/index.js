@@ -27,7 +27,7 @@ async function getChildren(array, item, options) {
   return children;
 };
 
-export async function buildTree(array, options = {}) {
+export async function relativeArrayToTree(array, options = {}) {
   const rootElements = await array.reduce(async (prev, item) => {
     const acc = await prev;
     const parent = get(item, options.parentPath || 'parent');
@@ -39,5 +39,15 @@ export async function buildTree(array, options = {}) {
     const result = { ...item };
     if (children.length) result.children = children;
     return [...acc, result];
+  }, Promise.resolve([]));
+};
+
+export async function treeToLeveledArray(tree, level = 0) {
+  return tree.reduce(async (prev, { children, ...item }) => {
+    const acc = await prev;
+    const curItem = { ...item };
+    if (level > 0) curItem.level = level;
+    const normalizedChildren = children ? await treeToLeveledArray(children, level + 1) : [];
+    return [...acc, curItem, ...normalizedChildren];
   }, Promise.resolve([]));
 };

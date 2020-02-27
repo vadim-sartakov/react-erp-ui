@@ -1,5 +1,9 @@
-export interface NormalizedTreeValue {
+export interface NormalizedRelativeTreeValue {
   parent: any;
+}
+
+export interface NormalizedLeveledTreeValue {
+  level?: number
 }
 
 export interface TreeValue {
@@ -8,7 +12,7 @@ export interface TreeValue {
 
 export type CompareCallback = (a: any, b: any) => boolean
 
-export interface BuildTreeOptions {
+export interface RelativeArrayToTreeOptions {
   /** Default is 'id' */
   idPath?: string;
   /** Default is 'parent' */
@@ -17,5 +21,5 @@ export interface BuildTreeOptions {
   comparator?: CompareCallback
 }
 
-/** Builds a tree of normalized array values */
-export declare function buildTree(array: NormalizedTreeValue[], options?: BuildTreeOptions): Promise<TreeValue[]>
+export declare function relativeArrayToTree(array: NormalizedRelativeTreeValue[], options?: RelativeArrayToTreeOptions): Promise<TreeValue[]>
+export declare function treeToLeveledArray(tree: TreeValue[]): Promise<NormalizedLeveledTreeValue[]>
