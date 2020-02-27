@@ -2,7 +2,7 @@ import {
   getItemsCountOnPage,
   getScrollPages,
   getPageNumberFromScrollPages,
-  getPageNumberWithDefaultSize,
+  getVisibleIndexesWithDefaultSize,
   getGapsWithDefaultSize,
   getGapsFromScrollPages,
   getFixedOffsets
@@ -131,21 +131,24 @@ describe('Scroller utils', () => {
     });
   });
 
-  describe('getPageNumberWithDefaultSize', () => {
-    it('should return 0 on scroll 0', () => {
-      expect(getPageNumberWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, scroll: 0, totalCount: 10 })).toBe(0);
+  describe('getVisibleIndexesWithDefaultSize', () => {
+    it('should return first visible indexes with default overscroll', () => {
+      expect(getVisibleIndexesWithDefaultSize({ containerSize: 50, defaultSize: 10, scroll: 0, totalCount: 200 })).toEqual([0, 1, 2, 3, 4]);
     });
-    it('should return 1 on scroll 10, default size - 20 and items per page - 1', () => {
-      expect(getPageNumberWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, scroll: 10, totalCount: 10 })).toBe(1);
+    it('should return first visible indexes on negative scroll value and provided overscroll value', () => {
+      expect(getVisibleIndexesWithDefaultSize({ containerSize: 50, defaultSize: 10, scroll: -150, totalCount: 200, overscroll: 2 })).toEqual([0, 1, 2, 3, 4, 5, 6]);
     });
-    it('should return 2 on scroll 20, default size - 20 and items per page - 1', () => {
-      expect(getPageNumberWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, scroll: 20, totalCount: 10 })).toBe(1);
+    it('should not get out of start bounds with overscroll value', () => {
+      expect(getVisibleIndexesWithDefaultSize({ containerSize: 50, defaultSize: 10, scroll: 10, totalCount: 200, overscroll: 2 })).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
     });
-    it('should return first page when scroll is negative', () => {
-      expect(getPageNumberWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, scroll: -20, totalCount: 10 })).toBe(0);
+    it('should not get out of end bounds with overscroll value', () => {
+      expect(getVisibleIndexesWithDefaultSize({ containerSize: 50, defaultSize: 10, scroll: 1950, totalCount: 200, overscroll: 2 })).toEqual([193, 194, 195, 196, 197, 198, 199]);
     });
-    it('should return last page when scroll is exceeded', () => {
-      expect(getPageNumberWithDefaultSize({ defaultSize: 20, itemsPerPage: 1, scroll: 500, totalCount: 10 })).toBe(9);
+    it('should return visible indexes in middle scroll and default overscroll', () => {
+      expect(getVisibleIndexesWithDefaultSize({ containerSize: 50, defaultSize: 10, scroll: 50, totalCount: 200 })).toEqual([5, 6, 7, 8, 9]);
+    });
+    it('should return visible indexes in middle scroll and provided overscroll value', () => {
+      expect(getVisibleIndexesWithDefaultSize({ containerSize: 50, defaultSize: 10, scroll: 50, totalCount: 200, overscroll: 2 })).toEqual([3, 4, 5, 6, 7, 8, 9, 10, 11]);
     });
   });
 

@@ -93,20 +93,24 @@ export const getPageNumberFromScrollPages = (scrollPages, scroll = 0) => {
 };
 
 /**
- * @function
  * @param {Object} options
+ * @param {number} options.containerSize
  * @param {number} options.defaultSize
- * @param {number} options.itemsPerPage
  * @param {number} options.totalCount
  * @param {number} options.scroll
+ * @param {number} options.overscroll
  * @returns {number} 
  */
-export const getPageNumberWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, scroll }) => {
-  if (scroll < 0) return 0;
-  const totalPages = getTotalPages(totalCount, itemsPerPage);
-  const pageSize = defaultSize * itemsPerPage;
-  const page = Math.floor( ( scroll + pageSize / 2 ) / pageSize);
-  return Math.min(totalPages - 1, page);
+export function getVisibleIndexesWithDefaultSize({ containerSize, defaultSize, totalCount, scroll, overscroll = 0 }) {
+  const visibleElementsCount = Math.ceil(containerSize / defaultSize);
+  const maxIndex = totalCount - 1;
+  let firstIndex = Math.max(Math.floor(scroll / defaultSize), 0);
+  let lastIndex = Math.min((firstIndex + visibleElementsCount) - 1, maxIndex);
+  firstIndex = Math.max(firstIndex - overscroll, 0);
+  lastIndex = Math.min(lastIndex + overscroll, maxIndex);
+  const result = [];
+  for (let i = firstIndex; i <= lastIndex; i++) result.push(i);
+  return result;
 };
 
 /**
