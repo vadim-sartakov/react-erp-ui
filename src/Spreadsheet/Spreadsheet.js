@@ -8,7 +8,7 @@ import { GroupLine } from './GroupLine';
 import SelectedRange from './SelectedRange';
 import Cell from './Cell';
 import ResizeLines from '../grid/ResizeLines';
-import FixLines from '../grid/FixLines';
+import FixLines from './FixLines';
 
 const visibleRangesFilter = ({
   fixRows,

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import { SpreadsheetContext } from '../Spreadsheet';
-import { getCellsRangeSize } from './MergedCell/utils';
+import { SpreadsheetContext } from '.';
+import { getCellsRangeSize } from '../grid/MergedCell/utils';
 
 const FixLines = ({
   rows,
