@@ -49,12 +49,12 @@ describe('tree', () => {
       const result = await treeToLeveledArray(tree);
       expect(result).toEqual([
         { string: '1' },
-        { string: '1.1', level: 1 },
-        { string: '1.1.1', level: 2 },
-        { string: '1.2', level: 1 },
+        { string: '1.1', _level: 1 },
+        { string: '1.1.1', _level: 2 },
+        { string: '1.2', _level: 1 },
         { string: '2' },
-        { string: '2.1', level: 1 },
-        { string: '2.2', level: 1 }
+        { string: '2.1', _level: 1 },
+        { string: '2.2', _level: 1 }
       ]);
     });
   });

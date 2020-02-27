@@ -12,7 +12,7 @@ export interface TreeValue {
 
 export type CompareCallback = (a: any, b: any) => boolean
 
-export interface RelativeArrayToTreeOptions {
+export interface Options {
   /** Default is 'id' */
   idPath?: string;
   /** Default is 'parent' */
@@ -21,5 +21,5 @@ export interface RelativeArrayToTreeOptions {
   comparator?: CompareCallback
 }
 
-export declare function relativeArrayToTree(array: NormalizedRelativeTreeValue[], options?: RelativeArrayToTreeOptions): Promise<TreeValue[]>
+export declare function relativeArrayToTree(array: NormalizedRelativeTreeValue[], options?: Options): Promise<TreeValue[]>
 export declare function treeToLeveledArray(tree: TreeValue[]): Promise<NormalizedLeveledTreeValue[]>

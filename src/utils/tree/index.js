@@ -46,7 +46,7 @@ export async function treeToLeveledArray(tree, level = 0) {
   return tree.reduce(async (prev, { children, ...item }) => {
     const acc = await prev;
     const curItem = { ...item };
-    if (level > 0) curItem.level = level;
+    if (level > 0) curItem._level = level;
     const normalizedChildren = children ? await treeToLeveledArray(children, level + 1) : [];
     return [...acc, curItem, ...normalizedChildren];
   }, Promise.resolve([]));
