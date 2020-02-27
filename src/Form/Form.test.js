@@ -4,13 +4,13 @@ import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
 import { useForm, Form, Field } from './';
 
-const FieldComponent = ({ value, onChange, onBlur, error, validating, dirty }) => {
+const FieldComponent = ({ value, onChange, onBlur, error, validating, dirty, triggerChangeAsCallback }) => {
   return (
     <div>
       <input
           className="field"
           value={value}
-          onChange={event => onChange(event.target.value)}
+          onChange={event => triggerChangeAsCallback ? onChange(value => event.target.value) : onChange(event.target.value)}
           onBlur={onBlur} />
       <div className="field-message">{error}</div>
       {validating && <div className="field-validating-message">Validating</div>}
@@ -19,12 +19,12 @@ const FieldComponent = ({ value, onChange, onBlur, error, validating, dirty }) =
   )
 };
 
-const TestComponent = ({ value, onChange, onSubmit: handleSubmit, validate, fieldValidators, defaultValue }) => {
+const TestComponent = ({ value, onChange, onSubmit: handleSubmit, validate, fieldValidators, defaultValue, triggerChangeAsCallback }) => {
   const { dirty, validating, error, formProps, onSubmit, submitting } = useForm({ value, onChange, handleSubmit, validate, defaultValue });
   return (
     <Form {...formProps}>
       <div>
-        <Field Component={FieldComponent} name="field" validators={fieldValidators} />
+        <Field Component={FieldComponent} name="field" validators={fieldValidators} triggerChangeAsCallback={triggerChangeAsCallback} />
         <button type="submit" className={classNames('submit', { submitting })} onClick={onSubmit}>Submit</button>
         {validating && <div className="form-validating-message">Validating</div>}
         <div className="form-message">{error}</div>
@@ -39,6 +39,13 @@ describe('Form', () => {
   it('should handle field change', () => {
     const onChange = jest.fn(setter => setter({}));
     const wrapper = mount(<TestComponent onChange={onChange} />);
+    wrapper.find('.field').simulate('change', { target: { value: 'test' } });
+    expect(onChange.mock.results[0].value).toEqual({ field: 'test' });
+  });
+
+  it('should handle field change as callback', () => {
+    const onChange = jest.fn(setter => setter({}));
+    const wrapper = mount(<TestComponent onChange={onChange} triggerChangeAsCallback />);
     wrapper.find('.field').simulate('change', { target: { value: 'test' } });
     expect(onChange.mock.results[0].value).toEqual({ field: 'test' });
   });

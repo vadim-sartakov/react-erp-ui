@@ -57,8 +57,9 @@ const Field = ({
     }
   }, [value, name, setErrorsContext, validators, setValidatingFields]);
 
-  const handleChange = useCallback((fieldValue, event) => {
+  const handleChange = useCallback((inputFieldValue, event) => {
     onChange(formValue => {
+      const fieldValue = typeof inputFieldValue === 'function' ? inputFieldValue(_.get(formValue, name)) : inputFieldValue;
       const nextValue = setIn(name, fieldValue, formValue);
       if (_.isEqual(fieldValue, defaultValue)) {
         setDirtyFields(dirtyFields => dirtyFields.filter(field => field !== name));
