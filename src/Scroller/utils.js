@@ -1,10 +1,9 @@
 import { getCellsRangeSize, getCellPosition } from "../grid/MergedCell/utils";
 
 /**
- * @typedef Meta
- * @property {number} size
+ * @param {number} totalCount 
+ * @param {number} itemsPerPage 
  */
-
 export function getTotalPages(totalCount, itemsPerPage){
   return Math.ceil(totalCount / itemsPerPage);
 };
@@ -22,31 +21,20 @@ export function getItemsCountOnPage(page, itemsPerPage, totalCount) {
   return page < totalPages - 1 ? itemsPerPage : totalCount - (page * itemsPerPage);
 };
 
-/**
- * @param {Object} options
- * @param {number} containerSize
- * @param {number[]} options.sizes
- * @param {number} options.scroll
- * @param {number} options.defaultSize
- * @param {number} options.totalCount
- */
-export function getVisibleIndexesWithCustomSizes({ containerSize, sizes, scroll, defaultSize, totalCount, overscroll = 0 }) {
-  let curScroll = 0;
-  let firstIndex, lastIndex;
-  for (let curIndex = 0; curIndex < totalCount; curIndex++) {
-    curScroll += sizes[curIndex] || defaultSize;
-    if (firstIndex === undefined && curScroll >= scroll) firstIndex = curIndex;
-    if (lastIndex === undefined && curScroll >= (scroll + containerSize)) {
-      lastIndex = curIndex;
-      break;
-    }
-  }
-  firstIndex = Math.max(firstIndex - overscroll, 0);
-  lastIndex = Math.min(lastIndex + overscroll, totalCount - 1);
+function getVisibleIndexesRange(startIndex, endIndex, totalCount, overscroll) {
+  const firstIndex = Math.max(startIndex - overscroll, 0);
+  const lastIndex = Math.min(endIndex + overscroll, totalCount - 1);
   const result = [];
   for (let i = firstIndex; i <= lastIndex; i++) result.push(i);
   return result;
 };
+
+/**
+ * @typedef ScrollData
+ * @property {number} offset
+ * @property {number} size
+ * @property {number[]} visibleIndexes
+ */
 
 /**
  * @param {Object} options
@@ -54,120 +42,53 @@ export function getVisibleIndexesWithCustomSizes({ containerSize, sizes, scroll,
  * @param {number} options.defaultSize
  * @param {number} options.totalCount
  * @param {number} options.scroll
- * @param {number} options.overscroll
- * @returns {number} 
+ * @param {number=0} options.overscroll
+ * @returns {ScrollData} 
  */
-export function getVisibleIndexesWithDefaultSizes({ containerSize, defaultSize, totalCount, scroll, overscroll = 0 }) {
+export function getScrollDataWithDefaultSize({ containerSize, defaultSize, totalCount, scroll, overscroll = 0 }) {
   const visibleElementsCount = Math.ceil(containerSize / defaultSize);
   const maxIndex = totalCount - 1;
   let firstIndex = Math.max(Math.floor(scroll / defaultSize), 0);
   let lastIndex = Math.min((firstIndex + visibleElementsCount) - 1, maxIndex);
-  firstIndex = Math.max(firstIndex - overscroll, 0);
-  lastIndex = Math.min(lastIndex + overscroll, maxIndex);
-  const result = [];
-  for (let i = firstIndex; i <= lastIndex; i++) result.push(i);
-  return result;
+  const visibleIndexes = getVisibleIndexesRange(firstIndex, lastIndex, totalCount, overscroll);
+  const offset = defaultSize * firstIndex;
+  const size = totalCount * defaultSize;
+  return { offset, size, visibleIndexes };
 };
 
 /**
- * Generic visible indexes calculation function which decides how indexes
- * will be calculated depending on whether meta option is specified or not
- * @function
  * @param {Object} options
- * @param {ScrollPage} options.scrollPages
- * @param {Meta[]} options.meta
- * @param {number} options.defaultSize
- * @param {number} options.containerSize
- * @param {number} options.totalCount
+ * @param {number[]} options.sizes
+ * @param {number} containerSize
  * @param {number} options.scroll
- * @param {number} options.overscroll
- */
-export const getVisibleIndexes = ({ scrollPages, defaultSize, totalCount, containerSize, scroll, overscroll = 0 }) => {
-  let visibleIndexes;
-  if (scrollPages && scrollPages.length) {
-    visibleIndexes = getVisibleIndexesWithCustomSizes(scrollPages, scroll);
-  } else {
-    visibleIndexes = getVisibleIndexesWithDefaultSizes({ defaultSize, containerSize, totalCount, scroll, overscroll });
-  }
-  return visibleIndexes;
-};
-
-/**
- * @typedef {Object} Gaps
- * @property {number} start 
- * @property {number} middle 
- * @property {number} end 
- */
-
-/**
- * @function
- * @param {Object} options
  * @param {number} options.defaultSize
- * @param {number} options.itemsPerPage
  * @param {number} options.totalCount
- * @param {number} options.page
- * @returns {Gaps} [Gaps]{@link module:components/Scroller/utils~Gaps}
+ * @param {number} [options.overscroll=0]
+ * @returns {number[]}
  */
-export const getGapsWithDefaultSize = ({ defaultSize, itemsPerPage, totalCount, page }) => {
-  const pageSize = defaultSize * itemsPerPage;
-  const visiblePages = getVisiblePages(page);
-  const startSectionSize = visiblePages[0] * pageSize;
-  const totalSize = totalCount * defaultSize;
-  const visibleItems =
-      getItemsCountOnPage(visiblePages[0], itemsPerPage, totalCount) +
-      getItemsCountOnPage(visiblePages[1], itemsPerPage, totalCount);
-  const visibleSectionSize = visibleItems * defaultSize;
-  const endSectionSize = totalSize - (startSectionSize + visibleSectionSize);
-  const middleSectionSize = totalSize - startSectionSize - endSectionSize;
-  return {
-    start: startSectionSize,
-    middle: middleSectionSize,
-    end: endSectionSize
-  };
+export function getScrollDataWithCustomSizes({ sizes, containerSize, scroll, defaultSize, totalCount, overscroll = 0 }) {
+  let curScroll = 0;
+  let size = 0;
+
+  let firstIndex, lastIndex, offset;
+  for (let curIndex = 0; curIndex < totalCount; curIndex++) {
+    const curSize = sizes[curIndex] || defaultSize;
+
+    curScroll += curSize;
+    size += curSize;
+
+    if (firstIndex === undefined && curScroll >= scroll) {
+      firstIndex = curIndex;
+      offset = curScroll - curSize;
+    }
+    if (lastIndex === undefined && curScroll >= (scroll + containerSize)) lastIndex = curIndex;
+  }
+  const visibleIndexes = getVisibleIndexesRange(firstIndex, lastIndex, totalCount, overscroll);
+  return { offset, size, visibleIndexes };
 };
 
-const gapsReducer = (acc, scrollPage) => acc + (scrollPage.end - scrollPage.start);
+export function getRelativeScrollData({ prevScrollData, prevScroll, scroll, defaultSize, totalCount, overscroll = 0 }) {
 
-/**
- * @function
- * @param {Object} options
- * @param {ScrollPage[]} options.scrollPages [ScrollPage]{@link module:components/Scroller/utils~ScrollPage}
- * @param {number} options.page
- * @returns {Gaps} [Gaps]{@link module:components/Scroller/utils~Gaps}
- */
-export const getGapsFromScrollPages = ({ scrollPages, page }) => {
-  const [startPage, endPage] = getVisiblePages(page);
-
-  const startSectionSize = scrollPages.slice(0, startPage).reduce(gapsReducer, 0);
-  const middleSectionSize = scrollPages.slice(startPage, endPage + 1).reduce(gapsReducer, 0);
-  const endSectionSize = scrollPages.slice(endPage + 1, scrollPages.length).reduce(gapsReducer, 0);
-
-  return {
-    start: startSectionSize,
-    middle: middleSectionSize,
-    end: endSectionSize
-  }
-};
-
-/**
- * Generic function which calculates gaps depending on whether meta is specified or not.
- * @function
- * @param {Object} options
- * @param {ScrollPage} options.scrollPages
- * @param {number} options.defaultSize
- * @param {number} options.itemsPerPage
- * @param {number} options.totalCount
- * @param {number} options.page
- * @returns {Gaps} [Gaps]{@link module:components/Scroller/utils~Gaps}
- */
-export const getGaps = ({ scrollPages, defaultSize, itemsPerPage, totalCount, page }) => {
-  let gaps;
-  if (scrollPages && scrollPages.length) {
-    gaps = getGapsFromScrollPages({ scrollPages, page });
-  } else {
-    gaps = getGapsWithDefaultSize({ defaultSize, itemsPerPage, totalCount, page });
-  }
-  return gaps;
 };
 
  /**

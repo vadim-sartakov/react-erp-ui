@@ -1,9 +1,7 @@
 import {
   getItemsCountOnPage,
-  getVisibleIndexesWithDefaultSizes,
-  getVisibleIndexesWithCustomSizes,
-  getGapsWithDefaultSize,
-  getGapsFromScrollPages,
+  getScrollDataWithDefaultSize,
+  getScrollDataWithCustomSizes,
   getFixedOffsets
 } from './utils';
 
@@ -18,41 +16,87 @@ describe('Scroller utils', () => {
     });
   });
 
-  describe('getVisibleIndexesWithDefaultSizes', () => {
+  describe('getScrollDataWithDefaultSize', () => {
     it('should return first visible indexes with default overscroll', () => {
-      expect(getVisibleIndexesWithDefaultSizes({ containerSize: 50, defaultSize: 10, scroll: 0, totalCount: 200 })).toEqual([0, 1, 2, 3, 4]);
+      const result = getScrollDataWithDefaultSize({ containerSize: 50, defaultSize: 10, scroll: 0, totalCount: 200 });
+      expect(result).toEqual({
+        offset: 0, 
+        size: 2000,
+        visibleIndexes: [0, 1, 2, 3, 4]
+      });
     });
     it('should not get out of start bounds with overscroll value', () => {
-      expect(getVisibleIndexesWithDefaultSizes({ containerSize: 50, defaultSize: 10, scroll: 10, totalCount: 200, overscroll: 2 })).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+      const result = getScrollDataWithDefaultSize({ containerSize: 50, defaultSize: 10, scroll: 10, totalCount: 200, overscroll: 2 });
+      expect(result).toEqual({
+        offset: 10,
+        size: 2000,
+        visibleIndexes: [0, 1, 2, 3, 4, 5, 6, 7]
+      });
     });
     it('should not get out of end bounds with overscroll value', () => {
-      expect(getVisibleIndexesWithDefaultSizes({ containerSize: 50, defaultSize: 10, scroll: 1950, totalCount: 200, overscroll: 2 })).toEqual([193, 194, 195, 196, 197, 198, 199]);
+      const result = getScrollDataWithDefaultSize({ containerSize: 50, defaultSize: 10, scroll: 1955, totalCount: 200, overscroll: 2 });
+      expect(result).toEqual({
+        offset: 1950,
+        size: 2000,
+        visibleIndexes: [193, 194, 195, 196, 197, 198, 199]
+      });
     });
     it('should return visible indexes in middle scroll and default overscroll', () => {
-      expect(getVisibleIndexesWithDefaultSizes({ containerSize: 50, defaultSize: 10, scroll: 50, totalCount: 200 })).toEqual([5, 6, 7, 8, 9]);
+      const result = getScrollDataWithDefaultSize({ containerSize: 50, defaultSize: 10, scroll: 55, totalCount: 200 });
+      expect(result).toEqual({
+        offset: 50,
+        size: 2000,
+        visibleIndexes: [5, 6, 7, 8, 9]
+      });
     });
     it('should return visible indexes in middle scroll and provided overscroll value', () => {
-      expect(getVisibleIndexesWithDefaultSizes({ containerSize: 50, defaultSize: 10, scroll: 50, totalCount: 200, overscroll: 2 })).toEqual([3, 4, 5, 6, 7, 8, 9, 10, 11]);
+      const result = getScrollDataWithDefaultSize({ containerSize: 50, defaultSize: 10, scroll: 50, totalCount: 200, overscroll: 2 });
+      expect(result).toEqual({
+        offset: 50,
+        size: 2000,
+        visibleIndexes: [3, 4, 5, 6, 7, 8, 9, 10, 11]
+      });
     });
   });
 
-  describe('getVisibleIndexesWithCustomSizes', () => {
+  describe('getScrollDataWithCustomSizes', () => {
 
     const sizes = [20, 30, 50, 80, 20, 10, 50, 90, 40, 30];
 
     it('should return first visible indexes', () => {
-      const result = getVisibleIndexesWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 0 });
-      expect(result).toEqual([0, 1]);
+      const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 0 });
+      expect(result).toEqual({
+        offset: 0,
+        size: 2320,
+        visibleIndexes: [0, 1]
+      });
     });
 
     it('should return first extended visible indexes when overscroll specified', () => {
-      const result = getVisibleIndexesWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 0, overscroll: 2 });
-      expect(result).toEqual([0, 1, 2, 3]);
+      const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 0, overscroll: 2 });
+      expect(result).toEqual({
+        offset: 0,
+        size: 2320,
+        visibleIndexes: [0, 1, 2, 3]
+      });
     });
 
     it('should return middle visible indexes when scrolled', () => {
-      const result = getVisibleIndexesWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 130 });
-      expect(result).toEqual([4, 5, 6]);
+      const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 181 });
+      expect(result).toEqual({
+        offset: 180,
+        size: 2320,
+        visibleIndexes: [4, 5, 6]
+      });
+    });
+
+    it('should return extended middle visible indexes when scrolled and overscroll value provided', () => {
+      const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 181, overscroll: 2 });
+      expect(result).toEqual({
+        offset: 180,
+        size: 2320,
+        visibleIndexes: [2, 3, 4, 5, 6, 7, 8]
+      });
     });
 
   });
