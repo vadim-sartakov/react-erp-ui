@@ -5,7 +5,10 @@ import {
   shiftScroll
 } from './utils';
 
+//             0   20  50  100 180 200 210  offsets
+//             20  50  100 180 200 210 260  scroll
 const sizes = [20, 30, 50, 80, 20, 10, 50, 90, 40, 30];
+//             0   1   2   3   4   5   6    index
 
 describe('Scroller utils', () => {
   
@@ -71,12 +74,10 @@ describe('Scroller utils', () => {
   });
 
   describe('getScrollDataWithCustomSizes', () => {
-
     it('should return first visible indexes', () => {
       const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 0 });
       expect(result).toEqual({
         offset: 0,
-        size: 2320,
         visibleIndexes: [0, 1]
       });
     });
@@ -85,46 +86,61 @@ describe('Scroller utils', () => {
       const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 0, overscroll: 2 });
       expect(result).toEqual({
         offset: 0,
-        size: 2320,
         visibleIndexes: [0, 1, 2, 3]
       });
     });
 
     it('should return middle visible indexes when scrolled', () => {
-      const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 180 });
+      const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 175 });
       expect(result).toEqual({
         offset: 100,
-        size: 2320,
         visibleIndexes: [3, 4, 5, 6]
       });
     });
 
     it('should return extended middle visible indexes when scrolled and overscroll value provided', () => {
-      const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 180, overscroll: 2 });
+      const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 175, overscroll: 2 });
       expect(result).toEqual({
-        offset: 100,
-        size: 2320,
+        offset: 20,
         visibleIndexes: [1, 2, 3, 4, 5, 6, 7, 8]
       });
     });
-
   });
 
-  describe('getRelativeScrollData', () => {
+  describe('shiftScroll', () => {
 
-    it('should move forward', () => {
+    it('should shift forward on scroll', () => {
       const prevScrollData = {
         offset: 100,
-        size: 2320,
         visibleIndexes: [3, 4, 5, 6]
       };
-      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 180, scroll: 200 });
+      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 175, scroll: 205 });
       expect(result).toEqual({
-        offset: 180,
-        size: 2320,
-        visibleIndexes: [4, 5, 6]
+        offset: 200,
+        visibleIndexes: [5, 6]
       });
     });
+
+    it('should return previous scroll data when scrolled by small value', () => {
+      const prevScrollData = {
+        offset: 100,
+        visibleIndexes: [3, 4, 5, 6]
+      };
+      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 175, scroll: 176 });
+      expect(result).toBe(prevScrollData);
+    });
+
+    /*it('should move backward', () => {
+      const prevScrollData = {
+        offset: 100,
+        visibleIndexes: [3, 4, 5, 6]
+      };
+      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 180, scroll: 100 });
+      expect(result).toEqual({
+        offset: 50,
+        visibleIndexes: [2, 3]
+      });
+    });*/
 
   });
 
