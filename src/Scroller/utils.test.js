@@ -121,13 +121,16 @@ describe('Scroller utils', () => {
       });
     });
 
-    it('should return previous scroll data when scrolled by small value', () => {
+    it('should stay on same position when scrolled by small value', () => {
       const prevScrollData = {
         offset: 100,
         visibleIndexes: [3, 4, 5, 6]
       };
       const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 175, scroll: 176 });
-      expect(result).toBe(prevScrollData);
+      expect(result).toEqual({
+        offset: 100,
+        visibleIndexes: [3, 4, 5, 6]
+      });
     });
 
     /*it('should move backward', () => {
@@ -135,7 +138,7 @@ describe('Scroller utils', () => {
         offset: 100,
         visibleIndexes: [3, 4, 5, 6]
       };
-      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 180, scroll: 100 });
+      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 175, scroll: 95 });
       expect(result).toEqual({
         offset: 50,
         visibleIndexes: [2, 3]
