@@ -108,11 +108,10 @@ export function shiftScroll({ prevScrollData, prevScroll, sizes, scroll, contain
   const firstPrevIndex = prevScrollData.visibleIndexes[0];
 
   if (scrollDiff > 0) {
-    const curSize = sizes[firstPrevIndex] || defaultSize;
-    const startOffset = scroll < prevScrollData.offset + curSize ? 0 : 1;
+    const prevSize = sizes[firstPrevIndex - 1] || defaultSize;
     const { offset, visibleIndexes } = getScrollDataWithCustomSizes({
-      startScroll: prevScroll,
-      startOffset: prevScrollData.offset,
+      startScroll: prevScrollData.offset,
+      startOffset: prevScrollData.offset - prevSize,
       startIndex: firstPrevIndex,
       sizes,
       defaultSize,
@@ -124,9 +123,9 @@ export function shiftScroll({ prevScrollData, prevScroll, sizes, scroll, contain
     return { offset, visibleIndexes };
   } else if (scrollDiff < 0) {
     const { offset, visibleIndexes } = getScrollDataWithCustomSizes({
-      //startScroll: prevScroll,
-      //startOffset: prevScrollData.offset,
-      //startIndex: prevScrollData.visibleIndexes[prevScrollData.visibleIndexes.length - 1],
+      startScroll: prevScrollData.offset,
+      startOffset: prevScrollData.offset,
+      startIndex: prevScrollData.visibleIndexes[0],
       sizes,
       defaultSize,
       scroll,
