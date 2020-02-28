@@ -42,7 +42,7 @@ function getVisibleIndexesRange(startIndex, endIndex, totalCount, overscroll) {
  * @param {number} options.defaultSize
  * @param {number} options.totalCount
  * @param {number} options.scroll
- * @param {number=0} options.overscroll
+ * @param {number} [options.overscroll=0]
  * @returns {ScrollData} 
  */
 export function getScrollDataWithDefaultSize({ containerSize, defaultSize, totalCount, scroll, overscroll = 0 }) {
@@ -56,6 +56,29 @@ export function getScrollDataWithDefaultSize({ containerSize, defaultSize, total
   return { offset, size, visibleIndexes };
 };
 
+function getIndexesAndOffsetWithCustomSizes({ startScroll = 0, startOffset = 0, startIndex = 0, sizes, defaultSize, scroll, containerSize, totalCount, overscroll }) {
+  let offset, firstIndex, lastIndex;
+  let curScroll = startScroll;
+  let curOffset = startOffset;
+
+  let curIndex = startIndex;
+  while (lastIndex === undefined && curIndex < totalCount) {
+    const prevSize = curIndex > 0 ? sizes[curIndex - 1] || defaultSize : 0;
+    const curSize = sizes[curIndex] || defaultSize;
+    curScroll += curSize;
+    curOffset += prevSize;
+    if (firstIndex === undefined && curScroll >= scroll) {
+      firstIndex = curIndex;
+      offset = curOffset;
+    }
+    if (lastIndex === undefined && curScroll >= (scroll + containerSize)) lastIndex = curIndex;
+    curIndex++;
+  }
+
+  const visibleIndexes = getVisibleIndexesRange(firstIndex, lastIndex, totalCount, overscroll);
+  return { offset, visibleIndexes };
+}
+
 /**
  * @param {Object} options
  * @param {number[]} options.sizes
@@ -64,51 +87,47 @@ export function getScrollDataWithDefaultSize({ containerSize, defaultSize, total
  * @param {number} options.defaultSize
  * @param {number} options.totalCount
  * @param {number} [options.overscroll=0]
- * @returns {number[]}
+ * @returns {ScrollData}
  */
 export function getScrollDataWithCustomSizes({ sizes, containerSize, scroll, defaultSize, totalCount, overscroll = 0 }) {
-  let curScroll = 0;
-  let size = 0;
-
-  let firstIndex, lastIndex, offset;
-  for (let curIndex = 0; curIndex < totalCount; curIndex++) {
-    const curSize = sizes[curIndex] || defaultSize;
-
-    curScroll += curSize;
-    size += curSize;
-
-    if (firstIndex === undefined && curScroll >= scroll) {
-      firstIndex = curIndex;
-      offset = curScroll - curSize;
-    }
-    if (lastIndex === undefined && curScroll >= (scroll + containerSize)) lastIndex = curIndex;
-  }
-  const visibleIndexes = getVisibleIndexesRange(firstIndex, lastIndex, totalCount, overscroll);
+  const { offset, visibleIndexes } = getIndexesAndOffsetWithCustomSizes({
+    sizes,
+    defaultSize,
+    scroll,
+    containerSize,
+    totalCount,
+    overscroll
+  });
+  const size = [...new Array(totalCount).keys()].reduce((acc, key) => {
+    const curSize = sizes[key] || defaultSize;
+    return acc + curSize;
+  }, 0);
   return { offset, size, visibleIndexes };
 };
 
-export function getRelativeScrollData({ prevScrollData, prevScroll, scroll, defaultSize, totalCount, overscroll = 0 }) {
+export function shiftScroll({ prevScrollData, prevScroll, sizes, scroll, containerSize, totalCount, defaultSize, overscroll = 0 }) {
+  const scrollDiff = scroll - prevScroll;
+  
+  if (scrollDiff > 0) {
+    const { offset, visibleIndexes } = getIndexesAndOffsetWithCustomSizes({
+      startScroll: prevScroll,
+      startOffset: prevScrollData.offset,
+      startIndex: prevScrollData.visibleIndexes[0] + 1,
+      sizes,
+      defaultSize,
+      scroll,
+      containerSize,
+      totalCount,
+      overscroll
+    });
 
-};
-
- /**
-  * @function
-  * @param {Object} options
-  * @param {Meta[]} options.meta [Meta]{@link module:components/Scroller~Meta}
-  * @param {number} options.defaultSize
-  * @param {number} options.fixed - Number of fixed items
-  * @returns {number[]}
-  */
-export const getFixedOffsets = ({ meta, defaultSize, fixed }) => {
-  const resultOffset = [...new Array(fixed).keys()].reduce((acc, curKey, index) => {
-    const curOffset = index === 0 ? 0 : [...new Array(index).keys()].reduce((acc, key, index) => {
-      const curMeta = meta && meta[index];
-      const offset = curMeta ? (curMeta.size || defaultSize) : defaultSize;
-      return acc + offset;
-    }, 0);
-    return [...acc, curOffset];
-  }, []);
-  return resultOffset;
+    return { offset, visibleIndexes, size: prevScrollData.size };
+    
+  } else if (scrollDiff < 0) {
+    
+  } else {
+    return prevScrollData;
+  }
 };
 
 /**
