@@ -80,9 +80,9 @@ export function getCustomSizesTotal({ sizes, totalCount, defaultSize }) {
  * @param {number} [options.overscroll=0]
  * @returns {ScrollData}
  */
-export function getInitialScrollDataWithCustomSizes({ sizes, containerSize, defaultSize, totalCount, overscroll = 0 }) {
-  const { offset, firstIndex } = findNextFirstIndexAndOffset({ startIndex: 0, startScroll: 0, targetScroll: 0, totalCount, sizes, defaultSize, overscroll });
-  const lastIndex = findLastIndex({ targetScroll: 0, offset, firstIndex, sizes, totalCount, defaultSize, containerSize, overscroll });
+export function getScrollDataWithCustomSizes({ scroll: targetScroll, sizes, containerSize, defaultSize, totalCount, overscroll = 0 }) {
+  const { offset, firstIndex } = findNextFirstIndexAndOffset({ startIndex: 0, startScroll: 0, targetScroll, totalCount, sizes, defaultSize, overscroll });
+  const lastIndex = findLastIndex({ targetScroll, offset, firstIndex, sizes, totalCount, defaultSize, containerSize, overscroll });
   const visibleIndexes = getVisibleIndexesRange(firstIndex, lastIndex);
   return { offset, visibleIndexes };
 };
@@ -101,6 +101,14 @@ function findNextFirstIndexAndOffset({ startIndex, startScroll, targetScroll, si
     }
     curOffset += curSize;
     curIndex++;
+  }
+  if (overscroll) {
+    for (let i = 1; i <= overscroll; i++) {
+      const curIndex = firstIndex - i;
+      if (curIndex < 0) break;
+      const curSize = sizes[curIndex] || defaultSize;
+      offset -= curSize;
+    }
   }
   firstIndex = applyStartOverscroll(firstIndex, overscroll);
   return { firstIndex, offset };
