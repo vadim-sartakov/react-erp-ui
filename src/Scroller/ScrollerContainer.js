@@ -1,7 +1,6 @@
 import React, { useMemo, forwardRef } from 'react';
 import { ScrollerContext } from './';
 
-/** @type {import('react').FunctionComponent<import('.').ScrollerContainerProps>} */
 const ScrollerContainer = forwardRef(({
   width,
   height,

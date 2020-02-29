@@ -1,35 +1,46 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { useScroller, ScrollerContainer } from './';
 
-/** @type {import('react').FunctionComponent<import('.').ScrollerProps>} */
 const Scroller = inputProps => {
-  const scrollerContainerRef = useRef();
 
-  const scrollerProps = useScroller({ ...inputProps, scrollerContainerRef });
+  const scrollerProps = useScroller(inputProps);
 
   const props = {
     ...inputProps,
     ...scrollerProps
   };
 
-  const { CellComponent } = props;
+  const {
+    scrollerContainerRef,
+    onScroll,
+    width,
+    height,
+    coverStyles,
+    pagesStyles,
+    visibleRowsIndexes,
+    visibleColumnsIndexes,
+    rowsSizes = [],
+    columnsSizes = [],
+    defaultColumnWidth,
+    defaultRowHeight,
+    value,
+    CellComponent
+  } = props;
 
-  const elements = props.visibleRows.reduce((acc, rowIndex) => {
-    const row = props.rows && props.rows[rowIndex];
-    if (props.visibleColumns) {
-      const columnsElements = props.visibleColumns.map(columnIndex => {
-        const column = props.columns && props.columns[columnIndex];
-        const valueArray = props.loadedValues || props.value;
-        const curValue = valueArray[rowIndex] && valueArray[rowIndex][columnIndex];
-        const cellProps = { row, column, rowIndex, columnIndex, value: curValue };
-        return <CellComponent key={`${rowIndex}-${columnIndex}`} {...cellProps} />;
+  const elements = visibleRowsIndexes.reduce((acc, rowIndex) => {
+    const height = rowsSizes[rowIndex] || defaultRowHeight;
+    if (visibleColumnsIndexes) {
+      const columnsElements = visibleColumnsIndexes.map(columnIndex => {
+        const width = columnsSizes[columnIndex] || defaultColumnWidth;
+        const curValue = value[rowIndex] && value[rowIndex][columnIndex];
+        const style = { width, height };
+        return <CellComponent key={`${rowIndex}-${columnIndex}`} value={curValue} style={style} />;
       });
       return [...acc, ...columnsElements];
     } else {
-      const valueArray = props.loadedValues || props.value;
-      const curValue = valueArray[rowIndex];
-      const cellProps = { row, rowIndex, value: curValue };
-      const rowElement = <CellComponent key={rowIndex} {...cellProps} />;
+      const curValue = value[rowIndex];
+      const style = { height };
+      const rowElement = <CellComponent key={rowIndex} value={curValue} style={style} />;
       return [...acc, rowElement];
     }
   }, []);
@@ -37,16 +48,14 @@ const Scroller = inputProps => {
   return (
     <ScrollerContainer
         ref={scrollerContainerRef}
-        defaultRowHeight={props.defaultRowHeight}
-        defaultColumnWidth={props.defaultColumnWidth}
-        onScroll={props.onScroll}
-        width={props.width}
-        height={props.height}>
-      <div style={props.coverStyles}>
-        <div style={props.pagesStyles}>
-          <div style={props.gridStyles}>
-            {elements}
-          </div>
+        defaultRowHeight={defaultRowHeight}
+        defaultColumnWidth={defaultColumnWidth}
+        onScroll={onScroll}
+        width={width}
+        height={height}>
+      <div style={coverStyles}>
+        <div style={pagesStyles}>
+          {elements}
         </div>
       </div>
     </ScrollerContainer>

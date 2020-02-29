@@ -118,7 +118,7 @@ function findPrevFirstIndexAndOffset({ startIndex, startScroll, targetScroll, si
   let firstIndex, offset;
   let curIndex = startIndex;
   let curScroll = startScroll;
-  while (firstIndex === undefined && curIndex > 0) {
+  while (firstIndex === undefined && curIndex >= 0) {
     const curSize = sizes[curIndex] || defaultSize;
     curScroll -= curSize;
     if (curScroll <= targetScroll) {

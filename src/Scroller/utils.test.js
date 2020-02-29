@@ -145,6 +145,18 @@ describe('Scroller utils', () => {
       });
     });
 
+    it('should move backward to scroll 0', () => {
+      const prevScrollData = {
+        offset: 100,
+        visibleIndexes: [3, 4, 5, 6]
+      };
+      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 175, scroll: 0 });
+      expect(result).toEqual({
+        offset: 0,
+        visibleIndexes: [0, 1]
+      });
+    });
+
   });
 
 });

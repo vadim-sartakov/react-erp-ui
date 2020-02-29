@@ -39,6 +39,7 @@ const useScroller = ({
   }, []);
 
   const [columnsScrollData, setColumnsScrollData] = useState(() => {
+    if (!totalColumns) return;
     const containerSize = containerSizes.width;
     if (columnsSizes.length) {
       return getScrollDataWithCustomSizes({ scroll: 0, sizes: columnsSizes, containerSize, defaultSize: defaultColumnWidth, totalCount: totalColumns, overscroll });
@@ -60,30 +61,33 @@ const useScroller = ({
   const prevScrollLeft = useRef(0);
 
   const handleScroll = useCallback(e => {
-    let rowsScrollData, columnsScrollData
-    if (columnsSizes.length) {
-      columnsScrollData = shiftScroll({
-        prevScrollData: columnsScrollData,
-        prevScroll: prevScrollLeft.current,
-        sizes: columnsSizes,
-        scroll: e.target.scrollLeft,
-        containerSize: containerSizes.width,
-        totalCount: totalColumns,
-        defaultSize: defaultColumnWidth,
-        overscroll
-      });
-    } else {
-      columnsScrollData = getScrollDataWithDefaultSize({
-        containerSize: containerSizes.width,
-        defaultSize: defaultColumnWidth,
-        totalCount: totalColumns,
-        scroll: e.target.scrollLeft,
-        overscroll
-      });
+    let nextRowsScrollData, nextColumnsScrollData
+    if (totalColumns) {
+      if (columnsSizes.length) {
+        nextColumnsScrollData = shiftScroll({
+          prevScrollData: columnsScrollData,
+          prevScroll: prevScrollLeft.current,
+          sizes: columnsSizes,
+          scroll: e.target.scrollLeft,
+          containerSize: containerSizes.width,
+          totalCount: totalColumns,
+          defaultSize: defaultColumnWidth,
+          overscroll
+        });
+      } else {
+        nextColumnsScrollData = getScrollDataWithDefaultSize({
+          containerSize: containerSizes.width,
+          defaultSize: defaultColumnWidth,
+          totalCount: totalColumns,
+          scroll: e.target.scrollLeft,
+          overscroll
+        });
+      }
+      setColumnsScrollData(nextColumnsScrollData);
     }
     
     if (rowsSizes.length) {
-      rowsScrollData = shiftScroll({
+      nextRowsScrollData = shiftScroll({
         prevScrollData: rowsScrollData,
         prevScroll: prevScrollTop.current,
         sizes: rowsSizes,
@@ -94,7 +98,7 @@ const useScroller = ({
         overscroll
       });
     } else {
-      rowsScrollData = getScrollDataWithDefaultSize({
+      nextRowsScrollData = getScrollDataWithDefaultSize({
         containerSize: containerSizes.height,
         defaultSize: defaultRowHeight,
         totalCount: totalRows,
@@ -102,12 +106,13 @@ const useScroller = ({
         overscroll
       });
     }
-    setColumnsScrollData(columnsScrollData);
-    setRowsScrollData(rowsScrollData);
+    setRowsScrollData(nextRowsScrollData);
 
     prevScrollTop.current = e.target.scrollTop;
     prevScrollLeft.current = e.target.prevScrollLeft;
   }, [
+    rowsScrollData,
+    columnsScrollData,
     columnsSizes,
     rowsSizes,
     containerSizes.height,
@@ -130,6 +135,7 @@ const useScroller = ({
   }, [lazy, rowsScrollData, rowsSizes, defaultRowHeight]);
 
   const coverWidth = useMemo(() => {
+    if (!totalColumns) return;
     if (columnsSizes.length) {
       return getCustomSizesTotal({ sizes: columnsSizes, totalCount: totalColumns, defaultSize: defaultColumnWidth });
     } else {
@@ -152,19 +158,20 @@ const useScroller = ({
       position: 'relative'
     }
   }, [lazy, coverHeight, coverWidth, rowsScrollData.offset, visibleRowsSize]);
+
   const pagesStyles = useMemo(() => {
     return {
       top: rowsScrollData.offset,
-      left: columnsScrollData.offset,
+      left: columnsScrollData && columnsScrollData.offset,
       position: 'absolute'
     };
-  }, [rowsScrollData.offset, columnsScrollData.offset]);
+  }, [rowsScrollData.offset, columnsScrollData]);
 
   return {
     scrollerContainerRef,
     focusCell,
     visibleRowsIndexes: rowsScrollData.visibleIndexes,
-    visibleColumnsIndexes: columnsScrollData.visibleIndexes,
+    visibleColumnsIndexes: columnsScrollData && columnsScrollData.visibleIndexes,
     onScroll: handleScroll,
     coverStyles,
     pagesStyles
