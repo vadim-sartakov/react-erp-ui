@@ -114,6 +114,25 @@ export function getScrollDataWithCustomSizes({ startScroll = 0, startOffset = 0,
   return { offset, visibleIndexes };
 };
 
+function findNextFirstIndexAndOffset({ startIndex, startScroll, targetScroll, sizes, totalCount, defaultSize, overscroll = 0 }) {
+  let firstIndex, offset;
+  let curIndex = startIndex;
+  let curScroll = startScroll;
+  let curOffset = startScroll;
+  while (firstIndex === undefined && curIndex < totalCount) {
+    const curSize = sizes[curIndex] || defaultSize;
+    curScroll += curSize;
+    if (curScroll >= targetScroll) {
+      firstIndex = curIndex;
+      offset = curOffset;
+    }
+    curOffset += curSize;
+    curIndex++;
+  }
+  firstIndex = applyStartOverscroll(firstIndex, overscroll);
+  return { firstIndex, offset };
+};
+
 function findPrevFirstIndexAndOffset({ startIndex, startScroll, targetScroll, sizes, defaultSize, overscroll = 0 }) {
   let firstIndex, offset;
   let curIndex = startIndex;
@@ -136,9 +155,9 @@ function findLastIndex({ offset, firstIndex, sizes, totalCount, defaultSize, con
   let curIndex = firstIndex;
   let curOffset = offset;
   while (lastIndex === undefined && curIndex < totalCount) {
-    if (curOffset >= offset + containerSize) lastIndex = curIndex
     const curSize = sizes[curIndex] || defaultSize;
     curOffset += curSize;
+    if (curOffset > offset + containerSize) lastIndex = curIndex;
     curIndex++;
   }
   lastIndex = applyEndOverscroll(lastIndex, totalCount, overscroll);
@@ -152,17 +171,23 @@ function shiftScrollBackward({ startIndex, startScroll, targetScroll, sizes, def
   return { offset, visibleIndexes };
 };
 
+function shiftScrollForward({ startIndex, startScroll, targetScroll, sizes, defaultSize, totalCount, containerSize, overscroll = 0 }) {
+  const { offset, firstIndex } = findNextFirstIndexAndOffset({ startIndex, startScroll, targetScroll, totalCount, sizes, defaultSize, overscroll });
+  const lastIndex = findLastIndex({ offset, firstIndex, sizes, totalCount, defaultSize, containerSize, overscroll });
+  const visibleIndexes = getVisibleIndexesRange(firstIndex, lastIndex);
+  return { offset, visibleIndexes };
+};
+
 export function shiftScroll({ prevScrollData, prevScroll, sizes, scroll, containerSize, totalCount, defaultSize, overscroll = 0 }) {
   const scrollDiff = scroll - prevScroll;
   const firstPrevIndex = prevScrollData.visibleIndexes[0];
   const curSize = sizes[firstPrevIndex] || defaultSize;
-  const prevSize = sizes[firstPrevIndex - 1] || defaultSize;
 
   if (scrollDiff > 0) {
-    const { offset, visibleIndexes } = getScrollDataWithCustomSizes({
-      startScroll: prevScrollData.offset,
-      startOffset: prevScrollData.offset - prevSize,
+    const { offset, visibleIndexes } = shiftScrollForward({
       startIndex: firstPrevIndex,
+      startScroll: prevScrollData.offset,
+      targetScroll: scroll,
       sizes,
       defaultSize,
       scroll,
