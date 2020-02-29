@@ -195,17 +195,15 @@ export function shiftScroll({ prevScrollData, prevScroll, sizes, scroll, contain
 };
 
 /**
- * @function
  * @param {Object} options
- * @param {Meta[]} options.meta [Meta]{@link module:components/Scroller~Meta}
+ * @param {sizes[]} options.sizes
  * @param {number} options.defaultSize
  * @returns {number}
  */
-export const getItemsSize = ({ startIndex = 0, meta, count, defaultSize }) => {
+export function getItemsSize({ startIndex = 0, sizes, count, defaultSize }) {
   if (!count) return 0;
-  return meta ? [...new Array(count).keys()].reduce((acc, key, index) => {
-    const curMeta = meta[index + startIndex];
-    const curSize = (curMeta && curMeta.size) || defaultSize;
+  return sizes && sizes.length ? [...new Array(count).keys()].reduce((acc, key, index) => {
+    const curSize = sizes[index + startIndex] || defaultSize;
     return acc + curSize;
   }, 0) : count * defaultSize;
 };
