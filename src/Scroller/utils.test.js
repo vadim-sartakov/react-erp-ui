@@ -1,7 +1,7 @@
 import {
   getItemsCountOnPage,
   getScrollDataWithDefaultSize,
-  getScrollDataWithCustomSizes,
+  getInitialScrollDataWithCustomSizes,
   shiftScroll
 } from './utils';
 
@@ -73,6 +73,14 @@ describe('Scroller utils', () => {
 
   });
 
+  it('should return initial indexes with custom sizes', () => {
+    const result = getInitialScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 0 });
+    expect(result).toEqual({
+      offset: 0,
+      visibleIndexes: [0, 1]
+    });
+  });
+
   describe.skip('getScrollDataWithCustomSizes', () => {
     it('should return first visible indexes', () => {
       const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 0 });
@@ -108,6 +116,32 @@ describe('Scroller utils', () => {
   });
 
   describe('shiftScroll', () => {
+
+    
+
+    /*it('should return first extended visible indexes when overscroll specified', () => {
+      const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 0, overscroll: 2 });
+      expect(result).toEqual({
+        offset: 0,
+        visibleIndexes: [0, 1, 2, 3]
+      });
+    });
+
+    it('should return middle visible indexes when scrolled', () => {
+      const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 175 });
+      expect(result).toEqual({
+        offset: 100,
+        visibleIndexes: [3, 4, 5, 6]
+      });
+    });
+
+    it('should return extended middle visible indexes when scrolled and overscroll value provided', () => {
+      const result = getScrollDataWithCustomSizes({ sizes, containerSize: 50, defaultSize: 10, totalCount: 200, scroll: 175, overscroll: 2 });
+      expect(result).toEqual({
+        offset: 20,
+        visibleIndexes: [1, 2, 3, 4, 5, 6, 7, 8]
+      });
+    });*/
 
     it('should shift forward on scroll', () => {
       const prevScrollData = {
