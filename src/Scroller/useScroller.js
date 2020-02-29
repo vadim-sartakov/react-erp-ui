@@ -109,7 +109,7 @@ const useScroller = ({
     setRowsScrollData(nextRowsScrollData);
 
     prevScrollTop.current = e.target.scrollTop;
-    prevScrollLeft.current = e.target.prevScrollLeft;
+    prevScrollLeft.current = e.target.scrollLeft;
   }, [
     rowsScrollData,
     columnsScrollData,

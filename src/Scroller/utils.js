@@ -135,7 +135,7 @@ function findLastIndex({ targetScroll, offset, firstIndex, sizes, totalCount, de
   let lastIndex;
   let curIndex = firstIndex;
   let curOffset = offset;
-  while (lastIndex === undefined && curIndex < totalCount) {
+  while (lastIndex === undefined && curIndex <= totalCount) {
     const curSize = sizes[curIndex] || defaultSize;
     curOffset += curSize;
     if (curOffset >= targetScroll + containerSize) lastIndex = curIndex;

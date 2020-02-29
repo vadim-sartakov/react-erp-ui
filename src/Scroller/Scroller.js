@@ -24,10 +24,11 @@ const Scroller = inputProps => {
     defaultColumnWidth,
     defaultRowHeight,
     value,
-    CellComponent
+    CellComponent,
+    RowComponent = 'div'
   } = props;
 
-  const elements = visibleRowsIndexes.reduce((acc, rowIndex) => {
+  const elements = visibleRowsIndexes.map(rowIndex => {
     const height = rowsSizes[rowIndex] || defaultRowHeight;
     if (visibleColumnsIndexes) {
       const columnsElements = visibleColumnsIndexes.map(columnIndex => {
@@ -36,14 +37,18 @@ const Scroller = inputProps => {
         const style = { width, height };
         return <CellComponent key={`${rowIndex}-${columnIndex}`} value={curValue} style={style} />;
       });
-      return [...acc, ...columnsElements];
+      return (
+        <RowComponent key={rowIndex} style={{ display: 'flex' }}>
+          {columnsElements}
+        </RowComponent>
+      );
     } else {
       const curValue = value[rowIndex];
       const style = { height };
       const rowElement = <CellComponent key={rowIndex} value={curValue} style={style} />;
-      return [...acc, rowElement];
+      return rowElement;
     }
-  }, []);
+  });
 
   return (
     <ScrollerContainer

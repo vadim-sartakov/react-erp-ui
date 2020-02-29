@@ -23,7 +23,7 @@ export const ListTestComponent = props => {
 };
 
 export const gridValue = generateGridValues(1000, 50);
-const columnsSizes = generateRandomSizes(gridValue[0].length, 100, 180);
+const columnsSizes = generateRandomSizes(gridValue[0].length, 80, 180);
 
 const GridCellComponent = ({ value, ...props }) => {
   return (

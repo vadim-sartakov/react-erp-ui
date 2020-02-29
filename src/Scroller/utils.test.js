@@ -7,7 +7,7 @@ import {
 
 //             0   20  50  100 180 200 210  offsets
 //             20  50  100 180 200 210 260  scroll
-const sizes = [20, 30, 50, 80, 20, 10, 50, 90, 40, 30];
+const sizes = [20, 30, 50, 80, 20, 10, 50, 90, 40, 30];  // 420 - total size
 //             0   1   2   3   4   5   6    index
 
 describe('Scroller utils', () => {
@@ -118,6 +118,18 @@ describe('Scroller utils', () => {
       expect(result).toEqual({
         offset: 200,
         visibleIndexes: [5, 6]
+      });
+    });
+
+    it('should shift forward to the last element', () => {
+      const prevScrollData = {
+        offset: 100,
+        visibleIndexes: [3, 4, 5, 6]
+      };
+      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 175, scroll: 2280 });
+      expect(result).toEqual({
+        offset: 2270,
+        visibleIndexes: [195, 196, 197, 198, 199]
       });
     });
 
