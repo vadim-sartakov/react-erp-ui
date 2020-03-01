@@ -92,6 +92,7 @@ function findNextFirstIndexAndOffset({ startIndex, startScroll, targetScroll, si
   let curIndex = startIndex;
   let curScroll = startScroll;
   let curOffset = startScroll;
+
   while (firstIndex === undefined && curIndex < totalCount) {
     const curSize = sizes[curIndex] || defaultSize;
     curScroll += curSize;
@@ -126,6 +127,14 @@ function findPrevFirstIndexAndOffset({ startIndex, startScroll, targetScroll, si
       offset = curScroll;
     }
     curIndex--;
+  }
+  if (overscroll) {
+    for (let i = 1; i <= overscroll; i++) {
+      const curIndex = firstIndex - i;
+      if (curIndex < 0) break;
+      const curSize = sizes[curIndex] || defaultSize;
+      offset -= curSize;
+    }
   }
   firstIndex = applyStartOverscroll(firstIndex, overscroll);
   return { firstIndex, offset };

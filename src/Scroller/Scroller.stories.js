@@ -8,7 +8,7 @@ import classes from './Scroller-stories.module.sass';
 export const generateRandomSizes = (count, start, end) => [...new Array(count).keys()].map(() => getRandomInt(start, end));
 
 export const listValue = generateListValues(1000);
-const rowsSizes = generateRandomSizes(listValue.length, 40, 100);
+const rowsSizes = generateRandomSizes(listValue.length, 40, 120);
 
 const ListCellComponent = ({ value, style }) => {
   return (
@@ -19,11 +19,11 @@ const ListCellComponent = ({ value, style }) => {
 };
 
 export const ListTestComponent = props => {
-  return <Scroller CellComponent={ListCellComponent} height={600} {...props} />;
+  return <Scroller CellComponent={ListCellComponent} height={600} overscroll={2} {...props} />;
 };
 
 export const gridValue = generateGridValues(1000, 50);
-const columnsSizes = generateRandomSizes(gridValue[0].length, 80, 180);
+const columnsSizes = generateRandomSizes(gridValue[0].length, 80, 250);
 
 const GridCellComponent = ({ value, ...props }) => {
   return (
@@ -34,7 +34,7 @@ const GridCellComponent = ({ value, ...props }) => {
 };
 
 export const GridTestComponent = props => {
-  return <Scroller CellComponent={GridCellComponent} width={800} height={600} {...props} />;
+  return <Scroller CellComponent={GridCellComponent} width={800} height={600} overscroll={2} {...props} />;
 };
 
 export const loadPageAsync = value => (page, itemsPerPage) => {

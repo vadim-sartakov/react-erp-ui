@@ -121,6 +121,18 @@ describe('Scroller utils', () => {
       });
     });
 
+    it('should shift forward with overscroll', () => {
+      const prevScrollData = {
+        offset: 50,
+        visibleIndexes: [2, 3, 4, 5, 6, 7]
+      };
+      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 175, scroll: 205, overscroll: 1 });
+      expect(result).toEqual({
+        offset: 180,
+        visibleIndexes: [4, 5, 6, 7]
+      });
+    });
+
     it('should shift forward to the last element', () => {
       const prevScrollData = {
         offset: 100,
@@ -145,7 +157,7 @@ describe('Scroller utils', () => {
       });
     });
 
-    it('should move backward', () => {
+    it('should shift backward', () => {
       const prevScrollData = {
         offset: 100,
         visibleIndexes: [3, 4, 5, 6]
@@ -154,6 +166,18 @@ describe('Scroller utils', () => {
       expect(result).toEqual({
         offset: 50,
         visibleIndexes: [2, 3]
+      });
+    });
+
+    it('should shift backward with overscroll', () => {
+      const prevScrollData = {
+        offset: 180,
+        visibleIndexes: [4, 5, 6, 7]
+      };
+      const result = shiftScroll({ sizes, prevScrollData: prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 205, scroll: 175, overscroll: 1 });
+      expect(result).toEqual({
+        offset: 50,
+        visibleIndexes: [2, 3, 4, 5, 6, 7]
       });
     });
 
