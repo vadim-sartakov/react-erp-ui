@@ -87,6 +87,19 @@ export function getScrollDataWithCustomSizes({ scroll: targetScroll, sizes, cont
   return { offset, visibleIndexes };
 };
 
+function reduceOverscrolledOffset({ offset, overscroll, firstIndex, sizes, defaultSize }) {
+  let resultOffset = offset;
+  if (overscroll) {
+    for (let i = 1; i <= overscroll; i++) {
+      const curIndex = firstIndex - i;
+      if (curIndex < 0) break;
+      const curSize = sizes[curIndex] || defaultSize;
+      resultOffset -= curSize;
+    }
+  }
+  return resultOffset;
+};
+
 function findNextFirstIndexAndOffset({ startIndex, startScroll, targetScroll, sizes, totalCount, defaultSize, overscroll = 0 }) {
   let firstIndex, offset;
   let curIndex = startIndex;
@@ -103,14 +116,7 @@ function findNextFirstIndexAndOffset({ startIndex, startScroll, targetScroll, si
     curOffset += curSize;
     curIndex++;
   }
-  if (overscroll) {
-    for (let i = 1; i <= overscroll; i++) {
-      const curIndex = firstIndex - i;
-      if (curIndex < 0) break;
-      const curSize = sizes[curIndex] || defaultSize;
-      offset -= curSize;
-    }
-  }
+  offset = reduceOverscrolledOffset({ offset, overscroll, firstIndex, sizes, defaultSize });
   firstIndex = applyStartOverscroll(firstIndex, overscroll);
   return { firstIndex, offset };
 };
@@ -128,15 +134,12 @@ function findPrevFirstIndexAndOffset({ startIndex, startScroll, targetScroll, si
     }
     curIndex--;
   }
-  if (overscroll) {
-    for (let i = 1; i <= overscroll; i++) {
-      const curIndex = firstIndex - i;
-      if (curIndex < 0) break;
-      const curSize = sizes[curIndex] || defaultSize;
-      offset -= curSize;
-    }
+  // Restricting accumulative overscroll apply when
+  // scrolled by small amount and index remain the same
+  if (firstIndex !== startIndex) {
+    offset = reduceOverscrolledOffset({ offset, overscroll, firstIndex, sizes, defaultSize });
+    firstIndex = applyStartOverscroll(firstIndex, overscroll);
   }
-  firstIndex = applyStartOverscroll(firstIndex, overscroll);
   return { firstIndex, offset };
 };
 

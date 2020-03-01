@@ -145,7 +145,7 @@ describe('Scroller utils', () => {
       });
     });
 
-    it('should stay on same position when scrolled by small value', () => {
+    it('should stay on same position when scrolled forward by small value', () => {
       const prevScrollData = {
         offset: 100,
         visibleIndexes: [3, 4, 5, 6]
@@ -169,12 +169,12 @@ describe('Scroller utils', () => {
       });
     });
 
-    it('should shift backward with overscroll', () => {
+    it('should stay on same position when scrolled backward by small value with overscroll', () => {
       const prevScrollData = {
-        offset: 180,
-        visibleIndexes: [4, 5, 6, 7]
+        offset: 50,
+        visibleIndexes: [2, 3, 4, 5, 6, 7]
       };
-      const result = shiftScroll({ sizes, prevScrollData: prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 205, scroll: 175, overscroll: 1 });
+      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 176, scroll: 175, overscroll: 1 });
       expect(result).toEqual({
         offset: 50,
         visibleIndexes: [2, 3, 4, 5, 6, 7]
