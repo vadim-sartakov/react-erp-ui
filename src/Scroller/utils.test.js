@@ -194,6 +194,19 @@ describe('Scroller utils', () => {
       });
     });
 
+    it('should not add end overscroll when scrolled back on small sized items', () => {
+      const sizes = [1, 1, 1, 50, 1, 1];
+      const prevScrollData = {
+        offset: 2,
+        visibleIndexes: [2, 3, 4, 5]
+      };
+      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 2, prevScroll: 53, scroll: 51, overscroll: 1 });
+      expect(result).toEqual({
+        offset: 2,
+        visibleIndexes: [2, 3, 4]
+      });
+    });
+
     it('should move backward to scroll 0', () => {
       const prevScrollData = {
         offset: 100,
