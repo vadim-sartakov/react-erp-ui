@@ -181,6 +181,19 @@ describe('Scroller utils', () => {
       });
     });
 
+    it('should stay on same position on start and shift on end when scrolled backward by small value with overscroll', () => {
+      const sizes = [50, 50, 1, 1, 1, 1];
+      const prevScrollData = {
+        offset: 0,
+        visibleIndexes: [0, 1, 2, 3, 4]
+      };
+      const result = shiftScroll({ sizes, prevScrollData, defaultSize: 10, totalCount: 200, containerSize: 50, prevScroll: 52, scroll: 51, overscroll: 1 });
+      expect(result).toEqual({
+        offset: 0,
+        visibleIndexes: [0, 1, 2, 3]
+      });
+    });
+
     it('should move backward to scroll 0', () => {
       const prevScrollData = {
         offset: 100,
